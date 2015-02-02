@@ -19,6 +19,29 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(freetype2)
+BuildRequires: 	qt5-plugin-accessible-widgets
+BuildRequires: 	qt5-plugin-bearer-connman
+BuildRequires: 	qt5-plugin-bearer-generic
+BuildRequires: 	qt5-plugin-bearer-nm
+BuildRequires: 	qt5-plugin-generic-evdev
+BuildRequires: 	qt5-plugin-imageformat-gif
+BuildRequires: 	qt5-plugin-imageformat-ico
+BuildRequires: 	qt5-plugin-imageformat-jpeg
+BuildRequires: 	qt5-plugin-platform-eglfs
+BuildRequires: 	qt5-plugin-platforminputcontext-ibus
+BuildRequires: 	qt5-plugin-platform-linuxfb
+BuildRequires: 	qt5-plugin-platform-minimal
+BuildRequires: 	qt5-plugin-platform-minimalegl
+BuildRequires: 	qt5-plugin-platform-offscreen
+BuildRequires: 	qt5-plugin-platform-xcb
+BuildRequires: 	qt5-qtdeclarative
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Gui)
+BuildRequires:  pkgconfig(Qt5Widgets)
+BuildRequires:  pkgconfig(Qt5Xml)
+BuildRequires:  pkgconfig(Qt5DBus)
+BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(Qt5OpenGL)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(xpm)
@@ -31,7 +54,9 @@ BuildRequires:  cmake
 
 Requires:	dbus
 Requires:	dbus-glib
-Requires:	gpsd
+
+#currently we are not using gpsd
+#Requires:	gpsd
 
 %description
 Navit is  modular design is capable of using vector maps of various formats 
@@ -67,7 +92,6 @@ install -m 644 %{navit_dir}/navit/xpm/*.png $RPM_BUILD_ROOT/%{_datadir}/navit/xp
 rm -rf %{buildroot}
 
 %files -f navit.lang
-#%files
 %defattr(-,root,root)
 %{_bindir}/navit
 %{_bindir}/maptool

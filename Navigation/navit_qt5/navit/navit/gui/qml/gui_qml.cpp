@@ -1,7 +1,8 @@
 #include <glib.h>
 #include <QtCore>
 #include <QtGui>
-#include <QtDeclarative>
+#include <QtWidgets>
+#include <QtQuick>
 #include <QtXml>
 #include "config.h"
 #ifdef HAVE_API_WIN32_BASE
@@ -61,8 +62,8 @@ struct gui_priv {
 	struct graphics *gra;
 	QWidget *mainWindow;
 	QWidget *graphicsWidget;
-	QDeclarativeView *guiWidget;
-	QDeclarativeView *prevGuiWidget;
+	QQuickView *guiWidget;
+	QQuickView *prevGuiWidget;
 	QStackedLayout *switcherWidget;
 	struct callback *button_cb;
 	struct callback *motion_cb;
@@ -309,8 +310,8 @@ static int gui_qml_set_graphics(struct gui_priv *this_, struct graphics *gra)
     this_->switcherWidget->addWidget(this_->graphicsWidget);
 	
 	//Instantiate qml components
-    this_->guiWidget = new QDeclarativeView(NULL);
-	this_->guiWidget->setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    this_->guiWidget = new QtQuickView(NULL);
+	this_->guiWidget->setResizeMode(QtQuickView::SizeRootObjectToView);
 		
 	this_->guiWidget->rootContext()->setContextProperty("gui",this_->guiProxy);
 	this_->guiWidget->rootContext()->setContextProperty("navit",this_->navitProxy);
