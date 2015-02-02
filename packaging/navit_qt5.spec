@@ -87,6 +87,10 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 # installed scaled png files
 install -m 644 %{navit_dir}/navit/xpm/*.png $RPM_BUILD_ROOT/%{_datadir}/navit/xpm/
+install -m 644 %{navit_dir}/../custom/img/*.png $RPM_BUILD_ROOT/%{_datadir}/navit/xpm/
+
+# install customized ui layout and settings
+install -m 644 %{navit_dir}/../custom/navit.xml $RPM_BUILD_ROOT/%{_datadir}/navit/
 
 %clean
 rm -rf %{buildroot}
