@@ -1,0 +1,13 @@
+Following are the recommended steps for building and installing "Navigation"
+
+1. Copy gbs-navit.conf file to your home directory.
+2. Run gbs -c ~/gbs-navit.conf build --spec navit_qt5.spec -A i586  --include-all  --clean
+3. Copy the navit-0.0.1.6011svn-1.i686.rpm from ~/GBS-ROOT/local/repos/tizen.ivi/i586/RPMS to the target system.
+4. On the target system, in the folder to which you copied the agl_plugin_suite-0.0.1-1.i686.rpm, run (as root):
+
+	rpm -ivh navit-0.0.1.6011svn-1.i686.rpm
+
+If a version already exists, remove it with:
+
+	rpm -e navit-0.0.1.6011svn-1.i686
+
