@@ -528,9 +528,11 @@ static void draw_mode(struct graphics_priv *gr, enum draw_mode_num mode)
 				r.setRect(0, 0, gr->widget->pixmap->width(), gr->widget->pixmap->height());
 				qt_qpainter_draw(gr, &r, 0);
 			}
+
+/* Remove QEventLoop::DeferredDeletion as this is not supported in qt5 */
 #if QT_VERSION >= 0x050000
 					if (!gr->parent)
-						QCoreApplication::processEvents(QEventLoop::ExcludeSocketNotifiers|QEventLoop::X11ExcludeTimers);
+						QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents|QEventLoop::ExcludeSocketNotifiers|QEventLoop::X11ExcludeTimers);
 #elif QT_VERSION >= 0x040000
 			 		if (!gr->parent)
 			 			QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents|QEventLoop::ExcludeSocketNotifiers|QEventLoop::DeferredDeletion|QEventLoop::X11ExcludeTimers);
