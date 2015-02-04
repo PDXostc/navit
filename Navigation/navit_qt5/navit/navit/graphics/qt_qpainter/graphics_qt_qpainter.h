@@ -66,8 +66,9 @@
 #include <QSvgRenderer>
 #endif
 
-#ifndef QT_QPAINTER_USE_EVENT_GLIB
-#define QT_QPAINTER_USE_EVENT_GLIB 1
+/* Use qt events instead of glib */
+#ifndef QT_QPAINTER_USE_EVENT_QT
+#define QT_QPAINTER_USE_EVENT_QT 1
 #endif
 
 #ifdef Q_WS_X11
