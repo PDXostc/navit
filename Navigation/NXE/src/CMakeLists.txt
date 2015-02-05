@@ -3,8 +3,7 @@ set( Python_ADDITIONAL_VERSIONS 2.7 )
 set(Python_FIND_VERSION 2)
 set(Python_FIND_VERSION_MAJOR 2)
 find_package(PythonInterp)
-find_package(Qt5Core REQUIRED) # for QProcess
-message(STATUS "Found python" ${PYTHON_VERSION_STRING})
+find_package(Boost COMPONENTS system filesystem)
 
 set(API_CONSTANT_NAME kAscii_nxe_api)
 
@@ -32,4 +31,4 @@ set(NXE_SRCS
 )
 
 add_library(nxe SHARED ${NXE_SRCS})
-target_link_libraries(nxe Qt5::Core)
+target_link_libraries(nxe ${Boost_LIBRARIES})
