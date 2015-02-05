@@ -6,15 +6,25 @@
 #include <chrono>
 #include <thread>
 
-int main(int argc, char *argv[])
-{
-    NXE::NavitProcessImpl p;
-    p.setProgramPath("/home/bata/builds/navit-qt5/navit");
-    std::cout << p.isRunning() << std::endl;
-    p.start();
-    std::cout << p.isRunning() << std::endl;
+#include <gtest/gtest.h>
 
-    std::chrono::milliseconds dura( 60 * 1000 * 1000 );
-    std::this_thread::sleep_for( dura );
-    return 0;
+
+class NavitProcessTest : public ::testing::Test
+{
+protected:
+    NXE::NavitProcessImpl process;
+};
+
+TEST_F(NavitProcessTest, failure_start_pathNotSet)
+{
+    EXPECT_NO_THROW(process.start());
+    EXPECT_FALSE(process.isRunning());
+}
+
+TEST_F(NavitProcessTest, success_start_pathSet)
+{
+    process.setProgramPath("/home/bata/builds/navit-qt5/navit");
+
+    EXPECT_NO_THROW(process.start());
+    EXPECT_TRUE(process.isRunning());
 }
