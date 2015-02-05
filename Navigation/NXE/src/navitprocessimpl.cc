@@ -43,7 +43,7 @@ void NavitProcessImpl::setProgramPath(const std::string &name)
     d_ptr->m_programPath = name;
 }
 
-void NavitProcessImpl::start()
+bool NavitProcessImpl::start()
 {
     d_ptr->m_lastError = bs::error_code();
     const std::string command =  d_ptr->m_programPath + "/" + d_ptr->m_navitProgramName;
@@ -53,6 +53,8 @@ void NavitProcessImpl::start()
                                  bp::initializers::start_in_dir(d_ptr->m_programPath),
                                  bp::initializers::inherit_env(),
                                  bp::initializers::set_on_error(d_ptr->m_lastError));
+
+    return d_ptr->m_lastError;
 }
 
 void NavitProcessImpl::stop()

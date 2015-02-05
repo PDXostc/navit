@@ -17,7 +17,7 @@ protected:
 
 TEST_F(NavitProcessTest, failure_start_pathNotSet)
 {
-    EXPECT_NO_THROW(process.start());
+    EXPECT_FALSE(process.start());
     EXPECT_FALSE(process.isRunning());
 }
 
@@ -25,6 +25,6 @@ TEST_F(NavitProcessTest, success_start_pathSet)
 {
     process.setProgramPath("/home/bata/builds/navit-qt5/navit");
 
-    EXPECT_NO_THROW(process.start());
+    EXPECT_TRUE(process.start());
     EXPECT_TRUE(process.isRunning());
 }

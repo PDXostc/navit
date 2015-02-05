@@ -8,4 +8,4 @@ set(TEST_SRCS
 
 add_executable(navitprocesstest ${TEST_SRCS})
 target_link_libraries(navitprocesstest nxe gmock_main)
-GTEST_ADD_TESTS(NavitProcessTest "" ${TEST_SRCS})
+#GTEST_ADD_TESTS(NavitProcessTest "" ${TEST_SRCS})

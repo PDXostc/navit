@@ -3,7 +3,9 @@ set( Python_ADDITIONAL_VERSIONS 2.7 )
 set(Python_FIND_VERSION 2)
 set(Python_FIND_VERSION_MAJOR 2)
 find_package(PythonInterp)
-find_package(Boost COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+
+include_directories(${Boost_INCLUDE_DIRS})
 
 set(API_CONSTANT_NAME kAscii_nxe_api)
 
@@ -22,6 +24,9 @@ set(NXE_SRCS
     nxe_instance.cc
     navitprocess.h
     navitprocessimpl.cc
+    navitcontroller.cc
+    navitdbus.cc
+    jsonmessage.cc
 
     # tizen-extension-crosswalk sources
     ../tec/common/extension.cc

@@ -4,6 +4,7 @@
 #include "common/extension.h"
 
 namespace NXE {
+class NavitProcess;
 
 class NXExtension : public common::Extension
 {
@@ -16,6 +17,10 @@ private:
     static void OnShutdown(XW_Extension xw_extension);
     static void OnInstanceCreated(XW_Instance xw_instance);
     static void OnInstanceDestroyed(XW_Instance xw_instance);
+
+private:
+    std::shared_ptr<NavitProcess> m_navitProcess;
+
 };
 
 }

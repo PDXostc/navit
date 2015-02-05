@@ -14,7 +14,7 @@ public:
     ~NavitProcessImpl();
 
     virtual void setProgramPath(const std::string &name) override final;
-    virtual void start() override final;
+    virtual bool start() override final;
     virtual void stop() override final;
     virtual bool isRunning() override final;
     virtual void setArgs(const std::list<std::string> &args) override final;

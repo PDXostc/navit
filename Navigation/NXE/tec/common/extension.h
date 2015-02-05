@@ -38,7 +38,6 @@ class Extension;
 // an appropriate Extension subclass.
 common::Extension* CreateExtension();
 
-
 namespace common {
 
 class Extension {
@@ -60,8 +59,8 @@ class Extension {
   static std::string GetRuntimeVariable(const char* var_name, unsigned len);
 
  private:
-  friend int32_t ::XW_Initialize(XW_Extension extension,
-                                 XW_GetInterface get_interface);
+  friend int32_t (::XW_Initialize(XW_Extension extension,
+                                 XW_GetInterface get_interface));
 
   // XW_Extension callbacks.
   static void OnShutdown(XW_Extension xw_extension);
