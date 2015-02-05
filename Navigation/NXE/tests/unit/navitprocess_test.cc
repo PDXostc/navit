@@ -1,4 +1,3 @@
-
 #include "navitprocessimpl.h"
 #include "nxe_extension.h"
 
@@ -23,6 +22,7 @@ TEST_F(NavitProcessTest, failure_start_pathNotSet)
 
 TEST_F(NavitProcessTest, success_start_pathSet)
 {
+    // TODO: This path needs to be properly set
     process.setProgramPath("/home/bata/builds/navit-qt5/navit");
 
     EXPECT_TRUE(process.start());

@@ -54,7 +54,7 @@ bool NavitProcessImpl::start()
                                  bp::initializers::inherit_env(),
                                  bp::initializers::set_on_error(d_ptr->m_lastError));
 
-    return d_ptr->m_lastError;
+    return !d_ptr->m_lastError;
 }
 
 void NavitProcessImpl::stop()

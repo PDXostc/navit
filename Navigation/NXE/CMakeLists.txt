@@ -13,6 +13,10 @@ if(NOT DISABLE_TESTS)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
 endif()
 
+# global vars
+find_package(Boost REQUIRED COMPONENTS system filesystem)
+include_directories(${Boost_INCLUDE_DIRS})
+message(STATUS ${Boost_INCLUDE_DIRS})
 
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
