@@ -5,6 +5,7 @@
 
 namespace NXE {
 
+class NavitDBusPrivate;
 class NavitDBus : public NavitController
 {
 public:
@@ -14,6 +15,8 @@ public:
     virtual void downloadMap() noexcept override;
 
     virtual void calculateRoute() noexcept override;
+private:
+    std::unique_ptr<NavitControllerPrivate> d_ptr;
 };
 
 } // namespace NXE

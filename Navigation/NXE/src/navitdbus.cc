@@ -2,6 +2,9 @@
 
 namespace NXE {
 
+struct NavitControllerPrivate {
+};
+
 NavitDBus::~NavitDBus()
 {
 
