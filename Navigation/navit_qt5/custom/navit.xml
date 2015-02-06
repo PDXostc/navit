@@ -32,7 +32,7 @@
 		Center coordinates format: "Long Lat" in decimal degrees (WGS 84).
 		For other formats see http://wiki.navit-project.org/index.php/Coordinate_format.
 		-->
-	<navit center="11.5666 48.1333" zoom="256" tracking="1" orientation="-1" recent_dest="250">
+	<navit center="521040 N 210173 E" zoom="128" tracking="1" orientation="-1" recent_dest="10">
 		<!-- Use one of gtk_drawing_area, qt_qpainter or sdl. 
 		     On windows systems, use win32 -->
 		<graphics type="qt_qpainter"/>
@@ -47,11 +47,10 @@
 		<!-- The action that appears on map click is configurable with the attribute "on_map_click".
 		     To get the prvious behaviour of showing the map point menu use on_map_click='menu("#Map Point")'
 	        -->
-		<gui type="internal" enabled="yes"><![CDATA[
+		<gui type="internal" font_size="450" enabled="yes"><![CDATA[
 			<html>
 				<a name='Main Menu'><text>Main menu</text>
 					<a href='#Actions'><img src='gui_actions'>Actions</img></a>
-					<a href='#Actions'><img src='gui_actions'>Navigate</img></a>
 					<img cond='flags&amp;2' src='gui_map' onclick='back_to_map()'><text>Show
 Map</text></img>
 					<a href='#Settings'><img src='gui_settings'><text>Settings</text></img></a>
@@ -151,21 +150,21 @@ Waypoint</text></img>
 		<!-- for a debug log -->
 		<log enabled="no" type="textfile_debug" data="debug_%Y%m%d-%i.txt" flush_size="1000" flush_time="30"/>
 		<!-- osd items allow to position display and control items directly on top of the map: -->
-		<osd enabled="yes" type="compass"/>
-		<osd enabled="yes" type="eta"/> 
-		<osd enabled="no" type="navigation_distance_to_target"/> 
-		<osd enabled="no" type="navigation"/> 
+		<osd enabled="yes" type="compass" x="0" y="-560"/>
+		<osd enabled="no" type="eta"/> 
+		<osd enabled="yes" type="navigation_distance_to_target"/> 
+		<osd enabled="yes" type="navigation"/> 
 		<osd enabled="no" type="navigation_distance_to_next"/> 
-		<osd enabled="no" type="navigation_next_turn"/> 
+		<osd enabled="yes" type="navigation_next_turn" x="0" y="-480" />
+		<osd enabled="yes" type="gps_status" x="0" y="0" /> 
 
 		<!-- Commands include gui_internal_menu, gui_internal_fullscreen, zoom_in and zoom_out.
 			Usage of negative values change the button origins. x="0" y="0" specifies the top left, x="-0" y="-0" the bottom right corner.
 			It's always the top left corner of the icon, so you need to consider the icon's size when you enter the values. -->
-		<osd enabled="no" type="button" x="0" y="0" command="gui.fullscreen=!gui.fullscreen" src="toggle_fullscreen.png"/>
+		<osd enabled="no" type="button" x="-1" y="-0" command="gui.fullscreen=!gui.fullscreen" src="gui_fullscreen.png"/>
 		<osd enabled="no" type="button" x="-96" y="0" command="gui.menu(1)" src="menu.png"/>
 		<osd enabled="no" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.png"/>
 		<osd enabled="no" type="button" x="0" y="-96" command="zoom_out()" src="zoom_out.png"/> 
-		<osd enabled="yes" type="button" x="-96" y="0" command="gui.menu(1)" src="menu.xpm"/>
 		<osd enabled="yes" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.svg"/>
 		<osd enabled="yes" type="button" x="36" y="-96" command="zoom_out()" src="zoom_out.svg"/> 
 
@@ -182,7 +181,7 @@ Waypoint</text></img>
 		<!-- For SDL, you should add follow="1" to have the view centered on your position -->
 		<!-- <vehicle name="Meins" enabled="yes" source="gpsd://localhost" color="#0000ff" follow="1"/> -->
 
-		<vehicle name="Demo" profilename="car" enabled="yes" source="demo://"/>
+		<vehicle name="Demo" profilename="car" enabled="yes" active="yes" source="demo://"/>
 
 		<!-- For the cumulative displacement filter to be enabled, set cdf_histsize="x" here, with x being an integer somewhere around 4 -->
 		<tracking cdf_histsize="0"/>
