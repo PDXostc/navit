@@ -7,21 +7,17 @@ set(TEST_SRCS
     navitdbus_test.cc
 )
 
-#Run through each source
+set(MINI_MAIN
+    testmain.cc
+)
+
+add_library(minimain STATIC ${MINI_MAIN})
+
 foreach(testSrc ${TEST_SRCS})
-        #Extract the filename without an extension (NAME_WE)
         get_filename_component(testName ${testSrc} NAME_WE)
-
-        #Add compile target
         add_executable(${testName} ${testSrc})
-
-        #link to Boost libraries AND your targets and dependencies
-        target_link_libraries(${testName} nxe gmock_main ${Boost_LIBRARIES})
-
-
-        #Finally add it to test execution -
-        #Notice the WORKING_DIRECTORY and COMMAND
-        add_test(NAME ${testName}
-                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/testBin
-                 COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/testBin/${testName} )
+        target_link_libraries(${testName} minimain nxe gtest gmock ${Boost_LIBRARIES})
+        add_test(NAME ${testName}Test
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                 COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${testName})
 endforeach(testSrc)

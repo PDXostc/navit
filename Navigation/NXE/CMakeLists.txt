@@ -7,6 +7,7 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 
 add_definitions(-std=c++11)
 add_definitions(-DBOOST_LOG_DYN_LINK)
+enable_testing()
 
 # 3rd party
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-dbus/include)

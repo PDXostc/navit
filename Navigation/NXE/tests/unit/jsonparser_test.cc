@@ -10,13 +10,12 @@
 #include <boost/log/trivial.hpp>
 #include "jsonmessage.h"
 
-class JSONParserTest : public ::testing::Test
+struct JSONParserTest : public ::testing::Test
 {
 };
 
 TEST_F(JSONParserTest, invalid_json_only_id)
 {
-    BOOST_LOG_TRIVIAL(info) << "invalid";
     const std::string incomingMessage = "{\"id\":0}";
     EXPECT_ANY_THROW(
         const NXE::JSONMessage message = NXE::JSONUtils::deserialize(incomingMessage)
