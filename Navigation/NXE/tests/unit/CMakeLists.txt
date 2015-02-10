@@ -16,7 +16,7 @@ foreach(testSrc ${TEST_SRCS})
         add_executable(${testName} ${testSrc})
 
         #link to Boost libraries AND your targets and dependencies
-        target_link_libraries(${testName} nxe gmock_main)
+        target_link_libraries(${testName} nxe gmock_main ${Boost_LIBRARIES})
 
 
         #Finally add it to test execution -

@@ -1,7 +1,10 @@
 #include "navitdbus.h"
+#include "log.h"
+
 #include <dbus/connection.hpp>
 
 #include <boost/asio.hpp>
+#include <thread>
 
 namespace ba = boost::asio;
 
@@ -26,6 +29,8 @@ struct NavitDBusPrivate {
     ba::io_service m_dbusEventLoop;
     dbus::endpoint m_navitDBusEndpoint;
     dbus::connection m_sessionBus;
+
+    std::thread m_ioThread;
 };
 
 NavitDBus::NavitDBus():
@@ -35,22 +40,27 @@ NavitDBus::NavitDBus():
 
 NavitDBus::~NavitDBus()
 {
+    stop();
+    d_ptr->m_ioThread.join();
 }
 
 void NavitDBus::start() noexcept
 {
-
-    d_ptr->m_dbusEventLoop.run();
+    d_ptr->m_ioThread = std::thread([this](){
+        LOG("Staring thread");
+        d_ptr->m_dbusEventLoop.run();
+        LOG("DBus event loop finished");
+    });
 }
 
 void NavitDBus::stop() noexcept
 {
+    LOG("Stopping Navit DBus client");
     d_ptr->m_dbusEventLoop.stop();
 }
 
 void NavitDBus::pan() noexcept
 {
-
 }
 
 void NavitDBus::scale() noexcept

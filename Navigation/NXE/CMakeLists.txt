@@ -6,6 +6,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 
 add_definitions(-std=c++11)
+add_definitions(-DBOOST_LOG_DYN_LINK)
 
 # 3rd party
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-dbus/include)
@@ -17,8 +18,9 @@ if(NOT DISABLE_TESTS)
 endif()
 
 # global vars
-find_package(Boost REQUIRED COMPONENTS system filesystem)
-include_directories(${Boost_INCLUDE_DIRS})
+find_package(Boost REQUIRED COMPONENTS system filesystem log thread)
+find_package(DBus REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 message(STATUS ${Boost_INCLUDE_DIRS})
 
 add_subdirectory(src)
