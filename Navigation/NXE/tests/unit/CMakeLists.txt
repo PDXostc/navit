@@ -5,6 +5,7 @@ set(TEST_SRCS
     navitprocess_test.cc
     jsonparser_test.cc
     navitdbus_test.cc
+    navitinstance_test.cc
 )
 
 set(MINI_MAIN

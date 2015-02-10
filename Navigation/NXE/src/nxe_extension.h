@@ -6,6 +6,11 @@
 namespace NXE {
 class NavitProcess;
 
+/*!
+ * \brief The NXExtension class describes an extension for Crosswalk to talk with Navit application
+ * The object is created in xwalk process space and it's used to create instances of NXE::NXEInstance
+ * which actually does the connection
+ */
 class NXExtension : public common::Extension
 {
 public:
@@ -13,7 +18,13 @@ public:
     ~NXExtension();
 private:
     // From common::Extension
+
+    /*!
+     * \brief Creates an instance of NXE::NXEInstance type
+     * \return Pointer to newly created object. Ownership is transferred to xwalk
+     */
     virtual common::Instance *CreateInstance() override;
+
     static void OnShutdown(XW_Extension xw_extension);
     static void OnInstanceCreated(XW_Instance xw_instance);
     static void OnInstanceDestroyed(XW_Instance xw_instance);
