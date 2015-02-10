@@ -4,6 +4,7 @@ include_directories(${CMAKE_SOURCE_DIR}/tec)
 set(TEST_SRCS
     navitprocess_test.cc
     jsonparser_test.cc
+    navitdbus_test.cc
 )
 
 #Run through each source
