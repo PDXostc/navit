@@ -1,5 +1,5 @@
 %define svnver 6011
-%define relver 0.0.1
+%define relver 0.5.0
 
 %define navit_dir Navigation/navit_qt5/navit
 
