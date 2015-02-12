@@ -1,0 +1,6 @@
+Following are the recommended steps for building "Navigation" with native qt5 UI.
+
+1. Copy gbs-navit.conf file to your home directory.
+2. Run gbs -c ~/gbs-navit.conf build --spec navit_qt5.spec -A i586  --include-all  --clean
+3. Copy the navit-0.5.0.6011svn-1.i686.rpm from ~/GBS-ROOT/local/repos/tizen.ivi/i586/RPMS to the target system.
+
