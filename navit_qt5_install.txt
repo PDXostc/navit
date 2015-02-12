@@ -1,0 +1,11 @@
+1. Install necessary packages:
+
+zypper install qt5-qtcore qt5-qtgui qt5-qtwayland qt5-qtwidgets   
+
+2. On the target system, in the folder to which you copied the navit-0.5.0.6011svn-1.i686.rpm, run (as root):
+
+	rpm -ivh navit-0.5.0.6011svn-1.i686.rpm
+
+If a version already exists, remove it with:
+
+	rpm -e navit-0.5.0.6011svn-1.i686

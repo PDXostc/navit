@@ -1,0 +1,20 @@
+1. After installation  navit application works in default demo mode.
+You can browse map, create routes and the application can navigate in demo mode.
+
+2. Currently after navit package installation there is no map installed on the target.
+To install a map you should first download this from http://maps5.navit-project.org/ 
+in bin format and copy to the target /home directory.
+
+3. You should change the initial map position in the target's /usr/share/navit/navit.xml
+by editing a line:
+
+	<navit center="521040 N 210173 E" zoom="128" tracking="1" orientation="-1" recent_dest="10">
+
+and replace 'center' value with coordinates corresponding to your map.
+
+See for details: http://wiki.navit-project.org/index.php/Configuration
+
+
+2. Currently you can run navit from wayland terminal:
+navit
+ 
