@@ -28,6 +28,7 @@ set(NXE_SRCS
     navitcontroller.cc
     navitdbus.cc
     jsonmessage.cc
+    settings.cc
 
     # tizen-extension-crosswalk sources
     ../tec/common/extension.cc

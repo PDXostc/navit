@@ -17,7 +17,6 @@ public:
     void HandleMessage(const char *msg) override;
 private:
     std::unique_ptr<NXEInstancePrivate> d_ptr;
-
 };
 
 } // namespace NXE
