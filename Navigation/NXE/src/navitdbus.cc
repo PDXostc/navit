@@ -18,12 +18,13 @@ namespace NXE {
 
 struct NavitDBusPrivate {
 
-    NavitDBusPrivate():
-        m_navitDBusEndpoint(dbus::endpoint(navitDBusDestination,
-                                           navitDBusInterface,
-                                           navitDBusPath)),
-        m_sessionBus(m_dbusEventLoop, dbus::bus::session)
-    {}
+    NavitDBusPrivate()
+        : m_navitDBusEndpoint(dbus::endpoint(navitDBusDestination,
+                                             navitDBusInterface,
+                                             navitDBusPath))
+        , m_sessionBus(m_dbusEventLoop, dbus::bus::session)
+    {
+    }
     NavitDBusPrivate(NavitDBusPrivate const&) = delete;
 
     ba::io_service m_dbusEventLoop;
@@ -33,8 +34,8 @@ struct NavitDBusPrivate {
     std::thread m_ioThread;
 };
 
-NavitDBus::NavitDBus():
-    d_ptr(new NavitDBusPrivate)
+NavitDBus::NavitDBus()
+    : d_ptr(new NavitDBusPrivate)
 {
 }
 
@@ -46,7 +47,7 @@ NavitDBus::~NavitDBus()
 
 void NavitDBus::start() noexcept
 {
-    d_ptr->m_ioThread = std::thread([this](){
+    d_ptr->m_ioThread = std::thread([this]() {
         LOG("Staring thread");
         d_ptr->m_dbusEventLoop.run();
         LOG("DBus event loop finished");
@@ -59,22 +60,8 @@ void NavitDBus::stop() noexcept
     d_ptr->m_dbusEventLoop.stop();
 }
 
-void NavitDBus::pan() noexcept
+void NavitDBus::moveBy(double x, double y) noexcept
 {
-}
-
-void NavitDBus::scale() noexcept
-{
-}
-
-void NavitDBus::downloadMap() noexcept
-{
-}
-
-void NavitDBus::calculateRoute() noexcept
-{
-
 }
 
 } // namespace NXE
-

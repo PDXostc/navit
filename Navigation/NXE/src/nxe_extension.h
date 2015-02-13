@@ -2,9 +2,11 @@
 #define NXEXTENSION_H
 
 #include "common/extension.h"
+#include <memory>
 
 namespace NXE {
 class NavitProcess;
+class NavitController;
 
 /*!
  * \brief The NXExtension class describes an extension for Crosswalk to talk with Navit application
@@ -31,6 +33,7 @@ private:
 
 private:
     std::shared_ptr<NavitProcess> m_navitProcess;
+    std::shared_ptr<NavitController> m_navitController;
 
 };
 

@@ -10,6 +10,9 @@ set(TEST_SRCS
 
 set(MINI_MAIN
     testmain.cc
+    testutils.cc
+    mocks/navitprocessmock.h
+    mocks/navitcontrollermock.h
 )
 
 add_library(minimain STATIC ${MINI_MAIN})

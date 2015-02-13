@@ -4,7 +4,6 @@
 #include <thread>
 #include <chrono>
 
-
 struct NavitDBusTest : public ::testing::Test
 {
 };

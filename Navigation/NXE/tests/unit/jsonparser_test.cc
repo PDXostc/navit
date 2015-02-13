@@ -10,59 +10,60 @@
 #include <boost/log/trivial.hpp>
 #include "jsonmessage.h"
 
-struct JSONParserTest : public ::testing::Test
-{
+struct JSONParserTest : public ::testing::Test {
 };
 
 TEST_F(JSONParserTest, invalid_json_only_id)
 {
     const std::string incomingMessage = "{\"id\":0}";
     EXPECT_ANY_THROW(
-        const NXE::JSONMessage message = NXE::JSONUtils::deserialize(incomingMessage)
-    );
-}
-TEST_F(JSONParserTest, minimal_proper_json)
-{
-    const std::string incomingMessage = "{\"id\":0, \"call\":\"pan\"}";
-    EXPECT_NO_THROW(
-        NXE::JSONMessage msg = std::move( NXE::JSONUtils::deserialize(incomingMessage))
-    );
+        const NXE::JSONMessage message = NXE::JSONUtils::deserialize(incomingMessage));
 }
 
-TEST_F(JSONParserTest, minimal_proper_json_with_values)
+TEST_F(JSONParserTest, moveBy_message_with_args)
 {
-    const std::string incomingMessage = "{\"id\":0, \"call\":\"pan\"}";
-    NXE::JSONMessage msg = std::move( NXE::JSONUtils::deserialize(incomingMessage));
+}
+
+// parsing shouldn't raise an exception, only handling should
+TEST_F(JSONParserTest, moveBy_message_without_args)
+{
+    const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
+    EXPECT_NO_THROW(
+    NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
 
     EXPECT_EQ(msg.id, 0);
-    EXPECT_EQ(msg.call, "pan");
+    EXPECT_EQ(msg.call, CallType::moveBy);
+    EXPECT_FALSE(msg.data);
+    );
 }
 
 TEST_F(JSONParserTest, full_json_message)
 {
-    const std::string incomingMessage = "{\"id\":0, \"call\":\"pan\", \"data\":\"some data\"}";
-    NXE::JSONMessage msg = std::move( NXE::JSONUtils::deserialize(incomingMessage));
+    const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\", \"data\":\"some data\"}";
+    EXPECT_NO_THROW(
+    NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
 
     EXPECT_EQ(msg.id, 0);
-    EXPECT_EQ(msg.call, "pan");
+    EXPECT_EQ(msg.call, CallType::moveBy);
     EXPECT_EQ(msg.data.value(), "some data");
+    );
 }
 
 // No need to create invalid test case as it's impossible to create invalid JSONMessage
 TEST_F(JSONParserTest, DISABLED_serialize_invalid)
 {
-    NXE::JSONMessage invalidMsg {0,""};
+    NXE::JSONMessage invalidMsg{ 0, CallType::unknown };
 }
 
 TEST_F(JSONParserTest, serialize_valid)
 {
-    NXE::JSONMessage msg {105, "pan"};
+    NXE::JSONMessage msg{ 105, CallType::moveBy };
     std::string data = NXE::JSONUtils::serialize(msg);
 
     boost::erase_all(data, " ");
     boost::erase_all(data, "\n");
 
-    const std::string expected = "{\"id\":\"105\",\"call\":\"pan\"}";
+    const std::string expected = "{\"id\":\"105\",\"call\":\"moveBy\"}";
 
     EXPECT_EQ(data, expected);
 }

@@ -2,14 +2,18 @@
 #define JSONMESSAGE_H
 
 #include <string>
+#include <map>
 #include <boost/optional.hpp>
+#include <boost/multi_index_container.hpp>
+
+#include "calls.h"
 
 namespace NXE{
 
 struct JSONMessage {
     // necessary fields
     const int id;
-    const std::string call;
+    const CallType call;
 
     // not necessary fields
     const boost::optional<int> errorCode;

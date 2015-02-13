@@ -2,6 +2,7 @@
 #include "nxe_instance.h"
 
 #include "navitprocessimpl.h"
+#include "navitdbus.h"
 #include "log.h"
 
 using namespace NXE;
@@ -32,9 +33,10 @@ common::Instance *NXExtension::CreateInstance()
 
         // Use proper DI here?
         m_navitProcess.reset(new NavitProcessImpl);
+        m_navitController.reset(new NavitDBus);
     }
 
-    return new NXEInstance(m_navitProcess);
+    return new NXEInstance(m_navitProcess, m_navitController);
 }
 
 void NXExtension::OnShutdown(XW_Extension xw_extension)

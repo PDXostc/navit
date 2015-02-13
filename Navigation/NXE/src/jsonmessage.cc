@@ -1,4 +1,5 @@
 #include "jsonmessage.h"
+#include "log.h"
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -7,11 +8,15 @@
 using namespace NXE;
 namespace bpt = boost::property_tree;
 
+namespace {
+const CallMapType types{ { CallType::moveBy, "moveBy" } };
+}
+
 std::string JSONUtils::serialize(NXE::JSONMessage json)
 {
     bpt::ptree tree;
-    tree.put("id",json.id);
-    tree.put("call",json.call);
+    tree.put("id", json.id);
+    tree.put("call",types.at(json.call));
 
     if (json.errorCode) {
         tree.put("errorCode", json.errorCode.value());
@@ -26,19 +31,28 @@ std::string JSONUtils::serialize(NXE::JSONMessage json)
     return buff.str();
 }
 
-
 JSONMessage JSONUtils::deserialize(std::string buff)
 {
     bpt::ptree tree;
     std::stringstream stream;
+
+
     stream << buff;
     std::istringstream is(stream.str());
     bpt::read_json(is, tree);
+    nDebug() << "JSON read";
     boost::optional<int> errorCode = tree.get_optional<int>("errorCode");
-    boost::optional<std::string> call = tree.get_optional<std::string>("call");
+
+    // this will throw an exception if `call` is not present
+    std::string call = tree.get<std::string>("call");
     boost::optional<std::string> data = tree.get_optional<std::string>("data");
-    return JSONMessage {tree.get<int>("id"),
-                        tree.get<std::string>("call"),
+
+    CallMapType::const_iterator it = std::find_if(types.begin(), types.end(), [&call](const std::pair<CallType, std::string>& pair) -> bool {
+                return pair.second == call;
+    });
+
+    return JSONMessage{ tree.get<int>("id"),
+                        it != types.end() ? it->first : CallType::unknown,
                         errorCode,
-                        data};
+                        data };
 }

@@ -5,15 +5,15 @@
 
 namespace NXE {
 
-class Settings
-{
+class Settings {
 public:
     Settings();
     ~Settings();
 
-    template<typename T>
-    T get(const std::string &key) {
-        return m_tree.get<T> (key);
+    template <typename T>
+    typename T::type get()
+    {
+        return m_tree.get<typename T::type>(T::name());
     }
 
 private:
