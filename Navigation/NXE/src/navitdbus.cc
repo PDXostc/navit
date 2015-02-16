@@ -22,14 +22,13 @@ struct NavitDBusPrivate {
         : m_navitDBusEndpoint(dbus::endpoint(navitDBusDestination,
                                              navitDBusInterface,
                                              navitDBusPath))
-        , m_sessionBus(m_dbusEventLoop, dbus::bus::session)
     {
     }
     NavitDBusPrivate(NavitDBusPrivate const&) = delete;
 
     ba::io_service m_dbusEventLoop;
     dbus::endpoint m_navitDBusEndpoint;
-    dbus::connection m_sessionBus;
+    std::unique_ptr<dbus::connection> m_sessionBus;
 
     std::thread m_ioThread;
 };
@@ -51,7 +50,7 @@ bool NavitDBus::start() noexcept
 {
     d_ptr->m_ioThread = std::thread([this]() {
         LOG("Staring thread");
-        d_ptr->m_sessionBus = dbus::connection(d_ptr->m_dbusEventLoop);
+        d_ptr->m_sessionBus.reset(new dbus::connection(d_ptr->m_dbusEventLoop, dbus::bus::session));
         d_ptr->m_dbusEventLoop.run();
         LOG("DBus event loop finished");
     });

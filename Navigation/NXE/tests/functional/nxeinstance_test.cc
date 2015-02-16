@@ -24,7 +24,7 @@ protected:
 TEST_F(NXEInstanceTest, proper_navit)
 {
     std::string msg{ TestUtils::moveByMessage(1, 1) };
-    EXPECT_NO_THROW(instance.HandleMessage(msg.data()));
+    ASSERT_NO_THROW(instance.HandleMessage(msg.data()));
 
     std::chrono::milliseconds dura(20 * 1000);
     std::this_thread::sleep_for(dura);
