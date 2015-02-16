@@ -1,8 +1,16 @@
 1. Install necessary packages:
 
-zypper install qt5-qtcore qt5-qtgui qt5-qtwayland qt5-qtwidgets   
+zypper install qt5-qtcore qt5-qtgui qt5-qtwayland qt5-qtwidgets 
 
-2. On the target system, in the folder to which you copied the navit-0.5.0.6011svn-1.i686.rpm, run (as root):
+2. Copy local gpsd package to the target - you can find this in
+Navigation/packages/gpsd-3.11~dev-0.i686.rpm.
+
+3. Install gpsd package on the target:
+
+rpm -ivh gpsd-3.11~dev-0.i686.rpm
+
+
+4. On the target system, in the folder to which you copied the navit-0.5.0.6011svn-1.i686.rpm, run (as root):
 
 	rpm -ivh navit-0.5.0.6011svn-1.i686.rpm
 
