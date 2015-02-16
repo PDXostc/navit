@@ -51,12 +51,10 @@ BuildRequires:  libjpeg-devel
 BuildRequires:  python-devel
 BuildRequires:  libxslt
 BuildRequires:  cmake
+BuildRequires:  gpsd-devel
 
 Requires:	dbus
 Requires:	dbus-glib
-
-#currently we are not using gpsd
-#Requires:	gpsd
 
 %description
 Navit is  modular design is capable of using vector maps of various formats 
