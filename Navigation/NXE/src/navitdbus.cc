@@ -42,13 +42,16 @@ NavitDBus::NavitDBus()
 NavitDBus::~NavitDBus()
 {
     stop();
-    d_ptr->m_ioThread.join();
+    if (d_ptr->m_ioThread.joinable()) {
+        d_ptr->m_ioThread.join();
+    }
 }
 
-void NavitDBus::start() noexcept
+bool NavitDBus::start() noexcept
 {
     d_ptr->m_ioThread = std::thread([this]() {
         LOG("Staring thread");
+        d_ptr->m_sessionBus = dbus::connection(d_ptr->m_dbusEventLoop);
         d_ptr->m_dbusEventLoop.run();
         LOG("DBus event loop finished");
     });

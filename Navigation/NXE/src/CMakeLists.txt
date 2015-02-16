@@ -7,9 +7,6 @@ set(API_CONSTANT_NAME kAscii_nxe_api)
 # Find Python interpreter
 find_package(PythonInterp)
 
-# find DBus
-find_package(DBus REQUIRED)
-include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
 
 include_directories(${CMAKE_SOURCE_DIR}/tec)
 add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/src/generated_api.cc
@@ -39,4 +36,4 @@ set(NXE_SRCS
 )
 
 add_library(nxe SHARED ${NXE_SRCS})
-target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES})
+target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES})

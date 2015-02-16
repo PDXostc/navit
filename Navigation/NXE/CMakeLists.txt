@@ -18,11 +18,14 @@ if(NOT DISABLE_TESTS)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
 endif()
 
-# global vars
+# find Boost
 find_package(Boost REQUIRED COMPONENTS system filesystem log thread)
-find_package(DBus REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
-message(STATUS ${Boost_INCLUDE_DIRS})
+# find DBus
+find_package(DBus REQUIRED)
+include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
+find_package(DBusCpp REQUIRED)
+include_directories(${DBUSCPP_INCLUDE_DIR})
 
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)

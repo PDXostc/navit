@@ -11,7 +11,7 @@ public:
     NavitDBus();
     ~NavitDBus();
 
-    virtual void start() noexcept override;
+    virtual bool start() noexcept override;
     virtual void stop() noexcept override;
     virtual void moveBy(double x, double y) noexcept override;
 

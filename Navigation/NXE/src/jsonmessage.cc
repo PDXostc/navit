@@ -51,8 +51,15 @@ JSONMessage JSONUtils::deserialize(std::string buff)
                 return pair.second == call;
     });
 
-    return JSONMessage{ tree.get<int>("id"),
+    return JSONMessage{ tree.get<std::uint32_t>("id"),
                         it != types.end() ? it->first : CallType::unknown,
                         errorCode,
                         data };
+}
+
+
+std::string NXE::JSONUtils::serialize(std::uint32_t id, CallType call, int ec, std::string data)
+{
+    JSONMessage m {id, call, ec, data};
+    return serialize(m);
 }

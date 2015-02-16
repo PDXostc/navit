@@ -23,6 +23,7 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
     using SettingsTags::Navit::AutoStart;
 
     auto navi = d_ptr->m_navitProcess.lock();
+    assert(navi);
 
     nDebug() << "Creating NXE instance";
     if (navi) {
@@ -40,6 +41,10 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
+    auto navit = d_ptr->m_navitProcess.lock();
+    if(navit) {
+        navit->stop();
+    }
 }
 
 void NXEInstance::HandleMessage(const char* msg)
@@ -61,6 +66,7 @@ void NXEInstance::HandleMessage(const char* msg)
     }
 
     auto navit = d_ptr->m_controller.lock();
+    assert(navit);
     navit->handleMessage(JSONUtils::deserialize(message));
 }
 

@@ -1,16 +1,14 @@
 
 #include <gtest/gtest.h>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
 
 #include "mocks/navitprocessmock.h"
 #include "mocks/navitcontrollermock.h"
 #include "nxe_instance.h"
 #include "settingtags.h"
 #include "jsonmessage.h"
+#include "../testutils.h"
 
 using ::testing::StrictMock;
-namespace bpt = boost::property_tree;
 
 struct NavitInstanceTest : public ::testing::Test {
 
@@ -21,11 +19,7 @@ struct NavitInstanceTest : public ::testing::Test {
 
     static void SetUpTestCase()
     {
-        // create simple json config file
-        bpt::ptree config;
-        config.put(SettingsTags::Navit::Path::name(), "/this/is/not/a/real/path");
-        config.put(SettingsTags::Navit::AutoStart::name(), false);
-        bpt::write_json("nxe.conf", config);
+        TestUtils::createNXEConfFile();
     }
 };
 

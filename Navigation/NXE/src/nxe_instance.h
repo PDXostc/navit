@@ -12,6 +12,7 @@ class NXEInstancePrivate;
 class NXEInstance : public common::Instance
 {
 public:
+    NXEInstance() = delete;
     NXEInstance(std::weak_ptr<NavitProcess> navitProcess, std::weak_ptr<NavitController> controller);
     ~NXEInstance();
 

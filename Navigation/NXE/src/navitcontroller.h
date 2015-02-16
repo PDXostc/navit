@@ -14,11 +14,15 @@ public:
     NavitController();
     virtual ~NavitController();
 
-    virtual void start() noexcept = 0;
+    //! IPC start/stop
+    virtual bool start() noexcept = 0;
     virtual void stop() noexcept = 0;
 
+    //! An IPC interface
     virtual void moveBy(double x, double y) noexcept = 0;
 
+    //! Common functions
+    void tryStart() ;
     void handleMessage(JSONMessage msg);
 
 private:

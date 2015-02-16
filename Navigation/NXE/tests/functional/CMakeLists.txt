@@ -1,12 +1,11 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/tec)
+include_directories(${CMAKE_SOURCE_DIR}/tests)
 
 set(TEST_SRCS
-    navitprocess_test.cc
-    jsonparser_test.cc
-    navitdbus_test.cc
-    navitinstance_test.cc
+    nxeinstance_test.cc
 )
+
 
 foreach(testSrc ${TEST_SRCS})
         get_filename_component(testName ${testSrc} NAME_WE)
