@@ -90,6 +90,10 @@ install -m 644 %{navit_dir}/../custom/img/*.png $RPM_BUILD_ROOT/%{_datadir}/navi
 # install customized ui layout and settings
 install -m 644 %{navit_dir}/../custom/navit.xml $RPM_BUILD_ROOT/%{_datadir}/navit/
 
+#install example map
+mkdir $RPM_BUILD_ROOT/%{_datadir}/navit/maps
+install -m 644 %{navit_dir}/../custom/maps/*.bin $RPM_BUILD_ROOT/%{_datadir}/navit/maps/
+
 %clean
 rm -rf %{buildroot}
 

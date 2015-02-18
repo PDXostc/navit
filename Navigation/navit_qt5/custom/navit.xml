@@ -32,7 +32,8 @@
 		Center coordinates format: "Long Lat" in decimal degrees (WGS 84).
 		For other formats see http://wiki.navit-project.org/index.php/Coordinate_format.
 		-->
-	<navit center="521040 N 210173 E" zoom="128" tracking="1" orientation="-1" recent_dest="10">
+		
+	<navit center="4531 N 12240 W" zoom="128" tracking="1" orientation="-1" recent_dest="10">
 		<!-- Use one of gtk_drawing_area, qt_qpainter or sdl. 
 		     On windows systems, use win32 -->
 		<graphics type="qt_qpainter"/>
@@ -751,7 +752,7 @@ Waypoint</text></img>
 
 		<!-- Mapset template for openstreetmaps -->
 		<mapset enabled="yes">
-			<maps type="binfile" data="/home/*.bin"/>
+			<maps type="binfile" data="$NAVIT_SHAREDIR/maps/*.bin"/>
 		</mapset>
 
 		<!-- Mapset template for garmin maps -->
