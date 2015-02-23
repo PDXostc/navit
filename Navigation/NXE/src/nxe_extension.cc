@@ -9,14 +9,22 @@ using namespace NXE;
 
 extern const char kAscii_nxe_api[];
 
+namespace {
+const std::string g_logPath = "/tmp/nxe.log";
+}
+
 common::Extension* CreateExtension()
 {
-    nDebug() << "Creating NXE extension";
+    //spdlog::rotating_logger_mt("nxe_logger", g_logPath, 1048576 * 5, 3);
+    spdlog::stdout_logger_mt("nxe_logger");
+    spdlog::set_level(spdlog::level::debug);
+    nInfo() << "Plugin loaded";
     return new NXExtension();
 }
 
 NXExtension::NXExtension()
 {
+    nDebug() << "Creating NXE extension";
     SetExtensionName("nxe");
     SetJavaScriptAPI(kAscii_nxe_api);
 }

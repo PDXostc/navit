@@ -78,7 +78,9 @@ int32_t XW_Initialize(XW_Extension extension, XW_GetInterface get_interface) {
   if (!InitializeInterfaces(get_interface))
     return XW_ERROR;
 
+  std::cout << "Create extension asd" << std::endl;
   g_extension = CreateExtension();
+  //g_extension = nullptr;
   if (!g_extension) {
     std::cerr << "Can't initialize extension: "
               << "create extension returned NULL.\n";

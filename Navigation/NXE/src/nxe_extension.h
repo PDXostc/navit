@@ -34,7 +34,6 @@ private:
 private:
     std::shared_ptr<NavitProcess> m_navitProcess;
     std::shared_ptr<NavitController> m_navitController;
-
 };
 
 }

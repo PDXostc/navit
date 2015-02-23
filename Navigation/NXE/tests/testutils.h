@@ -7,6 +7,7 @@
 namespace TestUtils
 {
 std::string moveByMessage(int x, int y);
+std::string zoomByMessage(int factor);
 void createNXEConfFile();
 }
 

@@ -7,7 +7,6 @@
 #include <cctype>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/log/trivial.hpp>
 #include "jsonmessage.h"
 
 struct JSONParserTest : public ::testing::Test {
@@ -45,7 +44,7 @@ TEST_F(JSONParserTest, full_json_message)
 
     EXPECT_EQ(msg.id, 0);
     EXPECT_EQ(msg.call, CallType::moveBy);
-    EXPECT_EQ(msg.data.value(), "some data");
+    EXPECT_EQ(msg.data.get(), "some data");
     );
 }
 

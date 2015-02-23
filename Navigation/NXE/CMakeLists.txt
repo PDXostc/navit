@@ -4,13 +4,11 @@ cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
+include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 
 add_definitions(-std=c++11)
 add_definitions(-DBOOST_LOG_DYN_LINK)
 enable_testing()
-
-# 3rd party
-include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-dbus/include)
 
 if(NOT DISABLE_TESTS)
     add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
@@ -18,16 +16,17 @@ if(NOT DISABLE_TESTS)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
 endif()
 
+set(boost_components system filesystem thread)
+
 # find Boost
-find_package(Boost REQUIRED COMPONENTS system filesystem log thread)
+find_package(Boost 1.51.0 EXACT REQUIRED COMPONENTS ${boost_components})
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
-# find DBus
-find_package(DBus REQUIRED)
-include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR})
-find_package(DBusCpp REQUIRED)
-include_directories(${DBUSCPP_INCLUDE_DIR})
 
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
     add_subdirectory(tests)
 endif()
+
+install (FILES nxe.conf
+         DESTINATION share/nxe
+         )

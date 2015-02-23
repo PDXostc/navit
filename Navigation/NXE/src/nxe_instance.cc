@@ -32,11 +32,11 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
         navi->setProgramPath(path);
     }
 
-    bool bAutoRun = d_ptr->m_settings.get<AutoStart>();
-    if (bAutoRun) {
-        nInfo() << "Autorun is set, starting Navit";
-        navi->start();
-    }
+//    bool bAutoRun = d_ptr->m_settings.get<AutoStart>();
+//    if (bAutoRun) {
+//        nInfo() << "Autorun is set, starting Navit";
+//        navi->start();
+//    }
 }
 
 NXEInstance::~NXEInstance()
@@ -50,7 +50,7 @@ NXEInstance::~NXEInstance()
 void NXEInstance::HandleMessage(const char* msg)
 {
     // lock shared ptr
-    const auto navi = d_ptr->m_navitProcess.lock();
+    const auto naviProcess = d_ptr->m_navitProcess.lock();
     std::string message{ msg };
 
     boost::algorithm::erase_all(message, " ");
@@ -59,15 +59,24 @@ void NXEInstance::HandleMessage(const char* msg)
 
     nDebug() << "Handling message " << msg;
 
-    if (!navi->isRunning()) {
-        if (!navi->start()) {
-            // unable to start Navit, we won't work
-        }
-    }
+//    if (!naviProcess->isRunning()) {
+//        if (!naviProcess->start()) {
+//            // unable to start Navit, we won't work
+//        }
+//    }
 
     auto navit = d_ptr->m_controller.lock();
     assert(navit);
-    navit->handleMessage(JSONUtils::deserialize(message));
+    navit->tryStart();
+
+    try {
+        navit->handleMessage(JSONUtils::deserialize(message));
+    }
+    catch( const std::exception &ex) 
+    {
+        nFatal() << "Unable to parse message, posting error!";
+        PostMessage("");
+    }
 }
 
 } // namespace NXE

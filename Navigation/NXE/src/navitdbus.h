@@ -14,6 +14,7 @@ public:
     virtual bool start() noexcept override;
     virtual void stop() noexcept override;
     virtual void moveBy(double x, double y) noexcept override;
+    virtual void zoomBy(int y) noexcept override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d_ptr;

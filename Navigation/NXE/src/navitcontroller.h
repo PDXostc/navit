@@ -20,6 +20,7 @@ public:
 
     //! An IPC interface
     virtual void moveBy(double x, double y) noexcept = 0;
+    virtual void zoomBy(int factor) noexcept = 0;
 
     //! Common functions
     void tryStart() ;

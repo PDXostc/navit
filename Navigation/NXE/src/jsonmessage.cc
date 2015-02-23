@@ -9,7 +9,10 @@ using namespace NXE;
 namespace bpt = boost::property_tree;
 
 namespace {
-const CallMapType types{ { CallType::moveBy, "moveBy" } };
+const CallMapType types{
+    { CallType::moveBy, "moveBy" },
+    { CallType::zoomBy, "zoomBy" }
+    };
 }
 
 std::string JSONUtils::serialize(NXE::JSONMessage json)
@@ -19,11 +22,11 @@ std::string JSONUtils::serialize(NXE::JSONMessage json)
     tree.put("call",types.at(json.call));
 
     if (json.errorCode) {
-        tree.put("errorCode", json.errorCode.value());
+        tree.put("errorCode", json.errorCode.get());
     }
 
     if (json.data) {
-        tree.put("data", json.data.value());
+        tree.put("data", json.data.get());
     }
 
     std::stringstream buff;

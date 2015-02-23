@@ -23,9 +23,13 @@ protected:
 
 TEST_F(NXEInstanceTest, proper_navit)
 {
-    std::string msg{ TestUtils::moveByMessage(1, 1) };
-    ASSERT_NO_THROW(instance.HandleMessage(msg.data()));
+    EXPECT_NO_THROW(
+        std::string msg{ TestUtils::zoomByMessage(2) };
 
-    std::chrono::milliseconds dura(20 * 1000);
-    std::this_thread::sleep_for(dura);
+        std::chrono::milliseconds dura(1 * 1000);
+        std::this_thread::sleep_for(dura);
+        instance.HandleMessage(msg.data());
+        std::this_thread::sleep_for(dura);
+        std::this_thread::sleep_for(dura);
+    );
 }

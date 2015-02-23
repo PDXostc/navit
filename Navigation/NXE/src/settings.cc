@@ -10,8 +10,13 @@ namespace bfs = boost::filesystem;
 namespace bpt = boost::property_tree;
 
 namespace {
-const std::list<std::string> settingPaths {"/etc/nxe/nxe.conf", "$HOME/.nxe/nxe.conf"};
+const std::list<std::string> settingPaths {
+    "/etc/nxe/nxe.conf",
+    "/usr/share/nxe/nxe.conf",
+    "$HOME/.nxe/nxe.conf"
+};
 
+//! This will return first path in settingPaths that does exists and is readable
 std::string getConfigPath()
 {
     auto check = [](const bfs::path &path) -> bool{
@@ -29,7 +34,6 @@ std::string getConfigPath()
 
     bfs::path configPath = bfs::current_path();
     configPath /= bfs::path("nxe.conf");
-
 
     if (check(configPath)) {
         nDebug() << "nxe.conf found in current dir [" << configPath.string() << " ] so it will be used";
@@ -55,6 +59,7 @@ namespace NXE {
 Settings::Settings():
     m_configPath(getConfigPath())
 {
+    nDebug() << "Reading config file from" << m_configPath;
     bpt::read_json(m_configPath, m_tree);
     nDebug() << "Settings are ready";
 }
