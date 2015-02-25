@@ -4,19 +4,18 @@
 #include "navitprocessimpl.h"
 #include "navitdbus.h"
 #include "log.h"
+#include "settings.h"
+#include "settingtags.h"
 
 using namespace NXE;
 
 extern const char kAscii_nxe_api[];
 
-namespace {
-const std::string g_logPath = "/tmp/nxe.log";
-}
-
 common::Extension* CreateExtension()
 {
-    //spdlog::rotating_logger_mt("nxe_logger", g_logPath, 1048576 * 5, 3);
-    spdlog::stdout_logger_mt("nxe_logger");
+    Settings s;
+    const std::string path = s.get<SettingsTags::FileLog>();
+    spdlog::rotating_logger_mt("nxe_logger", path, 1048576 * 5, 3);
     spdlog::set_level(spdlog::level::debug);
     nInfo() << "Plugin loaded";
     return new NXExtension();

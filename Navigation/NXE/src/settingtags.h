@@ -15,7 +15,12 @@ namespace Navit {
         typedef bool type;
         static std::string name() noexcept { return "navit.autostart"; }
     };
-}
+
+} // Navit
+struct FileLog {
+    typedef std::string type;
+    static std::string name() noexcept { return "logFile"; }
 };
+} // SettingsTags
 
 #endif // SETTINGTAGS_H
