@@ -21,7 +21,7 @@ public:
     void HandleMessage(const char *msg) override;
     void registerMessageCallback(const MessageCb_type &cb);
 private:
-    std::unique_ptr<NXEInstancePrivate> d_ptr;
+    std::unique_ptr<NXEInstancePrivate> d;
 };
 
 } // namespace NXE

@@ -11,7 +11,7 @@ public:
     NavitDBus();
     ~NavitDBus();
 
-    virtual bool start() override;
+    virtual void start() override;
     virtual void stop() override;
     virtual void moveBy(double x, double y) override;
     virtual void zoomBy(int y) override;

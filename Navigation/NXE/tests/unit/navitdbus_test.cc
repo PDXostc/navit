@@ -1,22 +1,38 @@
-#include <gtest/gtest.h>
 #include "navitdbus.h"
 #include "log.h"
+#include "navitprocessimpl.h"
+
+#include <gtest/gtest.h>
 #include <thread>
 #include <chrono>
+
+NXE::NavitProcessImpl process;
+const std::string navitPath { NAVIT_PATH };
 
 struct NavitDBusTest : public ::testing::Test
 {
     NXE::NavitDBus connection;
+
+    static void SetUpTestCase() {
+        nDebug() << "Running navit binary";
+        process.setProgramPath(navitPath);
+        process.start();
+        std::chrono::milliseconds dura( 1000 );
+        std::this_thread::sleep_for(dura);
+    }
+
+    static void TearDownTestCase() {
+        process.stop();
+    }
 };
 
 TEST_F(NavitDBusTest, properStart)
 {
+    ASSERT_NO_THROW(connection.start());
     EXPECT_NO_THROW(
-        connection.start();
 
         // wait a bit
-        std::chrono::milliseconds dura( 2000 );
-
+        std::chrono::milliseconds dura( 1000 );
         std::this_thread::sleep_for(dura);
         connection.stop();
     );
@@ -24,11 +40,10 @@ TEST_F(NavitDBusTest, properStart)
 
 TEST_F(NavitDBusTest, zoom)
 {
+    ASSERT_NO_THROW(connection.start());
     EXPECT_NO_THROW(
-        connection.start();
         // wait a bit
         std::chrono::milliseconds dura( 1000 );
-        std::this_thread::sleep_for(dura);
 
         int defZoom = connection.zoom();
         nDebug() << "Zoom is " << defZoom;

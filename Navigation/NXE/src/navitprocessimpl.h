@@ -19,7 +19,7 @@ public:
     virtual bool isRunning() override final;
     virtual void setArgs(const std::list<std::string> &args) override final;
 private:
-    std::unique_ptr<NavitProcessImplPrivate> d_ptr;
+    std::unique_ptr<NavitProcessImplPrivate> d;
 };
 
 } // namespace NXE

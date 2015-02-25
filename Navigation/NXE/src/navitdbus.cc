@@ -3,73 +3,37 @@
 
 #include <thread>
 #include <dbus-c++/dbus.h>
+#include "dbus_helpers.hpp"
 
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
 const std::string navitDBusPath = "/org/navit_project/navit/default_navit";
 const std::string navitDBusInterface = "org.navit_project.navit.navit";
-
-template<typename R>
-R getAttr(const std::string &attrName, DBus::InterfaceProxy &proxy) {
-    nDebug() << "Getting attribute = " << attrName;
-    DBus::CallMessage call;
-    DBus::MessageIter it = call.writer();
-    call.member("get_attr");
-    it << attrName;
-    DBus::Message ret = proxy.invoke_method(call);
-    if (ret.is_error()) {
-        throw std::runtime_error("Unable to call zoom");
-    }
-    nDebug() << "Unpacking";
-    std::string attr;
-    DBus::MessageIter retIter = ret.reader();
-    retIter >> attr ;
-    DBus::Variant v;
-    retIter >> v;
-    R value = static_cast<R>(v);
-    nDebug() << attrName << "= " << value;
-
-    return value;
-}
-
-template<typename A>
-void call(const std::string &methodName, DBus::InterfaceProxy &proxy, A attr)
-{
-    DBus::CallMessage call;
-    DBus::MessageIter it = call.writer();
-    call.member(methodName.c_str());
-    it << attr;
-    DBus::Message ret = proxy.invoke_method(call);
-    if (ret.is_error()) {
-        throw std::runtime_error("Unable to call zoom");
-    }
-}
-
 }
 
 namespace NXE {
 
-struct NavitDBusObjectProxy : public DBus::InterfaceProxy, public DBus::ObjectProxy {
-    NavitDBusObjectProxy(DBus::Connection& con)
-        : DBus::InterfaceProxy(navitDBusInterface)
-        , DBus::ObjectProxy(con, navitDBusPath, navitDBusDestination.c_str())
+struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::ObjectProxy {
+    NavitDBusObjectProxy(::DBus::Connection& con)
+        : ::DBus::InterfaceProxy(navitDBusInterface)
+        , ::DBus::ObjectProxy(con, navitDBusPath, navitDBusDestination.c_str())
     {
     }
 
     int zoom() {
-        return getAttr<int>("zoom", *this);
+        return NXE::DBus::getAttr<int>("zoom", *this);
     }
 
     void zoomBy(int factor) {
-        call("zoom", *this, factor);
+        DBus::call("zoom", *this, factor);
     }
 };
 
 struct NavitDBusPrivate {
 
-    std::shared_ptr<DBus::Connection> con;
+    std::shared_ptr<::DBus::Connection> con;
     std::shared_ptr<NavitDBusObjectProxy> object;
-    DBus::BusDispatcher dispatcher;
+    ::DBus::BusDispatcher dispatcher;
 
     bool m_threadRunning = false;
     std::thread m_thread;
@@ -88,14 +52,18 @@ NavitDBus::~NavitDBus()
     }
 }
 
-bool NavitDBus::start()
+void NavitDBus::start()
 {
-    DBus::default_dispatcher = &d->dispatcher;
-    d->con.reset(new DBus::Connection{ DBus::Connection::SessionBus() });
+    ::DBus::default_dispatcher = &d->dispatcher;
+    d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
-    d->m_thread = std::move(std::thread([]() {
+
+    d->m_thread = std::move(std::thread([this]() {
+        while(d->m_threadRunning) {
+            nDebug() << "Dispatching";
+            d->dispatcher.dispatch();
+        }
     }));
-    return true;
 }
 
 void NavitDBus::stop()

@@ -1,4 +1,5 @@
 #include "navitprocessimpl.h"
+#include "log.h"
 
 #include <boost/process.hpp>
 #include <boost/filesystem/path.hpp>
@@ -26,35 +27,36 @@ struct NavitProcessImplPrivate {
 
 
 NavitProcessImpl::NavitProcessImpl():
-    d_ptr(new NavitProcessImplPrivate())
+    d(new NavitProcessImplPrivate())
 {
 }
 
 NavitProcessImpl::~NavitProcessImpl()
 {
-    if (d_ptr->m_child.pid != invalidPid) {
+    if (d->m_child.pid != invalidPid) {
         // ask via DBus to close itself
-        bp::terminate(d_ptr->m_child);
+        bp::terminate(d->m_child);
     }
 }
 
 void NavitProcessImpl::setProgramPath(const std::string &name)
 {
-    d_ptr->m_programPath = name;
+    d->m_programPath = name;
 }
 
 bool NavitProcessImpl::start()
 {
-    d_ptr->m_lastError = bs::error_code();
-    const std::string command =  d_ptr->m_programPath + "/" + d_ptr->m_navitProgramName;
+    d->m_lastError = bs::error_code();
+    const std::string command =  d->m_programPath + "/" + d->m_navitProgramName;
+    nDebug() << "Starting navit process from " << command;
     bf::path exe = command;
 
-    d_ptr->m_child = bp::execute(bp::initializers::run_exe(exe),
-                                 bp::initializers::start_in_dir(d_ptr->m_programPath),
+    d->m_child = bp::execute(bp::initializers::run_exe(exe),
+                                 bp::initializers::start_in_dir(d->m_programPath),
                                  bp::initializers::inherit_env(),
-                                 bp::initializers::set_on_error(d_ptr->m_lastError));
+                                 bp::initializers::set_on_error(d->m_lastError));
 
-    return !d_ptr->m_lastError;
+    return !d->m_lastError;
 }
 
 void NavitProcessImpl::stop()
@@ -63,12 +65,12 @@ void NavitProcessImpl::stop()
 
 bool NavitProcessImpl::isRunning()
 {
-    return !(d_ptr->m_lastError);
+    return !(d->m_lastError);
 }
 
 void NavitProcessImpl::setArgs(const std::list<std::string> &args)
 {
-    d_ptr->m_args = args;
+    d->m_args = args;
 }
 
 } // namespace NXE

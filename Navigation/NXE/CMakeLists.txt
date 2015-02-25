@@ -7,10 +7,14 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 
 add_definitions(-std=c++11)
-add_definitions(-DBOOST_LOG_DYN_LINK)
 enable_testing()
 
 if(NOT DISABLE_TESTS)
+    if(NOT NAVIT_PATH)
+        message(FATAL_ERROR "Unable to properly do unit testing without navit exectuable")
+    else()
+        message(STATUS "Navit path set to" ${NAVIT_PATH})
+    endif()
     add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/gtest/include)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
@@ -29,4 +33,4 @@ endif()
 
 install (FILES nxe.conf
          DESTINATION share/nxe
-         )
+ )

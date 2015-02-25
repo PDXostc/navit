@@ -78,9 +78,9 @@ struct fun {
 };
 
 NavitController::NavitController()
-    : d_ptr(new NavitControllerPrivate)
+    : d(new NavitControllerPrivate)
 {
-    d_ptr->q = this;
+    d->q = this;
 }
 
 NavitController::~NavitController()
@@ -90,20 +90,7 @@ NavitController::~NavitController()
 void NavitController::tryStart()
 {
     nDebug() << "Trying to start IPC Navit controller";
-    if (!start()) {
-        nInfo() << "Unable to start IPC yet, will try to do that in " << timeout << " seconds";
-        d_ptr->m_retriggerThread = std::thread([this]() {
-            std::chrono::milliseconds dura(timeout * 1000);
-            std::this_thread::sleep_for(dura);
-            if(!start()) {
-                nFatal() << "Unable to start IPC, we won't be able to continue";
-            } else {
-                d_ptr->m_isRunning = true;
-            }
-        });
-    } else {
-        d_ptr->m_isRunning = true;
-    }
+    start();
 }
 
 void NavitController::handleMessage(JSONMessage msg)
@@ -112,14 +99,14 @@ void NavitController::handleMessage(JSONMessage msg)
     bool bCalled = false;
     try {
         const std::string& val = msg.data.get_value_or("");
-        boost::fusion::for_each(d_ptr->m, make_filter([msg, &bCalled](const std::string& str) -> bool {
+        boost::fusion::for_each(d->m, make_filter([msg, &bCalled](const std::string& str) -> bool {
             if (str == msg.call)  {
                 bCalled = true;
                 return true;
             }
             return false;
                                                       },
-                                                      fun(d_ptr.get(), val)));
+                                                      fun(d.get(), val)));
 
         if (!bCalled) {
             nFatal() << "Unable to call " << msg.call;

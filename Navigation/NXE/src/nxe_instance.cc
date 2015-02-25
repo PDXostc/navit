@@ -28,22 +28,22 @@ struct NXEInstancePrivate {
 };
 
 NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<NavitController> controller)
-    : d_ptr(new NXEInstancePrivate{ process, controller })
+    : d(new NXEInstancePrivate{ process, controller })
 {
     using SettingsTags::Navit::Path;
     using SettingsTags::Navit::AutoStart;
 
-    auto navi = d_ptr->navitProcess.lock();
+    auto navi = d->navitProcess.lock();
     assert(navi);
 
     nDebug() << "Creating NXE instance";
     if (navi) {
-        std::string path{ d_ptr->settings.get<Path>() };
+        std::string path{ d->settings.get<Path>() };
         nInfo() << "Setting navit path = [" << path << "]";
         navi->setProgramPath(path);
     }
 
-    bool bAutoRun = d_ptr->settings.get<AutoStart>();
+    bool bAutoRun = d->settings.get<AutoStart>();
     if (bAutoRun) {
         nInfo() << "Autorun is set, starting Navit";
         navi->start();
@@ -52,7 +52,7 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
-    auto navit = d_ptr->navitProcess.lock();
+    auto navit = d->navitProcess.lock();
     if (navit) {
         navit->stop();
     }
@@ -61,7 +61,7 @@ NXEInstance::~NXEInstance()
 void NXEInstance::HandleMessage(const char* msg)
 {
     // lock shared ptr
-    const auto naviProcess = d_ptr->navitProcess.lock();
+    const auto naviProcess = d->navitProcess.lock();
     std::string message{ msg };
 
     boost::algorithm::erase_all(message, " ");
@@ -76,22 +76,22 @@ void NXEInstance::HandleMessage(const char* msg)
         }
     }
 
-    auto navit = d_ptr->controller.lock();
-    assert(navit);
-    navit->tryStart();
-
     try {
+        auto navit = d->controller.lock();
+        assert(navit);
+        navit->tryStart();
         navit->handleMessage(JSONUtils::deserialize(message));
     }
     catch (const std::exception& ex) {
         nFatal() << "Unable to parse message, posting error= " << ex.what();
-        PostMessage("");
+        d->postMessage(this, ex.what());
+//        PostMessage("");
     }
 }
 
 void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
 {
-    d_ptr->callbacks.push_back(cb);
+    d->callbacks.push_back(cb);
 }
 
 } // namespace NXE

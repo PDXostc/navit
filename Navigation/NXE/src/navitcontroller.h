@@ -15,7 +15,7 @@ public:
     virtual ~NavitController();
 
     //! IPC start/stop
-    virtual bool start() = 0;
+    virtual void start() = 0;
     virtual void stop() = 0;
 
     //! An IPC interface
@@ -30,7 +30,7 @@ public:
     void handleMessage(JSONMessage msg);
 
 private:
-    std::unique_ptr<NavitControllerPrivate> d_ptr;
+    std::unique_ptr<NavitControllerPrivate> d;
 };
 
 } // namespace NXE
