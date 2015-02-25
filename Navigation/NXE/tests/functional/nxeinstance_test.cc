@@ -30,6 +30,5 @@ TEST_F(NXEInstanceTest, proper_navit)
         std::this_thread::sleep_for(dura);
         instance.HandleMessage(msg.data());
         std::this_thread::sleep_for(dura);
-        std::this_thread::sleep_for(dura);
     );
 }

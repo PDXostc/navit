@@ -9,7 +9,7 @@ namespace bpt = boost::property_tree;
 
 std::string TestUtils::moveByMessage(int x, int y)
 {
-    NXE::JSONMessage msg {1, CallType::moveBy };
+    NXE::JSONMessage msg {1, "moveBy" };
     return NXE::JSONUtils::serialize(msg);
 }
 
@@ -27,6 +27,6 @@ void TestUtils::createNXEConfFile()
 std::string TestUtils::zoomByMessage(int factor)
 {
     std::string data = boost::lexical_cast<std::string>(factor);
-    NXE::JSONMessage msg {1, CallType::zoomBy, 0,data };
+    NXE::JSONMessage msg {1, "zoomBy", 0,data };
     return NXE::JSONUtils::serialize(msg);
 }

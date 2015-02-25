@@ -8,40 +8,79 @@
 #include <chrono>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/fusion/algorithm/iteration/for_each.hpp>
+#include <boost/fusion/include/for_each.hpp>
 
 namespace NXE {
-
 const std::uint16_t timeout = 2;
-typedef std::function<bool(NavitController* ctrl, const std::string& data)> CallbackFunction;
-
-bool nonEmptyParser(NavitController* ctrl, const std::string& data, const CallbackFunction& fn)
-{
-    if (data.empty()) {
-        return false;
-    }
-
-    return fn(ctrl, data);
-}
-
-auto zoomByParser = std::bind(nonEmptyParser, std::placeholders::_1, std::placeholders::_2,
-                              [](NavitController* ctrl, const std::string& data) -> bool {
-        // data not empty here
-        ctrl->zoomBy(boost::lexical_cast<int>(data));
-        return true;
-    });
 
 struct NavitControllerPrivate {
-    const std::map<CallType, CallbackFunction> callbacks{
-        { CallType::zoomBy, zoomByParser }
-    };
-
+    NavitController* q;
     std::thread m_retriggerThread;
     bool m_isRunning = false;
+    map_type m{ boost::fusion::make_pair<MoveByMessage>("moveBy"),
+                boost::fusion::make_pair<ZoomByMessage>("zoomBy"),
+                boost::fusion::make_pair<ZoomMessage>("zoom") };
+
+    map_cb_type cb{
+        boost::fusion::make_pair<MoveByMessage>([](const std::string& data) {}),
+        boost::fusion::make_pair<ZoomByMessage>([](const std::string& data) {}),
+        boost::fusion::make_pair<ZoomMessage>([](const std::string& data) {}),
+    };
+
+    template <typename T>
+    void handleMessage(const std::string& data)
+    {
+        auto fn = boost::fusion::at_key<T>(cb);
+        fn(data);
+    }
+};
+
+template <class Pred, class Fun>
+struct filter {
+    Pred pred_;
+    const Fun& fun_;
+
+    filter(Pred p, const Fun& f)
+        : pred_(p)
+        , fun_(f)
+    {
+    }
+
+    template <class Pair>
+    void operator()(Pair& pair) const
+    {
+        if (pred_(pair.second))
+            fun_(pair);
+    }
+};
+
+template <class Pred, class Fun>
+filter<Pred, Fun> make_filter(Pred p, const Fun& f)
+{
+    return filter<Pred, Fun>(p, f);
+}
+
+struct fun {
+    fun(NXE::NavitControllerPrivate* d, const std::string& data)
+        : _d(d)
+        , _data(data)
+    {
+    }
+    template <class First, class Second>
+    void operator()(boost::fusion::pair<First, Second>&) const
+    {
+        _d->handleMessage<First>(_data);
+    }
+
+    NXE::NavitControllerPrivate* _d;
+    const std::string& _data;
 };
 
 NavitController::NavitController()
     : d_ptr(new NavitControllerPrivate)
 {
+    d_ptr->q = this;
 }
 
 NavitController::~NavitController()
@@ -69,9 +108,26 @@ void NavitController::tryStart()
 
 void NavitController::handleMessage(JSONMessage msg)
 {
-    auto funIter = d_ptr->callbacks.at(msg.call);
-    if(!funIter(this, msg.data.get_value_or(""))) {
-        nInfo() << "Unable to parser msg ";
+    nDebug() << "Handling message " << msg.call;
+    bool bCalled = false;
+    try {
+        const std::string& val = msg.data.get_value_or("");
+        boost::fusion::for_each(d_ptr->m, make_filter([msg, &bCalled](const std::string& str) -> bool {
+            if (str == msg.call)  {
+                bCalled = true;
+                return true;
+            }
+            return false;
+                                                      },
+                                                      fun(d_ptr.get(), val)));
+
+        if (!bCalled) {
+            nFatal() << "Unable to call " << msg.call;
+        }
+    }
+    catch (const std::exception &ex)
+    {
+        nFatal() << "Unable to call IPC. Error= " << ex.what();
     }
 }
 

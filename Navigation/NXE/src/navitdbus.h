@@ -11,13 +11,14 @@ public:
     NavitDBus();
     ~NavitDBus();
 
-    virtual bool start() noexcept override;
-    virtual void stop() noexcept override;
-    virtual void moveBy(double x, double y) noexcept override;
-    virtual void zoomBy(int y) noexcept override;
+    virtual bool start() override;
+    virtual void stop() override;
+    virtual void moveBy(double x, double y) override;
+    virtual void zoomBy(int y) override;
+    virtual int zoom() override;
 
 private:
-    std::unique_ptr<NavitDBusPrivate> d_ptr;
+    std::unique_ptr<NavitDBusPrivate> d;
 };
 
 } // namespace NXE

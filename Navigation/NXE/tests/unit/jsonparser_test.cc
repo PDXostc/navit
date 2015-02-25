@@ -31,7 +31,7 @@ TEST_F(JSONParserTest, moveBy_message_without_args)
     NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
 
     EXPECT_EQ(msg.id, 0);
-    EXPECT_EQ(msg.call, CallType::moveBy);
+    EXPECT_EQ(msg.call, "moveBy");
     EXPECT_FALSE(msg.data);
     );
 }
@@ -43,7 +43,7 @@ TEST_F(JSONParserTest, full_json_message)
     NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
 
     EXPECT_EQ(msg.id, 0);
-    EXPECT_EQ(msg.call, CallType::moveBy);
+    EXPECT_EQ(msg.call, "moveBy");
     EXPECT_EQ(msg.data.get(), "some data");
     );
 }
@@ -51,12 +51,12 @@ TEST_F(JSONParserTest, full_json_message)
 // No need to create invalid test case as it's impossible to create invalid JSONMessage
 TEST_F(JSONParserTest, DISABLED_serialize_invalid)
 {
-    NXE::JSONMessage invalidMsg{ 0, CallType::unknown };
+    NXE::JSONMessage invalidMsg{ 0, "" };
 }
 
 TEST_F(JSONParserTest, serialize_valid)
 {
-    NXE::JSONMessage msg{ 105, CallType::moveBy };
+    NXE::JSONMessage msg{ 105, "moveBy" };
     std::string data = NXE::JSONUtils::serialize(msg);
 
     boost::erase_all(data, " ");

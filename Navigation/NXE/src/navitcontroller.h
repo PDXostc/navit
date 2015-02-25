@@ -15,12 +15,15 @@ public:
     virtual ~NavitController();
 
     //! IPC start/stop
-    virtual bool start() noexcept = 0;
-    virtual void stop() noexcept = 0;
+    virtual bool start() = 0;
+    virtual void stop() = 0;
 
     //! An IPC interface
-    virtual void moveBy(double x, double y) noexcept = 0;
-    virtual void zoomBy(int factor) noexcept = 0;
+    virtual void moveBy(double x, double y) = 0;
+
+
+    virtual int zoom() = 0;
+    virtual void zoomBy(int factor) = 0;
 
     //! Common functions
     void tryStart() ;

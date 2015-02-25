@@ -28,6 +28,7 @@ set(NXE_SRCS
     navitprocess.h
     navitprocessimpl.cc
     navitcontroller.cc
+    calls.h
     ${dbus_library}
     jsonmessage.cc
     settings.cc

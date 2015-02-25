@@ -4,10 +4,11 @@
 #include "navitcontroller.h"
 
 class NavitControllerMock : public NXE::NavitController {
-    GMOCK_METHOD0_(, noexcept,, start, bool());
-    GMOCK_METHOD0_(, noexcept,, stop, void());
-    GMOCK_METHOD2_(, noexcept,, moveBy, void(double, double));
-    GMOCK_METHOD1_(, noexcept,, zoomBy, void(int));
+    GMOCK_METHOD0_(,,, start, bool());
+    GMOCK_METHOD0_(,,, stop, void());
+    GMOCK_METHOD2_(,,, moveBy, void(double, double));
+    GMOCK_METHOD1_(,,, zoomBy, void(int));
+    GMOCK_METHOD0_(,,, zoom, int(void));
 };
 
 #endif // NAVITCONTROLLERMOCK_H
