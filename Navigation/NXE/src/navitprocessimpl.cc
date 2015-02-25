@@ -25,7 +25,6 @@ struct NavitProcessImplPrivate {
     bs::error_code m_lastError           = bs::error_code(2,bs::generic_category());
 };
 
-
 NavitProcessImpl::NavitProcessImpl():
     d(new NavitProcessImplPrivate())
 {
