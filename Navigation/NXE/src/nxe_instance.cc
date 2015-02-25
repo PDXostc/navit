@@ -31,7 +31,6 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
     : d(new NXEInstancePrivate{ process, controller })
 {
     using SettingsTags::Navit::Path;
-    using SettingsTags::Navit::AutoStart;
 
     auto navi = d->navitProcess.lock();
     assert(navi);
@@ -43,11 +42,6 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
         navi->setProgramPath(path);
     }
 
-    bool bAutoRun = d->settings.get<AutoStart>();
-    if (bAutoRun) {
-        nInfo() << "Autorun is set, starting Navit";
-        navi->start();
-    }
 }
 
 NXEInstance::~NXEInstance()
@@ -55,6 +49,18 @@ NXEInstance::~NXEInstance()
     auto navit = d->navitProcess.lock();
     if (navit) {
         navit->stop();
+    }
+}
+
+void NXEInstance::Initialize()
+{
+    nDebug() << "Initializing NXEInstance";
+    using SettingsTags::Navit::AutoStart;
+    bool bAutoRun = d->settings.get<AutoStart>();
+    if (bAutoRun) {
+        nInfo() << "Autorun is set, starting Navit";
+        auto navi = d->navitProcess.lock();
+        navi->start();
     }
 }
 

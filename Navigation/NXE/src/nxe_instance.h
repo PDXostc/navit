@@ -18,6 +18,8 @@ public:
     NXEInstance(std::weak_ptr<NavitProcess> navitProcess, std::weak_ptr<NavitController> controller);
     ~NXEInstance();
 
+    virtual void Initialize() override;
+
     void HandleMessage(const char *msg) override;
     void registerMessageCallback(const MessageCb_type &cb);
 private:

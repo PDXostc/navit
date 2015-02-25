@@ -8,6 +8,8 @@ namespace NXE {
 class NavitProcess;
 class NavitController;
 
+struct NXExtensionPrivate;
+
 /*!
  * \brief The NXExtension class describes an extension for Crosswalk to talk with Navit application
  * The object is created in xwalk process space and it's used to create instances of NXE::NXEInstance
@@ -27,13 +29,8 @@ private:
      */
     virtual common::Instance *CreateInstance() override;
 
-    static void OnShutdown(XW_Extension xw_extension);
-    static void OnInstanceCreated(XW_Instance xw_instance);
-    static void OnInstanceDestroyed(XW_Instance xw_instance);
-
 private:
-    std::shared_ptr<NavitProcess> m_navitProcess;
-    std::shared_ptr<NavitController> m_navitController;
+    std::unique_ptr<NXExtensionPrivate> d;
 };
 
 }

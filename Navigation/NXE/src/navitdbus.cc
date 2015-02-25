@@ -46,6 +46,7 @@ NavitDBus::NavitDBus()
 
 NavitDBus::~NavitDBus()
 {
+    nDebug() << "Destroying navit dbus";
     stop();
     if (d->m_thread.joinable()) {
         d->m_thread.join();

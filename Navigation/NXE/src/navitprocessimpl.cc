@@ -33,10 +33,8 @@ NavitProcessImpl::NavitProcessImpl():
 
 NavitProcessImpl::~NavitProcessImpl()
 {
-    if (d->m_child.pid != invalidPid) {
-        // ask via DBus to close itself
-        bp::terminate(d->m_child);
-    }
+    nDebug() << __PRETTY_FUNCTION__;
+    stop();
 }
 
 void NavitProcessImpl::setProgramPath(const std::string &name)
@@ -61,6 +59,12 @@ bool NavitProcessImpl::start()
 
 void NavitProcessImpl::stop()
 {
+    nDebug() << "Stopping navit";
+    if (d->m_child.pid != invalidPid) {
+        // ask via DBus to close itself
+        nDebug() << "Terminating navit process";
+        bp::terminate(d->m_child);
+    }
 }
 
 bool NavitProcessImpl::isRunning()

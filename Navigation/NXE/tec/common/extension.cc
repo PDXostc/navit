@@ -78,7 +78,6 @@ int32_t XW_Initialize(XW_Extension extension, XW_GetInterface get_interface) {
   if (!InitializeInterfaces(get_interface))
     return XW_ERROR;
 
-  std::cout << "Create extension asd" << std::endl;
   g_extension = CreateExtension();
   //g_extension = nullptr;
   if (!g_extension) {
@@ -143,12 +142,14 @@ std::string Extension::GetRuntimeVariable(const char* var_name, unsigned len) {
 
 // static
 void Extension::OnShutdown(XW_Extension) {
+  std::cout << __PRETTY_FUNCTION__ << std::endl;
   delete g_extension;
   g_extension = NULL;
 }
 
 // static
 void Extension::OnInstanceCreated(XW_Instance xw_instance) {
+  std::cout << __PRETTY_FUNCTION__ << std::endl;
   assert(!g_core->GetInstanceData(xw_instance));
   Instance* instance = g_extension->CreateInstance();
   if (!instance)
@@ -160,6 +161,7 @@ void Extension::OnInstanceCreated(XW_Instance xw_instance) {
 
 // static
 void Extension::OnInstanceDestroyed(XW_Instance xw_instance) {
+  std::cout << __PRETTY_FUNCTION__ << std::endl;
   Instance* instance =
       reinterpret_cast<Instance*>(g_core->GetInstanceData(xw_instance));
   if (!instance)
