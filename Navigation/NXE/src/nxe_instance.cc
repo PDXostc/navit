@@ -72,7 +72,7 @@ void NXEInstance::HandleMessage(const char* msg)
 
     if (!naviProcess->isRunning()) {
         if (!naviProcess->start()) {
-            // unable to start Navit, we won't work
+            d->postMessage(this,"error");
         }
     }
 
@@ -85,7 +85,6 @@ void NXEInstance::HandleMessage(const char* msg)
     catch (const std::exception& ex) {
         nFatal() << "Unable to parse message, posting error= " << ex.what();
         d->postMessage(this, ex.what());
-//        PostMessage("");
     }
 }
 
