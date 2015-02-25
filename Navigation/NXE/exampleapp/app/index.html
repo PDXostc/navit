@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>simple extension app</title>
+        <meta name="viewport" content="width=device-width">
+        <style>
+body {
+      font-size: 2em;
+}
+        </style>
+    </head>
+    <body>
+
+        <p>This uses the echo extension defined to
+        extend Crosswalk.</p>
+
+        <div id="out"></div>
+
+        <script>
+var div = document.getElementById('out');
+
+var p1 = document.createElement('p');
+var p2 = document.createElement('p');
+
+// async call to extension
+nxe.echoAsync('hello async echo', function (result) {
+      p1.innerText = result;
+        div.appendChild(p1);
+});
+
+// sync call to extension
+p2.innerText = nxe.echoSync('hello sync echo');
+div.appendChild(p2);
+        </script>
+    </body>
+</html>
