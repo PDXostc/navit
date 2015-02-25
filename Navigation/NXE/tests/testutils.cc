@@ -6,6 +6,7 @@
 #include "jsonmessage.h"
 
 namespace bpt = boost::property_tree;
+const std::string navitPath { NAVIT_PATH };
 
 std::string TestUtils::moveByMessage(int x, int y)
 {
@@ -18,7 +19,7 @@ void TestUtils::createNXEConfFile()
 {
     // create simple json config file
     bpt::ptree config;
-    config.put(SettingsTags::Navit::Path::name(), "/home/bata/builds/navit-qt5/navit");
+    config.put(SettingsTags::Navit::Path::name(), navitPath);
     config.put(SettingsTags::Navit::AutoStart::name(), true);
     bpt::write_json("nxe.conf", config);
 }
