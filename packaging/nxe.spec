@@ -20,6 +20,7 @@ BuildRequires:  libdbus-c++-devel
 Requires:	dbus
 Requires:	dbus-glib
 Requires:	crosswalk
+Requires:	navit
 
 %description 
 A simple desc
