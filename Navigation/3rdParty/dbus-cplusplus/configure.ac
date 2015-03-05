@@ -164,12 +164,6 @@ xml_LIBS=-lexpat
 AC_SUBST(xml_CFLAGS)
 AC_SUBST(xml_LIBS)
 
-ACX_PTHREAD
-if test x"$acx_pthread_ok" = xyes; then
-	AC_DEFINE(HAVE_PTHREAD_H, 1, [Define to enable pthread support])
-	AM_CONDITIONAL(HAVE_PTHREAD, test x"$acx_pthread_ok" = xyes)
-fi
-
 # Doxygen Documentation
 
 AC_PATH_PROG(DOXYGEN, doxygen, no)

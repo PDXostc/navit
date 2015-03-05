@@ -1,3 +1,6 @@
+
+%define dbus_cplusplus_dir Navigation/3rdParty/dbus-cplusplus
+
 Summary:	C++ Interface for DBus
 Name:		libdbus-c++
 Version:	1.0.0
@@ -8,7 +11,6 @@ License:	LGPL
 Group:		Libraries
 BuildRoot:	%{_tmppath}/%{name}-root
 Prefix:		/usr
-
 
 BuildRequires: 	pkgconfig(dbus-1)
 BuildRequires: 	pkgconfig(ecore)
@@ -36,12 +38,13 @@ Header files for libdbus-c++
 %setup -q 
 
 %build
-cd Navigation/3rdParty/dbus-cplusplus
+cd %{dbus_cplusplus_dir}
 ./autogen.sh
 ./configure --prefix=/usr
 make -j 4
 
 %install
+cd %{dbus_cplusplus_dir}
 make prefix=$RPM_BUILD_ROOT%{prefix} install
 
 %clean
