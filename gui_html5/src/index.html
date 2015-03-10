@@ -10,39 +10,14 @@
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
   </head>
   <body>
-    <div class="container">
-      <div class="navbar navbar-default">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" ng-init="menuCollapsed = true"
-            ng-click="menuCollapsed = ! menuCollapsed">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <div class="navbar-brand">
-            <small>
-              <a href="to be done <%= version %>">v<%= version %></a>
-            </small>
-          </div>
+    <div class="container-fluid">
+        <div class="btn-group-vertical" role="group">
+            <button type="button" class="btn">v<%= version %></button>
+            <button type="button" class="btn btn-settings" ui-sref="home"></button>
+            <button type="button" class="btn btn-search" ui-sref="settings"></button>
+            <button type="button" class="btn btn-orientation" ui-sref="settings"></button>
+            <button type="button" class="btn btn-position" ui-sref="settings"></button>
         </div>
-        <div class="collapse navbar-collapse" collapse="menuCollapsed">
-          <ul class="nav navbar-nav">
-            <li ui-sref-active="active">
-              <a href ui-sref="home">
-                <i class="fa fa-home"></i>
-                Home
-              </a>
-            </li>
-            <li ui-sref-active="active">
-              <a href ui-sref="about">
-                <i class="fa fa-info-circle"></i>
-                What is it?
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
     </div>
 
 

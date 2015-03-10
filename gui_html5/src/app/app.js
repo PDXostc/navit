@@ -2,7 +2,7 @@ angular.module( 'navitGui', [
   'templates-app',
   'templates-common',
   'navitGui.home',
-  'navitGui.about',
+  'navitGui.settings',
   'ui.router'
 ])
 

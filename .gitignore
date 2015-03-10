@@ -9,6 +9,8 @@ build
 *.sw*
 *~
 gui_html5/build/
+gui_html5/build_xwalk/
 gui_html5/bin/
 gui_html5/node_modules/
 gui_html5/vendor/
+gui_html5/nbproject/
