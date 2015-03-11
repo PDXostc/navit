@@ -13,10 +13,11 @@ angular.module( 'navitGui.settings', [
         templateUrl: 'settings/settings.tpl.html'
       }
     },
-    data:{ pageTitle: 'Settings' }
+    data:{
+        pageTitle: 'Settings'
+    }
   });
 })
 
 .controller( 'SettingsCtrl', function AboutCtrl( $scope ) {
-  // todo 
 });

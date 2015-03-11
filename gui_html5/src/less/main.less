@@ -33,15 +33,26 @@
 }
 
 body {
-    background: @exampleMap; 
+    background: @black;
+    color: #fff;
+    font-size: 20pt;
 }
 
 .container-fluid {
     padding-left: 0;
 }
 
+.backgroundMap {
+    background: @exampleMap; 
+}
+
 .btn {
     border-radius: 0;
+}
+
+.btn-group-vertical {
+  position: relative;
+  top: 60px;
 }
 
 .btn-group-vertical > .btn {
@@ -57,33 +68,49 @@ body {
   > .btn,
   > .btn-group,
   > .btn-group > .btn {
-    height: 50px;
+    height: 60px;
+    width: 60px;
+  }
+
+  > .btn + .btn,
+  > .btn + .btn-group,
+  > .btn-group + .btn,
+  > .btn-group + .btn-group {
+    margin-top: 0px;
+    margin-left: 0;
   }
 }
 
 .btn-menu {
-    background-color: #000;
+    background-color: rgba(0, 0, 0, 0.5);
     background-repeat: no-repeat;
-    background-position: top left;
 }
 .btn-settings {
     background-image: url(../assets/icons/menu_icon_white.png);
+    background-position: 10px 10px;
     .btn-menu;
 }
 
 .btn-search {
     background-image: url(../assets/icons/search_icon_white_sm.png);
+    background-position: 10px 14px;
     .btn-menu;
 }
 
 .btn-orientation {
     background-image: url(../assets/icons/northup_icon_white.png);
+    background-position: 2px 1px;
     .btn-menu;
 }
 
 .btn-position {
     background-image: url(../assets/icons/car_icon_white.png);
+    background-position: 2px 6px;
     .btn-menu;
+}
+
+.table > tbody > tr > td {
+  border-color: #64bdd3;
 }
 
 /**

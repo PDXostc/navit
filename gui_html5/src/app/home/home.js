@@ -30,7 +30,10 @@ angular.module( 'navitGui.home', [
         templateUrl: 'home/home.tpl.html'
       }
     },
-    data:{ pageTitle: 'Home' }
+    data:{
+        pageTitle: 'Home',
+        backgroundClass: 'backgroundMap'
+    }
   });
 })
 

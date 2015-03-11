@@ -10,7 +10,13 @@ angular.module( 'navitGui', [
   $urlRouterProvider.otherwise( '/home' );
 })
 
-.run( function run () {
+.run( function run ($rootScope, $log) {
+    
+    // change background if map shouldn't be displayed
+    $rootScope.$on('$stateChangeSuccess',function(event, toState){
+        $rootScope.backgroundClass = toState.data.backgroundClass;
+    });
+
 })
 
 .controller( 'AppCtrl', function AppCtrl ( $scope, $location ) {
@@ -19,7 +25,4 @@ angular.module( 'navitGui', [
       $scope.pageTitle = toState.data.pageTitle + ' | navitGui' ;
     }
   });
-})
-
-;
-
+});
