@@ -3,6 +3,7 @@ angular.module( 'navitGui', [
   'templates-common',
   'navitGui.home',
   'navitGui.settings',
+  'navitGui.locations',
   'ui.router'
 ])
 
