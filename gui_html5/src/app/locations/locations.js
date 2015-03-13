@@ -1,3 +1,8 @@
+/**
+ * Module responsible for managing locations, searching, faforites and history.
+ * 
+ * @module navitGui.locations
+ */
 angular.module( 'navitGui.locations', [
   'ui.router',
   'placeholders',

@@ -1,9 +1,15 @@
+/**
+ * Main application module, parent for all modules
+ * 
+ * @module navitGui
+ */
 angular.module( 'navitGui', [
   'templates-app',
   'templates-common',
   'navitGui.home',
   'navitGui.settings',
   'navitGui.locations',
+  'navitGui.mapload',
   'ui.router'
 ])
 

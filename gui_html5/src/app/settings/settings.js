@@ -1,3 +1,8 @@
+/**
+ * Module responsible for applications settings.
+ * 
+ * @module navitGui.settings
+ */
 angular.module( 'navitGui.settings', [
   'ui.router',
   'placeholders',

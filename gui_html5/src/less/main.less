@@ -40,77 +40,27 @@ body {
 
 .container-fluid {
     padding-left: 0;
+    padding-right: 0;
 }
 
 .backgroundMap {
     background: @exampleMap; 
 }
 
-.btn {
-    border-radius: 0;
+.table {
+    width: 97%;
 }
 
-.btn-group-vertical {
-  position: relative;
-  top: 60px;
-}
-
-.btn-group-vertical > .btn {
-  &:first-child:not(:last-child) {
-    border-top-right-radius: 0;
-  }
-  &:last-child:not(:first-child) {
-    border-bottom-left-radius: 0;
-  }
-}
-
-.btn-group-vertical {
-  > .btn,
-  > .btn-group,
-  > .btn-group > .btn {
-    height: 60px;
-    width: 60px;
-  }
-
-  > .btn + .btn,
-  > .btn + .btn-group,
-  > .btn-group + .btn,
-  > .btn-group + .btn-group {
-    margin-top: 0px;
-    margin-left: 0;
-  }
-}
-
-.btn-menu {
-    background-color: rgba(0, 0, 0, 0.5);
-    background-repeat: no-repeat;
-}
-.btn-settings {
-    background-image: url(../assets/icons/menu_icon_white.png);
-    background-position: 10px 10px;
-    .btn-menu;
-}
-
-.btn-search {
-    background-image: url(../assets/icons/search_icon_white_sm.png);
-    background-position: 10px 14px;
-    .btn-menu;
-}
-
-.btn-orientation {
-    background-image: url(../assets/icons/northup_icon_white.png);
-    background-position: 2px 1px;
-    .btn-menu;
-}
-
-.btn-position {
-    background-image: url(../assets/icons/car_icon_white.png);
-    background-position: 2px 6px;
-    .btn-menu;
+.center-table {
+    margin: 0 auto;
 }
 
 .table > tbody > tr > td {
   border-color: #64bdd3;
+}
+
+.bg-info {
+    background-color: rgba(2, 118, 147, 0.8);
 }
 
 /**
@@ -119,5 +69,5 @@ body {
  *
  * TODO: In a later version of this boilerplate, I'd like to automate this.
  */
-
 @import '../app/home/home.less';
+@import '../app/mapload/mapload.less';
