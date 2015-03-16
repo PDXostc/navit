@@ -62,9 +62,12 @@
 #include <QPolygonF>
 #include <QPixmapCache>
 #include <QtGui>
+#include <QGLWidget>
 #ifdef HAVE_QT_SVG
 #include <QSvgRenderer>
 #endif
+
+#define QT_QPAINTER_NO_WIDGET
 
 /* Use qt events instead of glib */
 #ifndef QT_QPAINTER_USE_EVENT_QT
@@ -83,6 +86,7 @@
 
 #ifndef QT_QPAINTER_RENDERAREA_PARENT
 #define QT_QPAINTER_RENDERAREA_PARENT QWidget
+//#define QT_QPAINTER_RENDERAREA_PARENT QGLWidget
 #endif
 
 class RenderArea;

@@ -30,6 +30,8 @@
 #include "graphics_qt_qpainter.h"
 #include "RenderArea.h"
 
+#include <QElapsedTimer>
+
 //##############################################################################################################
 //# Description: RenderArea (QWidget) class for the main window (map, menu, ...) 
 //# Comment: 
@@ -63,6 +65,7 @@ overlay_rect(struct graphics_priv *parent, struct graphics_priv *overlay, int cl
 void
 qt_qpainter_draw(struct graphics_priv *gr, const QRect *r, int paintev)
 {
+    qDebug() << Q_FUNC_INFO;
 	if (!paintev) {
 #ifndef QT_QPAINTER_NO_WIDGET
 		dbg(lvl_debug,"update %d,%d %d x %d\n", r->x(), r->y(), r->width(), r->height());
@@ -106,9 +109,14 @@ qt_qpainter_draw(struct graphics_priv *gr, const QRect *r, int paintev)
 		}
 		overlay=overlay->next;
 	}
+//    QByteArray bytes;
+//    QBuffer buffer (&bytes);
+//    buffer.open(QIODevice::WriteOnly);
+//    pixmap.save(&buffer);
+
 #ifndef QT_QPAINTER_NO_WIDGET
-	QPainter painterw(gr->widget);
-	painterw.drawPixmap(r->x(), r->y(), pixmap);
+    QPainter painterw(gr->widget);
+    painterw.drawPixmap(r->x(), r->y(), pixmap);
 #endif
 }
 
@@ -506,6 +514,7 @@ static void background_gc(struct graphics_priv *gr, struct graphics_gc_priv *gc)
 //##############################################################################################################
 static void draw_mode(struct graphics_priv *gr, enum draw_mode_num mode)
 {
+    qDebug() << gr << mode;
 	dbg(lvl_debug,"mode for %p %d\n", gr, mode);
 	QRect r;
 	if (mode == draw_mode_begin) {
@@ -561,11 +570,12 @@ fullscreen(struct window *win, int on)
 	_outerWidget=(QWidget*)this_->widget->parent();
 #else
 	_outerWidget=this_->widget;
+
 #endif /* QT_QPAINTER_USE_EMBEDDING */
-	if (on)
-		_outerWidget->showFullScreen();
-	else
-		_outerWidget->showMaximized();
+    if (on)
+        _outerWidget->showFullScreen();
+    else
+        _outerWidget->showMaximized();
 #endif
 	return 1;
 }
@@ -595,6 +605,8 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		QSize size(this_->w,this_->h);
 		this_->widget->do_resize(size);
 	}
+
+
 	if (!strcmp(type, "qt_widget")) 
 	    return this_->widget;
 	if (!strcmp(type, "qt_pixmap")) 
@@ -608,12 +620,12 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		if (xid.length()>0) {
 			_outerWidget->embedInto(xid.toULong(&ok,0));
 		}
-		_outerWidget->show();
+        _outerWidget->show();
 #endif /* QT_QPAINTER_USE_EMBEDDING */
-		if (this_->w && this_->h)
-			this_->widget->show();
-		else
-			this_->widget->showMaximized();
+        if (this_->w && this_->h)
+            this_->widget->show();
+        else
+            this_->widget->showMaximized();
 #endif /* QT_QPAINTER_NO_WIDGET */
 		win->priv=this_;
 		win->fullscreen=fullscreen;
@@ -701,7 +713,6 @@ static struct graphics_methods graphics_methods = {
 	draw_text,
 	draw_image,
 	NULL,
-	draw_restore,
 	draw_drag,
 	font_new,
 	gc_new,
