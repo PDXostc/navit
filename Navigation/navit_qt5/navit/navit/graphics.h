@@ -69,7 +69,6 @@ struct graphics_methods {
 	void (*draw_text)(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct graphics_gc_priv *bg, struct graphics_font_priv *font, char *text, struct point *p, int dx, int dy);
 	void (*draw_image)(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct point *p, struct graphics_image_priv *img);
 	void (*draw_image_warp)(struct graphics_priv *gr, struct graphics_gc_priv *fg, struct point *p, int count, struct graphics_image_priv *img);
-	void (*draw_restore)(struct graphics_priv *gr, struct point *p, int w, int h);
 	void (*draw_drag)(struct graphics_priv *gr, struct point *p);
 	struct graphics_font_priv *(*font_new)(struct graphics_priv *gr, struct graphics_font_methods *meth, char *font,  int size, int flags);
 	struct graphics_gc_priv *(*gc_new)(struct graphics_priv *gr, struct graphics_gc_methods *meth);
@@ -100,7 +99,6 @@ struct graphics_gc_methods {
 	void (*gc_set_dashes)(struct graphics_gc_priv *gc, int width, int offset, unsigned char dash_list[], int n);
 	void (*gc_set_foreground)(struct graphics_gc_priv *gc, struct color *c);
 	void (*gc_set_background)(struct graphics_gc_priv *gc, struct color *c);
-	void (*gc_set_stipple)(struct graphics_gc_priv *gc, struct graphics_image_priv *img);
 };
 
 struct graphics_gc {
@@ -167,14 +165,12 @@ struct graphics_gc *graphics_gc_new(struct graphics *gra);
 void graphics_gc_destroy(struct graphics_gc *gc);
 void graphics_gc_set_foreground(struct graphics_gc *gc, struct color *c);
 void graphics_gc_set_background(struct graphics_gc *gc, struct color *c);
-void graphics_gc_set_stipple(struct graphics_gc *gc, struct graphics_image *img);
 void graphics_gc_set_linewidth(struct graphics_gc *gc, int width);
 void graphics_gc_set_dashes(struct graphics_gc *gc, int width, int offset, unsigned char dash_list[], int n);
 struct graphics_image *graphics_image_new_scaled(struct graphics *gra, char *path, int w, int h);
 struct graphics_image *graphics_image_new_scaled_rotated(struct graphics *gra, char *path, int w, int h, int rotate);
 struct graphics_image *graphics_image_new(struct graphics *gra, char *path);
 void graphics_image_free(struct graphics *gra, struct graphics_image *img);
-void graphics_draw_restore(struct graphics *this_, struct point *p, int w, int h);
 void graphics_draw_mode(struct graphics *this_, enum draw_mode_num mode);
 void graphics_draw_lines(struct graphics *this_, struct graphics_gc *gc, struct point *p, int count);
 void graphics_draw_circle(struct graphics *this_, struct graphics_gc *gc, struct point *p, int r);

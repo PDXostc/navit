@@ -568,18 +568,6 @@ void graphics_gc_set_background(struct graphics_gc *gc, struct color *c)
  * @returns <>
  * @author Martin Schaller (04/2008)
 */
-void graphics_gc_set_stipple(struct graphics_gc *gc, struct graphics_image *img)
-{
-	gc->meth.gc_set_stipple(gc->priv, img ? img->priv : NULL);
-}
-
-
-/**
- * FIXME
- * @param <>
- * @returns <>
- * @author Martin Schaller (04/2008)
-*/
 void graphics_gc_set_linewidth(struct graphics_gc *gc, int width)
 {
 	gc->meth.gc_set_linewidth(gc->priv, width);
@@ -849,17 +837,6 @@ struct graphics_image * graphics_image_new(struct graphics *gra, char *path)
 void graphics_image_free(struct graphics *gra, struct graphics_image *img)
 {
 	/* Image is cached inside gra->image_cache_hash. So it would be freed only when graphics is destroyed => Do nothing here. */
-}
-
-/**
- * FIXME
- * @param <>
- * @returns <>
- * @author Martin Schaller (04/2008)
-*/
-void graphics_draw_restore(struct graphics *this_, struct point *p, int w, int h)
-{
-	this_->meth.draw_restore(this_->priv, p, w, h);
 }
 
 /**
