@@ -16,7 +16,12 @@ namespace Navit {
         static std::string name() noexcept { return "navit.autostart"; }
     };
 
+    struct ExternalNavit {
+        typedef bool type;
+        static std::string name() noexcept { return "navit.external"; }
+    };
 } // Navit
+
 struct FileLog {
     typedef std::string type;
     static std::string name() noexcept { return "logFile"; }

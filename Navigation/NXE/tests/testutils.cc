@@ -21,6 +21,7 @@ void TestUtils::createNXEConfFile()
     bpt::ptree config;
     config.put(SettingsTags::Navit::Path::name(), navitPath);
     config.put(SettingsTags::Navit::AutoStart::name(), true);
+    config.put(SettingsTags::Navit::ExternalNavit::name(), false);
     config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
     bpt::write_json("nxe.conf", config);
 }

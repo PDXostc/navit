@@ -97,24 +97,32 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
+    using SettingsTags::Navit::ExternalNavit;
     auto navit = d->navitProcess.lock();
     if (navit) {
         navit->stop();
     }
 
-    bipc::shared_memory_object::remove(sharedMemoryName.c_str());
+    bool external = d->settings.get<ExternalNavit>();
+    if (!external) {
+        bipc::shared_memory_object::remove(sharedMemoryName.c_str());
+    }
 }
 
 void NXEInstance::Initialize()
 {
     nDebug() << "Initializing NXEInstance";
     using SettingsTags::Navit::AutoStart;
+    using SettingsTags::Navit::ExternalNavit;
     bool bAutoRun = d->settings.get<AutoStart>();
     d->shMem.truncate(sharedMemorySize);
     if (bAutoRun) {
-        nInfo() << "Autorun is set, starting Navit";
-        auto navi = d->navitProcess.lock();
-        navi->start();
+        bool external = d->settings.get<ExternalNavit>();
+        if (!external) {
+            nInfo() << "Autorun is set, starting Navit";
+            auto navi = d->navitProcess.lock();
+            navi->start();
+        }
         d->controller.tryStart();
     }
 }
