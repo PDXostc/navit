@@ -2,11 +2,12 @@
 #define NXE_NAVITDBUS_H
 
 #include "navitcontroller.h"
+#include "navitipc.h"
 
 namespace NXE {
 
 class NavitDBusPrivate;
-class NavitDBus : public NavitController {
+class NavitDBus : public NavitIPCInterface {
 public:
     NavitDBus();
     ~NavitDBus();
@@ -16,6 +17,7 @@ public:
     virtual void moveBy(double x, double y) override;
     virtual void zoomBy(int y) override;
     virtual int zoom() override;
+    virtual void render() override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;

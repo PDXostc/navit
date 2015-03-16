@@ -1,0 +1,30 @@
+
+///////////////////// ZOOM /////////////////////////
+Get zoom value
+
+Request:
+{
+    "id" : 102,
+    "call" : "zoom"
+}
+
+Response:
+{
+    "id": 102,
+    "call" : "zoom
+    "zoom" : 15
+}
+
+
+
+
+
+
+///////////////////// ERRORS /////////////////////////
+
+Unable to handle request
+
+{
+    "id" : -1,
+    "error": "An error string"
+}

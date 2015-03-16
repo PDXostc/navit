@@ -16,3 +16,4 @@ foreach(testSrc ${TEST_SRCS})
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${testName})
 endforeach(testSrc)
+

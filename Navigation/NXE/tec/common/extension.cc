@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "extension.h"
+#include "log.h"
 
 #include <assert.h>
-#include <iostream>
 #include <vector>
 
 namespace {
@@ -24,15 +24,15 @@ bool InitializeInterfaces(XW_GetInterface get_interface) {
   g_core = reinterpret_cast<const XW_CoreInterface*>(
       get_interface(XW_CORE_INTERFACE));
   if (!g_core) {
-    std::cerr << "Can't initialize extension: error getting Core interface.\n";
+    nError() << "Can't initialize extension: error getting Core interface";
     return false;
   }
 
   g_messaging = reinterpret_cast<const XW_MessagingInterface*>(
       get_interface(XW_MESSAGING_INTERFACE));
   if (!g_messaging) {
-    std::cerr <<
-        "Can't initialize extension: error getting Messaging interface.\n";
+    nError() <<
+        "Can't initialize extension: error getting Messaging interface.";
     return false;
   }
 
@@ -40,30 +40,30 @@ bool InitializeInterfaces(XW_GetInterface get_interface) {
       reinterpret_cast<const XW_Internal_SyncMessagingInterface*>(
           get_interface(XW_INTERNAL_SYNC_MESSAGING_INTERFACE));
   if (!g_sync_messaging) {
-    std::cerr <<
-        "Can't initialize extension: error getting SyncMessaging interface.\n";
+    nError() <<
+        "Can't initialize extension: error getting SyncMessaging interface.";
     return false;
   }
 
   g_entry_points = reinterpret_cast<const XW_Internal_EntryPointsInterface*>(
       get_interface(XW_INTERNAL_ENTRY_POINTS_INTERFACE));
   if (!g_entry_points) {
-    std::cerr << "NOTE: Entry points interface not available in this version "
-              << "of Crosswalk, ignoring entry point data for extensions.\n";
+    nError() << "NOTE: Entry points interface not available in this version "
+              << "of Crosswalk, ignoring entry point data for extensions.";
   }
 
   g_runtime = reinterpret_cast<const XW_Internal_RuntimeInterface*>(
       get_interface(XW_INTERNAL_RUNTIME_INTERFACE));
   if (!g_runtime) {
-    std::cerr << "NOTE: runtime interface not available in this version "
-              << "of Crosswalk, ignoring runtime variables for extensions.\n";
+    nError() << "NOTE: runtime interface not available in this version "
+              << "of Crosswalk, ignoring runtime variables for extensions.";
   }
 
   g_permission = reinterpret_cast<const XW_Internal_PermissionsInterface*>(
       get_interface(XW_INTERNAL_PERMISSIONS_INTERFACE));
   if (!g_permission) {
-    std::cerr << "NOTE: permission interface not available in this version "
-      << "of Crosswalk, ignoring permission for extensions.\n";
+    nError() << "NOTE: permission interface not available in this version "
+      << "of Crosswalk, ignoring permission for extensions.";
   }
 
   return true;
@@ -81,8 +81,8 @@ int32_t XW_Initialize(XW_Extension extension, XW_GetInterface get_interface) {
   g_extension = CreateExtension();
   //g_extension = nullptr;
   if (!g_extension) {
-    std::cerr << "Can't initialize extension: "
-              << "create extension returned NULL.\n";
+    nError() << "Can't initialize extension: "
+              << "create extension returned NULL.";
     return XW_ERROR;
   }
 
@@ -197,7 +197,7 @@ Instance::~Instance() {
 
 void Instance::PostMessage(const char* msg) {
   if (!xw_instance_) {
-    std::cerr << "Ignoring PostMessage() in the constructor or after the "
+    nError() << "Ignoring PostMessage() in the constructor or after the "
               << "instance was destroyed.";
     return;
   }
@@ -206,7 +206,7 @@ void Instance::PostMessage(const char* msg) {
 
 void Instance::SendSyncReply(const char* reply) {
   if (!xw_instance_) {
-    std::cerr << "Ignoring SendSyncReply() in the constructor or after the "
+    nError() << "Ignoring SendSyncReply() in the constructor or after the "
               << "instance was destroyed.";
     return;
   }

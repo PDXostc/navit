@@ -27,6 +27,14 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     void zoomBy(int factor) {
         DBus::call("zoom", *this, factor);
     }
+
+    void moveBy(double x, double y) {
+        DBus::call("move",*this, x, y);
+    }
+
+    void render() {
+        DBus::call("draw",*this);
+    }
 };
 
 struct NavitDBusPrivate {
@@ -55,6 +63,10 @@ NavitDBus::~NavitDBus()
 
 void NavitDBus::start()
 {
+    if (d->m_threadRunning) {
+        return;
+    }
+
     ::DBus::default_dispatcher = &d->dispatcher;
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
@@ -70,7 +82,9 @@ void NavitDBus::start()
 void NavitDBus::stop()
 {
     nDebug() << "Stopping Navit DBus client";
-    d->con->disconnect();
+    if (d->con) {
+        d->con->disconnect();
+    }
     d->m_threadRunning = false;
 }
 
@@ -88,6 +102,12 @@ int NavitDBus::zoom()
 {
     nDebug() << "Getting zoom";
     return d->object->zoom();
+}
+
+void NavitDBus::render()
+{
+    nDebug() << "Rendering";
+    return d->object->render();
 }
 
 } // namespace NXE

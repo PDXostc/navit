@@ -21,6 +21,11 @@ struct FileLog {
     typedef std::string type;
     static std::string name() noexcept { return "logFile"; }
 };
+struct LogLevel {
+    typedef std::string type;
+    static std::string name() noexcept { return "logLevel"; }
+};
+
 } // SettingsTags
 
 #endif // SETTINGTAGS_H

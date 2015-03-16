@@ -1,7 +1,9 @@
 set(MACOSX_BUNDLE_GUI_IDENTIFIER "org.navitproject.navit")
 set(MACOSX_BUNDLE_BUNDLE_NAME "Navit")
 message(STATUS "Building with CMake V${CMAKE_VERSION}")
-project(navit C)
+project(navit C CXX)
+
+add_definitions(-std=c++11)
 
 # Workaround for CMake issue 8345 / 9220, see http://trac.navit-project.org/ticket/1041
 if(DEFINED CMAKE_CXX_COMPILER AND CMAKE_CXX_COMPILER MATCHES "^$")
@@ -87,6 +89,7 @@ add_module(graphics/gtk_drawing_area "FreeType library not found" FALSE)
 add_module(graphics/opengl "FreeType library not found" FALSE)
 add_module(graphics/sdl "Required library not found" FALSE)
 add_module(graphics/qt_qpainter "Qt libraries not found" FALSE)
+add_module(graphics/qt_offscreen "Qt libraries not found" FALSE)
 add_module(gui/gtk "GTK libs not found" FALSE)
 add_module(vehicle/gpsd "gpsd lib not found" FALSE)
 add_module(vehicle/gypsy "gypsy lib not found" FALSE)
@@ -293,6 +296,7 @@ if (Qt5Core_FOUND)
    MESSAGE("Qt FOUND!!!!!!")
    if (Qt5Core_FOUND AND Qt5Widgets_FOUND AND FREETYPE_FOUND)
       set_with_reason(graphics/qt_qpainter "Qt libraries found" TRUE ${QT_LIBRARIES})
+      set_with_reason(graphics/qt_offscreen "Qt libraries found" TRUE ${QT_LIBRARIES})
 
 	  if (Qt5Quick_FOUND AND Qt5Xml_FOUND)
          set_with_reason(gui/qml "Qt Declarative found" TRUE ${QT_LIBRARIES})

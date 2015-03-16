@@ -8,27 +8,75 @@
 #include "calls.h"
 
 #include <boost/algorithm/string.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+
+namespace bipc = boost::interprocess;
+
+namespace {
+const std::string sharedMemoryName {"Navit_shm"};
+const std::uint32_t sharedMemorySize = 8208000;
+}
 
 namespace NXE {
 
 struct NXEInstancePrivate {
+
+    NXEInstancePrivate(std::weak_ptr<NavitProcess> p, std::weak_ptr<NavitIPCInterface> w, NXEInstance* qptr)
+        : navitProcess(p)
+        , q(qptr)
+        , controller(w.lock())
+    {
+    }
     std::weak_ptr<NavitProcess> navitProcess;
-    std::weak_ptr<NavitController> controller;
+    NXEInstance* q;
+    NavitController controller;
     Settings settings;
     std::vector<NXEInstance::MessageCb_type> callbacks;
+    std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
+    bipc::shared_memory_object shMem {bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
 
-    void postMessage(NXEInstance* inst, const std::string& message)
+    void postMessage(const JSONMessage& message)
     {
-        inst->PostMessage(message.c_str());
+        const std::string rsp = JSONUtils::serialize(message);
+        // This is xwalk posting mechanism
+        q->PostMessage(rsp.c_str());
 
-        std::for_each(callbacks.begin(), callbacks.end(), [&message](const NXEInstance::MessageCb_type& callback) {
-            callback(message);
+        // This is our internal post message
+        std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
+            callback(rsp);
         });
+    }
+
+    void navitMsgCallback(const JSONMessage& response)
+    {
+        if (response.call == "render") {
+            nInfo()<< "Rendering finished!";
+            // read shared memory
+            bipc::mapped_region region(shMem, bipc::read_only);
+            char *mem = static_cast<char*>(region.get_address());
+            nInfo() << (int)mem[0] << (int)mem[1] << (int)mem[2] << (int)mem[3];
+            q->PostMessage(mem);
+            // This is our internal post message
+            std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
+                callback(std::string(mem));
+            });
+        }
+        else {
+            postMessage(response);
+        }
+        auto it = timers.find(response.call);
+        if (it != timers.end()) {
+            auto now = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> diff = now - timers[response.call];
+            perfLog(response.call) << " parsing " << response.call << " took " << diff.count() << " ms";
+            timers.erase(it);
+        }
     }
 };
 
-NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<NavitController> controller)
-    : d(new NXEInstancePrivate{ process, controller })
+NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<NavitIPCInterface> ipc)
+    : d(new NXEInstancePrivate{ process, ipc, this })
 {
     using SettingsTags::Navit::Path;
 
@@ -42,6 +90,9 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
         navi->setProgramPath(path);
     }
 
+    nDebug() << "Connecting to navitprocess signals";
+    auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
+    d->controller.addListener(bound);
 }
 
 NXEInstance::~NXEInstance()
@@ -50,6 +101,8 @@ NXEInstance::~NXEInstance()
     if (navit) {
         navit->stop();
     }
+
+    bipc::shared_memory_object::remove(sharedMemoryName.c_str());
 }
 
 void NXEInstance::Initialize()
@@ -57,10 +110,12 @@ void NXEInstance::Initialize()
     nDebug() << "Initializing NXEInstance";
     using SettingsTags::Navit::AutoStart;
     bool bAutoRun = d->settings.get<AutoStart>();
+    d->shMem.truncate(sharedMemorySize);
     if (bAutoRun) {
         nInfo() << "Autorun is set, starting Navit";
         auto navi = d->navitProcess.lock();
         navi->start();
+        d->controller.tryStart();
     }
 }
 
@@ -74,28 +129,47 @@ void NXEInstance::HandleMessage(const char* msg)
     boost::algorithm::erase_all(message, "\n");
     boost::algorithm::erase_all(message, "\t");
 
-    nDebug() << "Handling message " << msg;
+    nDebug() << "Handling message " << message;
 
-    if (!naviProcess->isRunning()) {
-        if (!naviProcess->start()) {
-            d->postMessage(this,"error");
+    using SettingsTags::Navit::AutoStart;
+    bool bAutoRun = d->settings.get<AutoStart>();
+    if (!bAutoRun) {
+        if (!naviProcess->isRunning()) {
+            if (!naviProcess->start()) {
+                d->postMessage(JSONMessage{ 0, "" });
+            }
+        }
+        d->controller.tryStart();
+    }
+
+    // Eat all exceptions!
+    try {
+        NXE::JSONMessage jsonMsg = JSONUtils::deserialize(message);
+
+        try {
+            d->timers[jsonMsg.call] = std::chrono::high_resolution_clock::now();
+            d->controller.handleMessage(jsonMsg);
+        }
+        catch (const std::exception& ex) {
+            nFatal() << "Unable to handle message " << jsonMsg.call << ", error=" << ex.what();
+            NXE::JSONMessage error{ jsonMsg.id, jsonMsg.call, " some error" };
+            auto it = d->timers.find(jsonMsg.call);
+            if (it != d->timers.end()) {
+                d->timers.erase(it);
+            }
+            d->postMessage(error);
         }
     }
-
-    try {
-        auto navit = d->controller.lock();
-        assert(navit);
-        navit->tryStart();
-        navit->handleMessage(JSONUtils::deserialize(message));
-    }
     catch (const std::exception& ex) {
+        NXE::JSONMessage error{ 0, "", 0 };
         nFatal() << "Unable to parse message, posting error= " << ex.what();
-        d->postMessage(this, ex.what());
+        d->postMessage(error);
     }
 }
 
 void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
 {
+    nTrace() << "registering cb";
     d->callbacks.push_back(cb);
 }
 

@@ -1,5 +1,6 @@
 #include "nxe_extension.h"
 #include "nxe_instance.h"
+#include "navitipc.h"
 
 #include "navitprocessimpl.h"
 #include "navitdbus.h"
@@ -14,7 +15,7 @@ NXE::NXExtension* g_extension = nullptr;
 
 struct NXE::NXExtensionPrivate {
     std::shared_ptr<NavitProcess> navitProcess;
-    std::shared_ptr<NavitController> navitController;
+    std::shared_ptr<NavitIPCInterface> navitIPC;
 
     NXEInstance* instance = nullptr;
 };
@@ -23,8 +24,17 @@ common::Extension* CreateExtension()
 {
     Settings s;
     const std::string path = s.get<SettingsTags::FileLog>();
-    spdlog::rotating_logger_mt("nxe_logger", path, 1048576 * 5, 3, true);
-    spdlog::set_level(spdlog::level::debug);
+    const std::string level = s.get<SettingsTags::LogLevel>();
+    std::shared_ptr<spdlog::sinks::sink> rot { new spdlog::sinks::rotating_file_sink_mt ("nxe_logger", path,1048576  * 5, 3, true ) };
+    spdlog::create("nxe_logger", {rot});
+
+    if (level == "debug") {
+        spdlog::set_level(spdlog::level::debug);
+    } else if (level == "warn") {
+        spdlog::set_level(spdlog::level::warn);
+    } else {
+        spdlog::set_level(spdlog::level::err);
+    }
     g_extension = new NXExtension();
     nInfo() << "Plugin loaded. Addr" << static_cast<void*>(g_extension);
     return g_extension;
@@ -56,33 +66,11 @@ common::Instance *NXExtension::CreateInstance()
 
         // Use proper DI here?
         d->navitProcess.reset(new NavitProcessImpl);
-        d->navitController.reset(new NavitDBus);
+        d->navitIPC.reset(new NavitDBus);
     }
 
-    d->instance =  new NXEInstance(d->navitProcess, d->navitController);
+    d->instance =  new NXEInstance(d->navitProcess, d->navitIPC);
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;
 }
-
-//void NXExtension::OnShutdown(XW_Extension xw_extension)
-//{
-//    nDebug() << "On Shutdown " << xw_extension;
-//    delete g_extension;
-//}
-
-//void NXExtension::OnInstanceCreated(XW_Instance xw_instance)
-//{
-//    nDebug() << "Instance created " << xw_instance;
-//    if(g_extension) {
-//        g_extension->d->instance->Initialize();
-//    }
-//}
-
-//void NXExtension::OnInstanceDestroyed(XW_Instance xw_instance)
-//{
-//    nDebug() << "Instance destroyed " << xw_instance;
-//    if (g_extension) {
-//        g_extension->d->instance.reset();
-//    }
-//}

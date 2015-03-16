@@ -3,27 +3,27 @@
 
 #include <string>
 #include <map>
-#include <boost/optional.hpp>
 #include <cstdint>
-
-#include "calls.h"
+#include <boost/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace NXE {
 
 struct JSONMessage {
     // necessary fields
-    const std::uint32_t id;
-    const std::string call;
+    std::uint32_t id;
+    std::string call;
     // not necessary fields
-    const boost::optional<int> errorCode;
-    const boost::optional<std::string> data;
+    std::string error;
+    boost::property_tree::ptree data;
 };
 
 namespace JSONUtils {
     JSONMessage deserialize(std::string buff);
     std::string serialize(JSONMessage json);
-    std::string serialize(std::uint32_t id, const std::string &call, int ec = 0, std::string data = "");
+    std::string serialize(std::uint32_t id, const std::string& call, const std::string &err = "",
+                          boost::property_tree::ptree data = boost::property_tree::ptree());
 }
-}
+} // NXE
 
 #endif // JSONMESSAGE_H

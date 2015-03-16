@@ -6,6 +6,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 
+# add __FILENAME__ macro definition
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
+
 add_definitions(-std=c++11)
 enable_testing()
 
@@ -20,7 +23,7 @@ if(NOT DISABLE_TESTS)
     include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
 endif()
 
-set(boost_components system filesystem thread)
+set(boost_components system filesystem thread chrono iostreams timer)
 
 # find Boost
 find_package(Boost 1.57.0 EXACT REQUIRED COMPONENTS ${boost_components})

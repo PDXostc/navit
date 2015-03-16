@@ -6,7 +6,7 @@
 #include <thread>
 #include <chrono>
 
-NXE::NavitProcessImpl process;
+NXE::NavitProcessImpl *process = nullptr;
 const std::string navitPath { NAVIT_PATH };
 
 struct NavitDBusTest : public ::testing::Test
@@ -15,14 +15,17 @@ struct NavitDBusTest : public ::testing::Test
 
     static void SetUpTestCase() {
         nDebug() << "Running navit binary";
-        process.setProgramPath(navitPath);
-        process.start();
+        process = new NXE::NavitProcessImpl;
+        process->setProgramPath(navitPath);
+        process->start();
         std::chrono::milliseconds dura( 1000 );
         std::this_thread::sleep_for(dura);
     }
 
     static void TearDownTestCase() {
-        process.stop();
+        process->stop();
+        delete process;
+        process = 0;
     }
 };
 

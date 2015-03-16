@@ -9,24 +9,20 @@ using namespace NXE;
 namespace bpt = boost::property_tree;
 
 namespace {
-//const CallMapType types{
-//    { CallType::moveBy, "moveBy" },
-//    { CallType::zoomBy, "zoomBy" }
-//    };
 }
 
 std::string JSONUtils::serialize(NXE::JSONMessage json)
 {
     bpt::ptree tree;
     tree.put("id", json.id);
-    tree.put("call",json.call);
+    tree.put("call", json.call);
 
-    if (json.errorCode) {
-        tree.put("errorCode", json.errorCode.get());
+    if (!json.error.empty()) {
+        tree.put("error", json.error);
     }
 
-    if (json.data) {
-        tree.put("data", json.data.get());
+    if (!json.data.empty()) {
+        tree.put_child("data", json.data);
     }
 
     std::stringstream buff;
@@ -42,27 +38,23 @@ JSONMessage JSONUtils::deserialize(std::string buff)
     stream << buff;
     std::istringstream is(stream.str());
     bpt::read_json(is, tree);
-    nDebug() << "JSON read";
-    boost::optional<int> errorCode = tree.get_optional<int>("errorCode");
+    boost::optional<std::string> error = tree.get_optional<std::string>("error");
+    const std::string errorMsg { error ? error.value(): "" };
 
     // this will throw an exception if `call` is not present
     std::string call = tree.get<std::string>("call");
-    boost::optional<std::string> data = tree.get_optional<std::string>("data");
-
-//    CallMapType::const_iterator it = std::find_if(types.begin(), types.end(), [&call](const std::pair<CallType, std::string>& pair) -> bool {
-//                return pair.second == call;
-//    });
-
+    bpt::ptree data;
+    if (tree.find("data") != tree.not_found()) {
+        data = tree.get_child("data");
+    }
     return JSONMessage{ tree.get<std::uint32_t>("id"),
-//                        it != types.end() ? it->first : CallType::unknown,
                         call,
-                        errorCode,
+                        errorMsg,
                         data };
 }
 
-
-std::string NXE::JSONUtils::serialize(std::uint32_t id, const std::string &call, int ec, std::string data)
+std::string NXE::JSONUtils::serialize(std::uint32_t id, const std::string& call, const std::string &err, boost::property_tree::ptree data)
 {
-    JSONMessage m {id, call, ec, data};
+    JSONMessage m{ id, call, err, data };
     return serialize(m);
 }

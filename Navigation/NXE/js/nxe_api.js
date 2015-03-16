@@ -1,3 +1,7 @@
+/*
+ * NXE Javascript API
+ */
+
 var echoListener = null;
 
 extension.setMessageListener(function(msg) {

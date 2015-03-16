@@ -1,6 +1,8 @@
 #ifndef CALLS_H
 #define CALLS_H
 
+#include "jsonmessage.h"
+
 #include <string>
 #include <map>
 #include <functional>
@@ -12,15 +14,18 @@
 #include <boost/fusion/include/as_map.hpp>
 #include <boost/fusion/sequence/intrinsic.hpp>
 #include <boost/fusion/include/mpl.hpp>
+#include <boost/property_tree/ptree.hpp>
 
-// All messages
+// Messages handled by application
 struct MoveByMessage {};
 struct ZoomByMessage {};
 struct ZoomMessage {};
+struct PositionMessage {};
+struct RenderMessage {};
 
 // Container of all registered messages
-typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage> Messages_type;
-typedef std::function<void (const std::string &data)> JSONMessageParser_type;
+typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage, PositionMessage, RenderMessage> Messages_type;
+typedef std::function<void (const NXE::JSONMessage &data)> JSONMessageParser_type;
 
 template<typename T>
 struct make_sig_pair
