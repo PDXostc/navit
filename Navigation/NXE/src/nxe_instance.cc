@@ -160,7 +160,7 @@ void NXEInstance::HandleMessage(const char* msg)
         }
         catch (const std::exception& ex) {
             nFatal() << "Unable to handle message " << jsonMsg.call << ", error=" << ex.what();
-            NXE::JSONMessage error{ jsonMsg.id, jsonMsg.call, " some error" };
+            NXE::JSONMessage error{ jsonMsg.id, jsonMsg.call, ex.what() };
             auto it = d->timers.find(jsonMsg.call);
             if (it != d->timers.end()) {
                 d->timers.erase(it);

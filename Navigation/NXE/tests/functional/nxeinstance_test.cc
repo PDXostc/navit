@@ -98,7 +98,7 @@ TEST_F(NXEInstanceTest, zoomInAndOut)
     EXPECT_FALSE(respMsg.data.empty());
 }
 
-TEST_F(NXEInstanceTest, renderTest)
+TEST_F(NXEInstanceTest, renderOneFrame)
 {
     std::string msg{ TestUtils::renderMessage() };
     render = true;
@@ -110,10 +110,11 @@ TEST_F(NXEInstanceTest, renderTest)
         instance.HandleMessage(msg.data());
     );
     // Message cannot be properly parsed!
+    EXPECT_EQ(respMsg.error, "");
     EXPECT_TRUE(receivedRender);
 }
 
-TEST_F(NXEInstanceTest, renderBenchmarkTest)
+TEST_F(NXEInstanceTest, renderBenchmark)
 {
     std::string msg{ TestUtils::renderMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
