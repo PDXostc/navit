@@ -9,6 +9,8 @@ angular.module( 'navitGui', [
   'navitGui.home',
   'navitGui.settings',
   'navitGui.locations',
+  'navitGui.welcome',
+  'navitGui.download',
   'navitGui.mapload',
   'ui.router'
 ])

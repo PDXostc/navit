@@ -20,5 +20,5 @@ angular.module( 'navitGui.mapload', [
     }
   });
 })
-.controller( 'MapLoadCtrl', function HomeController( $scope ) {
+.controller( 'MapLoadCtrl', function MaploadController( $scope ) {
 });
