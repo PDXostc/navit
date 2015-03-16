@@ -36,7 +36,7 @@
 	<navit center="4531 N 12240 W" zoom="128" tracking="1" orientation="-1" recent_dest="10">
 		<!-- Use one of gtk_drawing_area, qt_qpainter or sdl. 
 		     On windows systems, use win32 -->
-		<graphics type="qt_qpainter"/>
+		<graphics type="qt_offscreen"/>
 		<!-- The following line let you select which graphical user interface you'd like to use.
 		Options include internal (optimized for touch screen devices), gtk (useful for desktop computers).
 		If you don't like the internal gui, set enabled=yes for the following tag and enabled=no for the gui internal tag -->
@@ -48,7 +48,7 @@
 		<!-- The action that appears on map click is configurable with the attribute "on_map_click".
 		     To get the prvious behaviour of showing the map point menu use on_map_click='menu("#Map Point")'
 	        -->
-		<gui type="internal" font_size="450" enabled="yes" fullscreen="1"><![CDATA[
+		<gui type="internal" font_size="450" enabled="yes"><![CDATA[
 			<html>
 				<a name='Main Menu'><text>Main menu</text>
 					<a href='#Actions'><img src='gui_actions'>Actions</img></a>
