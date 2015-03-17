@@ -3,6 +3,7 @@
 
 #include "common/extension.h"
 #include <memory>
+#include <vector>
 
 namespace NXE {
 class NavitProcess;
@@ -22,6 +23,9 @@ public:
 
     void HandleMessage(const char *msg) override;
     void registerMessageCallback(const MessageCb_type &cb);
+
+    std::vector<double> renderMeasurements() const;
+
 private:
     std::unique_ptr<NXEInstancePrivate> d;
 };

@@ -14,7 +14,7 @@
 namespace bipc = boost::interprocess;
 
 namespace {
-const std::string sharedMemoryName {"Navit_shm"};
+const std::string sharedMemoryName{ "Navit_shm" };
 const std::uint32_t sharedMemorySize = 8208000;
 }
 
@@ -34,7 +34,9 @@ struct NXEInstancePrivate {
     Settings settings;
     std::vector<NXEInstance::MessageCb_type> callbacks;
     std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
-    bipc::shared_memory_object shMem {bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
+    bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
+    bipc::mapped_region region;
+    std::vector<double> perfMeasurement;
 
     void postMessage(const JSONMessage& message)
     {
@@ -51,10 +53,10 @@ struct NXEInstancePrivate {
     void navitMsgCallback(const JSONMessage& response)
     {
         if (response.call == "render") {
-            nInfo()<< "Rendering finished!";
+            nInfo() << "Rendering finished!";
             // read shared memory
-            bipc::mapped_region region(shMem, bipc::read_only);
-            char *mem = static_cast<char*>(region.get_address());
+            char* mem = static_cast<char*>(region.get_address());
+            assert(mem);
             nInfo() << (int)mem[0] << (int)mem[1] << (int)mem[2] << (int)mem[3];
             q->PostMessage(mem);
             // This is our internal post message
@@ -69,7 +71,9 @@ struct NXEInstancePrivate {
         if (it != timers.end()) {
             auto now = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> diff = now - timers[response.call];
-            perfLog(response.call) << " parsing " << response.call << " took " << diff.count() << " ms";
+            double res = diff.count();
+            perfMeasurement.push_back(res);
+            perfLog(response.call) << " parsing took " << res << " ms";
             timers.erase(it);
         }
     }
@@ -79,6 +83,8 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
     : d(new NXEInstancePrivate{ process, ipc, this })
 {
     using SettingsTags::Navit::Path;
+
+    nDebug() << "Setting path is" << d->settings.configPath();
 
     auto navi = d->navitProcess.lock();
     assert(navi);
@@ -111,17 +117,21 @@ NXEInstance::~NXEInstance()
 
 void NXEInstance::Initialize()
 {
-    nDebug() << "Initializing NXEInstance";
     using SettingsTags::Navit::AutoStart;
     using SettingsTags::Navit::ExternalNavit;
+
+    nDebug() << "Initializing NXEInstance";
     bool bAutoRun = d->settings.get<AutoStart>();
     d->shMem.truncate(sharedMemorySize);
+    d->region = bipc::mapped_region(d->shMem, bipc::read_only);
     if (bAutoRun) {
         bool external = d->settings.get<ExternalNavit>();
         if (!external) {
             nInfo() << "Autorun is set, starting Navit";
             auto navi = d->navitProcess.lock();
             navi->start();
+        } else {
+            nInfo() << "Navit external is set, won't run";
         }
         d->controller.tryStart();
     }
@@ -130,7 +140,6 @@ void NXEInstance::Initialize()
 void NXEInstance::HandleMessage(const char* msg)
 {
     // lock shared ptr
-    const auto naviProcess = d->navitProcess.lock();
     std::string message{ msg };
 
     boost::algorithm::erase_all(message, " ");
@@ -138,17 +147,6 @@ void NXEInstance::HandleMessage(const char* msg)
     boost::algorithm::erase_all(message, "\t");
 
     nDebug() << "Handling message " << message;
-
-    using SettingsTags::Navit::AutoStart;
-    bool bAutoRun = d->settings.get<AutoStart>();
-    if (!bAutoRun) {
-        if (!naviProcess->isRunning()) {
-            if (!naviProcess->start()) {
-                d->postMessage(JSONMessage{ 0, "" });
-            }
-        }
-        d->controller.tryStart();
-    }
 
     // Eat all exceptions!
     try {
@@ -179,6 +177,11 @@ void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
 {
     nTrace() << "registering cb";
     d->callbacks.push_back(cb);
+}
+
+std::vector<double> NXEInstance::renderMeasurements() const
+{
+    return d->perfMeasurement;
 }
 
 } // namespace NXE

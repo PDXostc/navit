@@ -15,6 +15,11 @@ Response:
     "zoom" : 15
 }
 
+Request:
+{
+    "id" : 102,
+    "call" : "render"
+}
 
 
 
