@@ -1604,6 +1604,8 @@ gui_internal_keypress_do(struct gui_priv *this, char *key)
 	int len=0;
 	char *text=NULL;
 
+	printf("\n >>>>> gui_internal_keypress_do: key = %s\n", key);
+
 	menu=g_list_last(this->root.children)->data;
 	wi=gui_internal_find_widget(menu, NULL, STATE_EDIT);
 	if (wi) {
@@ -1639,9 +1641,12 @@ gui_internal_keypress_do(struct gui_priv *this, char *key)
 				dbg(lvl_info,"wi->state=0x%x\n", wi->state);
 			}
 			text=g_strdup_printf("%s%s", wi->text ? wi->text : "", key);
+
+
 		}
 		g_free(wi->text);
 		wi->text=text;
+		printf("\n >>>>> gui_internal_keypress_do: wi->text = %s\n", wi->text);
 		if (wi->func) {
 			wi->reason=gui_internal_reason_keypress;
 			wi->func(this, wi, wi->data);
@@ -2754,11 +2759,15 @@ gui_internal_keynav_highlight_next(struct gui_priv *this, int dx, int dy)
 //# Comment:
 //# Authors: Martin Schaller (04/2008)
 //##############################################################################################################
-static void gui_internal_keypress(void *data, char *key)
+static void gui_internal_keypress(void *data, char *ikey)
 {
 	struct gui_priv *this=data;
 	int w,h;
 	struct point p;
+	char key[256] = {0,};
+
+	g_stpcpy(key,ikey);
+
 	if (!this->root.children) {
 		transform_get_size(navit_get_trans(this->nav), &w, &h);
 		switch (*key) {

@@ -10,6 +10,7 @@
 #include "gui_internal_widget.h"
 #include "gui_internal_priv.h"
 #include "gui_internal_menu.h"
+#include "window.h"
 
 static void gui_internal_scroll_buttons_init(struct gui_priv *this, struct widget *widget, struct scroll_buttons *sb);
 
@@ -691,6 +692,11 @@ gui_internal_widget_children_destroy(struct gui_priv *this, struct widget *w)
 void
 gui_internal_widget_destroy(struct gui_priv *this, struct widget *w)
 {
+	if (! this->keyboard)
+	{
+		//this->win->vkeyboard_show(this->win, 0);
+	}
+
 	gui_internal_widget_children_destroy(this, w);
 	g_free(w->command);
 	g_free(w->speech);

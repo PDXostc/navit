@@ -25,7 +25,7 @@
 #include "gui_internal_menu.h"
 #include "gui_internal_keyboard.h"
 #include "gui_internal_poi.h"
-
+#include "window.h"
 
 struct item_data {
 	int dist;
@@ -533,6 +533,8 @@ gui_internal_cmd_pois_filter(struct gui_priv *this, struct widget *wm, void *dat
 	
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,keyboard_mode));
+	else
+		this->win->vkeyboard_show(this->win, 1);
 	gui_internal_menu_render(this);
 
 

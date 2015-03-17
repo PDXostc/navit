@@ -15,6 +15,7 @@
 #include "gui_internal_menu.h"
 #include "gui_internal_keyboard.h"
 #include "gui_internal_bookmark.h"
+#include "window.h"
 
 static void
 gui_internal_cmd_add_bookmark_do(struct gui_priv *this, struct widget *widget)
@@ -104,6 +105,9 @@ gui_internal_cmd_add_bookmark2(struct gui_priv *this, struct widget *wm, void *d
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
+	else
+		this->win->vkeyboard_show(this->win, 1);
+
 	gui_internal_menu_render(this);
 }
 
@@ -132,6 +136,8 @@ gui_internal_cmd_add_bookmark_folder2(struct gui_priv *this, struct widget *wm, 
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
+	else
+		this->win->vkeyboard_show(this->win, 1);
 	gui_internal_menu_render(this);
 }
 
@@ -161,6 +167,8 @@ gui_internal_cmd_rename_bookmark(struct gui_priv *this, struct widget *wm, void 
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
+	else
+		this->win->vkeyboard_show(this->win, 1);
 	gui_internal_menu_render(this);
 }
 

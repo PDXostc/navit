@@ -11,6 +11,7 @@
 #include "gui_internal_priv.h"
 #include "gui_internal_menu.h"
 #include "gui_internal_keyboard.h"
+#include "window.h"
 
 
 static void
@@ -20,12 +21,15 @@ gui_internal_cmd_keypress(struct gui_priv *this, struct widget *wm, void *data)
 	gui_internal_keypress_do(this, (char *) wm->data);
 	md=gui_internal_menu_data(this);
 	// Switch to lowercase after the first key is pressed
-	if (md->keyboard_mode == 2) // Latin
-		gui_internal_keyboard_do(this, md->keyboard, 10);
-	if (md->keyboard_mode == 26) // Umlaut
-		gui_internal_keyboard_do(this, md->keyboard, 34);
-	if (md->keyboard_mode == 42) // Russian/Ukrainian/Belorussian
-		gui_internal_keyboard_do(this, md->keyboard, 50);
+	if(this->keyboard)
+	{
+		if (md->keyboard_mode == 2) // Latin
+			gui_internal_keyboard_do(this, md->keyboard, 10);
+		if (md->keyboard_mode == 26) // Umlaut
+			gui_internal_keyboard_do(this, md->keyboard, 34);
+		if (md->keyboard_mode == 42) // Russian/Ukrainian/Belorussian
+			gui_internal_keyboard_do(this, md->keyboard, 50);
+	}
 }
 	
 static struct widget *
@@ -322,6 +326,7 @@ gui_internal_keyboard(struct gui_priv *this, int mode)
 	if (! this->keyboard)
 		return NULL;
 	return gui_internal_keyboard_do(this, NULL, mode);
+
 }
 
 static void

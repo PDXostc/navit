@@ -554,6 +554,7 @@ static char *argv[]={NULL,NULL,NULL};
 static int
 fullscreen(struct window *win, int on)
 {
+	QRectF kbdRect;
 #ifndef QT_QPAINTER_NO_WIDGET
 	struct graphics_priv *this_=(struct graphics_priv *)win->priv;
 	QWidget* _outerWidget;
@@ -568,6 +569,24 @@ fullscreen(struct window *win, int on)
 		_outerWidget->showMaximized();
 #endif
 	return 1;
+}
+
+static void
+vkeyboard_show(struct window *win, int on)
+{
+#ifndef QT_QPAINTER_NO_WIDGET
+	struct graphics_priv *this_=(struct graphics_priv *)win->priv;
+	QWidget* _outerWidget;
+#ifdef QT_QPAINTER_USE_EMBEDDING
+	_outerWidget=(QWidget*)this_->widget->parent();
+#else
+	_outerWidget=this_->widget;
+#endif /* QT_QPAINTER_USE_EMBEDDING */
+	if (on)
+		this_->app->inputMethod()->show();
+	else
+		this_->app->inputMethod()->hide();
+#endif
 }
 
 static void
@@ -618,6 +637,7 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		win->priv=this_;
 		win->fullscreen=fullscreen;
 		win->disable_suspend=disable_suspend;
+		win->vkeyboard_show=vkeyboard_show;
 		return win;
 	}
 	return NULL;

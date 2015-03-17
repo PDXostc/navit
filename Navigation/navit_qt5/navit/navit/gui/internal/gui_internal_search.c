@@ -21,6 +21,7 @@
 #include "gui_internal_menu.h"
 #include "gui_internal_keyboard.h"
 #include "gui_internal_search.h"
+#include "window.h"
 
 static void
 gui_internal_search_country(struct gui_priv *this, struct widget *widget, void *data)
@@ -560,6 +561,8 @@ gui_internal_search(struct gui_priv *this, const char *what, const char *type, i
 	wk->name=g_strdup(type);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,keyboard_mode));
+	else
+		this->win->vkeyboard_show(this->win, 1);
 	gui_internal_menu_render(this);
 }
 

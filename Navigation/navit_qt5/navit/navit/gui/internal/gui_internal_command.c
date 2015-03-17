@@ -36,6 +36,7 @@
 #include "gui_internal_search.h"
 #include "gui_internal_poi.h"
 #include "gui_internal_command.h"
+#include "window.h"
 
 extern char *version;
 
@@ -270,8 +271,10 @@ gui_internal_cmd_enter_coord(struct gui_priv *this, char *function, struct attr 
 	gui_internal_widget_append(wr,row);
 
 	if (this->keyboard)
-                gui_internal_widget_append(w, gui_internal_keyboard(this,56));
-       gui_internal_menu_render(this);
+        gui_internal_widget_append(w, gui_internal_keyboard(this,56));
+	else
+		this->win->vkeyboard_show(this->win, 1);
+	gui_internal_menu_render(this);
 }
 
 static void
@@ -837,6 +840,8 @@ gui_internal_cmd_log(struct gui_priv *this)
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
+	else
+		this->win->vkeyboard_show(this->win, 1);
 	gui_internal_menu_render(this);
 	gui_internal_leave(this);
 }
