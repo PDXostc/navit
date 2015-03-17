@@ -5,10 +5,15 @@
 
 namespace NXE {
 
+// DO NOT USE nDebug, nLog or other logging macros here!
 class Settings {
 public:
     Settings();
     ~Settings();
+
+    const std::string &configPath() const noexcept {
+        return m_configPath;
+    }
 
     template <typename T>
     typename T::type get()

@@ -8,6 +8,8 @@
 namespace bpt = boost::property_tree;
 const std::string navitPath { NAVIT_PATH };
 
+extern bool runNavit;
+
 std::string TestUtils::moveByMessage(int x, int y)
 {
     NXE::JSONMessage msg {1, "moveBy" };
@@ -21,7 +23,7 @@ void TestUtils::createNXEConfFile()
     bpt::ptree config;
     config.put(SettingsTags::Navit::Path::name(), navitPath);
     config.put(SettingsTags::Navit::AutoStart::name(), true);
-    config.put(SettingsTags::Navit::ExternalNavit::name(), false);
+    config.put(SettingsTags::Navit::ExternalNavit::name(), !runNavit);
     config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
     bpt::write_json("nxe.conf", config);
 }

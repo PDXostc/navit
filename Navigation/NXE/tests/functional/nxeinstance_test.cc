@@ -37,7 +37,7 @@ TEST_F(NXEInstanceTest, zoomBy)
 {
     std::string msg{ TestUtils::zoomByMessage(2) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
-    EXPECT_NO_THROW(instance.Initialize());
+    instance.Initialize();
     std::chrono::milliseconds dura( 1000 );
     std::this_thread::sleep_for(dura);
     EXPECT_NO_THROW(
@@ -79,6 +79,47 @@ TEST_F(NXEInstanceTest, zoom)
     EXPECT_FALSE(respMsg.data.empty());
 }
 
+TEST_F(NXEInstanceTest, renderBenchmarkTest)
+{
+    std::string msg{ TestUtils::renderMessage() };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    render = true;
+    EXPECT_NO_THROW(
+        for(int i = 0 ; i < 100 ; ++i) {
+            instance.HandleMessage(msg.data());
+        }
+    );
+    std::vector<double> mes = instance.renderMeasurements();
+    double mean = std::accumulate(mes.begin(), mes.end(), 0.0)/mes.size();
+    perfLog("render") << " mean = " << mean;
+    // should be 100
+    EXPECT_LT(mean, 200.0);
+    EXPECT_TRUE(render);
+    EXPECT_TRUE(receivedRender);
+}
+
+TEST_F(NXEInstanceTest, zoomedRenderBenchmarkTest)
+{
+    std::string msg{ TestUtils::renderMessage() };
+    std::string zoomMsg{ TestUtils::zoomByMessage(8) };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    instance.HandleMessage(zoomMsg.data());
+    render = true;
+    EXPECT_NO_THROW(
+        for(int i = 0 ; i < 20; ++i) {
+            instance.HandleMessage(msg.data());
+        }
+    );
+    EXPECT_TRUE(render);
+    EXPECT_TRUE(receivedRender);
+}
+
 TEST_F(NXEInstanceTest, zoomInAndOut)
 {
     std::string msg1{ TestUtils::zoomByMessage(2) };
@@ -88,6 +129,7 @@ TEST_F(NXEInstanceTest, zoomInAndOut)
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura( 100 );
     std::this_thread::sleep_for(dura);
+    render = false;
     EXPECT_NO_THROW(
         for(int i = 0 ; i < 10 ; ++i) {
             instance.HandleMessage(msg1.data());
@@ -95,7 +137,8 @@ TEST_F(NXEInstanceTest, zoomInAndOut)
         }
     );
 
-    EXPECT_FALSE(respMsg.data.empty());
+    EXPECT_TRUE(respMsg.data.empty());
+    EXPECT_EQ(respMsg.call, "zoomBy");
 }
 
 TEST_F(NXEInstanceTest, renderOneFrame)
@@ -109,39 +152,11 @@ TEST_F(NXEInstanceTest, renderOneFrame)
     EXPECT_NO_THROW(
         instance.HandleMessage(msg.data());
     );
+    std::vector<double> mes = instance.renderMeasurements();
+    double mean = std::accumulate(mes.begin(), mes.end(), 0.0)/mes.size();
+    perfLog("render") << " mean = " << mean;
+    EXPECT_LT(mean, 200.0);
     // Message cannot be properly parsed!
     EXPECT_EQ(respMsg.error, "");
     EXPECT_TRUE(receivedRender);
-}
-
-TEST_F(NXEInstanceTest, renderBenchmark)
-{
-    std::string msg{ TestUtils::renderMessage() };
-    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
-    EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
-    std::this_thread::sleep_for(dura);
-    EXPECT_NO_THROW(
-        for(int i = 0 ; i < 100 ; ++i) {
-            instance.HandleMessage(msg.data());
-        }
-    );
-    EXPECT_TRUE(respMsg.data.empty());
-}
-
-TEST_F(NXEInstanceTest, zoomedRenderBenchmarkTest)
-{
-    std::string msg{ TestUtils::renderMessage() };
-    std::string zoomMsg{ TestUtils::zoomByMessage(8) };
-    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
-    EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
-    std::this_thread::sleep_for(dura);
-    instance.HandleMessage(zoomMsg.data());
-    EXPECT_NO_THROW(
-        for(int i = 0 ; i < 20; ++i) {
-            instance.HandleMessage(msg.data());
-        }
-    );
-    EXPECT_TRUE(respMsg.data.empty());
 }
