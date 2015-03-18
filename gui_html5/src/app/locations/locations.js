@@ -58,6 +58,15 @@ angular.module( 'navitGui.locations', [
         templateUrl: 'locations/favorites.tpl.html'
       }
     }
+  })
+  .state( 'locations.results', {
+    url: '/results',
+    views: {
+      "main": {
+        controller: 'LocationsCtrl',
+        templateUrl: 'locations/results.tpl.html'
+      }
+    }
   });
 })
 

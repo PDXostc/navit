@@ -13,7 +13,8 @@ angular.module( 'navitGui.home', [
  * this way makes each module more "self-contained".
  */
 .config(function config( $stateProvider ) {
-  $stateProvider.state( 'home', {
+  $stateProvider
+  .state( 'home', {
     url: '/home',
     views: {
       "main": {
@@ -25,11 +26,46 @@ angular.module( 'navitGui.home', [
         pageTitle: 'Home',
         backgroundClass: 'backgroundMap'
     }
+  })
+  //state after clicking a location from search result
+  .state( 'home.location', {
+    url: '/location',
+    views: {
+      "main": {
+        controller: 'HomeCtrl',
+        templateUrl: 'home/home.tpl.html'
+      }
+    }
   });
 })
 
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $state ) {
+
+    // Text to speech testing
+    $scope.say = function () {
+        var text = 'After 50 meters turn left',
+            msg;
+
+        // I'm not sure if window.tizen is the proper way of checking API features
+        if (window.tizen && window.tizen.speech) {
+            msg = tizen.speech;
+            msg.vocalizeString(text);
+        } else {
+            // this is only to work with other platforms like WebKit
+            msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+        }
+    };
+
+    // hide or show location controls if in home.location state
+    if($state.is('home.location')) {
+        $scope.locationControls = {'visibility': 'visible'};
+    } else {
+        $scope.locationControls = {'visibility': 'hidden'};
+    }
+
+
 });

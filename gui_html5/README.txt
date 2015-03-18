@@ -1,32 +1,7 @@
-Faurecia HMI demostrator
-========================
+Navit GUI application
+=====================
 
-Welcome to the project. It is very early stage of this project so information
-put here will be dynamically evolving. Stay tuned.
-
-TODO:
------
-
-1. Write about how to contribute
-2. Write about build system tasks
-3. Write about common pitfalls
-
-
-Scope
------
-
-
-Testing tools
--------------
-
-So far there is no decision on how to test or to test what so ever. However if testing
-is the case, Jasmine + Karma are suggested technologies to be used.
-
-Static code analysis 
---------------------
-
-Although there is no mentioning about it, JSHint or JSLint is suggested.
-
+The project is to create GUI to be displayed above NavIT system.
 
 Installation
 ============
@@ -34,13 +9,27 @@ Installation
 Install Node.js and npm package manager for node.
 
 Next clone repository
-> git clone git@gitlab.mobica.com:navit-gui/navit-gui.git
+> git clone https://github.com/PDXostc/08-navit-port-to-agl.git
 > cd navit-gui
 
 Then install all dependencies
 > sudo npm -g install grunt-cli karma bower
 > npm install
 > bower install
+
+Deploy
+======
+
+You will need ssh key to be added without a password. Name it "deploy_tizen".
+Put your public key on target machine under /home/app/.ssh/authorized_keys.
+
+For now you will have to install application on the target manually for the first time.
+
+> pkgcmd -i -t xpk -p /home/app/package_name.xpk -q
+
+After this you can run following command to deploy application automatically:
+
+> grunt deploy
 
 
 Architecture
