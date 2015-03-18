@@ -48,7 +48,7 @@
 		<!-- The action that appears on map click is configurable with the attribute "on_map_click".
 		     To get the prvious behaviour of showing the map point menu use on_map_click='menu("#Map Point")'
 	        -->
-		<gui type="internal" font_size="450" enabled="yes" fullscreen="1"><![CDATA[
+		<gui type="internal" font_size="450" enabled="yes" fullscreen="1" keyboard="false" ><![CDATA[
 			<html>
 				<a name='Main Menu'><text>Main menu</text>
 					<a href='#Actions'><img src='gui_actions'>Actions</img></a>

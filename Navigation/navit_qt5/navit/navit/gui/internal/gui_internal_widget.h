@@ -70,6 +70,7 @@ struct widget {
 	int deflt;
 	int is_on;
 	int redraw;
+	int kbd; // when set to 1 the virtual keyboard should be visible
 	struct menu_data *menu_data;
 	struct form *form;
 	GList *children;

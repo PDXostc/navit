@@ -236,8 +236,9 @@ gui_internal_cmd2_waypoints(struct gui_priv *this, char *function, struct attr *
 static void
 gui_internal_cmd_enter_coord(struct gui_priv *this, char *function, struct attr **in, struct attr ***out, int *valid)
 {
-        struct widget *w, *wb, *wk, *wr, *we, *wnext, *row;
-        wb=gui_internal_menu(this, _("Enter Coordinates"));
+    struct widget *w, *wb, *wk, *wr, *we, *wnext, *row, *wl;
+    GList *l;
+    wb=gui_internal_menu(this, _("Enter Coordinates"));
 	w=gui_internal_box_new(this, gravity_center|orientation_vertical|flags_expand|flags_fill);
 	gui_internal_widget_append(wb, w);
 	wr=gui_internal_box_new(this, gravity_top_center|orientation_vertical|flags_expand|flags_fill);
@@ -272,8 +273,12 @@ gui_internal_cmd_enter_coord(struct gui_priv *this, char *function, struct attr 
 
 	if (this->keyboard)
         gui_internal_widget_append(w, gui_internal_keyboard(this,56));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 }
 
@@ -818,6 +823,7 @@ static void
 gui_internal_cmd_log(struct gui_priv *this)
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
+	GList *l;
 	gui_internal_enter(this, 1);
 	gui_internal_set_click_coord(this, NULL);
 	gui_internal_enter_setup(this);
@@ -840,8 +846,12 @@ gui_internal_cmd_log(struct gui_priv *this)
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 	gui_internal_leave(this);
 }

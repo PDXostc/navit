@@ -497,7 +497,8 @@ gui_internal_cmd_pois_filter_changed(struct gui_priv *this, struct widget *wm, v
 void
 gui_internal_cmd_pois_filter(struct gui_priv *this, struct widget *wm, void *data) 
 {
-	struct widget *wb, *w, *wr, *wk, *we;
+	struct widget *wb, *w, *wr, *wk, *we, *wl;
+	GList *l;
 	int keyboard_mode;
 	keyboard_mode=2+gui_internal_keyboard_init_mode(getenv("LANG"));
 	wb=gui_internal_menu(this,"Filter");
@@ -533,8 +534,12 @@ gui_internal_cmd_pois_filter(struct gui_priv *this, struct widget *wm, void *dat
 	
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,keyboard_mode));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 
 

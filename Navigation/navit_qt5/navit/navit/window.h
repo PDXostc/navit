@@ -21,5 +21,5 @@ struct window {
 	void *priv;
 	int (*fullscreen)(struct window *win, int on);
 	void (*disable_suspend)(struct window *win);
-	void (*vkeyboard_show)(struct window *win, int on);
+	void (*vkeyboard_show)(struct window *win, int on); // used for show/hide virtual keyboard
 };

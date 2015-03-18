@@ -424,7 +424,18 @@ gui_internal_say(struct gui_priv *this, struct widget *w, int questionmark)
 void
 gui_internal_back(struct gui_priv *this, struct widget *w, void *data)
 {
+	GList* l;
+	struct widget *wl;
+
 	gui_internal_prune_menu_count(this, 1, 1);
+
+	// find the current widget and show virtual keyboard if required
+	if (this->keyboard!=0 && l!=NULL && l->data!=NULL)
+	{
+		l = g_list_last(this->root.children);
+		wl = l->data;
+		this->win->vkeyboard_show(this->win, wl->kbd);
+	}
 }
 
 void
@@ -1604,8 +1615,6 @@ gui_internal_keypress_do(struct gui_priv *this, char *key)
 	int len=0;
 	char *text=NULL;
 
-	printf("\n >>>>> gui_internal_keypress_do: key = %s\n", key);
-
 	menu=g_list_last(this->root.children)->data;
 	wi=gui_internal_find_widget(menu, NULL, STATE_EDIT);
 	if (wi) {
@@ -1646,7 +1655,7 @@ gui_internal_keypress_do(struct gui_priv *this, char *key)
 		}
 		g_free(wi->text);
 		wi->text=text;
-		printf("\n >>>>> gui_internal_keypress_do: wi->text = %s\n", wi->text);
+
 		if (wi->func) {
 			wi->reason=gui_internal_reason_keypress;
 			wi->func(this, wi, wi->data);

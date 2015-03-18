@@ -692,11 +692,6 @@ gui_internal_widget_children_destroy(struct gui_priv *this, struct widget *w)
 void
 gui_internal_widget_destroy(struct gui_priv *this, struct widget *w)
 {
-	if (! this->keyboard)
-	{
-		//this->win->vkeyboard_show(this->win, 0);
-	}
-
 	gui_internal_widget_children_destroy(this, w);
 	g_free(w->command);
 	g_free(w->speech);
@@ -729,6 +724,7 @@ gui_internal_widget_render(struct gui_priv *this, struct widget *w)
 	switch (w->type) {
 	case widget_box:
 		gui_internal_box_render(this, w);
+
 		break;
 	case widget_label:
 		gui_internal_label_render(this, w);

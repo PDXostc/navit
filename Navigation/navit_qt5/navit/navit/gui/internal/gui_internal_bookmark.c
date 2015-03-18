@@ -84,6 +84,7 @@ void
 gui_internal_cmd_add_bookmark2(struct gui_priv *this, struct widget *wm, void *data)
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
+	GList *l;
 	char *name=data;
 	wb=gui_internal_menu(this,_("Add Bookmark"));
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
@@ -105,8 +106,12 @@ gui_internal_cmd_add_bookmark2(struct gui_priv *this, struct widget *wm, void *d
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else 	// find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 
 	gui_internal_menu_render(this);
 }
@@ -115,6 +120,7 @@ void
 gui_internal_cmd_add_bookmark_folder2(struct gui_priv *this, struct widget *wm, void *data)
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
+	GList *l;
 	char *name=data;
 	wb=gui_internal_menu(this,_("Add Bookmark folder"));
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
@@ -136,8 +142,12 @@ gui_internal_cmd_add_bookmark_folder2(struct gui_priv *this, struct widget *wm, 
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 }
 
@@ -145,6 +155,7 @@ void
 gui_internal_cmd_rename_bookmark(struct gui_priv *this, struct widget *wm, void *data)
 {
 	struct widget *w,*wb,*wk,*wl,*we,*wnext;
+	GList *l;
 	char *name=wm->text;
 	wb=gui_internal_menu(this,_("Rename"));
 	w=gui_internal_box_new(this, gravity_left_top|orientation_vertical|flags_expand|flags_fill);
@@ -167,8 +178,12 @@ gui_internal_cmd_rename_bookmark(struct gui_priv *this, struct widget *wm, void 
 	gui_internal_widget_append(w, wl);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,2+gui_internal_keyboard_init_mode(getenv("LANG"))));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 }
 

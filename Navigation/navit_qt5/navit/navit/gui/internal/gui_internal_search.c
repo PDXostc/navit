@@ -26,6 +26,8 @@
 static void
 gui_internal_search_country(struct gui_priv *this, struct widget *widget, void *data)
 {
+	struct widget *w = widget;
+
 	gui_internal_prune_menu_count(this, 1, 0);
 	gui_internal_search(this,_("Country"),"Country",0);
 }
@@ -43,6 +45,8 @@ gui_internal_search_town(struct gui_priv *this, struct widget *wm, void *data)
 static void
 gui_internal_search_street(struct gui_priv *this, struct widget *widget, void *data)
 {
+	struct widget *w = widget;
+
 	search_list_select(this->sl, attr_town_or_district_name, 0, 0);
 	gui_internal_search(this,_("Street"),"Street",0);
 }
@@ -50,6 +54,9 @@ gui_internal_search_street(struct gui_priv *this, struct widget *widget, void *d
 static void
 gui_internal_search_house_number(struct gui_priv *this, struct widget *widget, void *data)
 {
+	struct widget *w = widget;
+
+
 	search_list_select(this->sl, attr_street_name, 0, 0);
 	gui_internal_search(this,_("House number"),"House number",0);
 }
@@ -500,6 +507,7 @@ void
 gui_internal_search(struct gui_priv *this, const char *what, const char *type, int flags)
 {
 	struct widget *wb,*wk,*w,*wr,*we,*wl,*wnext=NULL;
+	GList *l;
 	char *country;
 	int keyboard_mode;
 	gui_internal_search_list_new(this);
@@ -561,8 +569,12 @@ gui_internal_search(struct gui_priv *this, const char *what, const char *type, i
 	wk->name=g_strdup(type);
 	if (this->keyboard)
 		gui_internal_widget_append(w, gui_internal_keyboard(this,keyboard_mode));
-	else
-		this->win->vkeyboard_show(this->win, 1);
+	else // find the current widget and set virtual keyboard required
+	{
+		l=g_list_last(this->root.children);
+		wl = l->data;
+		wl->kbd=1;
+	}
 	gui_internal_menu_render(this);
 }
 
