@@ -1,0 +1,73 @@
+
+#include "benchmark/benchmark.h"
+
+#include "nxe_instance.h"
+#include "navitprocessimpl.h"
+#include "navitcontroller.h"
+#include "navitipc.h"
+#include "navitdbus.h"
+#include "testutils.h"
+#include "settingtags.h"
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <chrono>
+#include <thread>
+
+namespace bpt = boost::property_tree;
+
+const std::string navitPath { NAVIT_PATH };
+
+struct RenderTest {
+    std::shared_ptr<NXE::NavitProcess> np{ new NXE::NavitProcessImpl };
+    std::shared_ptr<NXE::NavitIPCInterface> nc{ new NXE::NavitDBus };
+    NXE::NXEInstance instance{ np, nc };
+};
+
+void renderOneFrame(benchmark::State &state)
+{
+    const NXE::JSONMessage msg { 3, "render"};
+    const std::string sMsg {NXE::JSONUtils::serialize(msg)};
+
+    RenderTest t;
+    t.instance.Initialize();
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    while(state.KeepRunning()) {
+        t.instance.HandleMessage(sMsg.data());
+    }
+}
+
+BENCHMARK(renderOneFrame);
+
+int main(int argc, char **argv)
+{
+    bpt::ptree config;
+    config.put(SettingsTags::Navit::Path::name(), navitPath);
+    config.put(SettingsTags::Navit::AutoStart::name(), true);
+    config.put(SettingsTags::Navit::ExternalNavit::name(), false);
+    config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
+    bpt::write_json("nxe.conf", config);
+    const std::vector<std::string> arguments(argv + 1, argv + argc);
+
+    bool debug = std::find(arguments.begin(), arguments.end(), "--debug") != arguments.end();
+    bool perf = std::find(arguments.begin(), arguments.end(), "--perf") != arguments.end();
+
+    auto logger = spdlog::stdout_logger_mt("nxe");
+    auto perfLogger = spdlog::stdout_logger_mt("perf");
+    if (perf)
+        perfLogger->set_level(spdlog::level::info);
+    else
+        perfLogger->set_level(spdlog::level::off);
+    if (debug) {
+        logger->set_level(spdlog::level::trace);
+        perfLogger->set_level(spdlog::level::info);
+    }
+    else {
+        logger->set_level(spdlog::level::off);
+    }
+
+    benchmark::Initialize(&argc, const_cast<const char**>(argv));
+    benchmark::RunSpecifiedBenchmarks();
+    return 0;
+}

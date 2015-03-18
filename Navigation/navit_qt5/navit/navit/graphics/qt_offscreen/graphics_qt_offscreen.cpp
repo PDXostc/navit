@@ -127,11 +127,11 @@ void setupQtPainter(graphics_priv* ret)
     }
 
     if (ftruncate(sharedMemoryFd, defaultWidth * defaultHeight * 4) != 0) {
-        qFatal("Unable to open shm");
+        qFatal("Unable to truncate shm");
         return;
     }
 
-    qDebug() << "Finished set up graphics" << ret << ret->buffer << "shared mem=";
+    qDebug() << "Finished set up graphics" << ret << ret->buffer << "shared mem=" << sharedMemoryName.c_str();
 }
 
 void
