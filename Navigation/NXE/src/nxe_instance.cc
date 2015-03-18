@@ -37,6 +37,7 @@ struct NXEInstancePrivate {
     bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
     bipc::mapped_region region;
     std::vector<double> perfMeasurement;
+    bool initialized {false};
 
     void postMessage(const JSONMessage& message)
     {
@@ -117,6 +118,10 @@ NXEInstance::~NXEInstance()
 
 void NXEInstance::Initialize()
 {
+    if (d->initialized) {
+        nDebug() << "Already initilized";
+        return;
+    }
     using SettingsTags::Navit::AutoStart;
     using SettingsTags::Navit::ExternalNavit;
 
@@ -135,6 +140,7 @@ void NXEInstance::Initialize()
         }
         d->controller.tryStart();
     }
+    d->initialized = true;
 }
 
 void NXEInstance::HandleMessage(const char* msg)
@@ -167,8 +173,9 @@ void NXEInstance::HandleMessage(const char* msg)
         }
     }
     catch (const std::exception& ex) {
-        NXE::JSONMessage error{ 0, "", 0 };
-        nFatal() << "Unable to parse message, posting error= " << ex.what();
+        NXE::JSONMessage error{ 0, "", std::string(ex.what() )};
+        nFatal() << "Unable to deserialize message =" << msg;
+        nFatal() <<", posting error= " << ex.what();
         d->postMessage(error);
     }
 }
