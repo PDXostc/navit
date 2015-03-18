@@ -25,14 +25,17 @@ common::Extension* CreateExtension()
     Settings s;
     const std::string path = s.get<SettingsTags::FileLog>();
     const std::string level = s.get<SettingsTags::LogLevel>();
-    std::shared_ptr<spdlog::sinks::sink> rot { new spdlog::sinks::rotating_file_sink_mt ("nxe_logger", path,1048576  * 5, 3, true ) };
-    spdlog::create("nxe_logger", {rot});
+    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::rotating_file_sink_mt(path, "log",
+        1048576 * 5, 3, true) };
+    spdlog::create("nxe", { rot });
 
     if (level == "debug") {
         spdlog::set_level(spdlog::level::debug);
-    } else if (level == "warn") {
+    }
+    else if (level == "warn") {
         spdlog::set_level(spdlog::level::warn);
-    } else {
+    }
+    else {
         spdlog::set_level(spdlog::level::err);
     }
     g_extension = new NXExtension();
@@ -52,7 +55,7 @@ NXExtension::~NXExtension()
 {
 }
 
-common::Instance *NXExtension::CreateInstance()
+common::Instance* NXExtension::CreateInstance()
 {
     if (d->instance) {
         nFatal() << "This plugin does not support more than one instance yet";
@@ -69,7 +72,7 @@ common::Instance *NXExtension::CreateInstance()
         d->navitIPC.reset(new NavitDBus);
     }
 
-    d->instance =  new NXEInstance(d->navitProcess, d->navitIPC);
+    d->instance = new NXEInstance(d->navitProcess, d->navitIPC);
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;
