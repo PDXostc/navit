@@ -554,7 +554,9 @@ static char *argv[]={NULL,NULL,NULL};
 static int
 fullscreen(struct window *win, int on)
 {
-	QRectF kbdRect;
+    QDesktopWidget *scr =  QApplication::desktop();
+    QRect screenGeometry = scr->availableGeometry();
+
 #ifndef QT_QPAINTER_NO_WIDGET
 	struct graphics_priv *this_=(struct graphics_priv *)win->priv;
 	QWidget* _outerWidget;
@@ -563,10 +565,15 @@ fullscreen(struct window *win, int on)
 #else
 	_outerWidget=this_->widget;
 #endif /* QT_QPAINTER_USE_EMBEDDING */
-	if (on)
-		_outerWidget->showFullScreen();
-	else
-		_outerWidget->showMaximized();
+    if (on)
+    {
+    	_outerWidget->showFullScreen();
+        this_->w = screenGeometry.width();
+        this_->h = screenGeometry.height();
+        this_->widget->do_resize(screenGeometry.size());
+     }
+     else
+        _outerWidget->showMaximized();
 #endif
 	return 1;
 }

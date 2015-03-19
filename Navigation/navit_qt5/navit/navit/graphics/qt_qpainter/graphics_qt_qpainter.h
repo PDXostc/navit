@@ -50,6 +50,9 @@
 
 #include <QResizeEvent>
 #include <QApplication>
+#include <QSize>
+#include <QRect>
+#include <QDesktopWidget>
 #if QT_VERSION >= 0x040200
 #include <QGraphicsScene>
 #include <QGraphicsView>
