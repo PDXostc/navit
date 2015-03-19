@@ -446,7 +446,8 @@ void
 gui_internal_cmd_return(struct gui_priv *this, struct widget *wm, void *data)
 {
 	gui_internal_prune_menu(this, wm->data);
-	if (!this->keyboard)
+
+	if (this->keyboard==0 && wm->data==NULL)
 		this->win->vkeyboard_show(this->win, 0);
 }
 
