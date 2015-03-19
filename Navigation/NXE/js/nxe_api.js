@@ -3,7 +3,7 @@
  */
 
 var responseCallback = null;
-var renderCallback = null;
+var navitCanvas = null;
 
 extension.setMessageListener(function(msg) {
     if (echoListener instanceof Function) {
@@ -13,17 +13,19 @@ extension.setMessageListener(function(msg) {
             responseCallback(json)
         } else {
             // this is a RAW byte from Render call
-            renderCallback(msg);
+            var context = navitCanvas.getContext('2d');
+            var image = context.createImageData(1080, 1900);
+            image.data = msg;
+            context.putImageData(image, 0,0);
         }
     };
 });
 
-exports.setRenderCallback = function(callback) {
-    renderCallback = callback;
+exports.setRenderCanvas = function(canvas) {
+    navitCanvas = canvas;
 }
 
-exports.render = function(callback) {
-    responseCallback = callback;
+exports.render = function() {
     var message = {"call": "render", "id":0}
     return extension.postMessage(JSON.stringify(message));
 }
