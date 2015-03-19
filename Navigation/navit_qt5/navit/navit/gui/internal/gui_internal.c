@@ -424,17 +424,21 @@ gui_internal_say(struct gui_priv *this, struct widget *w, int questionmark)
 void
 gui_internal_back(struct gui_priv *this, struct widget *w, void *data)
 {
-	GList* l;
-	struct widget *wl;
+	GList* l=NULL;
+	struct widget *wl=NULL;
 
 	gui_internal_prune_menu_count(this, 1, 1);
 
 	// find the current widget and show virtual keyboard if required
-	if (this->keyboard!=0 && l!=NULL && l->data!=NULL)
+	if (!this->keyboard)
 	{
 		l = g_list_last(this->root.children);
-		wl = l->data;
-		this->win->vkeyboard_show(this->win, wl->kbd);
+
+		if (l!=NULL && l->data!=NULL)
+		{
+			wl = l->data;
+			this->win->vkeyboard_show(this->win, wl->kbd);
+		}
 	}
 }
 
@@ -442,6 +446,8 @@ void
 gui_internal_cmd_return(struct gui_priv *this, struct widget *wm, void *data)
 {
 	gui_internal_prune_menu(this, wm->data);
+	if (!this->keyboard)
+		this->win->vkeyboard_show(this->win, 0);
 }
 
 

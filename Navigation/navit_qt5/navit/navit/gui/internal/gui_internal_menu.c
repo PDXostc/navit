@@ -76,17 +76,21 @@ gui_internal_prune_menu_do(struct gui_priv *this, struct widget *w, int render)
 void
 gui_internal_prune_menu(struct gui_priv *this, struct widget *w)
 {
-	GList* l;
-	struct widget *wl;
+	GList* l=NULL;
+	struct widget *wl=NULL;
 
 	gui_internal_prune_menu_do(this, w, 1);
 
 	// find the current widget and show virtual keyboard if required
-	if (this->keyboard!=0 && l!=NULL && l->data!=NULL)
+	if (!this->keyboard)
 	{
 		l = g_list_last(this->root.children);
-		wl = l->data;
-		this->win->vkeyboard_show(this->win, wl->kbd);
+
+		if (l!=NULL && l->data!=NULL)
+		{
+			wl = l->data;
+			this->win->vkeyboard_show(this->win, wl->kbd);
+		}
 	}
 }
 
@@ -199,7 +203,7 @@ gui_internal_menu_render(struct gui_priv *this)
 	gui_internal_widget_render(this, menu);
 
 	// show virtual keyboard if required
-	if (this->keyboard)
+	if (!this->keyboard)
 		this->win->vkeyboard_show(this->win, menu->kbd);
 
 }
