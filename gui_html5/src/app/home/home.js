@@ -4,7 +4,8 @@
  * @module navitGui.home
  */
 angular.module( 'navitGui.home', [
-  'ui.router'
+  'ui.router',
+  'nxe'
 ])
 
 /**
@@ -42,7 +43,7 @@ angular.module( 'navitGui.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $state ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, nxeCall ) {
 
     // Text to speech testing
     $scope.say = function () {
@@ -50,15 +51,22 @@ angular.module( 'navitGui.home', [
             msg;
 
         // I'm not sure if window.tizen is the proper way of checking API features
-        if (window.tizen && window.tizen.speech) {
+        if ($window.tizen && $window.tizen.speech) {
             msg = tizen.speech;
             msg.vocalizeString(text);
         } else {
             // this is only to work with other platforms like WebKit
             msg = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(msg);
+            $window.speechSynthesis.speak(msg);
         }
     };
+
+    $scope.sendNXE = function () {
+        nxeCall("render", function (data) {
+            console.log(data);
+        });
+    };
+
 
     // hide or show location controls if in home.location state
     if($state.is('home.location')) {
