@@ -170,7 +170,7 @@ Waypoint</text></img>
 		<osd enabled="yes" type="button" x="36" y="-96" command="zoom_out()" src="zoom_out.svg"/> 
 
 		<!-- Vehicle with GPS enabled for gpsd on unix -->
-		<vehicle name="Local GPS" profilename="car" enabled="no" active="1" source="gpsd://localhost" gpsd_query="w+xj">
+		<vehicle name="Local GPS" profilename="car" enabled="yes" active="1" source="gpsd://localhost" gpsd_query="w+xj">
 		<!-- Vehicle with GPS enabled for direct communication on windows. Remove the line above if you use this. -->
 		<!-- <vehicle name="Local GPS" profilename="car" follow="1" enabled="yes" active="1" 
 				source="serial:COM4 baud=4800 parity=N data=8 stop=1" > -->
@@ -182,7 +182,7 @@ Waypoint</text></img>
 		<!-- For SDL, you should add follow="1" to have the view centered on your position -->
 		<!-- <vehicle name="Meins" enabled="yes" source="gpsd://localhost" color="#0000ff" follow="1"/> -->
 
-		<vehicle name="Demo" profilename="car" enabled="yes" active="yes" source="demo://"/>
+		<vehicle name="Demo" profilename="car" enabled="no" active="yes" source="demo://"/>
 
 		<!-- For the cumulative displacement filter to be enabled, set cdf_histsize="x" here, with x being an integer somewhere around 4 -->
 		<tracking cdf_histsize="0"/>
