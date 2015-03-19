@@ -32,6 +32,7 @@ set(NXE_SRCS
     navitcontroller.cc
     calls.h
     log.h
+    log.cc
     ${dbus_library}
     jsonmessage.cc
     settings.cc

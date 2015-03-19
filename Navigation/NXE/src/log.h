@@ -9,6 +9,5 @@
 #define nError() spdlog::get("nxe")->error()
 #define nFatal() spdlog::get("nxe")->critical()
 
-#define perfLog(Measurement) spdlog::get("perf")->info() << Measurement
+spdlog::details::line_logger perfLog(const std::string &name);
 #endif // LOG_H
-

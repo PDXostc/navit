@@ -11,7 +11,7 @@ Request:
 Response:
 {
     "id": 102,
-    "call" : "zoom
+    "call" : "zoom",
     "zoom" : 15
 }
 
@@ -21,6 +21,12 @@ Request:
     "call" : "render"
 }
 
+Request:
+{
+    "id" : 102,
+    "call" : "zoomBy",
+    "
+}
 
 
 

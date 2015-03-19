@@ -12,7 +12,7 @@ body {
     <body>
 
         <p>This uses the echo extension defined to
-        extend Crosswalk.</p>
+        and should render something.</p>
 
         <div id="out"></div>
 
@@ -23,13 +23,11 @@ var p1 = document.createElement('p');
 var p2 = document.createElement('p');
 
 // async call to extension
-nxe.echoAsync('hello async echo', function (result) {
-      p1.innerText = result;
-        div.appendChild(p1);
+nxe.render(function (bytes) {
+    // tutaj są bajty
 });
 
 // sync call to extension
-p2.innerText = nxe.echoSync('hello sync echo');
 div.appendChild(p2);
         </script>
     </body>
