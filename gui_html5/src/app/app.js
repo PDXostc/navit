@@ -20,6 +20,7 @@ angular.module( 'navitGui', [
 })
 
 .run( function run ($rootScope, $log) {
+    $log.log("navitGui starting...");
     
     // change background if map shouldn't be displayed
     $rootScope.$on('$stateChangeSuccess',function(event, toState){

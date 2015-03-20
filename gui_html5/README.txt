@@ -32,6 +32,44 @@ After this you can run following command to deploy application automatically:
 > grunt deploy
 
 
+Remote debugging
+================
+
+To debug Crosswalk applications on Tizen, the Crosswalk service on the target
+must be configured to provide a debugging endpoint. You can then access this
+endpoint from a Chrome browser on the host.
+
+From the host, log on to the Tizen target. For example, if the Tizen target has
+the IP address 192.168.0.19:
+
+$ ssh root@192.168.0.19
+Password:
+Welcome to Tizen
+root:~>
+(The default password is tizen.)
+
+On the target, add a --remote-debugging-port=9222 option to the ExecStart= line
+in the Crosswalk service configuration file, /usr/lib/systemd/user/xwalk.service.
+For example, open the file for editing:
+
+root:~> vim /usr/lib/systemd/user/xwalk.service
+Then edit the ExecStart= line so it looks like this:
+
+ExecStart=/usr/lib/xwalk/xwalk --remote-debugging-port=9222 \
+  --external-extensions-path=/usr/lib/tizen-extensions-crosswalk
+
+Reboot the Tizen target device.
+Once the Crosswalk service is enabled for debugging, debug your applications as follows:
+
+Launch a Crosswalk application on the Tizen target using a console.
+xwalk-launcher -d <appid>
+
+Back on the host, open a Chrome browser and open the address http://192.168.0.19:9222
+
+A list of all the pages available for debugging should now be displayed in the
+Chrome browser window. Click on the link for the application you want to debug.
+
+
 Architecture
 ============
 

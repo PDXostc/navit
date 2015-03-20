@@ -43,7 +43,7 @@ angular.module( 'navitGui.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, nxeCall ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, $log, nxeCall ) {
 
     // Text to speech testing
     $scope.say = function () {
@@ -63,7 +63,8 @@ angular.module( 'navitGui.home', [
 
     $scope.sendNXE = function () {
         nxeCall("render", function (data) {
-            console.log(data);
+            $log.log("Inside a callback");
+            $log.log(data);
         });
     };
 
