@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VERBOSE=false
-NO_HTML=false
+VERBOSE=true
+NO_HTML=true
 TIZEN_IP="192.168.41.64"
 GBS_ROOT="$HOME/GBS-ROOT"
 BUILD_NAVIT=true
@@ -67,10 +67,9 @@ if [ "$BUILD_NXE" = true ]; then
 fi
 
 if [ "$BUILD_NAVIT" = true ]; then
-    # remove Navit
     ssh root@$TIZEN_IP zypper -n -q rm navit > /dev/null 2>&1
     ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
+    # ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
 fi
 
 if [ "$BUILD_NAVIT" = true ]; then
@@ -85,7 +84,7 @@ if [ "$BUILD_NAVIT" = true ]; then
     fi
 
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    #try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
 fi
 
