@@ -56,10 +56,11 @@ struct NXEInstancePrivate {
         if (response.call == "render") {
             nInfo() << "Rendering finished!";
             // read shared memory
-            char* mem = static_cast<char*>(region.get_address());
+            const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
             nInfo() << (int)mem[0] << (int)mem[1] << (int)mem[2] << (int)mem[3];
             q->PostMessage(mem);
+
             // This is our internal post message
             std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
                 callback(std::string(mem));
