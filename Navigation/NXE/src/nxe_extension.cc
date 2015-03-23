@@ -25,8 +25,8 @@ common::Extension* CreateExtension()
     Settings s;
     const std::string path = s.get<SettingsTags::FileLog>();
     const std::string level = s.get<SettingsTags::LogLevel>();
-    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::rotating_file_sink_mt(path, "log",
-        1048576 * 5, 3, true) };
+    std::cout << "logger path= " << path << " level = " << level;
+    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path, true)};
     spdlog::create("nxe", { rot });
 
     if (level == "debug") {

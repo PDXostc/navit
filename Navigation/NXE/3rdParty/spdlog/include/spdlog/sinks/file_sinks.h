@@ -100,10 +100,20 @@ private:
     static std::string calc_filename(const std::string& filename, std::size_t index, const std::string& extension)
     {
         details::fmt::MemoryWriter w;
-        if (index)
-            w.write("{}.{}.{}", filename, index, extension);
-        else
-            w.write("{}.{}", filename, extension);
+        if (index) {
+            if (extension.empty()) {
+                w.write("{}.{}", filename, index);
+            } else {
+                w.write("{}.{}.{}", filename, index, extension);
+            }
+        }
+        else {
+            if (extension.empty()) {
+                w.write("{}", filename);
+            } else {
+                w.write("{}.{}", filename, extension);
+            }
+        }
         return w.str();
     }
 

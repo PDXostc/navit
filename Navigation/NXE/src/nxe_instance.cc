@@ -11,11 +11,24 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
+#include <boost/archive/iterators/binary_from_base64.hpp>
+#include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
+#include <boost/algorithm/string.hpp>
+
 namespace bipc = boost::interprocess;
 
 namespace {
 const std::string sharedMemoryName{ "Navit_shm" };
 const std::uint32_t sharedMemorySize = 8208000;
+
+std::string encodeBase64(const std::string &bytes)
+{
+    using namespace boost::archive::iterators;
+    using It = base64_from_binary<transform_width<std::string::const_iterator, 6, 8>>;
+    auto tmp = std::string(It(std::begin(bytes)), It(std::end(bytes)));
+    return tmp.append((3 - bytes.size() % 3) % 3, '=');
+}
 }
 
 namespace NXE {
@@ -57,9 +70,17 @@ struct NXEInstancePrivate {
             nInfo() << "Rendering finished!";
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
+
             assert(mem);
             nInfo() << (int)mem[0] << (int)mem[1] << (int)mem[2] << (int)mem[3];
-            q->PostMessage(mem);
+            std::string prep = std::string(mem, sharedMemorySize);
+            nInfo() << "before encoding size =" << prep.size()
+                    << " bytes= " << prep[0] << " " << prep[1000];
+            std::string encoded = encodeBase64(prep);
+            nInfo() << "After encoding size =" << encoded.size()
+                    << " bytes= " << encoded[0] << " " << encoded[1000];
+            const char *data = encoded.data();
+            q->PostMessage(data);
 
             // This is our internal post message
             std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {

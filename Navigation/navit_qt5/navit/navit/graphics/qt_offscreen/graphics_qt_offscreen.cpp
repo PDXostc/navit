@@ -36,8 +36,8 @@ void qt_offscreen_draw(graphics_priv* gr);
 void event_qt_remove_timeout(event_timeout*);
 
 namespace {
-const std::uint16_t defaultWidth = 1900;
-const std::uint16_t defaultHeight = 1080;
+const std::uint16_t defaultWidth = 1080;
+const std::uint16_t defaultHeight = 1900;
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 
