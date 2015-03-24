@@ -62,14 +62,16 @@ struct NXEInstancePrivate {
             nInfo() << "Rendering finished!";
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
-
             assert(mem);
-            nInfo() << (int)mem[0] << " " <<  (int)mem[1] << " " << (int)mem[2] << " "<< (int)mem[3];
-            q->PostMessage(mem);
+            const std::string buff (mem, sharedMemorySize);
+
+            nInfo() << "Size is " << buff.size();
+            nInfo() << buff[0] << buff[1] << buff[2] << buff[3];
+            q->PostMessage(buff.c_str());
 
             // This is our internal post message
-            std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
-                callback(std::string(mem));
+            std::for_each(callbacks.begin(), callbacks.end(), [&buff](const NXEInstance::MessageCb_type& callback) {
+                callback(buff);
             });
         }
         else {
