@@ -42,16 +42,15 @@ BENCHMARK(renderOneFrame);
 
 int main(int argc, char **argv)
 {
+    const std::vector<std::string> arguments(argv + 1, argv + argc);
+
     bpt::ptree config;
     config.put(SettingsTags::Navit::Path::name(), navitPath);
     config.put(SettingsTags::Navit::AutoStart::name(), true);
-    config.put(SettingsTags::Navit::ExternalNavit::name(), false);
-    config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
-    bpt::write_json("nxe.conf", config);
-    const std::vector<std::string> arguments(argv + 1, argv + argc);
 
     bool debug = std::find(arguments.begin(), arguments.end(), "--debug") != arguments.end();
     bool perf = std::find(arguments.begin(), arguments.end(), "--perf") != arguments.end();
+    bool externalServer = std::find(arguments.begin(), arguments.end(), "--no-navit") != arguments.end();
 
     auto logger = spdlog::stdout_logger_mt("nxe");
     auto perfLogger = spdlog::stdout_logger_mt("perf");
@@ -66,6 +65,15 @@ int main(int argc, char **argv)
     else {
         logger->set_level(spdlog::level::off);
     }
+
+    if (externalServer) {
+        config.put(SettingsTags::Navit::ExternalNavit::name(), true);
+    } else {
+        config.put(SettingsTags::Navit::ExternalNavit::name(), false);
+    }
+
+    config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
+    bpt::write_json("nxe.conf", config);
 
     benchmark::Initialize(&argc, const_cast<const char**>(argv));
     benchmark::RunSpecifiedBenchmarks();
