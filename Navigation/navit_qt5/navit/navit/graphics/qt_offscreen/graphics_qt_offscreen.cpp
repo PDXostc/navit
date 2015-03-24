@@ -39,7 +39,7 @@ void event_qt_remove_timeout(event_timeout*);
 namespace {
 const std::uint16_t defaultWidth = 1080;
 const std::uint16_t defaultHeight = 1900;
-const std::uint32_t sharedMemorySize = 862592;
+const std::uint32_t sharedMemorySize = defaultHeight * defaultWidth*4;
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 
@@ -140,6 +140,7 @@ void
 qt_offscreen_draw(graphics_priv* gr)
 {
     static int count = 0;
+
     QImage img;
     if (gr->opengl) {
         img = gr->fbo->toImage();
@@ -148,19 +149,11 @@ qt_offscreen_draw(graphics_priv* gr)
         img = gr->pixmapBuffer->toImage();
     }
 
-    QByteArray ba;
-    QBuffer b(&ba);
-    b.open(QIODevice::WriteOnly);
-    img.save(&b, "png");
-    QByteArray dd = ba.toBase64();
-    qDebug() << dd.size() << dd[0] << dd[1] << dd[2];
+    qDebug() << "Image size=" << img.byteCount();
 
-    qDebug() << "Copying to buffer. Buff size="
-             << "image size" << img.byteCount();
-
-    void *to = mmap(0, dd.size(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
-    const char *from = reinterpret_cast<char*>(dd.data());
-    std::memcpy(to, from, dd.size());
+    void *to = mmap(0, img.byteCount(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
+    const char *from = reinterpret_cast<char*>(img.bits());
+    std::memcpy(to, from, img.byteCount());
     char *cc = reinterpret_cast<char*>(to);
 
     qDebug() << "First 4 bytes"
