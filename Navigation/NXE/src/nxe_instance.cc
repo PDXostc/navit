@@ -20,7 +20,7 @@ namespace bipc = boost::interprocess;
 
 namespace {
 const std::string sharedMemoryName{ "Navit_shm" };
-const std::uint32_t sharedMemorySize = 8208000;
+const std::uint32_t sharedMemorySize = 862592;
 
 std::string encodeBase64(const std::string &bytes)
 {
@@ -72,15 +72,15 @@ struct NXEInstancePrivate {
             const char* mem = static_cast<const char*>(region.get_address());
 
             assert(mem);
-            nInfo() << (int)mem[0] << (int)mem[1] << (int)mem[2] << (int)mem[3];
-            std::string prep = std::string(mem, sharedMemorySize);
-            nInfo() << "before encoding size =" << prep.size()
-                    << " bytes= " << prep[0] << " " << prep[1000];
-            std::string encoded = encodeBase64(prep);
-            nInfo() << "After encoding size =" << encoded.size()
-                    << " bytes= " << encoded[0] << " " << encoded[1000];
-            const char *data = encoded.data();
-            q->PostMessage(data);
+            nInfo() << (int)mem[0] << " " <<  (int)mem[1] << " " << (int)mem[2] << " "<< (int)mem[3];
+//            std::string prep = std::string(mem, sharedMemorySize);
+//            nInfo() << "before encoding size =" << prep.size()
+//                    << " bytes= " << prep[0] << " " << prep[1000];
+//            std::string encoded = encodeBase64(prep);
+//            nInfo() << "After encoding size =" << encoded.size()
+//                    << " bytes= " << encoded[0] << " " << encoded[1000];
+//            const char *data = encoded.data();
+            q->PostMessage(mem);
 
             // This is our internal post message
             std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {

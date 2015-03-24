@@ -17,6 +17,7 @@
 #include <QtCore/QtDebug>
 #include <QtCore/QEventLoop>
 #include <QtCore/QElapsedTimer>
+#include <QtCore/QBuffer>
 
 #include <QtGui/QPen>
 #include <QtGui/QBrush>
@@ -38,6 +39,7 @@ void event_qt_remove_timeout(event_timeout*);
 namespace {
 const std::uint16_t defaultWidth = 1080;
 const std::uint16_t defaultHeight = 1900;
+const std::uint32_t sharedMemorySize = 862592;
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 
@@ -126,7 +128,7 @@ void setupQtPainter(graphics_priv* ret)
         return;
     }
 
-    if (ftruncate(sharedMemoryFd, defaultWidth * defaultHeight * 4) != 0) {
+    if (ftruncate(sharedMemoryFd, sharedMemorySize) != 0) {
         qFatal("Unable to truncate shm");
         return;
     }
@@ -146,12 +148,19 @@ qt_offscreen_draw(graphics_priv* gr)
         img = gr->pixmapBuffer->toImage();
     }
 
+    QByteArray ba;
+    QBuffer b(&ba);
+    b.open(QIODevice::WriteOnly);
+    img.save(&b, "png");
+    QByteArray dd = ba.toBase64();
+    qDebug() << dd.size() << dd[0] << dd[1] << dd[2];
+
     qDebug() << "Copying to buffer. Buff size="
              << "image size" << img.byteCount();
 
-    void *to = mmap(0, img.byteCount(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
-    const char *from = reinterpret_cast<char*>(img.bits());
-    std::memcpy(to, from, img.byteCount());
+    void *to = mmap(0, dd.size(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
+    const char *from = reinterpret_cast<char*>(dd.data());
+    std::memcpy(to, from, dd.size());
     char *cc = reinterpret_cast<char*>(to);
 
     qDebug() << "First 4 bytes"
