@@ -1,21 +1,17 @@
 #!/bin/bash
 
-BUILD_ONLY=false
 VERBOSE=false
 NO_HTML=false
 TIZEN_IP="192.168.41.64"
 GBS_ROOT="$HOME/GBS-ROOT"
 BUILD_NAVIT=true
+BUILD_NXE=true
 
 # getopt section
-TEMP=`getopt -o b,v,h,i:,g:,n --long build-only,verbose,help,tizen-ip:,gbs-root:,no-navit -n 'flash.sh' -- "$@"`
+TEMP=`getopt -o v,h,i:,g:,n,x --long verbose,help,tizen-ip:,gbs-root:,no-navit,no-nxe -n 'flash.sh' -- "$@"`
 eval set -- "$TEMP"
 while true; do
     case "$1" in 
-    --build-only)
-        shift;
-        BUILD_ONLY=true;
-        ;;
     -v|--verbose)
         shift;
         VERBOSE=true
@@ -35,6 +31,10 @@ while true; do
         ;;
     -n|--no-navit)
         BUILD_NAVIT=false;
+        shift ;
+        ;;
+    -x|--no-nxe)
+        BUILD_NXE=false;
         shift ;
         ;;
     --)
@@ -57,20 +57,21 @@ try() { "$@" || die "cannot $*"; }
 unalias gbs > /dev/null 2>&1
 
 # remove all rpms from target
-if [ "$BUILD_ONLY" = false ]; then
-    echo "${red}Cleaning previous installation${reset}"
-    ssh root@$TIZEN_IP rm /root/navit* -rf
-    ssh root@$TIZEN_IP rm /root/nxe* -rf
+echo "${red}Cleaning previous installation${reset}"
+ssh root@$TIZEN_IP rm /root/navit* -rf
+ssh root@$TIZEN_IP rm /root/nxe* -rf
 
-    # remove nxe and navit
+if [ "$BUILD_NXE" = true ]; then
+    # remove nxe 
     ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
     ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
+fi
 
-    if [ "$BUILD_NAVIT" = true ]; then
-        ssh root@$TIZEN_IP zypper -n -q rm navit > /dev/null 2>&1
-        ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource > /dev/null 2>&1
-        ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
-    fi
+if [ "$BUILD_NAVIT" = true ]; then
+    # remove Navit
+    ssh root@$TIZEN_IP zypper -n -q rm navit > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
 fi
 
 if [ "$BUILD_NAVIT" = true ]; then
@@ -82,33 +83,30 @@ if [ "$BUILD_NAVIT" = true ]; then
     else
         try gbs build -A i586 --spec navit_qt5.spec --include-all > /dev/null 2>&1
     fi
-    if [ "$BUILD_ONLY" = false ]; then
-        try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-        try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-        try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+
+    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+fi
+
+if [ "$BUILD_NXE" = true ]; then
+    # build nxe
+    echo "${red}Building nxe${reset}"
+    if [ "$VERBOSE" = true ]; then
+        try gbs build -A i586 --spec nxe.spec --include-all 
+    else
+        try gbs build -A i586 --spec nxe.spec --include-all > /dev/null 2>&1
     fi
-fi
 
-# build nxe
-echo "${red}Building nxe${reset}"
-if [ "$VERBOSE" = true ]; then
-    try gbs build -A i586 --spec nxe.spec --include-all 
-else
-    try gbs build -A i586 --spec nxe.spec --include-all > /dev/null 2>&1
-fi
-
-if [ "$BUILD_ONLY" = false ]; then
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-0.1-1.i686.rpm root@$TIZEN_IP:/root
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-debugsource-0.1-1.i686.rpm root@$TIZEN_IP:/root
 fi
 
-if [ "$BUILD_ONLY" = false ]; then
-    # install both
-    if [ "$BUILD_NAVIT" = true ]; then
-        try ssh root@$TIZEN_IP rpm -ivh /root/navit*
-    fi
-    try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
+# install both
+if [ "$BUILD_NAVIT" = true ]; then
+    try ssh root@$TIZEN_IP rpm -ivh /root/navit*
 fi
+try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
 
 if [ "$NO_HTML" = false ]; then
     # example
