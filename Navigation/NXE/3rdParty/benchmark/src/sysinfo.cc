@@ -344,12 +344,12 @@ double ChildrenCPUUsage() {
 #endif  // OS_WINDOWS
 
 double CyclesPerSecond(void) {
-  std::call_once(cpuinfo_init, InitializeSystemInfo);
+  InitializeSystemInfo();
   return cpuinfo_cycles_per_second;
 }
 
 int NumCPUs(void) {
-  std::call_once(cpuinfo_init, InitializeSystemInfo);
+  InitializeSystemInfo();
   return cpuinfo_num_cpus;
 }
 }  // end namespace benchmark
