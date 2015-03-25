@@ -25,7 +25,9 @@ Request:
 {
     "id" : 102,
     "call" : "zoomBy",
-    "
+    {
+        "factor":2
+    }
 }
 
 

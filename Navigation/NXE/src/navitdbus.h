@@ -14,7 +14,7 @@ public:
 
     virtual void start() override;
     virtual void stop() override;
-    virtual void moveBy(double x, double y) override;
+    virtual void moveBy(int x, int y) override;
     virtual void zoomBy(int y) override;
     virtual int zoom() override;
     virtual void render() override;

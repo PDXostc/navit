@@ -166,6 +166,7 @@ void NXEInstance::HandleMessage(const char* msg)
     // lock shared ptr
     std::string message{ msg };
 
+    nTrace() << "Message = " << msg;
     boost::algorithm::erase_all(message, " ");
     boost::algorithm::erase_all(message, "\n");
     boost::algorithm::erase_all(message, "\t");

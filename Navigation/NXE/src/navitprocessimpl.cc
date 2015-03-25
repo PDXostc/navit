@@ -48,7 +48,7 @@ bool NavitProcessImpl::start()
     nDebug() << "Starting navit process from " << command << " in dir " << d->m_programPath << " with args ";
     bf::path exe = command;
 
-    boost::iostreams::file_descriptor_sink sink("/tmp/what.out");
+    boost::iostreams::file_descriptor_sink sink("/tmp/navit.out");
     d->m_child = bp::execute(bp::initializers::run_exe(exe),
                              bp::initializers::start_in_dir(d->m_programPath),
                              bp::initializers::inherit_env(),

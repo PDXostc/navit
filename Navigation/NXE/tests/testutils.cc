@@ -12,10 +12,12 @@ extern bool runNavit;
 
 std::string TestUtils::moveByMessage(int x, int y)
 {
-    NXE::JSONMessage msg {1, "moveBy" };
+    bpt::ptree data;
+    data.put("x", x);
+    data.put("y", y);
+    NXE::JSONMessage msg {1, "moveBy","",data };
     return NXE::JSONUtils::serialize(msg);
 }
-
 
 void TestUtils::createNXEConfFile()
 {
@@ -36,7 +38,6 @@ std::string TestUtils::zoomByMessage(int factor)
     NXE::JSONMessage msg {1, "zoomBy", "", p};
     return NXE::JSONUtils::serialize(msg);
 }
-
 
 std::string TestUtils::zoomMessage()
 {

@@ -31,18 +31,23 @@ struct NXEInstanceTest : public ::testing::Test {
             respMsg = NXE::JSONUtils::deserialize(response);
         }
     }
+
+    void zoom(int factor) {
+        const std::string msg{ TestUtils::zoomByMessage(factor) };
+        instance.HandleMessage(msg.data());
+    }
 };
 
 TEST_F(NXEInstanceTest, zoomBy)
 {
-    std::string msg{ TestUtils::zoomByMessage(2) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     instance.Initialize();
     std::chrono::milliseconds dura( 1000 );
     std::this_thread::sleep_for(dura);
     EXPECT_NO_THROW(
-        for(int i = 0 ; i < 10 ; ++i)
-            instance.HandleMessage(msg.data());
+        for(int i = 0 ; i < 10 ; ++i) {
+            zoom(2);
+        }
     );
     ASSERT_EQ(respMsg.call, "zoomBy");
     EXPECT_TRUE(respMsg.data.empty());
@@ -51,14 +56,13 @@ TEST_F(NXEInstanceTest, zoomBy)
 
 TEST_F(NXEInstanceTest, zoomOut)
 {
-    std::string msg{ TestUtils::zoomByMessage(-2) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura( 1000 );
     std::this_thread::sleep_for(dura);
     EXPECT_NO_THROW(
         for(int i = 0 ; i < 10 ; ++i)
-            instance.HandleMessage(msg.data());
+            zoom(-2);
     );
     ASSERT_EQ(respMsg.call, "zoomBy");
     EXPECT_TRUE(respMsg.data.empty());
@@ -104,12 +108,11 @@ TEST_F(NXEInstanceTest, renderBenchmarkTest)
 TEST_F(NXEInstanceTest, zoomedRenderBenchmarkTest)
 {
     std::string msg{ TestUtils::renderMessage() };
-    std::string zoomMsg{ TestUtils::zoomByMessage(8) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura( 100 );
     std::this_thread::sleep_for(dura);
-    instance.HandleMessage(zoomMsg.data());
+    zoom(8);
     render = true;
     EXPECT_NO_THROW(
         for(int i = 0 ; i < 20; ++i) {
@@ -155,8 +158,20 @@ TEST_F(NXEInstanceTest, renderOneFrame)
     std::vector<double> mes = instance.renderMeasurements();
     double mean = std::accumulate(mes.begin(), mes.end(), 0.0)/mes.size();
     perfLog("render") << " mean = " << mean;
-    EXPECT_LT(mean, 200.0);
+    EXPECT_LT(mean, 100.0);
     // Message cannot be properly parsed!
     EXPECT_EQ(respMsg.error, "");
     EXPECT_TRUE(receivedRender);
+}
+
+TEST_F(NXEInstanceTest, moveByMessage)
+{
+    const std::string msg{ TestUtils::moveByMessage(10,10) };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    EXPECT_NO_THROW(
+        instance.HandleMessage(msg.data());
+    );
 }

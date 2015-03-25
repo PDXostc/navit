@@ -34,3 +34,7 @@ exports.render = function() {
     var message = {"call": "render", "id":0}
     return extension.postMessage(JSON.stringify(message));
 }
+
+exports.zoomBy = function( factor) {
+    var zoomMessage = {"call":"zoomBy", "id":1, "data":{"factor":2}}
+}

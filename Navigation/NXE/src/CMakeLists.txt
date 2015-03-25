@@ -33,6 +33,7 @@ set(NXE_SRCS
     calls.h
     log.h
     log.cc
+    dbus_helpers.hpp
     ${dbus_library}
     jsonmessage.cc
     settings.cc

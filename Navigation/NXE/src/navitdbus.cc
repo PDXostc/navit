@@ -28,8 +28,20 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         DBus::call("zoom", *this, factor);
     }
 
-    void moveBy(double x, double y) {
-        DBus::call("move",*this, x, y);
+    // Implement a generic DBus method
+    void moveBy(int x, int y) {
+        ::DBus::CallMessage call;
+        ::DBus::MessageIter it = call.writer();
+        call.member("set_center_screen");
+        ::DBus::Struct<int, int> val;
+        val._1 = x;
+        val._2 = y;
+        it << val;
+        ::DBus::Message ret = invoke_method(call);
+        if (ret.is_error()) {
+            nFatal() << "Unable to call " << "set_center_screen";
+            throw std::runtime_error("Unable to call moveBy");
+        }
     }
 
     void render() {
@@ -88,8 +100,9 @@ void NavitDBus::stop()
     d->m_threadRunning = false;
 }
 
-void NavitDBus::moveBy(double x, double y)
+void NavitDBus::moveBy(int x, int y)
 {
+    d->object->moveBy(x,y);
 }
 
 void NavitDBus::zoomBy(int y)
