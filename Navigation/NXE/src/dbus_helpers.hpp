@@ -35,7 +35,7 @@ void unpack(::DBus::MessageIter &)
 {}
 
 template<typename T>
-void unpack(::DBus::MessageIter &it, T t)
+void processOne(::DBus::MessageIter &it, T t)
 {
     it << t;
 }
@@ -43,7 +43,8 @@ void unpack(::DBus::MessageIter &it, T t)
 template<typename T, typename ...Args>
 void unpack(::DBus::MessageIter &it, T t, Args... args)
 {
-    unpack(it, t, args...);
+    processOne(it,t);
+    unpack(it,args...);
 }
 
 template<typename ...Args>
@@ -53,8 +54,10 @@ void call(const std::string &methodName, ::DBus::InterfaceProxy &proxy, Args... 
     ::DBus::CallMessage call;
     ::DBus::MessageIter it = call.writer();
     call.member(methodName.c_str());
+    nDebug() << "Signature " << call.signature();
     unpack(it, attr...);
     ::DBus::Message ret = proxy.invoke_method(call);
+    nDebug() << "After " << methodName << " call";
     if (ret.is_error()) {
         nFatal() << "Unable to call " << methodName;
         throw std::runtime_error("Unable to call" + methodName);
