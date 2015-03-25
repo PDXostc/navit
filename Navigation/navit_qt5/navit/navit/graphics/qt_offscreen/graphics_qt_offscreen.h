@@ -44,7 +44,7 @@ struct graphics_priv {
     std::unique_ptr<QWindow> window = nullptr;
     std::unique_ptr<QOpenGLContext> context = nullptr;
     std::unique_ptr<QGLFramebufferObject> fbo = nullptr;
-    std::unique_ptr<QPixmap> pixmapBuffer = nullptr;
+    std::unique_ptr<QImage> pixmapBuffer = nullptr;
     QPaintDevice *buffer = nullptr;
 
     callback_list* cbl;

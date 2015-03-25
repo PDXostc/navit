@@ -6,6 +6,7 @@ var responseCallback = null;
 var navitCanvas = null;
 
 extension.setMessageListener(function(msg) {
+    console.debug(msg.length);
     if (msg[0] === '{') {
         if (responseCallback instanceof Function) {
             console.debug('This is a normal callback');
@@ -17,7 +18,8 @@ extension.setMessageListener(function(msg) {
         // this is a RAW byte from Render call
         var context = navitCanvas.getContext('2d');
         var img = new Image(1080,1900);
-        img.src="data:image/png;base64," + msg;
+        console.debug('Try to display bmp');
+        img.src="data:image/bmp;base64," + msg;
         img.onload = function() {
             context.drawImage(img,0,0);
         }

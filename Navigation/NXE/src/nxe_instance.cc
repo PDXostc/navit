@@ -16,11 +16,16 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/algorithm/string.hpp>
 
+#include <sstream>
+#include <string>
+#include <iostream>
+#include <iomanip>
+
 namespace bipc = boost::interprocess;
 
 namespace {
 const std::string sharedMemoryName{ "Navit_shm" };
-const std::uint32_t sharedMemorySize = 8208000;
+const std::uint32_t sharedMemorySize = 8208072;
 }
 
 namespace NXE {
@@ -63,10 +68,14 @@ struct NXEInstancePrivate {
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
-            const std::string buff (mem, sharedMemorySize);
+            const std::string buff = std::string(mem, sharedMemorySize);
+            std::ostringstream ss;
+
+            ss <<  std::hex << std::uppercase << std::setfill('0');
 
             nInfo() << "Size is " << buff.size();
-            nInfo() << buff[0] << buff[1] << buff[2] << buff[3];
+            ss << buff[0] << buff[1] << buff[2] << buff[3] << buff[10000];
+            nInfo() << "Sample buff" << ss.str();
             q->PostMessage(buff.c_str());
 
             // This is our internal post message

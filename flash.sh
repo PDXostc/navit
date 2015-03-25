@@ -58,10 +58,9 @@ unalias gbs > /dev/null 2>&1
 
 # remove all rpms from target
 echo "${red}Cleaning previous installation${reset}"
-ssh root@$TIZEN_IP rm /root/navit* -rf
-ssh root@$TIZEN_IP rm /root/nxe* -rf
 
 if [ "$BUILD_NXE" = true ]; then
+    ssh root@$TIZEN_IP rm /root/nxe* -rf
     # remove nxe 
     ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
     ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
@@ -75,6 +74,7 @@ if [ "$BUILD_NAVIT" = true ]; then
 fi
 
 if [ "$BUILD_NAVIT" = true ]; then
+    ssh root@$TIZEN_IP rm /root/navit* -rf
     # build navit
 
     echo "${red}Building navit${reset}"
@@ -106,7 +106,10 @@ fi
 if [ "$BUILD_NAVIT" = true ]; then
     try ssh root@$TIZEN_IP rpm -ivh /root/navit*
 fi
-try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
+
+if [ "$BUILD_NXE" = true ]; then
+    try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
+fi
 
 if [ "$NO_HTML" = false ]; then
     # example
@@ -117,4 +120,5 @@ if [ "$NO_HTML" = false ]; then
     # stop xwalk
     try ssh app@$TIZEN_IP pkgcmd -u -n cjhbbeknomcehebnhobpolialjjnalad -q
     try ssh app@$TIZEN_IP pkgcmd -i -t xpk -p /home/app/app.xpk -q
+    rm app.xpk
 fi

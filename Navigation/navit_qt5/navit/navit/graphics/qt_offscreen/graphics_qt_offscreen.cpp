@@ -39,7 +39,7 @@ void event_qt_remove_timeout(event_timeout*);
 namespace {
 const std::uint16_t defaultWidth = 1080;
 const std::uint16_t defaultHeight = 1900;
-const std::uint32_t sharedMemorySize = defaultHeight * defaultWidth*4;
+const std::uint32_t sharedMemorySize = 8208072;
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 
@@ -115,8 +115,8 @@ void setupQtPainter(graphics_priv* ret)
         ret->painter.reset(new QPainter(ret->glBuffer.get()));
         ret->buffer = ret->glBuffer.get();
     } else {
-        ret->pixmapBuffer.reset(new QPixmap(defaultWidth, defaultHeight));
-        ret->pixmapBuffer->fill();
+        ret->pixmapBuffer.reset(new QImage(QSize(defaultWidth, defaultHeight), QImage::Format_RGB32));
+//        ret->pixmapBuffer->fill();
         ret->painter.reset(new QPainter(ret->pixmapBuffer.get()));
         ret->buffer = ret->pixmapBuffer.get();
     }
@@ -146,13 +146,19 @@ qt_offscreen_draw(graphics_priv* gr)
         img = gr->fbo->toImage();
     }
     else {
-        img = gr->pixmapBuffer->toImage();
+        img = *(gr->pixmapBuffer.get());
     }
 
-    qDebug() << "Image size=" << img.byteCount();
+    qDebug() << "QImage size=" << img.byteCount();
 
-    void *to = mmap(0, img.byteCount(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
-    const char *from = reinterpret_cast<char*>(img.bits());
+    QByteArray ba;
+    QBuffer b { &ba };
+    img.save(&b, "bmp");
+    QByteArray newBa = ba.toBase64();
+    qDebug() << "BMP size=" << newBa.size();
+
+    void *to = mmap(0, newBa.size(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
+    const char *from = reinterpret_cast<char*>(newBa.data());
     std::memcpy(to, from, img.byteCount());
     char *cc = reinterpret_cast<char*>(to);
 
