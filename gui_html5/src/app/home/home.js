@@ -1,6 +1,6 @@
 /**
- * Module responsible for handling map display. 
- * 
+ * Module responsible for handling map display.
+ *
  * @module navitGui.home
  */
 angular.module( 'navitGui.home', [
@@ -62,10 +62,33 @@ angular.module( 'navitGui.home', [
     };
 
     $scope.sendNXE = function () {
-        nxeCall("render", function (data) {
-            $log.log("Inside a callback");
-            $log.log(data);
-        });
+
+        var canvas = document.getElementById('mapCanvas'),
+            ctx;
+
+        if (canvas && canvas.getContext){
+            ctx = canvas.getContext('2d');
+
+            nxeCall("render", function (data) {
+                $log.log("Inside a callback... processing response");
+                $log.log("Type of data", typeof data, "(length="+data.length+")");
+
+                $log.log('Creating image data');
+                var img = new Image(1080,1900);
+                var dataUrl = "data:image/bmp;base64," + data;
+                img.src = dataUrl;
+
+                $log.log("Draw image in canvas");
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0);
+                    $log.log('DONE');
+                };
+            });
+
+        } else {
+            $log.log("Canvas not created or not supported");
+        }
+
     };
 
 

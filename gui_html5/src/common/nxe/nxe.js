@@ -1,7 +1,7 @@
 /**
  * Module responsible for handling communication with NXE.
  * Supported only on Tizen platform with special Crosswalk extension enabled.
- * 
+ *
  * @module nxe
  */
 angular.module( 'nxe', [])
@@ -10,7 +10,7 @@ angular.module( 'nxe', [])
 
     /**
      * Low level nxe call
-     * 
+     *
      * @param {JSON} data json string
      * @param {function} callback
      * @returns {undefined}
@@ -23,7 +23,7 @@ angular.module( 'nxe', [])
                 $log.log(err);
                 $log.error('NXE is not supported');
             }
-        },    
+        },
         // template data to be send using nxe call
         jsonData = {
             id: null,
@@ -31,8 +31,8 @@ angular.module( 'nxe', [])
         },
         /**
          * list of nxe handlers
-         * render, zoomBy,... 
-         * 
+         * render, zoomBy,...
+         *
          */
         handlers = {
             render: function (callback) {
@@ -44,16 +44,30 @@ angular.module( 'nxe', [])
         },
         createCanvas = function () {
             var canvas = document.getElementById("mapCanvas"),
-                idAttr = null;
+                width = 1080,
+                height = 1900,
+                idAttr, widthAttr, heightAttr;
 
             if (!canvas) {
                 $log.log('Canvas is not created... creating.');
                 canvas = document.createElement('canvas');
+
+                // create all canvas attributes
                 idAttr = document.createAttribute('id');
                 idAttr.value = 'mapCanvas';
+                widthAttr = document.createAttribute('width');
+                widthAttr.value = width;
+                heightAttr = document.createAttribute('height');
+                heightAttr.value = height;
+
+                // add attributes to canvas node
                 canvas.setAttributeNode(idAttr);
+                canvas.setAttributeNode(widthAttr);
+                canvas.setAttributeNode(heightAttr);
+
                 // insert canvas as a first child of body element
                 document.body.insertBefore(canvas, document.body.childNodes[0]);
+
                 $log.log('Canvas has been created with id=mapCanvas');
             } else {
                 $log.log('Canvas is already created');
