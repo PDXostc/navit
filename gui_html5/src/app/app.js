@@ -1,6 +1,6 @@
 /**
  * Main application module, parent for all modules
- * 
+ *
  * @module navitGui
  */
 angular.module( 'navitGui', [
@@ -12,6 +12,7 @@ angular.module( 'navitGui', [
   'navitGui.welcome',
   'navitGui.download',
   'navitGui.mapload',
+  'navitGui.reset',
   'ui.router'
 ])
 
@@ -21,7 +22,7 @@ angular.module( 'navitGui', [
 
 .run( function run ($rootScope, $log) {
     $log.log("navitGui starting...");
-    
+
     // change background if map shouldn't be displayed
     $rootScope.$on('$stateChangeSuccess',function(event, toState){
         $rootScope.backgroundClass = toState.data.backgroundClass;
