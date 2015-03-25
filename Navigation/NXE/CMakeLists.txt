@@ -7,8 +7,10 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 
 # add __FILENAME__ macro definition
+# however this doesn't work for Ninja, so we need to
+# use GCC __BASE_FILE__ macro
 if(CMAKE_GENERATOR STREQUAL "Ninja")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$$(subst ${CMAKE_SOURCE_DIR}/,,$$(abspath $$<))\"'")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__=__BASE_FILE__")
 elseif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 endif()
