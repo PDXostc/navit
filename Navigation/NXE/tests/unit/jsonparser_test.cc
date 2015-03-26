@@ -27,13 +27,14 @@ TEST_F(JSONParserTest, moveBy_message_with_args)
 TEST_F(JSONParserTest, moveBy_message_without_args)
 {
     const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
-    EXPECT_ANY_THROW(
-    NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
+    NXE::JSONMessage msg;
+    EXPECT_NO_THROW(
+        msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
+    );
 
     EXPECT_EQ(msg.id, 0);
     EXPECT_EQ(msg.call, "moveBy");
-    EXPECT_FALSE(msg.data.empty());
-    );
+    EXPECT_TRUE(msg.data.empty());
 }
 
 TEST_F(JSONParserTest, full_json_message)

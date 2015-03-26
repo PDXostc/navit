@@ -7,6 +7,7 @@
 
 #include <gtest/gtest.h>
 
+const std::string navitPath { NAVIT_PATH };
 
 class NavitProcessTest : public ::testing::Test
 {
@@ -22,9 +23,7 @@ TEST_F(NavitProcessTest, failure_start_pathNotSet)
 
 TEST_F(NavitProcessTest, success_start_pathSet)
 {
-    // TODO: This path needs to be properly set
-    process.setProgramPath("/home/bata/builds/navit-qt5/navit");
-
+    process.setProgramPath(navitPath);
     EXPECT_TRUE(process.start());
     EXPECT_TRUE(process.isRunning());
 }
