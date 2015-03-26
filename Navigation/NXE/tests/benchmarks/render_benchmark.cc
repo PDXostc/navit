@@ -38,7 +38,27 @@ void renderOneFrame(benchmark::State &state)
     }
 }
 
+void moveBackAndForth(benchmark::State &state)
+{
+    bpt::ptree backTree, fwdTree;
+    backTree.put("x", 500); backTree.put("y",900);
+    fwdTree.put("x", 1080); fwdTree.put("y",1900);
+    const std::string back { NXE::JSONUtils::serialize( NXE::JSONMessage {3,"moveBy", "", backTree }) };
+    const std::string forth { NXE::JSONUtils::serialize( NXE::JSONMessage {3,"moveBy", "", fwdTree }) };
+
+    RenderTest t;
+    t.instance.Initialize();
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+
+    while (state.KeepRunning()) {
+        t.instance.HandleMessage(back.data());
+        t.instance.HandleMessage(forth.data());
+    }
+}
+
 BENCHMARK(renderOneFrame);
+BENCHMARK(moveBackAndForth);
 
 int main(int argc, char **argv)
 {

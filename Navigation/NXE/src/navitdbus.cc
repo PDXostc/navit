@@ -7,7 +7,7 @@
 
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
-const std::string navitDBusPath = "/org/navit_project/navit/default_navit";
+const std::string navitDBusPath = "/org/navit_project/navit/navit/0";
 const std::string navitDBusInterface = "org.navit_project.navit.navit";
 }
 
@@ -18,6 +18,8 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         : ::DBus::InterfaceProxy(navitDBusInterface)
         , ::DBus::ObjectProxy(con, navitDBusPath, navitDBusDestination.c_str())
     {
+        nDebug() << "Connect to signal";
+        connect_signal(NavitDBusObjectProxy, signal, speechCallback);
     }
 
     int zoom() {
@@ -47,6 +49,22 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     void render() {
         DBus::call("draw",*this);
     }
+
+    void speechCallback(const ::DBus::SignalMessage &sig) {
+        ::DBus::MessageIter it = sig.reader();
+        ::DBus::Signature signa;
+        std::map<std::string, ::DBus::Variant> res;
+        it >> res;
+
+        auto val = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant> &val) -> bool{
+            const std::string strVal = val.second;
+            return val.first == "type" && strVal == "speech";
+                                });
+
+        if (val != res.end()) {
+            nDebug() << "Speech cb received";
+        }
+    }
 };
 
 struct NavitDBusPrivate {
@@ -75,25 +93,26 @@ NavitDBus::~NavitDBus()
 
 void NavitDBus::start()
 {
+    nTrace() << "Staring DBus dispatching";
     if (d->m_threadRunning) {
         return;
     }
+
 
     ::DBus::default_dispatcher = &d->dispatcher;
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
 
     d->m_thread = std::move(std::thread([this]() {
-        while(d->m_threadRunning) {
-            nDebug() << "Dispatching";
-            d->dispatcher.dispatch();
-        }
+        d->m_threadRunning = true;
+        ::DBus::default_dispatcher->enter();
     }));
 }
 
 void NavitDBus::stop()
 {
     nDebug() << "Stopping Navit DBus client";
+    ::DBus::default_dispatcher->leave();
     if (d->con) {
         d->con->disconnect();
     }
