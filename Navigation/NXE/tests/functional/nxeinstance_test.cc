@@ -17,7 +17,7 @@ struct NXEInstanceTest : public ::testing::Test {
     NXE::NXEInstance instance{ np, nc };
     NXE::JSONMessage respMsg;
     bool receivedRender {false};
-    std::size_t numberOfResponses;
+    std::size_t numberOfResponses = 0;
 
     static void SetUpTestCase()
     {
@@ -35,7 +35,7 @@ struct NXEInstanceTest : public ::testing::Test {
     }
 
     void zoom(int factor) {
-        const std::string msg{ TestUtils::zoomByMessage(factor) };
+        std::string msg{ TestUtils::zoomByMessage(factor) };
         instance.HandleMessage(msg.data());
     }
 };
@@ -118,7 +118,7 @@ TEST_F(NXEInstanceTest, renderBenchmarkTest)
     EXPECT_TRUE(receivedRender);
 }
 
-TEST_F(NXEInstanceTest, zoomedRenderBenchmarkTest)
+TEST_F(NXEInstanceTest, DISABLED_zoomedRenderBenchmarkTest)
 {
     std::string msg{ TestUtils::renderMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -134,7 +134,7 @@ TEST_F(NXEInstanceTest, zoomedRenderBenchmarkTest)
     EXPECT_TRUE(receivedRender);
 }
 
-TEST_F(NXEInstanceTest, zoomInAndOut)
+TEST_F(NXEInstanceTest, DISABLED_zoomInAndOut)
 {
     std::string msg1{ TestUtils::zoomByMessage(2) };
     std::string msg2{ TestUtils::zoomByMessage(-2) };

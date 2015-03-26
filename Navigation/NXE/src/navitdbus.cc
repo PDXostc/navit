@@ -81,7 +81,7 @@ struct NavitDBusPrivate {
     bool m_threadRunning = false;
     std::thread m_thread;
 
-    void dbusSignalReceived(const std::string &data ) {
+    void dbusSignalReceived(std::string data ) {
         if (callback) {
             callback(data);
         } else {
@@ -125,6 +125,11 @@ void NavitDBus::start()
 
 void NavitDBus::stop()
 {
+    if (!d->m_threadRunning) {
+        // nothing to do really ;)
+        return;
+    }
+
     nDebug() << "Stopping Navit DBus client";
     ::DBus::default_dispatcher->leave();
     if (d->con) {

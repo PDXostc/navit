@@ -30,7 +30,7 @@ std::string JSONUtils::serialize(NXE::JSONMessage json)
     return buff.str();
 }
 
-JSONMessage JSONUtils::deserialize(std::string buff)
+JSONMessage JSONUtils::deserialize(const std::string &buff)
 {
     bpt::ptree tree;
     std::stringstream stream;
