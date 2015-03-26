@@ -2,13 +2,14 @@
 #define NAVITIPC_H
 
 #include <functional>
+#include <boost/signals2/signal.hpp>
 
 namespace NXE {
 
 class NavitIPCInterface {
 public:
-
-    typedef std::function<void (std::string)> SpeechCallback;
+    typedef boost::signals2::signal<void (std::string)> SpeechSignal;
+    typedef boost::signals2::signal<void ()> InitializedSignal;
 
     virtual ~NavitIPCInterface() {}
 
@@ -22,7 +23,9 @@ public:
     virtual void zoomBy(int factor) = 0;
     virtual void render() = 0;
 
-    virtual void registerSpeechCallback(const SpeechCallback &cb) = 0;
+    // Signals from IPC
+    virtual SpeechSignal& speechSignal() = 0;
+    virtual InitializedSignal& initializedSignal() = 0;
 };
 
 } // NXE

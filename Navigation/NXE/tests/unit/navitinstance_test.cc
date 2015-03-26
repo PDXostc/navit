@@ -27,6 +27,9 @@ struct NavitInstanceTest : public ::testing::Test {
     bool bData = false;
     std::string response;
 
+    NXE::NavitIPCInterface::SpeechSignal speechS;
+    NXE::NavitIPCInterface::InitializedSignal initS;
+
     static void SetUpTestCase()
     {
         TestUtils::createNXEConfFile();
@@ -34,10 +37,12 @@ struct NavitInstanceTest : public ::testing::Test {
 
     void setupMocks() {
         using ::testing::Return;
+        using ::testing::ReturnRef;
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
         EXPECT_CALL(*mock_process, setProgramPath(navitPath));
         EXPECT_CALL(*mock_process, stop());
-        EXPECT_CALL(*mock_ipc, registerSpeechCallback(::testing::_));
+        EXPECT_CALL(*mock_ipc, speechSignal()).WillOnce(ReturnRef(speechS));
+        EXPECT_CALL(*mock_ipc, initializedSignal()).WillOnce(ReturnRef(initS));
     }
 
     void callback(const std::string &str) {

@@ -23,6 +23,8 @@ struct NavitProcessImplPrivate {
     std::list<std::string> m_args        = {};
     bp::child m_child                    = bp::child(invalidPid);
     bs::error_code m_lastError           = bs::error_code(2,bs::generic_category());
+    std::thread m_monitor;
+    bool m_bShouldBeRunning              = false;
 };
 
 NavitProcessImpl::NavitProcessImpl():
@@ -32,7 +34,6 @@ NavitProcessImpl::NavitProcessImpl():
 
 NavitProcessImpl::~NavitProcessImpl()
 {
-    nDebug() << __PRETTY_FUNCTION__;
     stop();
 }
 
@@ -56,6 +57,15 @@ bool NavitProcessImpl::start()
                              bp::initializers::bind_stdout(sink),
                              bp::initializers::bind_stderr(sink));
     nTrace() << d->m_lastError.message();
+
+    if (!d->m_lastError) {
+        d->m_monitor = std::move( std::thread( [this]() {
+            nTrace() << "Start monitoring thread";
+            int exitVal = bp::wait_for_exit(d->m_child);
+            nDebug() << "Navit process exited with " << exitVal;
+        }));
+    }
+
     return !d->m_lastError;
 }
 
@@ -63,9 +73,7 @@ void NavitProcessImpl::stop()
 {
     nDebug() << "Stopping navit";
     if (d->m_child.pid != invalidPid) {
-        // ask via DBus to close itself
-        nDebug() << "Terminating navit process";
-        bp::terminate(d->m_child);
+        d->m_monitor.join();
     }
 }
 

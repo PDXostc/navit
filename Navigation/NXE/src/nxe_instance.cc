@@ -115,6 +115,8 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
+    d->controller.stop();
+
     using SettingsTags::Navit::ExternalNavit;
     auto navit = d->navitProcess.lock();
     if (navit) {
@@ -143,6 +145,11 @@ void NXEInstance::Initialize()
     if (bAutoRun) {
         bool external = d->settings.get<ExternalNavit>();
         if (!external) {
+
+            // before running navit, kill
+            // all possible running instances
+            system("killall navit");
+
             nInfo() << "Autorun is set, starting Navit";
             auto navi = d->navitProcess.lock();
             navi->start();

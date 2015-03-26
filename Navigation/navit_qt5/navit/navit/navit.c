@@ -263,7 +263,6 @@ navit_draw_async(struct navit *this_, int async)
 void
 navit_draw(struct navit *this_)
 {
-    navit_say(this_, "draw");
 	if (this_->ready == 3)
 		navit_draw_async(this_, 0);
 }

@@ -28,7 +28,8 @@ struct NavitControllerPrivate {
                 boost::fusion::make_pair<ZoomByMessage>("zoomBy"),
                 boost::fusion::make_pair<ZoomMessage>("zoom"),
                 boost::fusion::make_pair<PositionMessage>("position"),
-                boost::fusion::make_pair<RenderMessage>("render")
+                boost::fusion::make_pair<RenderMessage>("render"),
+                boost::fusion::make_pair<ExitMessage>("exit")
               };
 
     map_cb_type cb{
@@ -73,6 +74,12 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<RenderMessage>([this](const JSONMessage& message) {
             nTrace() << "rendering " << message.call;
             ipc->render();
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+        boost::fusion::make_pair<ExitMessage>([this](const JSONMessage& message) {
+            nTrace() << "exit " << message.call;
+            ipc->stop();
             JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
@@ -142,7 +149,6 @@ NavitController::NavitController(std::shared_ptr<NavitIPCInterface> ipc)
     d->ipc = ipc;
     d->q = this;
 
-    d->ipc->registerSpeechCallback(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
 }
 
 NavitController::~NavitController()
@@ -158,6 +164,8 @@ void NavitController::tryStart()
 {
     nDebug() << "Trying to start IPC Navit controller";
     d->ipc->start();
+    d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
+    d->ipc->initializedSignal().connect([](){});
 }
 
 void NavitController::handleMessage(const JSONMessage &msg)
@@ -182,6 +190,11 @@ void NavitController::handleMessage(const JSONMessage &msg)
 void NavitController::addListener(const NavitController::Callback_type& cb)
 {
     d->successSignal.connect(cb);
+}
+
+void NavitController::stop()
+{
+    d->ipc->stop();
 }
 
 } // namespace NXE

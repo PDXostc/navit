@@ -22,18 +22,26 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         nDebug() << "Connect to signal";
         connect_signal(NavitDBusObjectProxy, signal, speechCallback);
+        connect_signal(NavitDBusObjectProxy, startup, startupCallback);
     }
 
-    int zoom() {
+    int zoom()
+    {
         return NXE::DBus::getAttr<int>("zoom", *this);
     }
 
-    void zoomBy(int factor) {
+    void zoomBy(int factor)
+    {
         DBus::call("zoom", *this, factor);
     }
 
+    void stop() {
+        DBus::call("quit", *this);
+    }
+
     // Implement a generic DBus method
-    void moveBy(int x, int y) {
+    void moveBy(int x, int y)
+    {
         ::DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member("set_center_screen");
@@ -43,24 +51,27 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         it << val;
         ::DBus::Message ret = invoke_method(call);
         if (ret.is_error()) {
-            nFatal() << "Unable to call " << "set_center_screen";
+            nFatal() << "Unable to call "
+                     << "set_center_screen";
             throw std::runtime_error("Unable to call moveBy");
         }
     }
 
-    void render() {
-        DBus::call("draw",*this);
+    void render()
+    {
+        DBus::call("draw", *this);
     }
 
-    void speechCallback(const ::DBus::SignalMessage &sig) {
+    void speechCallback(const ::DBus::SignalMessage& sig)
+    {
         ::DBus::MessageIter it = sig.reader();
         std::map<std::string, ::DBus::Variant> res;
         it >> res;
 
-        auto val = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant> &val) -> bool{
+        auto val = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
             const std::string strVal = val.second;
             return val.first == "type" && strVal == "speech";
-                                });
+        });
 
         if (val != res.end()) {
             std::string data = res["data"];
@@ -68,26 +79,23 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         }
     }
 
-    boost::signals2::signal<void (std::string)> speechSignal;
+    void startupCallback(const ::DBus::SignalMessage&)
+    {
+        initializedSignal();
+    }
+
+    boost::signals2::signal<void(std::string)> speechSignal;
+    boost::signals2::signal<void()> initializedSignal;
 };
 
 struct NavitDBusPrivate {
 
-    std::shared_ptr<::DBus::Connection> con;
+    std::shared_ptr< ::DBus::Connection> con;
     std::shared_ptr<NavitDBusObjectProxy> object;
     ::DBus::BusDispatcher dispatcher;
 
-    NavitIPCInterface::SpeechCallback callback;
     bool m_threadRunning = false;
     std::thread m_thread;
-
-    void dbusSignalReceived(std::string data ) {
-        if (callback) {
-            callback(data);
-        } else {
-            nError() << "Trying to say, but no one wants to listen";
-        }
-    }
 };
 
 NavitDBus::NavitDBus()
@@ -114,8 +122,6 @@ void NavitDBus::start()
     ::DBus::default_dispatcher = &d->dispatcher;
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
-    auto bound = std::bind(&NavitDBusPrivate::dbusSignalReceived, d.get(), std::placeholders::_1);
-    d->object->speechSignal.connect(bound);
 
     d->m_thread = std::move(std::thread([this]() {
         d->m_threadRunning = true;
@@ -130,6 +136,9 @@ void NavitDBus::stop()
         return;
     }
 
+    nDebug() << "Gracefully quit Navit process";
+    d->object->stop();
+
     nDebug() << "Stopping Navit DBus client";
     ::DBus::default_dispatcher->leave();
     if (d->con) {
@@ -140,7 +149,7 @@ void NavitDBus::stop()
 
 void NavitDBus::moveBy(int x, int y)
 {
-    d->object->moveBy(x,y);
+    d->object->moveBy(x, y);
 }
 
 void NavitDBus::zoomBy(int y)
@@ -161,9 +170,16 @@ void NavitDBus::render()
     return d->object->render();
 }
 
-void NavitDBus::registerSpeechCallback(const NavitIPCInterface::SpeechCallback &cb)
+NavitIPCInterface::SpeechSignal& NavitDBus::speechSignal()
 {
-    d->callback = cb;
+    assert(d && d->object);
+    return d->object->speechSignal;
+}
+
+NavitIPCInterface::InitializedSignal& NavitDBus::initializedSignal()
+{
+    assert(d && d->object);
+    return d->object->initializedSignal;
 }
 
 } // namespace NXE

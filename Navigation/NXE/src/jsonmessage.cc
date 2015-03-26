@@ -11,7 +11,7 @@ namespace bpt = boost::property_tree;
 namespace {
 }
 
-std::string JSONUtils::serialize(NXE::JSONMessage json)
+std::string JSONUtils::serialize(const JSONMessage &json)
 {
     bpt::ptree tree;
     tree.put("id", json.id);
@@ -27,7 +27,9 @@ std::string JSONUtils::serialize(NXE::JSONMessage json)
 
     std::stringstream buff;
     bpt::write_json(buff, tree);
-    return buff.str();
+
+    std::string buffer {buff.str()};
+    return buffer;
 }
 
 JSONMessage JSONUtils::deserialize(const std::string &buff)
@@ -47,10 +49,11 @@ JSONMessage JSONUtils::deserialize(const std::string &buff)
     if (tree.find("data") != tree.not_found()) {
         data = tree.get_child("data");
     }
-    return JSONMessage{ tree.get<std::uint32_t>("id"),
+    JSONMessage msg{ tree.get<std::uint32_t>("id"),
                         call,
                         errorMsg,
                         data };
+    return msg;
 }
 
 std::string NXE::JSONUtils::serialize(std::uint32_t id, const std::string& call, const std::string &err, boost::property_tree::ptree data)
