@@ -3,8 +3,6 @@ set(MACOSX_BUNDLE_BUNDLE_NAME "Navit")
 message(STATUS "Building with CMake V${CMAKE_VERSION}")
 project(navit C CXX)
 
-add_definitions(-std=c++11)
-
 # Workaround for CMake issue 8345 / 9220, see http://trac.navit-project.org/ticket/1041
 if(DEFINED CMAKE_CXX_COMPILER AND CMAKE_CXX_COMPILER MATCHES "^$")
   set(CMAKE_CXX_COMPILER CMAKE_CXX_COMPILER-NOTFOUND)
