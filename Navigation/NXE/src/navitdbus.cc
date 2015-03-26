@@ -5,6 +5,8 @@
 #include <dbus-c++/dbus.h>
 #include "dbus_helpers.hpp"
 
+#include <boost/signals2/signal.hpp>
+
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
 const std::string navitDBusPath = "/org/navit_project/navit/navit/0";
@@ -52,7 +54,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     void speechCallback(const ::DBus::SignalMessage &sig) {
         ::DBus::MessageIter it = sig.reader();
-        ::DBus::Signature signa;
         std::map<std::string, ::DBus::Variant> res;
         it >> res;
 
@@ -62,9 +63,12 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
                                 });
 
         if (val != res.end()) {
-            nDebug() << "Speech cb received";
+            std::string data = res["data"];
+            speechSignal(data);
         }
     }
+
+    boost::signals2::signal<void (std::string)> speechSignal;
 };
 
 struct NavitDBusPrivate {
@@ -73,8 +77,17 @@ struct NavitDBusPrivate {
     std::shared_ptr<NavitDBusObjectProxy> object;
     ::DBus::BusDispatcher dispatcher;
 
+    NavitIPCInterface::SpeechCallback callback;
     bool m_threadRunning = false;
     std::thread m_thread;
+
+    void dbusSignalReceived(const std::string &data ) {
+        if (callback) {
+            callback(data);
+        } else {
+            nError() << "Trying to say, but no one wants to listen";
+        }
+    }
 };
 
 NavitDBus::NavitDBus()
@@ -84,7 +97,7 @@ NavitDBus::NavitDBus()
 
 NavitDBus::~NavitDBus()
 {
-    nDebug() << "Destroying navit dbus";
+    nTrace() << "Destroying navit dbus";
     stop();
     if (d->m_thread.joinable()) {
         d->m_thread.join();
@@ -98,10 +111,11 @@ void NavitDBus::start()
         return;
     }
 
-
     ::DBus::default_dispatcher = &d->dispatcher;
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
+    auto bound = std::bind(&NavitDBusPrivate::dbusSignalReceived, d.get(), std::placeholders::_1);
+    d->object->speechSignal.connect(bound);
 
     d->m_thread = std::move(std::thread([this]() {
         d->m_threadRunning = true;
@@ -140,6 +154,11 @@ void NavitDBus::render()
 {
     nDebug() << "Rendering";
     return d->object->render();
+}
+
+void NavitDBus::registerSpeechCallback(const NavitIPCInterface::SpeechCallback &cb)
+{
+    d->callback = cb;
 }
 
 } // namespace NXE

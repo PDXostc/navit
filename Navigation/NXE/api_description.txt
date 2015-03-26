@@ -25,12 +25,23 @@ Request:
 {
     "id" : 102,
     "call" : "zoomBy",
-    {
+    "data" : {
         "factor":2
     }
 }
 
 
+///////////////////// SPEECH /////////////////////////
+
+This may come anytime
+Response:
+{
+    "id": 0, // ALWAYS 0
+    "call" : "speech",
+    "data" : {
+        "text" : "draw"
+    }
+}
 
 
 ///////////////////// ERRORS /////////////////////////

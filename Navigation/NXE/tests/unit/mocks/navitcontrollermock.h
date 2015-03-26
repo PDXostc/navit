@@ -10,6 +10,7 @@ struct NavitIPCMock : public NXE::NavitIPCInterface {
     GMOCK_METHOD2_(, , , moveBy, void(int, int));
     GMOCK_METHOD1_(, , , zoomBy, void(int));
     GMOCK_METHOD0_(, , , zoom, int(void));
+    GMOCK_METHOD1_(, , , registerSpeechCallback, void(const SpeechCallback &));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

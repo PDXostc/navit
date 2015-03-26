@@ -85,6 +85,13 @@ struct NavitControllerPrivate {
         auto fn = boost::fusion::at_key<T>(cb);
         fn(data);
     }
+
+    void speechCallback(const std::string &data) {
+        bpt::ptree tree;
+        tree.put("text", data);
+        JSONMessage speech {0,"speech", "", tree};
+        successSignal(speech);
+    }
 };
 
 template <class Pred, class Fun>
@@ -134,6 +141,8 @@ NavitController::NavitController(std::shared_ptr<NavitIPCInterface> ipc)
 {
     d->ipc = ipc;
     d->q = this;
+
+    d->ipc->registerSpeechCallback(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
 }
 
 NavitController::~NavitController()

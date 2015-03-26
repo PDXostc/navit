@@ -1,10 +1,15 @@
 #ifndef NAVITIPC_H
 #define NAVITIPC_H
 
+#include <functional>
+
 namespace NXE {
 
 class NavitIPCInterface {
 public:
+
+    typedef std::function<void (std::string)> SpeechCallback;
+
     virtual ~NavitIPCInterface() {}
 
     //! IPC start/stop
@@ -14,6 +19,8 @@ public:
     virtual int zoom() = 0;
     virtual void zoomBy(int factor) = 0;
     virtual void render() = 0;
+
+    virtual void registerSpeechCallback(const SpeechCallback &cb) = 0;
 };
 
 } // NXE

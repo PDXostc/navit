@@ -18,6 +18,7 @@ public:
     virtual void zoomBy(int y) override;
     virtual int zoom() override;
     virtual void render() override;
+    virtual void registerSpeechCallback(const SpeechCallback &cb) override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;
