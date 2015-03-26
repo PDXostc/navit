@@ -38,8 +38,8 @@ void event_qt_remove_timeout(event_timeout*);
 
 namespace {
 const std::uint16_t defaultWidth = 1080;
-const std::uint16_t defaultHeight = 1900;
-const std::uint32_t sharedMemorySize = 8208072;
+const std::uint16_t defaultHeight = 1660;
+const std::uint32_t sharedMemorySize = 72 + (defaultHeight * defaultWidth * 4); // 7171272
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 
@@ -116,7 +116,6 @@ void setupQtPainter(graphics_priv* ret)
         ret->buffer = ret->glBuffer.get();
     } else {
         ret->pixmapBuffer.reset(new QImage(QSize(defaultWidth, defaultHeight), QImage::Format_RGB32));
-//        ret->pixmapBuffer->fill();
         ret->painter.reset(new QPainter(ret->pixmapBuffer.get()));
         ret->buffer = ret->pixmapBuffer.get();
     }
@@ -128,6 +127,7 @@ void setupQtPainter(graphics_priv* ret)
         return;
     }
 
+    qDebug() << "Shared mem size = " << sharedMemorySize;
     if (ftruncate(sharedMemoryFd, sharedMemorySize) != 0) {
         qFatal("Unable to truncate shm");
         return;

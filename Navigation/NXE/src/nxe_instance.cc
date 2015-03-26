@@ -25,7 +25,7 @@ namespace bipc = boost::interprocess;
 
 namespace {
 const std::string sharedMemoryName{ "Navit_shm" };
-const std::uint32_t sharedMemorySize = 8208072;
+const std::uint32_t sharedMemorySize = 7171272;
 }
 
 namespace NXE {
@@ -68,19 +68,12 @@ struct NXEInstancePrivate {
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
-            const std::string buff = std::string(mem, sharedMemorySize);
-            std::ostringstream ss;
 
-            ss <<  std::hex << std::uppercase << std::setfill('0');
-
-            nInfo() << "Size is " << buff.size();
-            ss << buff[0] << buff[1] << buff[2] << buff[3] << buff[10000];
-            nInfo() << "Sample buff" << ss.str();
-            q->PostMessage(buff.c_str());
+            q->PostMessage(mem);
 
             // This is our internal post message
-            std::for_each(callbacks.begin(), callbacks.end(), [&buff](const NXEInstance::MessageCb_type& callback) {
-                callback(buff);
+            std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
+                callback(std::string {mem, sharedMemorySize});
             });
         }
         else {
