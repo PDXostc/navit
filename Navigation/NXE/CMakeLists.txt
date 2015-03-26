@@ -10,8 +10,10 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 # however this doesn't work for Ninja, so we need to
 # use GCC __BASE_FILE__ macro
 if(CMAKE_GENERATOR STREQUAL "Ninja")
+    message(STATUS "Ninja")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__=__BASE_FILE__")
-elseif()
+else()
+    message(STATUS "Not ninja")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D__FILENAME__='\"$(subst ${CMAKE_SOURCE_DIR}/,,$(abspath $<))\"'")
 endif()
 
