@@ -168,11 +168,18 @@ void NavitDBus::start()
         d->m_threadRunning = true;
         ::DBus::default_dispatcher->enter();
     }));
+
+    // wait until dispatching thread is started
+    while (!d->m_threadRunning) {
+        std::chrono::milliseconds dura( 1000 );
+        std::this_thread::sleep_for(dura);
+    }
+
+    nTrace() << "Navit DBus started";
 }
 
 void NavitDBus::stop(bool quit)
 {
-
     while (d && d->object && d->object->inProgress) {
         nInfo() << "A signal processing is in progress we have to wait";
         std::chrono::milliseconds dura( 30 );
@@ -193,11 +200,16 @@ void NavitDBus::stop(bool quit)
     }
 
     nDebug() << "Stopping Navit DBus client";
-    ::DBus::default_dispatcher->leave();
     if (d->con) {
         d->con->disconnect();
+        nTrace() << "Object disconnected";
     }
+
+    ::DBus::default_dispatcher->leave();
+    nTrace() << "Dispatcher leave";
+
     d->m_threadRunning = false;
+    nDebug() << "Done stoping dbus";
 }
 
 void NavitDBus::moveBy(int x, int y)

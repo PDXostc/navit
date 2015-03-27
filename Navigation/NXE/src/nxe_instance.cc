@@ -115,9 +115,11 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
+    nTrace() << "~NXEInstance";
     using SettingsTags::Navit::ExternalNavit;
     const bool external = d->settings.get<ExternalNavit>();
 
+    nTrace() << "Stopping controller. external navit=" << external;
     d->controller.stop(!external);
 
     auto navit = d->navitProcess.lock();
