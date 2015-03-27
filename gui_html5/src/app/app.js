@@ -20,7 +20,7 @@ angular.module( 'navitGui', [
   $urlRouterProvider.otherwise( '/home' );
 })
 
-.run( function run ($rootScope, $log) {
+.run( function run ($rootScope, $log, $window) {
     $log.log("navitGui starting...");
 
     // change background if map shouldn't be displayed

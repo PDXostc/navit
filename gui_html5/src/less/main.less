@@ -36,7 +36,32 @@ body {
     background: @black;
     color: #fff;
     font-size: 34pt;
-    max-height: 1660px;
+}
+
+#applicationWrapper {
+    position: relative;
+    z-index:100;
+}
+
+canvas {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+}
+
+#dna-top {
+    height: 130px;
+    width: 100%;
+    background-color: cyan;
+}
+
+#dna-bottom {
+    position: fixed;
+    bottom:0;
+    height: 130px;
+    width: 100%;
+    background-color: magenta;
 }
 
 a {
@@ -48,6 +73,7 @@ a:hover {
 }
 
 .container-fluid {
+    position: relative;
     z-index:2;
     padding-left: 0;
     padding-right: 0;

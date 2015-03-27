@@ -18,10 +18,13 @@ angular.module( 'nxe', [])
     var call = function (data, callback) {
             $log.log("Calling nxe", data);
             try {
-                nxe.render(data, callback);
+                if ($window.nxe) {
+                    nxe.render(data, callback);
+                } else {
+                    $log.info('NXE is not supported');
+                }
             } catch (err) {
-                $log.log(err);
-                $log.error('NXE is not supported');
+                $log.error(err);
             }
         },
         // template data to be send using nxe call
@@ -37,46 +40,59 @@ angular.module( 'nxe', [])
         handlers = {
             render: function (callback) {
                 $log.log("Render handler invoked");
+
+                resizeCanvas();
+
                 jsonData.call = "render";
                 jsonData.id = 0;
                 call(JSON.stringify(jsonData), callback);
             }
         },
-        createCanvas = function () {
+        /**
+         * Resize canvas just before rendering. This way canvas should always be
+         * resized properly at the very last end.
+         *
+         * @returns {undefined}
+         */
+        resizeCanvas = function () {
+            //TODO: don't use native document variable, change to angular invocation
             var canvas = document.getElementById("mapCanvas"),
-                width = 1080,
-                height = 1900,
-                idAttr, widthAttr, heightAttr;
+                body, html, height;
 
-            if (!canvas) {
-                $log.log('Canvas is not created... creating.');
-                canvas = document.createElement('canvas');
+            if (canvas) {
+                $log.log('Resizing canvas to fit visible area.');
 
-                // create all canvas attributes
-                idAttr = document.createAttribute('id');
-                idAttr.value = 'mapCanvas';
-                widthAttr = document.createAttribute('width');
-                widthAttr.value = width;
-                heightAttr = document.createAttribute('height');
-                heightAttr.value = height;
+                body = document.body;
+                html = document.documentElement;
 
-                // add attributes to canvas node
-                canvas.setAttributeNode(idAttr);
-                canvas.setAttributeNode(widthAttr);
-                canvas.setAttributeNode(heightAttr);
+                // calculate canvas height and width
+                height = Math.max( body.scrollHeight, body.offsetHeight,
+                         html.clientHeight, html.scrollHeight, html.offsetHeight);
+                //debugDocument(body, html, height);
 
-                // insert canvas as a first child of body element
-                document.body.insertBefore(canvas, document.body.childNodes[0]);
-
-                $log.log('Canvas has been created with id=mapCanvas');
+                canvas.height = height - 260; // without simulated dna bars
+                canvas.width = body.clientWidth;
             } else {
-                $log.log('Canvas is already created');
+                $log.log('Canvas is not created');
             }
+        },
+        debugDocument = function (body, html, height) {
+            $log.log("BODY H (client)="+body.clientHeight);
+            $log.log("BODY H (scroll)="+body.scrollHeight);
+            $log.log("BODY H (offset)="+body.offsetHeight);
+            $log.log("HTML H (client)="+html.clientHeight);
+            $log.log("HTML H (scroll)="+html.scrollHeight);
+            $log.log("HTML H (offset)="+html.offsetHeight);
+
+            $log.log("BODY W (client)="+body.clientWidth);
+            $log.log("BODY W (scroll)="+body.scrollWidth);
+            $log.log("BODY W (offset)="+body.offsetWidth);
+            $log.log("HTML W (client)="+html.clientWidth);
+            $log.log("HTML W (scroll)="+html.scrollWidth);
+            $log.log("HTML W (offset)="+html.offsetWidth);
+            $log.log("BODY H (calculated)="+height);
         };
 
-
-    // initialize service internals, canvas, etc
-    createCanvas();
 
     // service invocation
     return function (name, callback) {
