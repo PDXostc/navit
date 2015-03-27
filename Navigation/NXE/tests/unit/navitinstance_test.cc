@@ -41,8 +41,7 @@ struct NavitInstanceTest : public ::testing::Test {
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
         EXPECT_CALL(*mock_process, setProgramPath(navitPath));
         EXPECT_CALL(*mock_process, stop());
-        EXPECT_CALL(*mock_ipc, speechSignal()).WillOnce(ReturnRef(speechS));
-        EXPECT_CALL(*mock_ipc, initializedSignal()).WillOnce(ReturnRef(initS));
+        EXPECT_CALL(*mock_ipc, stop(::testing::_));
     }
 
     void callback(const std::string &str) {

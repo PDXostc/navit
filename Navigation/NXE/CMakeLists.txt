@@ -18,6 +18,7 @@ else()
 endif()
 
 add_definitions(-std=c++11)
+add_definitions(-DBOOST_SPIRIT_THREADSAFE)
 enable_testing()
 
 if(NOT DISABLE_TESTS)
@@ -32,7 +33,6 @@ if(NOT DISABLE_TESTS)
 endif()
 
 set(boost_components system filesystem thread chrono iostreams timer)
-add_definitions(-DBOOST_SPIRIT_THREADSAFE)
 
 # find Boost
 find_package(Boost 1.57.0 EXACT REQUIRED COMPONENTS ${boost_components})

@@ -34,10 +34,13 @@ std::string JSONUtils::serialize(const JSONMessage &json)
 
 JSONMessage JSONUtils::deserialize(const std::string &buff)
 {
+    nTrace() << "Deserialize";
     bpt::ptree tree;
     std::stringstream stream;
 
-    stream << buff;
+    const std::string copy {buff};
+
+    stream << copy;
     std::istringstream is(stream.str());
     bpt::read_json(is, tree);
     boost::optional<std::string> error = tree.get_optional<std::string>("error");
@@ -53,6 +56,7 @@ JSONMessage JSONUtils::deserialize(const std::string &buff)
                         call,
                         errorMsg,
                         data };
+    nTrace() << "End of deserialize";
     return msg;
 }
 

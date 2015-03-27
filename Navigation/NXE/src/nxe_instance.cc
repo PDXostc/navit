@@ -115,15 +115,16 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
-    d->controller.stop();
-
     using SettingsTags::Navit::ExternalNavit;
+    const bool external = d->settings.get<ExternalNavit>();
+
+    d->controller.stop(!external);
+
     auto navit = d->navitProcess.lock();
     if (navit) {
         navit->stop();
     }
 
-    bool external = d->settings.get<ExternalNavit>();
     if (!external) {
         bipc::shared_memory_object::remove(sharedMemoryName.c_str());
     }

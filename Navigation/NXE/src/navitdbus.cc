@@ -2,10 +2,12 @@
 #include "log.h"
 
 #include <thread>
+#include <chrono>
 #include <dbus-c++/dbus.h>
 #include "dbus_helpers.hpp"
 
 #include <boost/signals2/signal.hpp>
+
 
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
@@ -27,21 +29,29 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     int zoom()
     {
-        return NXE::DBus::getAttr<int>("zoom", *this);
+        inProgress = true;
+        int val = NXE::DBus::getAttr<int>("zoom", *this);
+        inProgress = false;
+        return val;
     }
 
     void zoomBy(int factor)
     {
+        inProgress = true;
         DBus::call("zoom", *this, factor);
+        inProgress = false;
     }
 
-    void stop() {
+    void quit() {
+        inProgress = true;
         DBus::call("quit", *this);
+        inProgress = false;
     }
 
     // Implement a generic DBus method
     void moveBy(int x, int y)
     {
+        inProgress = true;
         ::DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member("set_center_screen");
@@ -55,15 +65,20 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
                      << "set_center_screen";
             throw std::runtime_error("Unable to call moveBy");
         }
+        inProgress = false;
     }
 
     void render()
     {
+        inProgress = true;
         DBus::call("draw", *this);
+        inProgress = false;
     }
 
     void speechCallback(const ::DBus::SignalMessage& sig)
     {
+        nDebug() << "Speech callback";
+        inProgress = true;
         ::DBus::MessageIter it = sig.reader();
         std::map<std::string, ::DBus::Variant> res;
         it >> res;
@@ -77,15 +92,24 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             std::string data = res["data"];
             speechSignal(data);
         }
+
+        nTrace() << "Speech callback ended";
+        inProgress = false;
     }
 
     void startupCallback(const ::DBus::SignalMessage&)
     {
+        inProgress = true;
+        nTrace() << "Navit has started";
+        started = true;
         initializedSignal();
+        inProgress = false;
     }
 
     boost::signals2::signal<void(std::string)> speechSignal;
     boost::signals2::signal<void()> initializedSignal;
+    bool started = false;
+    bool inProgress = false;
 };
 
 struct NavitDBusPrivate {
@@ -106,7 +130,7 @@ NavitDBus::NavitDBus()
 NavitDBus::~NavitDBus()
 {
     nTrace() << "Destroying navit dbus";
-    stop();
+    stop(false);
     if (d->m_thread.joinable()) {
         d->m_thread.join();
     }
@@ -124,20 +148,41 @@ void NavitDBus::start()
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
 
     d->m_thread = std::move(std::thread([this]() {
+        nDebug() << "Dispatching";
         d->m_threadRunning = true;
         ::DBus::default_dispatcher->enter();
     }));
+
+    while (!d->object->started) {
+        nTrace() << "Still nothing";
+        std::chrono::milliseconds dura( 30 );
+        std::this_thread::sleep_for(dura);
+    }
+
+    nTrace() << "Navit DBUS is online!";
 }
 
-void NavitDBus::stop()
+void NavitDBus::stop(bool quit)
 {
+
+    while (d && d->object && d->object->inProgress) {
+        nInfo() << "A signal processing is in progress we have to wait";
+        std::chrono::milliseconds dura( 30 );
+        std::this_thread::sleep_for(dura);
+    }
+
+    nTrace() << "Signal processing is done!";
+
     if (!d->m_threadRunning) {
         // nothing to do really ;)
+        nInfo() << "Navit DBus Already stopped";
         return;
     }
 
-    nDebug() << "Gracefully quit Navit process";
-    d->object->stop();
+    if (quit) {
+        nTrace() << "Gracefully quit Navit process";
+        d->object->quit();
+    }
 
     nDebug() << "Stopping Navit DBus client";
     ::DBus::default_dispatcher->leave();

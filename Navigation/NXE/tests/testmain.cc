@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     if (extNavit) {
         runNavit = false;
     }
-    spdlog::set_pattern("[%H:%M:%S %z] [thread %t] %v");
+    spdlog::set_pattern("[%M:%S.%e] [%t] [%l] %v");
 
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::UnitTest::GetInstance()->listeners().Append(new TestListener);

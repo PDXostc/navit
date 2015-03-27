@@ -10,13 +10,13 @@
 #include <chrono>
 #include <thread>
 
+extern bool runNavit;
 struct NXEInstanceTest : public ::testing::Test {
 
     std::shared_ptr<NXE::NavitProcess> np{ new NXE::NavitProcessImpl };
     std::shared_ptr<NXE::NavitIPCInterface> nc{ new NXE::NavitDBus };
     NXE::NXEInstance instance{ np, nc };
     NXE::JSONMessage respMsg;
-    std::mutex responseMutex;
     bool receivedRender {false};
     std::size_t numberOfResponses = 0;
 
@@ -25,25 +25,9 @@ struct NXEInstanceTest : public ::testing::Test {
         TestUtils::createNXEConfFile();
     }
 
-    void SetUp() {
-        nc->start();
-    }
-
-    void TearDown() {
-        nc->stop();
-    }
-
     void callback(const std::string &response) {
-        {
-            std::lock_guard<std::mutex> guard {responseMutex};
-            nDebug() << "Callback";
-            if (response.size() == 7171272) {
-                receivedRender = true;
-            } else {
-                respMsg = NXE::JSONUtils::deserialize(response);
-                nDebug() << response;
-            }
-            nDebug() << "Eof Callback";
+        if (response.size() == 7171272) {
+            receivedRender = true;
         }
         numberOfResponses++;
     }
@@ -109,6 +93,7 @@ TEST_F(NXEInstanceTest, zoom)
         instance.HandleMessage(msg.data());
     );
 
+    EXPECT_EQ(respMsg.error.size(), 0);
     EXPECT_FALSE(respMsg.data.empty());
 }
 

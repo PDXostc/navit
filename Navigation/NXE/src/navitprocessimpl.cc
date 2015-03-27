@@ -49,21 +49,25 @@ bool NavitProcessImpl::start()
     nDebug() << "Starting navit process from " << command << " in dir " << d->m_programPath << " with args ";
     bf::path exe = command;
 
-    boost::iostreams::file_descriptor_sink sink("/tmp/navit.out");
+    boost::iostreams::file_descriptor_sink sinkOut("/tmp/navit.out");
+    boost::iostreams::file_descriptor_sink sinkErr("/tmp/navit.err");
     d->m_child = bp::execute(bp::initializers::run_exe(exe),
                              bp::initializers::start_in_dir(d->m_programPath),
                              bp::initializers::inherit_env(),
                              bp::initializers::set_on_error(d->m_lastError),
-                             bp::initializers::bind_stdout(sink),
-                             bp::initializers::bind_stderr(sink));
-    nTrace() << d->m_lastError.message();
+                             bp::initializers::bind_stdout(sinkOut),
+                             bp::initializers::bind_stderr(sinkErr));
 
     if (!d->m_lastError) {
+        nDebug() << "Navit process properly started";
         d->m_monitor = std::move( std::thread( [this]() {
             nTrace() << "Start monitoring thread";
             int exitVal = bp::wait_for_exit(d->m_child);
             nDebug() << "Navit process exited with " << exitVal;
         }));
+    } else {
+        nError() << d->m_lastError.message();
+        d->m_child.pid = invalidPid;
     }
 
     return !d->m_lastError;
@@ -71,15 +75,16 @@ bool NavitProcessImpl::start()
 
 void NavitProcessImpl::stop()
 {
-    nDebug() << "Stopping navit";
+    nDebug() << "Stopping navit Pid=" << d->m_child.pid;
     if (d->m_child.pid != invalidPid) {
         d->m_monitor.join();
     }
+    d->m_child.pid = invalidPid;
 }
 
 bool NavitProcessImpl::isRunning()
 {
-    return !(d->m_lastError);
+    return !(d->m_lastError) && d->m_child.pid != invalidPid;
 }
 
 void NavitProcessImpl::setArgs(const std::list<std::string> &args)

@@ -42,6 +42,7 @@ const std::uint16_t defaultHeight = 1660;
 const std::uint32_t sharedMemorySize = 72 + (defaultHeight * defaultWidth * 4); // 7171272
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
+static graphics_priv* event_gr;
 
 // For testing purposes only
 struct Counter {
@@ -190,9 +191,11 @@ struct graphics_image_priv {
 
 static void graphics_destroy(graphics_priv* gr)
 {
+    qDebug() << Q_FUNC_INFO;
+    gr->painter->end();
     gr->freetype_methods.destroy();
     shm_unlink(sharedMemoryName.c_str());
-    delete gr;
+    event_gr->app->quit();
 }
 
 static void font_destroy(struct graphics_font_priv* font)
@@ -506,11 +509,15 @@ static graphics_priv* overlay_new(struct graphics_priv* gr, struct graphics_meth
     return ret;
 }
 
-static graphics_priv* event_gr;
 
 static void event_qt_main_loop_run()
 {
-    event_gr->app->exec();
+    qDebug() << Q_FUNC_INFO;
+    if (event_gr) {
+        event_gr->app->exec();
+    }
+    qDebug() << "Finished event loop";
+    delete event_gr;
 }
 
 static void event_qt_main_loop_quit()
