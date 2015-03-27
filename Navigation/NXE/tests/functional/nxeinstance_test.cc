@@ -29,8 +29,12 @@ struct NXEInstanceTest : public ::testing::Test {
         if (response.size() == 7171272) {
             receivedRender = true;
         }
+
+        respMsg = NXE::JSONUtils::deserialize(response);
+
         numberOfResponses++;
     }
+
 
     void zoom(int factor) {
         std::string msg{ TestUtils::zoomByMessage(factor) };
@@ -97,26 +101,6 @@ TEST_F(NXEInstanceTest, zoom)
     EXPECT_FALSE(respMsg.data.empty());
 }
 
-TEST_F(NXEInstanceTest, renderBenchmarkTest)
-{
-    std::string msg{ TestUtils::renderMessage() };
-    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
-    EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
-    std::this_thread::sleep_for(dura);
-    EXPECT_NO_THROW(
-        for(int i = 0 ; i < 100 ; ++i) {
-            instance.HandleMessage(msg.data());
-        }
-    );
-    std::vector<double> mes = instance.renderMeasurements();
-    double mean = std::accumulate(mes.begin(), mes.end(), 0.0)/mes.size();
-    perfLog("render") << " mean = " << mean;
-    // should be 100
-    EXPECT_LT(mean, 200.0);
-    EXPECT_TRUE(receivedRender);
-}
-
 TEST_F(NXEInstanceTest, DISABLED_zoomedRenderBenchmarkTest)
 {
     std::string msg{ TestUtils::renderMessage() };
@@ -181,4 +165,31 @@ TEST_F(NXEInstanceTest, moveByMessage)
     EXPECT_NO_THROW(
         instance.HandleMessage(msg.data());
     );
+}
+
+TEST_F(NXEInstanceTest, changeOrientation)
+{
+    const std::string msg{ TestUtils::changeOrientationMessage(-1) };
+    const std::string msg2{ TestUtils::orientationMessage() };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    instance.HandleMessage(msg.data());
+    instance.HandleMessage(msg2.data());
+
+    EXPECT_EQ(numberOfResponses, 2);
+    EXPECT_TRUE(respMsg.error.empty());
+}
+
+TEST_F(NXEInstanceTest, changeOrientationToIncorrectValue)
+{
+    const std::string msg{ TestUtils::changeOrientationMessage(100) };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    instance.HandleMessage(msg.data());
+
+    EXPECT_FALSE(respMsg.error.empty());
 }

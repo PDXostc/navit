@@ -15,12 +15,14 @@ Response:
     "zoom" : 15
 }
 
+/////////////////////  RENDER /////////////////////////
 Request:
 {
     "id" : 102,
     "call" : "render"
 }
 
+///////////////////// ZOOMBY /////////////////////////
 Request:
 {
     "id" : 102,
@@ -28,6 +30,37 @@ Request:
     "data" : {
         "factor":2
     }
+}
+
+///////////////////// ORIENTATION /////////////////////////
+Request:
+{
+    "id" : 102,
+    "call" : "orientation",
+}
+Response:
+{
+    "id": 0,
+    "call" : "orientation",
+    "data" : {
+        "orientation" : "-1"
+    }
+}
+
+///////////////////// SET ORIENTATION /////////////////////////
+Request:
+{
+    "id" : 102,
+    "call" : "setOrientation",
+    "data" : {
+        "orientation" : "-1"
+    }
+}
+
+Response:
+{
+    "id": 102,
+    "call" : "orientation",
 }
 
 

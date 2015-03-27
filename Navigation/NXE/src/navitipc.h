@@ -23,6 +23,9 @@ public:
     virtual void zoomBy(int factor) = 0;
     virtual void render() = 0;
 
+    virtual int orientation() = 0;
+    virtual void setOrientation(int newOrientation) = 0;
+
     // Signals from IPC
     virtual SpeechSignal& speechSignal() = 0;
     virtual InitializedSignal& initializedSignal() = 0;

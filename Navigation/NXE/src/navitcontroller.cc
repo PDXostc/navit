@@ -29,7 +29,9 @@ struct NavitControllerPrivate {
                 boost::fusion::make_pair<ZoomMessage>("zoom"),
                 boost::fusion::make_pair<PositionMessage>("position"),
                 boost::fusion::make_pair<RenderMessage>("render"),
-                boost::fusion::make_pair<ExitMessage>("exit")
+                boost::fusion::make_pair<ExitMessage>("exit"),
+                boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
+                boost::fusion::make_pair<OrientationMessage>("orientation")
               };
 
     map_cb_type cb{
@@ -62,7 +64,6 @@ struct NavitControllerPrivate {
             bpt::ptree values;
             values.put("zoom", zoomValue);
             JSONMessage response {message.id, message.call, "", values };
-            // TODO: proper success signal
             successSignal(response);
         }),
 
@@ -82,6 +83,22 @@ struct NavitControllerPrivate {
             nTrace() << "exit " << message.call;
             ipc->stop(false);
             JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+
+        boost::fusion::make_pair<SetOrientationMessage>([this](const JSONMessage& message) {
+            nTrace() << "exit " << message.call;
+            int newOrientation = message.data.get<int>("orientation");
+            ipc->setOrientation(newOrientation);
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+
+        boost::fusion::make_pair<OrientationMessage>([this](const JSONMessage& message) {
+            nTrace() << "exit " << message.call;
+            bpt::ptree p;
+            p.put("orientation", ipc->orientation());
+            JSONMessage response {message.id, message.call, "", p };
             successSignal(response);
         }),
     };

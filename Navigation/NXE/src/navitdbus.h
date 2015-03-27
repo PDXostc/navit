@@ -19,6 +19,9 @@ public:
     virtual void zoomBy(int y) override;
     virtual int zoom() override;
     virtual void render() override;
+    virtual int orientation() override;
+    virtual void setOrientation(int newOrientation) override;
+
     virtual SpeechSignal& speechSignal() override;
     virtual InitializedSignal& initializedSignal() override;
 

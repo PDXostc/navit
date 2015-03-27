@@ -13,6 +13,8 @@ std::string moveByMessage(int x, int y);
 std::string zoomByMessage(int factor);
 std::string zoomMessage();
 std::string renderMessage();
+std::string changeOrientationMessage(int orientation);
+std::string orientationMessage();
 void createNXEConfFile();
 
 struct Timer {

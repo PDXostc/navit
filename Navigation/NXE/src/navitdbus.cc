@@ -101,14 +101,30 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         inProgress = true;
         nTrace() << "Navit has started";
-        started = true;
         initializedSignal();
         inProgress = false;
     }
 
+    int orientation()
+    {
+        inProgress = true;
+        int orientation = DBus::getAttr<int>("orientation", *this);
+        inProgress = false;
+
+        return orientation;
+    }
+
+    void setOrientation(int newOrientation)
+    {
+        nInfo() << "Changing orientation to " << newOrientation;
+        ::DBus::Variant val;
+        ::DBus::MessageIter ww = val.writer();
+        ww << newOrientation;
+        DBus::setAttr("orientation", *this, val);
+    }
+
     boost::signals2::signal<void(std::string)> speechSignal;
     boost::signals2::signal<void()> initializedSignal;
-    bool started = false;
     bool inProgress = false;
 };
 
@@ -152,14 +168,6 @@ void NavitDBus::start()
         d->m_threadRunning = true;
         ::DBus::default_dispatcher->enter();
     }));
-
-    while (!d->object->started) {
-        nTrace() << "Still nothing";
-        std::chrono::milliseconds dura( 30 );
-        std::this_thread::sleep_for(dura);
-    }
-
-    nTrace() << "Navit DBUS is online!";
 }
 
 void NavitDBus::stop(bool quit)
@@ -213,6 +221,19 @@ void NavitDBus::render()
 {
     nDebug() << "Rendering";
     return d->object->render();
+}
+
+int NavitDBus::orientation()
+{
+    return d->object->orientation();
+}
+
+void NavitDBus::setOrientation(int newOrientation)
+{
+    if (newOrientation != 0 && newOrientation != -1 ) {
+        throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
+    }
+    d->object->setOrientation(newOrientation);
 }
 
 NavitIPCInterface::SpeechSignal& NavitDBus::speechSignal()

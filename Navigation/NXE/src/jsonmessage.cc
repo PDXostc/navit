@@ -34,7 +34,6 @@ std::string JSONUtils::serialize(const JSONMessage &json)
 
 JSONMessage JSONUtils::deserialize(const std::string &buff)
 {
-    nTrace() << "Deserialize";
     bpt::ptree tree;
     std::stringstream stream;
 
@@ -56,7 +55,6 @@ JSONMessage JSONUtils::deserialize(const std::string &buff)
                         call,
                         errorMsg,
                         data };
-    nTrace() << "End of deserialize";
     return msg;
 }
 

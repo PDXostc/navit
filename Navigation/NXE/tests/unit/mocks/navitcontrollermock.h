@@ -12,6 +12,8 @@ struct NavitIPCMock : public NXE::NavitIPCInterface {
     GMOCK_METHOD0_(, , , zoom, int(void));
     GMOCK_METHOD0_(, , , speechSignal, SpeechSignal&());
     GMOCK_METHOD0_(, , , initializedSignal, InitializedSignal&());
+    MOCK_METHOD1(setOrientation, void(int));
+    MOCK_METHOD0(orientation, int());
 };
 
 #endif // NAVITCONTROLLERMOCK_H

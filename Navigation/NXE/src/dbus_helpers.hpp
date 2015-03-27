@@ -8,62 +8,77 @@
 namespace NXE {
 namespace DBus {
 
-template<typename R>
-R getAttr(const std::string &attrName, ::DBus::InterfaceProxy &proxy) {
-    ::DBus::CallMessage call;
-    ::DBus::MessageIter it = call.writer();
-    call.member("get_attr");
-    it << attrName;
-    ::DBus::Message ret = proxy.invoke_method(call);
+    template <typename R>
+    R getAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy)
+    {
+        ::DBus::CallMessage call;
+        ::DBus::MessageIter it = call.writer();
+        call.member("get_attr");
+        it << attrName;
+        ::DBus::Message ret = proxy.invoke_method(call);
 
-    if (ret.is_error()) {
-        throw std::runtime_error("Unable to call zoom");
+        if (ret.is_error()) {
+            throw std::runtime_error("Unable to call zoom");
+        }
+
+        std::string attr;
+        ::DBus::MessageIter retIter = ret.reader();
+        retIter >> attr;
+        ::DBus::Variant v;
+        retIter >> v;
+        R value = static_cast<R>(v);
+        nDebug() << attrName << "= " << value;
+
+        return value;
     }
 
-    std::string attr;
-    ::DBus::MessageIter retIter = ret.reader();
-    retIter >> attr ;
-    ::DBus::Variant v;
-    retIter >> v;
-    R value = static_cast<R>(v);
-    nDebug() << attrName << "= " << value;
+    template <typename Arg>
+    void setAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy, Arg && value)
+    {
+        ::DBus::CallMessage call;
+        ::DBus::MessageIter it = call.writer();
+        call.member("set_attr");
+        it << attrName << value;
+        ::DBus::Message ret = proxy.invoke_method(call);
 
-    return value;
-}
-
-void unpack(::DBus::MessageIter &)
-{}
-
-template<typename T>
-void processOne(::DBus::MessageIter &it, T t)
-{
-    it << t;
-}
-
-template<typename T, typename ...Args>
-void unpack(::DBus::MessageIter &it, T t, Args... args)
-{
-    processOne(it,t);
-    unpack(it,args...);
-}
-
-template<typename ...Args>
-void call(const std::string &methodName, ::DBus::InterfaceProxy &proxy, Args... attr)
-{
-    nDebug() << "Calling dbus " << methodName;
-    ::DBus::CallMessage call;
-    ::DBus::MessageIter it = call.writer();
-    call.member(methodName.c_str());
-    unpack(it, attr...);
-    ::DBus::Message ret = proxy.invoke_method(call);
-    if (ret.is_error()) {
-        nFatal() << "Unable to call " << methodName;
-        throw std::runtime_error("Unable to call" + methodName);
+        if (ret.is_error()) {
+            throw std::runtime_error("Unable to call zoom");
+        }
     }
-}
+
+    void unpack(::DBus::MessageIter&)
+    {
+    }
+
+    template <typename T>
+    void processOne(::DBus::MessageIter& it, T t)
+    {
+        it << t;
+    }
+
+    template <typename T, typename... Args>
+    void unpack(::DBus::MessageIter& it, T t, Args... args)
+    {
+        processOne(it, t);
+        unpack(it, args...);
+    }
+
+    template <typename... Args>
+    void call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
+    {
+        nDebug() << "Calling dbus " << methodName;
+        ::DBus::CallMessage call;
+        ::DBus::MessageIter it = call.writer();
+        call.member(methodName.c_str());
+        unpack(it, attr...);
+        ::DBus::Message ret = proxy.invoke_method(call);
+        if (ret.is_error()) {
+            nFatal() << "Unable to call " << methodName;
+            throw std::runtime_error("Unable to call" + methodName);
+        }
+    }
 
 } // DBus
 } // NXE
 
 #endif // DBUS_HELPERS_HPP
-

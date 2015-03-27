@@ -15,16 +15,19 @@ struct NavitDBusTest : public ::testing::Test
     NXE::NavitDBus connection;
 
     static void SetUpTestCase() {
-        nDebug() << "Running navit binary";
-        process = new NXE::NavitProcessImpl;
-        process->setProgramPath(navitPath);
-        process->start();
+        if (runNavit) {
+            nDebug() << "Running navit binary";
+            process = new NXE::NavitProcessImpl;
+            process->setProgramPath(navitPath);
+            process->start();
+        }
     }
 
     static void TearDownTestCase() {
-        process->stop();
-        delete process;
-        process = 0;
+        if (runNavit) {
+            delete process;
+            process = 0;
+        }
     }
 
     void SetUp() {
@@ -47,4 +50,21 @@ TEST_F(NavitDBusTest, zoom)
 
         EXPECT_EQ(defZoom / zoomBy, connection.zoom());
     );
+}
+
+TEST_F(NavitDBusTest, setOrientation)
+{
+    int orientation = connection.orientation();
+    EXPECT_ANY_THROW(connection.setOrientation(1));
+
+    if (orientation == 0) {
+        connection.setOrientation(-1);
+    } else {
+        connection.setOrientation(0);
+    }
+
+
+    int newOrientation = connection.orientation();
+
+    EXPECT_NE(orientation, newOrientation);
 }

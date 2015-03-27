@@ -23,9 +23,15 @@ struct ZoomMessage {};
 struct PositionMessage {};
 struct RenderMessage {};
 struct ExitMessage {};
+struct SetOrientationMessage {};
+struct OrientationMessage {};
 
 // Container of all registered messages
-typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage, PositionMessage, RenderMessage, ExitMessage> Messages_type;
+typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage,
+                           PositionMessage, RenderMessage, ExitMessage,
+                           SetOrientationMessage, OrientationMessage
+
+    > Messages_type;
 typedef std::function<void (const NXE::JSONMessage &data)> JSONMessageParser_type;
 
 template<typename T>

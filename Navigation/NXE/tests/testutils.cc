@@ -50,3 +50,19 @@ std::string TestUtils::renderMessage()
     NXE::JSONMessage msg { 3, "render"};
     return NXE::JSONUtils::serialize(msg);
 }
+
+
+std::string TestUtils::changeOrientationMessage(int orientation)
+{
+    boost::property_tree::ptree p;
+    p.put("orientation", orientation);
+    NXE::JSONMessage msg { 3, "setOrientation", "", p};
+    return NXE::JSONUtils::serialize(msg);
+}
+
+
+std::string TestUtils::orientationMessage()
+{
+    NXE::JSONMessage msg { 3, "orientation"};
+    return NXE::JSONUtils::serialize(msg);
+}
