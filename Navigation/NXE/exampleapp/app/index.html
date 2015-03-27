@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>simple extension app</title>
+        <meta name="viewport" content="width=device-width">
+        <style>
+body {
+      font-size: 2em;
+}
+        </style>
+    </head>
+    <body>
+
+        <p>This uses the echo extension defined to
+        and should render something.</p>
+         <canvas id="navitCanvas" width="1000" height="800"></canvas>
+
+        <div id="out"></div>
+
+        <script>
+var div = document.getElementById('out');
+var canvas = document.getElementById('navitCanvas');
+
+var p1 = document.createElement('p');
+var p2 = document.createElement('p');
+
+// async call to extension
+
+nxe.setRenderCanvas(canvas);
+nxe.render();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,54 @@
+
+///////////////////// ZOOM /////////////////////////
+Get zoom value
+
+Request:
+{
+    "id" : 102,
+    "call" : "zoom"
+}
+
+Response:
+{
+    "id": 102,
+    "call" : "zoom",
+    "zoom" : 15
+}
+
+Request:
+{
+    "id" : 102,
+    "call" : "render"
+}
+
+Request:
+{
+    "id" : 102,
+    "call" : "zoomBy",
+    "data" : {
+        "factor":2
+    }
+}
+
+
+///////////////////// SPEECH /////////////////////////
+
+This may come anytime
+Response:
+{
+    "id": 0, // ALWAYS 0
+    "call" : "speech",
+    "data" : {
+        "text" : "draw"
+    }
+}
+
+
+///////////////////// ERRORS /////////////////////////
+
+Unable to handle request
+
+{
+    "id" : -1,
+    "error": "An error string"
+}

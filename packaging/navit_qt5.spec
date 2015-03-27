@@ -19,7 +19,6 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(freetype2)
-BuildRequires: 	qt5-plugin-accessible-widgets
 BuildRequires: 	qt5-plugin-bearer-connman
 BuildRequires: 	qt5-plugin-bearer-generic
 BuildRequires: 	qt5-plugin-bearer-nm
@@ -33,7 +32,6 @@ BuildRequires: 	qt5-plugin-platform-linuxfb
 BuildRequires: 	qt5-plugin-platform-minimal
 BuildRequires: 	qt5-plugin-platform-minimalegl
 BuildRequires: 	qt5-plugin-platform-offscreen
-BuildRequires: 	qt5-plugin-platform-xcb
 BuildRequires: 	qt5-qtdeclarative
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
@@ -44,7 +42,6 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5OpenGL)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(glesv2)
-BuildRequires:  pkgconfig(xpm)
 BuildRequires:	desktop-file-utils
 BuildRequires:  gettext-devel
 BuildRequires:  libjpeg-devel
