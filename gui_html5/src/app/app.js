@@ -26,6 +26,13 @@ angular.module( 'navitGui', [
     // change background if map shouldn't be displayed
     $rootScope.$on('$stateChangeSuccess',function(event, toState){
         $rootScope.backgroundClass = toState.data.backgroundClass;
+
+        // show canvas only for home state
+        if(toState.name === 'home' || toState.name === 'home.location') {
+            $rootScope.mapVisible = {'display': 'inline-block'};
+        } else {
+            $rootScope.mapVisible = {'display': 'none'};
+        }
     });
 
 })

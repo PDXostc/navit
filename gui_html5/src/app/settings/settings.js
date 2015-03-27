@@ -1,12 +1,10 @@
 /**
  * Module responsible for applications settings.
- * 
+ *
  * @module navitGui.settings
  */
 angular.module( 'navitGui.settings', [
-  'ui.router',
-  'placeholders',
-  'ui.bootstrap'
+  'ui.router'
 ])
 
 .config(function config( $stateProvider ) {
@@ -52,5 +50,25 @@ angular.module( 'navitGui.settings', [
   });
 })
 
-.controller( 'SettingsCtrl', function SettingsCtrl( $scope ) {
+.run( function run ($window, $log) {
+
+    var settings = JSON.parse($window.localStorage.getItem("settings"));
+    $log.log("::Settings::getting settings from localStorage");
+    $log.log("::Settings::value", settings);
+
+    if (!settings) {
+        $log.log("::Settings::creating settings in localStorage");
+        $window.localStorage.setItem("settings", JSON.stringify({
+            'poi': false
+        }));
+    }
+})
+
+.controller( 'SettingsCtrl', function SettingsCtrl( $scope, $window, $log) {
+
+    //TODO:  this fragmet is called twice in settings.main state
+    var settings = JSON.parse($window.localStorage.getItem("settings"));
+    $log.log("::Settings::CONTROLLER::getting settings from localStorage");
+    $log.log("::Settings::value", settings);
+
 });

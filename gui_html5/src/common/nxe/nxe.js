@@ -15,7 +15,8 @@ angular.module( 'nxe', [])
      * @param {function} callback
      * @returns {undefined}
      */
-    var call = function (data, callback) {
+    var canvasResized = false,
+        call = function (data, callback) {
             $log.log("Calling nxe", data);
             try {
                 if ($window.nxe) {
@@ -55,6 +56,9 @@ angular.module( 'nxe', [])
          * @returns {undefined}
          */
         resizeCanvas = function () {
+            if (canvasResized) {
+                return;
+            }
             //TODO: don't use native document variable, change to angular invocation
             var canvas = document.getElementById("mapCanvas"),
                 body, html, height;
@@ -72,6 +76,10 @@ angular.module( 'nxe', [])
 
                 canvas.height = height - 260; // without simulated dna bars
                 canvas.width = body.clientWidth;
+
+                // set flag to prevent resizing again, because height or width
+                // when touched will remove canvas content (at least on tizen)
+                canvasResized = !canvasResized;
             } else {
                 $log.log('Canvas is not created');
             }

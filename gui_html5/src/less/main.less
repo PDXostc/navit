@@ -83,18 +83,6 @@ a:hover {
     background: @exampleMap;
 }
 
-.table {
-    width: 97%;
-}
-
-.center-table {
-    margin: 0 auto;
-}
-
-.table > tbody > tr > td {
-  border-color: #64bdd3;
-}
-
 .bg-info {
     background-color: rgba(2, 118, 147, 0.8);
 }
@@ -115,10 +103,9 @@ a:hover {
 /**
  * Now that all app-wide styles have been applied, we can load the styles for
  * all the submodules and components we are using.
- *
- * TODO: In a later version of this boilerplate, I'd like to automate this.
  */
 @import '../app/home/home.less';
 @import '../app/mapload/mapload.less';
 @import '../app/download/download.less';
 @import '../app/locations/locations.less';
+@import '../app/settings/settings.less';
