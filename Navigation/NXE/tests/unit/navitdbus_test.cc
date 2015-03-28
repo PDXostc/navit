@@ -25,7 +25,7 @@ struct NavitDBusTest : public ::testing::Test
     }
 
     void TearDown() {
-        connection.stop(runNavit);
+        connection.stop();
         if(runNavit) {
             process.stop();
         }

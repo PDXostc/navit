@@ -15,7 +15,6 @@ class NavitProcessTest : public ::testing::Test
 {
 protected:
     NXE::NavitProcessImpl process;
-    NXE::NavitDBus dbus;
 };
 
 TEST_F(NavitProcessTest, failure_start_pathNotSet)
@@ -33,6 +32,4 @@ TEST_F(NavitProcessTest, success_start_pathSet)
         EXPECT_TRUE(process.start());
         EXPECT_TRUE(process.isRunning());
     }
-    dbus.start();
-    dbus.stop(true);
 }

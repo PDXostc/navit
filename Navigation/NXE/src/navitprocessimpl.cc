@@ -7,9 +7,9 @@
 
 #include <iostream>
 
-namespace bp = ::boost::process;
-namespace bs = ::boost::system;
-namespace bf = ::boost::filesystem;
+namespace bp = boost::process;
+namespace bs = boost::system;
+namespace bf = boost::filesystem;
 
 namespace {
 constexpr pid_t invalidPid = -1;
@@ -61,9 +61,13 @@ bool NavitProcessImpl::start()
     if (!d->m_lastError) {
         nDebug() << "Navit process properly started";
         d->m_monitor = std::move( std::thread( [this]() {
-            nTrace() << "Start monitoring thread";
-            int exitVal = bp::wait_for_exit(d->m_child);
-            nDebug() << "Navit process exited with " << exitVal;
+            try {
+                nTrace() << "Start monitoring thread";
+                int exitVal = bp::wait_for_exit(d->m_child);
+                nDebug() << "Navit process exited with " << exitVal;
+            } catch (const std::exception &ex) {
+                nError() << "Exception during waiting, probably because stop() call";
+            }
         }));
     } else {
         nError() << d->m_lastError.message();
@@ -77,6 +81,7 @@ void NavitProcessImpl::stop()
 {
     nDebug() << "Stopping navit Pid=" << d->m_child.pid;
     if (d->m_child.pid != invalidPid) {
+        bp::terminate(d->m_child);
         d->m_monitor.join();
     }
     d->m_child.pid = invalidPid;

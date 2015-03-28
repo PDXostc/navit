@@ -81,7 +81,7 @@ struct NavitControllerPrivate {
 
         boost::fusion::make_pair<ExitMessage>([this](const JSONMessage& message) {
             nTrace() << "exit " << message.call;
-            ipc->stop(false);
+            ipc->stop();
             JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
@@ -208,11 +208,6 @@ void NavitController::handleMessage(const JSONMessage &msg)
 void NavitController::addListener(const NavitController::Callback_type& cb)
 {
     d->successSignal.connect(cb);
-}
-
-void NavitController::stop(bool quit)
-{
-    d->ipc->stop(quit);
 }
 
 } // namespace NXE
