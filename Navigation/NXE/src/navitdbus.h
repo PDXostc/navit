@@ -14,7 +14,8 @@ public:
 
     //! This will block until startup signal is received
     virtual void start() override;
-    virtual void stop(bool quit) override;
+    virtual void stop() override;
+    virtual void quit() override;
     virtual void moveBy(int x, int y) override;
     virtual void zoomBy(int y) override;
     virtual int zoom() override;

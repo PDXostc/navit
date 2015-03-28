@@ -56,15 +56,20 @@ struct NXEInstancePrivate {
         q->PostMessage(rsp.c_str());
 
         // This is our internal post message
-        std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
-            callback(rsp);
-        });
+        try {
+            std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
+                callback(rsp);
+            });
+        } catch(const std::exception &ex) {
+            nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
+        }
+
     }
 
     void navitMsgCallback(const JSONMessage& response)
     {
         if (response.call == "render") {
-            nInfo() << "Rendering finished!";
+            nInfo() << "Rendering finished!" << "size=" << sharedMemorySize;
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
@@ -72,13 +77,18 @@ struct NXEInstancePrivate {
             q->PostMessage(mem);
 
             // This is our internal post message
-            std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
-                callback(std::string {mem, sharedMemorySize});
-            });
+            try {
+                std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
+                    callback(std::string {mem, sharedMemorySize});
+                });
+            } catch(const std::exception &ex) {
+                nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
+            }
         }
         else {
             postMessage(response);
         }
+
         auto it = timers.find(response.call);
         if (it != timers.end()) {
             auto now = std::chrono::high_resolution_clock::now();
@@ -115,10 +125,11 @@ NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<Navi
 
 NXEInstance::~NXEInstance()
 {
+    nTrace() << "~NXEInstance";
     using SettingsTags::Navit::ExternalNavit;
     const bool external = d->settings.get<ExternalNavit>();
 
-    d->controller.stop(!external);
+    nTrace() << "Stopping controller. external navit=" << external;
 
     auto navit = d->navitProcess.lock();
     if (navit) {

@@ -146,7 +146,7 @@ NavitDBus::NavitDBus()
 NavitDBus::~NavitDBus()
 {
     nTrace() << "Destroying navit dbus";
-    stop(false);
+    stop();
     if (d->m_thread.joinable()) {
         d->m_thread.join();
     }
@@ -164,15 +164,23 @@ void NavitDBus::start()
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
 
     d->m_thread = std::move(std::thread([this]() {
-        nDebug() << "Dispatching";
+        nTrace() << "Dispatching";
         d->m_threadRunning = true;
         ::DBus::default_dispatcher->enter();
+        nTrace() << "EOF dispatching";
     }));
+
+    // wait until dispatching thread is started
+    while (!d->m_threadRunning) {
+        std::chrono::milliseconds dura( 1000 );
+        std::this_thread::sleep_for(dura);
+    }
+
+    nTrace() << "Navit DBus started";
 }
 
-void NavitDBus::stop(bool quit)
+void NavitDBus::stop()
 {
-
     while (d && d->object && d->object->inProgress) {
         nInfo() << "A signal processing is in progress we have to wait";
         std::chrono::milliseconds dura( 30 );
@@ -187,17 +195,22 @@ void NavitDBus::stop(bool quit)
         return;
     }
 
-    if (quit) {
-        nTrace() << "Gracefully quit Navit process";
-        d->object->quit();
-    }
-
     nDebug() << "Stopping Navit DBus client";
-    ::DBus::default_dispatcher->leave();
     if (d->con) {
         d->con->disconnect();
+        nTrace() << "Object disconnected";
     }
+
+    ::DBus::default_dispatcher->leave();
+    nTrace() << "Dispatcher leave";
+
     d->m_threadRunning = false;
+    nDebug() << "Done stoping dbus";
+}
+
+void NavitDBus::quit()
+{
+    DBus::call("quit",*(d->object.get()));
 }
 
 void NavitDBus::moveBy(int x, int y)

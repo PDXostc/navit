@@ -26,8 +26,6 @@ public:
     void handleMessage(const JSONMessage &msg);
     void addListener(const Callback_type &cb);
 
-    void stop(bool quit);
-
 private:
     std::unique_ptr<NavitControllerPrivate> d;
 };

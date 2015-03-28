@@ -6,36 +6,29 @@
 #include <thread>
 #include <chrono>
 
-NXE::NavitProcessImpl *process = nullptr;
 const std::string navitPath { NAVIT_PATH };
 extern bool runNavit;
 
 struct NavitDBusTest : public ::testing::Test
 {
     NXE::NavitDBus connection;
-
-    static void SetUpTestCase() {
-        if (runNavit) {
-            nDebug() << "Running navit binary";
-            process = new NXE::NavitProcessImpl;
-            process->setProgramPath(navitPath);
-            process->start();
-        }
-    }
-
-    static void TearDownTestCase() {
-        if (runNavit) {
-            delete process;
-            process = 0;
-        }
-    }
+    NXE::NavitProcessImpl process;
 
     void SetUp() {
-        ASSERT_NO_THROW(connection.start());
+
+        if (runNavit) {
+            nDebug() << "Running navit binary";
+            process.setProgramPath(navitPath);
+            process.start();
+        }
+        connection.start();
     }
 
     void TearDown() {
-        connection.stop(runNavit);
+        connection.stop();
+        if(runNavit) {
+            process.stop();
+        }
     }
 };
 
@@ -65,6 +58,5 @@ TEST_F(NavitDBusTest, setOrientation)
 
 
     int newOrientation = connection.orientation();
-
     EXPECT_NE(orientation, newOrientation);
 }

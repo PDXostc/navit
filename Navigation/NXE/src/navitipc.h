@@ -15,7 +15,10 @@ public:
 
     //! IPC start/stop
     virtual void start() = 0;
-    virtual void stop(bool quit) = 0;
+    // stops monitoring 
+    virtual void stop() = 0;
+
+    virtual void quit() = 0;
 
     // Actuall interface description
     virtual void moveBy(int x, int y) = 0;
