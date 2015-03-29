@@ -3,4 +3,3 @@ build
 *.pyc
 *.swp
 *build
-.ycm_extra_conf.py
