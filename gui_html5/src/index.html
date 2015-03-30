@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html ng-app="navitGui" ng-controller="AppCtrl">
+<head>
+    <title ng-bind="pageTitle"></title>
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=no">
+
+    <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
+    <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
+    <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
+    <script type="text/javascript" src="<%= file %>"></script><% }); %>
+</head>
+
+<body class="{{backgroundClass}}">
+    <!-- Simulate dna system top bar -->
+    <div id="dna-top"></div>
+    <div id="applicationWrapper">
+        <canvas id="mapCanvas" ng-style="mapVisible"></canvas>
+
+        <!-- Here we put different views content -->
+        <div class="container-fluid" ui-view="main"></div>
+    </div>
+    <!-- Simulate dna system bottom bar -->
+    <div id="dna-bottom"></div>
+</body>
+</html>

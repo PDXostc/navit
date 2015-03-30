@@ -1,0 +1,12 @@
+<tr>
+    <td colspan="2" class="search-results-query">
+        <div>
+            1234 North Main
+        </div>
+    </td>
+</tr>
+
+<tr ui-sref="home.location" ng-repeat="i in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']">
+    <td>Location {{i}} <span>(details)</span></td>
+    <td>{{$index + 0.5}}</td>
+</tr>

@@ -1,0 +1,111 @@
+/**
+ * This is the main application stylesheet. It should include or import all
+ * stylesheets used throughout the application as this is the only stylesheet in
+ * the Grunt configuration that is automatically processed.
+ */
+
+
+/**
+ * First, we include the Twitter Bootstrap LESS files. Only the ones used in the
+ * project should be imported as the rest are just wasting space.
+ */
+
+@import '../../vendor/bootstrap/less/bootstrap.less';
+
+
+/**
+ * This is our main variables file. We must include it last so we can overwrite any variable
+ * definitions in our imported stylesheets.
+ */
+
+@import 'variables.less';
+
+
+/**
+ * Typography
+ */
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto Regular'), local('Roboto-Regular'), url(fonts/Roboto-Regular.woff) format('woff');
+}
+
+body {
+    background: @black;
+    color: #fff;
+    font-size: 34pt;
+}
+
+#applicationWrapper {
+    position: relative;
+    z-index:100;
+}
+
+canvas {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    left: 0;
+}
+
+#dna-top {
+    height: 130px;
+    width: 100%;
+    background-color: cyan;
+}
+
+#dna-bottom {
+    position: fixed;
+    bottom:0;
+    height: 130px;
+    width: 100%;
+    background-color: magenta;
+}
+
+a {
+    color: #fff;
+}
+a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.container-fluid {
+    position: relative;
+    z-index:2;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.backgroundMap {
+    background: @exampleMap;
+}
+
+.bg-info {
+    background-color: rgba(2, 118, 147, 0.8);
+}
+
+.resetProgressBar {
+    width: 90%;
+    height: 20px;
+    margin: 50px auto;
+    background-color: #6BA7B6;
+
+    > div {
+        width: 20%;
+        height: 100%;
+        background-color: #E6E6E6;
+    }
+}
+
+/**
+ * Now that all app-wide styles have been applied, we can load the styles for
+ * all the submodules and components we are using.
+ */
+@import '../app/home/home.less';
+@import '../app/mapload/mapload.less';
+@import '../app/download/download.less';
+@import '../app/locations/locations.less';
+@import '../app/settings/settings.less';

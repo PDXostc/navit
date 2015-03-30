@@ -1,0 +1,31 @@
+<div class="row locationInfo" ng-style="locationControls">
+  <div class="col-md-10">
+      <div class="locationInfoName">
+        Location Name
+      </div>
+      <div class="locationInfoAddress">
+          1234 N Main, Portland, OR 97208
+      </div>
+  </div>
+  <div class="col-md-2 locationInfoDistance">
+      <div>3 min</div>
+      <div>0.2 miles</div>
+  </div>
+</div>
+
+<div class="btn-group-vertical" role="group">
+    <button type="button" class="btn btn-back" ui-sref="locations.results" ng-style="locationControls" title="Back"></button>
+    <button type="button" class="btn btn-settings" ui-sref="settings.main" title="Settings"></button>
+    <button type="button" class="btn btn-search" ui-sref="locations.main" title="Search location"></button>
+    <button type="button" class="btn btn-orientation" ui-sref="home" title="Orientation"></button>
+    <button type="button" class="btn btn-position" ui-sref="home" title="Position"></button>
+    <button type="button" class="btn btn-settings" ui-sref="welcome" title="Welcome"></button>
+    <button type="button" class="btn btn-settings" ui-sref="mapload" title="Map Load"></button>
+    <button type="button" class="btn btn-settings" ng-click="say()" title="Speech Synthesis"></button>
+    <button type="button" class="btn btn-settings" ng-click="sendNXE()" title="Send NXE"></button>
+
+
+    <!-- Bottom controls (e.g. for particular location) -->
+    <button type="button" class="btn btn-favorites" ng-style="locationControls" title="Add to favorites"></button>
+    <button type="button" class="btn btn-navigate" ng-style="locationControls" title="Add to favorites"></button>
+</div>

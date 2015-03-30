@@ -1,0 +1,7 @@
+{
+  "name": "Navit GUI",
+  "start_url": "index.html",
+  "xwalk_description": "HTML5 GUI application for Navit",
+  "xwalk_version": "0.0.1",
+  "display": "fullscreen"
+}
