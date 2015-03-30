@@ -80,7 +80,7 @@ TEST_F(NXEInstanceTest, zoom)
     EXPECT_FALSE(respMsg.data.empty());
 }
 
-TEST_F(NXEInstanceTest, DISABLED_zoomInAndOut)
+TEST_F(NXEInstanceTest, zoomInAndOut)
 {
     std::string msg1{ TestUtils::zoomByMessage(2) };
     std::string msg2{ TestUtils::zoomByMessage(-2) };

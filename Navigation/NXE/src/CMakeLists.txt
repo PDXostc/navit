@@ -32,7 +32,10 @@ set(NXE_SRCS
     navitcontroller.cc
     calls.h
     log.h
+    position.h
+    igpsprovider.h
     log.cc
+    gpsdprovider.cc
     dbus_helpers.hpp
     ${dbus_library}
     jsonmessage.cc
