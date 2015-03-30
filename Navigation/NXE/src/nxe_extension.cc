@@ -4,6 +4,7 @@
 
 #include "navitprocessimpl.h"
 #include "navitdbus.h"
+#include "gpsdprovider.h"
 #include "log.h"
 #include "settings.h"
 #include "settingtags.h"
@@ -61,12 +62,13 @@ common::Instance* NXExtension::CreateInstance()
         return nullptr;
     }
 
-    typedef fruit::Component<INavitIPC, INavitProcess> NXEImplsComponent;
+    typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImplsComponent;
 
-    NXEInstance::DepInInterfaces injector { []() -> NXEImplsComponent {
+    DI::Injector injector { []() -> DI::Components {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
-                .bind<INavitProcess, NavitProcessImpl>();
+                .bind<INavitProcess, NavitProcessImpl>()
+                .bind<IGPSProvider, GPSDProvider>();
     }() } ;
 
     d->instance = new NXEInstance {injector};

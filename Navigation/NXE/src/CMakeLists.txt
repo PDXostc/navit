@@ -19,6 +19,7 @@ add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/src/generated_api.cc
 # find DBus
 find_package(DBus REQUIRED)
 find_package(DBusCpp REQUIRED)
+find_package(GPSD REQUIRED)
 include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR} ${DBUSCPP_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -27,6 +28,7 @@ set (dbus_library navitdbus.cc)
 set(nxe_interfaces
     inavitprocess.h
     inavitipc.h
+    igpsprovider.h
 )
 
 set(NXE_SRCS
@@ -39,16 +41,20 @@ set(NXE_SRCS
     calls.h
     log.h
     log.cc
-    dbus_helpers.hpp
     jsonmessage.cc
     settings.cc
     settingtags.h
+    position.h
 
     # dbus interface implementation
     ${dbus_library}
+    dbus_helpers.hpp
 
     # navit posix process controlling implementation
     navitprocessimpl.cc
+
+    # gps providers
+    gpsdprovider.cc
 
     # tizen-extension-crosswalk sources
     ../tec/common/extension.cc
@@ -58,7 +64,7 @@ set(NXE_SRCS
 )
 
 add_library(nxe SHARED ${NXE_SRCS})
-target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit)
+target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
 
 install(TARGETS nxe
         DESTINATION lib/tizen-extensions-crosswalk)

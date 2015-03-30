@@ -66,3 +66,10 @@ std::string TestUtils::orientationMessage()
     NXE::JSONMessage msg { 3, "orientation"};
     return NXE::JSONUtils::serialize(msg);
 }
+
+
+std::string TestUtils::positionMessage()
+{
+    NXE::JSONMessage msg {100, "position"};
+    return NXE::JSONUtils::serialize(msg);
+}

@@ -8,6 +8,7 @@
 #include "testutils.h"
 #include "mocks/navitprocessmock.h"
 #include "mocks/navitcontrollermock.h"
+#include "mocks/gpsmock.h"
 #include "testutils.h"
 
 #include <fruit/component.h>
@@ -17,10 +18,11 @@
 namespace bpt = boost::property_tree;
 
 struct RenderTest {
-    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::INavitIPC, NXE::INavitProcess> {
+    NXE::DI::Injector injector{ []() -> NXE::DI::Components {
         return fruit::createComponent()
                 .bind<NXE::INavitIPC, NavitIPCMock>()
-                .bind<NXE::INavitProcess, NavitProcessMock>();
+                .bind<NXE::INavitProcess, NavitProcessMock>()
+                .bind<NXE::IGPSProvider, GPSMock>();
     }() };
 
     NXE::NXEInstance instance{ injector };

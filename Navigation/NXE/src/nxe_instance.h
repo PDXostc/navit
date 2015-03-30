@@ -2,25 +2,25 @@
 #define NXE_NXEINSTANCE_H
 
 #include "common/extension.h"
+#include "context.h"
+
 #include <memory>
 #include <vector>
 
-#include <fruit/fruit_forward_decls.h>
 
 namespace NXE {
 class INavitProcess;
 class INavitIPC;
 class NavitController;
+class IGPSProvider;
 
 class NXEInstancePrivate;
 class NXEInstance : public common::Instance
 {
 public:
-    typedef fruit::Injector<INavitIPC, INavitProcess> DepInInterfaces;
-
     typedef std::function<void (const std::string &)> MessageCb_type;
     NXEInstance() = delete;
-    NXEInstance(DepInInterfaces & impls);
+    NXEInstance(DI::Injector & impls);
     ~NXEInstance();
 
     virtual void Initialize() override;

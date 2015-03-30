@@ -6,6 +6,7 @@ set(TEST_SRCS
     jsonparser_test.cc
     navitdbus_test.cc
     navitinstance_test.cc
+    gpsd_test.cc
 )
 
 foreach(testSrc ${TEST_SRCS})

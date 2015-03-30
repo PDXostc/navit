@@ -9,7 +9,6 @@
 #
 #  DBUSCPP_LIBRARIES
 #     which contains the library directory for libdbus-c++-1
-
 #			
 find_path(DBUSCPP_INCLUDE_DIR dbus-c++/dbus.h
                  PATH_SUFFIXES include/dbus-c++-1)

@@ -2,12 +2,15 @@
 #include "inavitipc.h"
 #include "log.h"
 #include "calls.h"
+#include "igpsprovider.h"
 
 #include <functional>
 #include <map>
 #include <typeindex>
 #include <thread>
 #include <chrono>
+
+#include <fruit/injector.h>
 
 #include <boost/lexical_cast.hpp>
 #include <boost/fusion/algorithm/iteration/for_each.hpp>
@@ -20,6 +23,7 @@ namespace NXE {
 
 struct NavitControllerPrivate {
     std::shared_ptr<INavitIPC> ipc;
+    std::shared_ptr<IGPSProvider> gps;
     NavitController* q;
     std::thread m_retriggerThread;
     bool m_isRunning = false;
@@ -68,8 +72,13 @@ struct NavitControllerPrivate {
         }),
 
         boost::fusion::make_pair<PositionMessage>([this](const JSONMessage& message) {
-            q->positon();
-            // TODO: proper success signal
+            Position pos = gps->position();
+            bpt::ptree values;
+            values.put("altitude", pos.altitude);
+            values.put("longitude", pos.longitude);
+            values.put("latitude", pos.latitude);
+            JSONMessage response {message.id, message.call, "", values };
+            successSignal(response);
         }),
 
         boost::fusion::make_pair<RenderMessage>([this](const JSONMessage& message) {
@@ -161,12 +170,12 @@ struct fun {
     const JSONMessage& _data;
 };
 
-NavitController::NavitController(const std::shared_ptr<INavitIPC> &ipc)
+NavitController::NavitController(DI::Injector &ctx)
     : d(new NavitControllerPrivate)
 {
-    d->ipc = ipc;
+    d->ipc = ctx.get<std::shared_ptr<INavitIPC>>();
+    d->gps = ctx.get<std::shared_ptr<IGPSProvider>>();
     d->q = this;
-
 }
 
 NavitController::~NavitController()

@@ -2,6 +2,7 @@
 
 #include "mocks/navitprocessmock.h"
 #include "mocks/navitcontrollermock.h"
+#include "mocks/gpsmock.h"
 #include "nxe_instance.h"
 #include "navitcontroller.h"
 #include "inavitipc.h"
@@ -17,10 +18,11 @@ const std::string navitPath{ NAVIT_PATH };
 
 struct NavitInstanceTest : public ::testing::Test {
 
-    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::INavitIPC, NXE::INavitProcess> {
+    NXE::DI::Injector injector{ []() -> NXE::DI::Components {
         return fruit::createComponent()
                 .bind<NXE::INavitIPC, NavitIPCMock>()
-                .bind<NXE::INavitProcess, NavitProcessMock>();
+                .bind<NXE::INavitProcess, NavitProcessMock>()
+                .bind<NXE::IGPSProvider, GPSMock>();
     }() };
 
     NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };

@@ -6,6 +6,7 @@
 #include "inavitipc.h"
 #include "navitdbus.h"
 #include "testutils.h"
+#include "mocks/gpsmock.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -18,10 +19,11 @@
 namespace bpt = boost::property_tree;
 
 struct RenderTest {
-    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::INavitIPC, NXE::INavitProcess> {
+    NXE::DI::Injector injector{ []() -> NXE::DI::Components {
         return fruit::createComponent()
                 .bind<NXE::INavitIPC, NXE::NavitDBus>()
-                .bind<NXE::INavitProcess, NXE::NavitProcessImpl>();
+                .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
+                .bind<NXE::IGPSProvider, GPSMock>();
     }() };
     NXE::NXEInstance instance{ injector };
 };

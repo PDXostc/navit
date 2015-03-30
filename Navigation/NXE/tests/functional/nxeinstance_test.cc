@@ -2,6 +2,7 @@
 #include "navitprocessimpl.h"
 #include "navitcontroller.h"
 #include "navitdbus.h"
+#include "gpsdprovider.h"
 #include "testutils.h"
 
 #include <gtest/gtest.h>
@@ -13,13 +14,14 @@
 using namespace NXE;
 extern bool runNavit;
 
-typedef fruit::Component<INavitIPC, INavitProcess> NXEImpls;
+typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImpls;
 struct NXEInstanceTest : public ::testing::Test {
 
-    NXEInstance::DepInInterfaces injector { []() -> NXEImpls {
+    DI::Injector injector { []() -> DI::Components {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
-                .bind<INavitProcess, NavitProcessImpl>();
+                .bind<INavitProcess, NavitProcessImpl>()
+                .bind<IGPSProvider, GPSDProvider>();
         }() };
     NXEInstance instance {injector};
     JSONMessage respMsg;
@@ -138,6 +140,18 @@ TEST_F(NXEInstanceTest, changeOrientation)
     instance.HandleMessage(msg2.data());
 
     EXPECT_EQ(numberOfResponses, 2);
+    EXPECT_TRUE(respMsg.error.empty());
+}
+
+TEST_F(NXEInstanceTest, position)
+{
+    const std::string msg{ TestUtils::positionMessage() };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura( 100 );
+    std::this_thread::sleep_for(dura);
+    instance.HandleMessage(msg.data());
+
     EXPECT_TRUE(respMsg.error.empty());
 }
 

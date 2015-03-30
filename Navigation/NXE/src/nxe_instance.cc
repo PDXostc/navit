@@ -34,10 +34,10 @@ namespace NXE {
 
 struct NXEInstancePrivate {
 
-    NXEInstancePrivate(std::shared_ptr<INavitProcess> p, std::shared_ptr<INavitIPC> w, NXEInstance* qptr)
-        : navitProcess(p)
+    NXEInstancePrivate(DI::Injector &ifaces, NXEInstance* qptr)
+        : navitProcess(ifaces.get<std::shared_ptr<INavitProcess>>())
         , q(qptr)
-        , controller(w)
+        , controller(ifaces)
     {
     }
     std::shared_ptr<INavitProcess> navitProcess;
@@ -103,9 +103,8 @@ struct NXEInstancePrivate {
     }
 };
 
-NXEInstance::NXEInstance(DepInInterfaces &impls)
-    : d(new NXEInstancePrivate{ impls.get<std::shared_ptr<INavitProcess>>(),
-                                impls.get<std::shared_ptr<INavitIPC>>(), this })
+NXEInstance::NXEInstance(DI::Injector &impls)
+    : d(new NXEInstancePrivate{ impls,this })
 {
 
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();

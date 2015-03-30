@@ -15,6 +15,8 @@ std::string zoomMessage();
 std::string renderMessage();
 std::string changeOrientationMessage(int orientation);
 std::string orientationMessage();
+std::string positionMessage();
+
 void createNXEConfFile();
 
 struct Timer {

@@ -4,6 +4,7 @@
 #include <memory>
 #include <functional>
 #include "jsonmessage.h"
+#include "context.h"
 
 namespace NXE {
 
@@ -15,7 +16,7 @@ public:
     typedef std::function<void (const JSONMessage &) > Callback_type;
 
     // basic ctor
-    NavitController(const std::shared_ptr<INavitIPC> &ipc);
+    NavitController(DI::Injector &ctx);
     virtual ~NavitController();
 
     // LBS functions
