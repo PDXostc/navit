@@ -17,9 +17,21 @@
 }
 
 .table > tbody > tr > td {
-  border-color: #64bdd3;
+    border-color: #64bdd3;
 
-  &:last-child {
-     text-align: right;
-  }
+    &:last-child {
+        text-align: right;
+    }
+}
+
+.settingsTable > tbody > tr > td {
+    cursor: pointer;
+    &:last-child {
+        color: @settingsValue;
+        text-align: right;
+    }
+}
+
+.offColor {
+    color: @offSettingsValue !important;
 }

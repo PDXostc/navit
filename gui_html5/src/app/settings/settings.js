@@ -4,7 +4,8 @@
  * @module navitGui.settings
  */
 angular.module( 'navitGui.settings', [
-  'ui.router'
+  'ui.router',
+  'LocalStorageModule'
 ])
 
 .config(function config( $stateProvider ) {
@@ -13,7 +14,8 @@ angular.module( 'navitGui.settings', [
     url: '/settings',
     views: {
       "main": {
-        controller: 'SettingsCtrl',
+        // uncomment when breadcumbs introduced
+        //controller: 'SettingsCtrl',
         templateUrl: 'settings/settings.tpl.html'
       }
     },
@@ -50,25 +52,69 @@ angular.module( 'navitGui.settings', [
   });
 })
 
-.run( function run ($window, $log) {
+.run( function run ($rootScope, $log, localStorageService) {
+    var settingsKeys = {
+            'poi': 'off',
+            'orientation': 'north-up',
+            'view': '2D',
+            'theme': 'basic',
+            'routes': 'fast',
+            'voice': 'on'
+        },
+        setKey;
 
-    var settings = JSON.parse($window.localStorage.getItem("settings"));
-    $log.log("::Settings::getting settings from localStorage");
-    $log.log("::Settings::value", settings);
-
-    if (!settings) {
-        $log.log("::Settings::creating settings in localStorage");
-        $window.localStorage.setItem("settings", JSON.stringify({
-            'poi': false
-        }));
-    }
+    // initialize settings
+    angular.forEach(settingsKeys, function(value, key){
+        setKey = "settings." + key;
+        if(!localStorageService.get(setKey)) {
+            $log.log("::Settings::RUN::creating initial " + setKey);
+            localStorageService.set(setKey, value);
+        }
+        // make settings be available everywhere
+        localStorageService.bind($rootScope, setKey);
+    });
 })
 
-.controller( 'SettingsCtrl', function SettingsCtrl( $scope, $window, $log) {
+.controller( 'SettingsCtrl', function SettingsCtrl($scope, $rootScope, $log) {
 
-    //TODO:  this fragmet is called twice in settings.main state
-    var settings = JSON.parse($window.localStorage.getItem("settings"));
-    $log.log("::Settings::CONTROLLER::getting settings from localStorage");
-    $log.log("::Settings::value", settings);
+    // stores settings possible values
+    $scope.states = {
+        'poi': ['off', 'on'],
+        'orientation': ['north-up'],
+        'view': ['2D', '3D'],
+        'theme': ['basic'],
+        'routes': ['fast', 'short'],
+        'voice': ['off', 'on']
+    };
+
+    /**
+     * Controls toggling settings values
+     * Param should be short e.g 'poi'
+     *
+     * @param {string} setting
+     * @returns {undefined}
+     */
+    $scope.updateSettings = function(setting) {
+        var value, index;
+        // don't toggle single options
+        if ($scope.states[setting].length === 1) {
+            return;
+        }
+        // get current value
+        value = $rootScope.settings[setting];
+        // get index of current value
+        index = $scope.states[setting].indexOf(value);
+        // move to the next value or the begining
+        if ($scope.states[setting].length > index + 1) {
+            $rootScope.settings[setting] = $scope.states[setting][index +1];
+        } else {
+            $rootScope.settings[setting] = $scope.states[setting][0];
+        }
+    };
+
+    $scope.settingOffColor = function (setting) {
+        return $rootScope.settings[setting] === 'off';
+    };
+
 
 });

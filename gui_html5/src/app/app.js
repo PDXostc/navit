@@ -13,11 +13,19 @@ angular.module( 'navitGui', [
   'navitGui.download',
   'navitGui.mapload',
   'navitGui.reset',
-  'ui.router'
+  'ui.router',
+  'LocalStorageModule'
 ])
 
-.config( function myAppConfig ( $stateProvider, $urlRouterProvider ) {
-  $urlRouterProvider.otherwise( '/home' );
+.config( function myAppConfig ( $stateProvider, $urlRouterProvider, localStorageServiceProvider ) {
+    // go to home state when url not reckognized
+    $urlRouterProvider.otherwise( '/home' );
+
+    // set global prefix for localStorage keys and storage type
+    localStorageServiceProvider
+        .setPrefix('navit')
+        .setStorageType('localStorage');
+
 })
 
 .run( function run ($rootScope, $log, $window) {

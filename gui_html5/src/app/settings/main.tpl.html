@@ -1,34 +1,40 @@
 <tr>
     <td>Points of Interest</td>
-    <td>off</td>
+    <td ng-click="updateSettings('poi')"
+        ng-class="{offColor: settingOffColor('poi')}">
+        {{settings.poi}}
+    </td>
 </tr>
 <tr>
     <td>Orientation</td>
-    <td>north-up</td>
+    <td>{{settings.orientation}}</td>
 </tr>
 <tr>
     <td>2D/3D View</td>
-    <td>2D</td>
+    <td ng-click="updateSettings('view')">{{settings.view}}</td>
 </tr>
 <tr>
     <td>Theme</td>
-    <td>basic</td>
+    <td>{{settings.theme}}</td>
 </tr>
 <tr>
     <td>Fast/Short Routes</td>
-    <td>fast</td>
+    <td ng-click="updateSettings('routes')">{{settings.routes}}</td>
 </tr>
 <tr>
     <td>Voice Navigation</td>
-    <td>on</td>
+    <td ng-click="updateSettings('voice')"
+        ng-class="{offColor: settingOffColor('voice')}">
+        {{settings.voice}}
+    </td>
 </tr>
 <tr ui-sref="settings.countrylang">
     <td>Country/Language</td>
-    <td>&gt;</td>
+    <td class="offColor">&gt;</td>
 </tr>
 <tr ui-sref="settings.managepoi">
     <td>Manage POIs</td>
-    <td>&gt;</td>
+    <td class="offColor">&gt;</td>
 </tr>
 <tr>
     <td>Delete Cache</td>
@@ -36,5 +42,5 @@
 </tr>
 <tr>
     <td ui-sref="reset">Factory Reset</td>
-    <td>&nbsp;</td>
+    <td class="offColor">&nbsp;</td>
 </tr>
