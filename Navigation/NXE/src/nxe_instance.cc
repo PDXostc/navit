@@ -6,6 +6,7 @@
 #include "settingtags.h"
 #include "log.h"
 #include "calls.h"
+#include "navitipc.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -20,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <fruit/injector.h>
 
 namespace bipc = boost::interprocess;
 
@@ -32,13 +34,13 @@ namespace NXE {
 
 struct NXEInstancePrivate {
 
-    NXEInstancePrivate(std::weak_ptr<NavitProcess> p, std::weak_ptr<NavitIPCInterface> w, NXEInstance* qptr)
+    NXEInstancePrivate(std::shared_ptr<NavitProcess> p, std::shared_ptr<NavitIPCInterface> w, NXEInstance* qptr)
         : navitProcess(p)
         , q(qptr)
-        , controller(w.lock())
+        , controller(w)
     {
     }
-    std::weak_ptr<NavitProcess> navitProcess;
+    std::shared_ptr<NavitProcess> navitProcess;
     NXEInstance* q;
     NavitController controller;
     Settings settings;
@@ -101,22 +103,18 @@ struct NXEInstancePrivate {
     }
 };
 
-NXEInstance::NXEInstance(std::weak_ptr<NavitProcess> process, std::weak_ptr<NavitIPCInterface> ipc)
-    : d(new NXEInstancePrivate{ process, ipc, this })
+NXEInstance::NXEInstance(DepInInterfaces &impls)
+    : d(new NXEInstancePrivate{ impls.get<std::shared_ptr<NavitProcess>>(),
+                                impls.get<std::shared_ptr<NavitIPCInterface>>(), this })
 {
     using SettingsTags::Navit::Path;
 
     nDebug() << "Setting path is" << d->settings.configPath();
 
-    auto navi = d->navitProcess.lock();
-    assert(navi);
-
     nDebug() << "Creating NXE instance";
-    if (navi) {
-        std::string path{ d->settings.get<Path>() };
-        nInfo() << "Setting navit path = [" << path << "]";
-        navi->setProgramPath(path);
-    }
+    std::string path{ d->settings.get<Path>() };
+    nInfo() << "Setting navit path = [" << path << "]";
+    d->navitProcess->setProgramPath(path);
 
     nDebug() << "Connecting to navitprocess signals";
     auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
@@ -131,10 +129,7 @@ NXEInstance::~NXEInstance()
 
     nTrace() << "Stopping controller. external navit=" << external;
 
-    auto navit = d->navitProcess.lock();
-    if (navit) {
-        navit->stop();
-    }
+    d->navitProcess->stop();
 
     if (!external) {
         bipc::shared_memory_object::remove(sharedMemoryName.c_str());
@@ -163,8 +158,7 @@ void NXEInstance::Initialize()
             system("killall navit");
 
             nInfo() << "Autorun is set, starting Navit";
-            auto navi = d->navitProcess.lock();
-            navi->start();
+            d->navitProcess->start();
         } else {
             nInfo() << "Navit external is set, won't run";
         }

@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include <fruit/fruit_forward_decls.h>
+
 namespace NXE {
 class NavitProcess;
 class NavitController;
@@ -14,9 +16,11 @@ class NXEInstancePrivate;
 class NXEInstance : public common::Instance
 {
 public:
+    typedef fruit::Injector<NavitIPCInterface, NavitProcess> DepInInterfaces;
+
     typedef std::function<void (const std::string &)> MessageCb_type;
     NXEInstance() = delete;
-    NXEInstance(std::weak_ptr<NavitProcess> navitProcess, std::weak_ptr<NavitIPCInterface> ipc);
+    NXEInstance(DepInInterfaces & impls);
     ~NXEInstance();
 
     virtual void Initialize() override;

@@ -3,6 +3,7 @@
 
 #include "navitprocess.h"
 #include <memory>
+#include <fruit/macro.h>
 
 namespace NXE {
 
@@ -10,7 +11,7 @@ struct NavitProcessImplPrivate;
 class NavitProcessImpl : public NavitProcess
 {
 public:
-    NavitProcessImpl();
+    INJECT(NavitProcessImpl());
     ~NavitProcessImpl();
 
     virtual void setProgramPath(const std::string &name) override final;

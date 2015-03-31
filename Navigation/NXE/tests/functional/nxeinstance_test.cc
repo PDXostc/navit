@@ -1,7 +1,6 @@
 #include "nxe_instance.h"
 #include "navitprocessimpl.h"
 #include "navitcontroller.h"
-#include "navitipc.h"
 #include "navitdbus.h"
 #include "testutils.h"
 
@@ -9,14 +8,21 @@
 #include <memory>
 #include <chrono>
 #include <thread>
+#include <fruit/fruit.h>
 
+using namespace NXE;
 extern bool runNavit;
+
+typedef fruit::Component<NavitIPCInterface, NavitProcess> NXEImpls;
 struct NXEInstanceTest : public ::testing::Test {
 
-    std::shared_ptr<NXE::NavitProcess> np{ new NXE::NavitProcessImpl };
-    std::shared_ptr<NXE::NavitIPCInterface> nc{ new NXE::NavitDBus };
-    NXE::NXEInstance instance{ np, nc };
-    NXE::JSONMessage respMsg;
+    NXEInstance::DepInInterfaces injector { []() -> NXEImpls {
+        return fruit::createComponent()
+                .bind<NavitIPCInterface, NavitDBus>()
+                .bind<NavitProcess, NavitProcessImpl>();
+        }() };
+    NXEInstance instance {injector};
+    JSONMessage respMsg;
     bool receivedRender {false};
     std::size_t numberOfResponses = 0;
 

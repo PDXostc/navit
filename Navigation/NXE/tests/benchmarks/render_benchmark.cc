@@ -1,4 +1,3 @@
-
 #include "benchmark/benchmark.h"
 
 #include "nxe_instance.h"
@@ -13,15 +12,20 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <chrono>
 #include <thread>
+#include <fruit/component.h>
+#include <fruit/injector.h>
 
 namespace bpt = boost::property_tree;
 
 const std::string navitPath { NAVIT_PATH };
 
 struct RenderTest {
-    std::shared_ptr<NXE::NavitProcess> np{ new NXE::NavitProcessImpl };
-    std::shared_ptr<NXE::NavitIPCInterface> nc{ new NXE::NavitDBus };
-    NXE::NXEInstance instance{ np, nc };
+    NXE::NXEInstance::DepInInterfaces injector { []() -> fruit::Component<NXE::NavitIPCInterface, NXE::NavitProcess> {
+        return fruit::createComponent()
+                .bind<NXE::NavitIPCInterface, NXE::NavitDBus>()
+                .bind<NXE::NavitProcess, NXE::NavitProcessImpl>();
+        }() };
+    NXE::NXEInstance instance{injector};
 };
 
 void renderOneFrame(benchmark::State &state)

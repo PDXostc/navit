@@ -1,4 +1,3 @@
-
 #include <gtest/gtest.h>
 
 #include "mocks/navitprocessmock.h"
@@ -11,18 +10,21 @@
 #include "../testutils.h"
 #include "log.h"
 
+#include <fruit/injector.h>
+
 using ::testing::StrictMock;
-const std::string navitPath { NAVIT_PATH };
+const std::string navitPath{ NAVIT_PATH };
 
 struct NavitInstanceTest : public ::testing::Test {
 
-    std::shared_ptr<StrictMock<NavitProcessMock> > processMock{ new StrictMock<NavitProcessMock>{} };
-    std::shared_ptr<NXE::NavitProcess> process{ processMock };
-    std::shared_ptr<StrictMock<NavitIPCMock> > ipcMock { new StrictMock<NavitIPCMock>{} };
-    std::shared_ptr<NXE::NavitIPCInterface> ipc { ipcMock };
+    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::NavitIPCInterface, NXE::NavitProcess> {
+        return fruit::createComponent()
+                .bind<NXE::NavitIPCInterface, NavitIPCMock>()
+                .bind<NXE::NavitProcess, NavitProcessMock>();
+    }() };
 
-    NavitProcessMock *mock_process { (dynamic_cast<NavitProcessMock*>(process.get())) };
-    NavitIPCMock *mock_ipc { (dynamic_cast<NavitIPCMock*>(ipc.get())) };
+    NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::NavitProcess*>())) };
+    NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::NavitIPCInterface*>())) };
 
     bool bData = false;
     std::string response;
@@ -35,7 +37,8 @@ struct NavitInstanceTest : public ::testing::Test {
         TestUtils::createNXEConfFile();
     }
 
-    void setupMocks() {
+    void setupMocks()
+    {
         using ::testing::Return;
         using ::testing::ReturnRef;
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
@@ -44,7 +47,8 @@ struct NavitInstanceTest : public ::testing::Test {
         //EXPECT_CALL(*mock_ipc, stop());
     }
 
-    void callback(const std::string &str) {
+    void callback(const std::string& str)
+    {
         ASSERT_NE(str, "error");
         nDebug() << "Callback data=" << str;
         bData = true;
@@ -57,7 +61,7 @@ TEST_F(NavitInstanceTest, moveBy_without_data)
     TestUtils::Timer t;
     setupMocks();
 
-    NXE::NXEInstance instance{ process, ipc };
+    NXE::NXEInstance instance{ injector };
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
     const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
     EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
@@ -70,12 +74,11 @@ TEST_F(NavitInstanceTest, moveBy_with_data)
     // Arrange
     ASSERT_FALSE(bData);
     setupMocks();
-    EXPECT_CALL(*mock_ipc, moveBy(-15,-15));
+    EXPECT_CALL(*mock_ipc, moveBy(-15, -15));
 
-    NXE::NXEInstance instance{ process, ipc };
+    NXE::NXEInstance instance{ injector };
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
-    const std::string incomingMessage =
-            "{ \
+    const std::string incomingMessage = "{ \
                 \"id\":0, \
                 \"call\":\"moveBy\", \
                 \"data\": { \
@@ -97,10 +100,9 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
     setupMocks();
     EXPECT_CALL(*mock_ipc, zoom()).WillOnce(Return(10));
 
-    NXE::NXEInstance instance{ process, ipc };
+    NXE::NXEInstance instance{ injector };
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
-    const std::string incomingMessage =
-            "{ \
+    const std::string incomingMessage = "{ \
                 \"id\":15, \
                 \"call\":\"zoom\" \
             }";
@@ -108,10 +110,10 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
     // Act
     EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
     EXPECT_TRUE(bData);
-    EXPECT_NE(response,"");
+    EXPECT_NE(response, "");
     NXE::JSONMessage json = NXE::JSONUtils::deserialize(response);
 
     // Assert
     ASSERT_FALSE(json.data.empty());
-    EXPECT_EQ(json.data.get<double>("zoom"),10);
+    EXPECT_EQ(json.data.get<double>("zoom"), 10);
 }

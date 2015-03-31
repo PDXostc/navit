@@ -8,15 +8,14 @@
 #include "settings.h"
 #include "settingtags.h"
 
+#include <fruit/fruit.h>
+
 using namespace NXE;
 
 extern const char kAscii_nxe_api[];
 NXE::NXExtension* g_extension = nullptr;
 
 struct NXE::NXExtensionPrivate {
-    std::shared_ptr<NavitProcess> navitProcess;
-    std::shared_ptr<NavitIPCInterface> navitIPC;
-
     NXEInstance* instance = nullptr;
 };
 
@@ -62,17 +61,15 @@ common::Instance* NXExtension::CreateInstance()
         return nullptr;
     }
 
-    if (!d->navitProcess) {
+    typedef fruit::Component<NavitIPCInterface, NavitProcess> NXEImplsComponent;
 
-        // TODO: Properly set Navit path and
-        // environment for Navit
+    NXEInstance::DepInInterfaces injector { []() -> NXEImplsComponent {
+        return fruit::createComponent()
+                .bind<NavitIPCInterface, NavitDBus>()
+                .bind<NavitProcess, NavitProcessImpl>();
+    }() } ;
 
-        // Use proper DI here?
-        d->navitProcess.reset(new NavitProcessImpl);
-        d->navitIPC.reset(new NavitDBus);
-    }
-
-    d->instance = new NXEInstance(d->navitProcess, d->navitIPC);
+    d->instance = new NXEInstance {injector};
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;

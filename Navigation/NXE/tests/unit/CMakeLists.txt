@@ -11,7 +11,7 @@ set(TEST_SRCS
 foreach(testSrc ${TEST_SRCS})
         get_filename_component(testName ${testSrc} NAME_WE)
         add_executable(${testName} ${testSrc})
-        target_link_libraries(${testName} testminimain nxe gtest gmock ${Boost_LIBRARIES})
+        target_link_libraries(${testName} testminimain nxe gtest gmock fruit ${Boost_LIBRARIES})
         add_test(NAME ${testName}Test
                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${testName})

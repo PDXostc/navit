@@ -6,6 +6,7 @@
 
 struct NavitProcessMock : public NXE::NavitProcess
 {
+    using Inject = NavitProcessMock();
     MOCK_METHOD1(setProgramPath, void(const std::string&));
     MOCK_METHOD0(start, bool());
     MOCK_METHOD0(stop, void());

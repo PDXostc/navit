@@ -4,12 +4,14 @@
 #include "navitcontroller.h"
 #include "navitipc.h"
 
+#include <fruit/macro.h>
+
 namespace NXE {
 
 class NavitDBusPrivate;
 class NavitDBus : public NavitIPCInterface {
 public:
-    NavitDBus();
+    INJECT(NavitDBus());
     ~NavitDBus();
 
     //! This will block until startup signal is received

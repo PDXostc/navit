@@ -3,7 +3,9 @@
 
 #include "navitipc.h"
 
-struct NavitIPCMock : public NXE::NavitIPCInterface {
+struct NavitIPCMock : public NXE::NavitIPCInterface
+{
+    using Inject = NavitIPCMock();
     GMOCK_METHOD0_(, , , start, void());
     GMOCK_METHOD0_(, , , stop, void());
     GMOCK_METHOD0_(, , , quit, void());
