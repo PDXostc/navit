@@ -14,8 +14,7 @@ angular.module( 'navitGui.settings', [
     url: '/settings',
     views: {
       "main": {
-        // uncomment when breadcumbs introduced
-        //controller: 'SettingsCtrl',
+        controller: 'SettingsCtrl',
         templateUrl: 'settings/settings.tpl.html'
       }
     },
@@ -37,8 +36,13 @@ angular.module( 'navitGui.settings', [
     views: {
       "main": {
         controller: 'SettingsCtrl',
-        templateUrl: 'settings/country_lang.tpl.html'
+        templateUrl: 'settings/country_lang.tpl.html',
+        breadcrumb: 'Country/Language'
       }
+    },
+    data: {
+        breadcrumb: 'Country/Language',
+        backState: 'settings.main'
     }
   })
   .state( 'settings.managepoi', {
@@ -48,6 +52,10 @@ angular.module( 'navitGui.settings', [
         controller: 'SettingsCtrl',
         templateUrl: 'settings/manage_poi.tpl.html'
       }
+    },
+    data: {
+        breadcrumb: 'Manage POIs',
+        backState: 'settings.main'
     }
   });
 })
@@ -75,7 +83,20 @@ angular.module( 'navitGui.settings', [
     });
 })
 
-.controller( 'SettingsCtrl', function SettingsCtrl($scope, $rootScope, $log) {
+.controller( 'SettingsCtrl', function SettingsCtrl($scope, $rootScope, $state, $log) {
+
+    // set back state
+    $rootScope.backUrl = '#/home';
+    if ($state.current.data && $state.current.data.backState) {
+        $rootScope.backUrl  = $state.href($state.current.data.backState);
+    }
+
+    // set breadcrumbs label
+    $rootScope.breadcrumb = null;
+    if ($state.current.data && $state.current.data.breadcrumb) {
+        $rootScope.breadcrumb = $state.current.data.breadcrumb;
+    }
+
 
     // stores settings possible values
     $scope.states = {

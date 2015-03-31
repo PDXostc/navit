@@ -1,6 +1,6 @@
 /**
  * Module responsible for managing locations, searching, faforites and history.
- * 
+ *
  * @module navitGui.locations
  */
 angular.module( 'navitGui.locations', [
@@ -39,6 +39,10 @@ angular.module( 'navitGui.locations', [
         controller: 'LocationsCtrl',
         templateUrl: 'locations/search.tpl.html'
       }
+    },
+    data: {
+        breadcrumb: 'Search',
+        backState: 'locations.main'
     }
   })
   .state( 'locations.destination_history', {
@@ -48,6 +52,10 @@ angular.module( 'navitGui.locations', [
         controller: 'LocationsCtrl',
         templateUrl: 'locations/destination_history.tpl.html'
       }
+    },
+    data: {
+        breadcrumb: 'Destination History',
+        backState: 'locations.main'
     }
   })
   .state( 'locations.favorites', {
@@ -57,6 +65,10 @@ angular.module( 'navitGui.locations', [
         controller: 'LocationsCtrl',
         templateUrl: 'locations/favorites.tpl.html'
       }
+    },
+    data: {
+        breadcrumb: 'Favorites',
+        backState: 'locations.main'
     }
   })
   .state( 'locations.results', {
@@ -66,9 +78,25 @@ angular.module( 'navitGui.locations', [
         controller: 'LocationsCtrl',
         templateUrl: 'locations/results.tpl.html'
       }
+    },
+    data: {
+        breadcrumb: 'Search',
+        backState: 'locations.main'
     }
   });
 })
 
-.controller( 'LocationsCtrl', function LocationsCtrl( $scope ) {
+.controller( 'LocationsCtrl', function LocationsCtrl( $scope, $state, $rootScope ) {
+    // set back state
+    $rootScope.backUrl = '#/home';
+    if ($state.current.data && $state.current.data.backState) {
+        $rootScope.backUrl  = $state.href($state.current.data.backState);
+    }
+
+    // set breadcrumbs label
+    $rootScope.breadcrumb = null;
+    if ($state.current.data && $state.current.data.breadcrumb) {
+        $rootScope.breadcrumb = $state.current.data.breadcrumb;
+    }
+
 });

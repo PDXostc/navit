@@ -2,10 +2,10 @@
     <thead>
         <tr>
             <th>
-                <a ui-sref="home">
+                <a href="{{backUrl}}">
                     <img src="assets/icons/back_icon_white_lg.png" alt="back"/>
                 </a>
-                Settings
+                Settings <span class="mybreadcrumb" ng-if="breadcrumb">/</span><span>{{breadcrumb}}</span>
             </th>
           <th>
                 <img src="assets/icons/back_icon_white_md.png" alt="back"/>

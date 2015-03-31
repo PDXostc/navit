@@ -1,9 +1,16 @@
-<table class="table center-table">
+<table class="table center-table locationsTable">
     <thead>
         <tr>
-            <th><button type="button" ui-sref="home">back</button> Locations</th>
-          <th>icon</th>
+            <th>
+                <a href="{{backUrl}}">
+                    <img src="assets/icons/back_icon_white_lg.png" alt="back"/>
+                </a>
+                Locations <span class="mybreadcrumb" ng-if="breadcrumb">/</span><span>{{breadcrumb}}</span></th>
+            <th>
+                <img src="assets/icons/back_icon_white_md.png" alt="back"/>
+                <img src="assets/icons/map_icon_white.png" alt="back"/>
+            </th>
         </tr>
       </thead>
     <tbody ui-view="main"></tbody>
-</table>   
+</table>
