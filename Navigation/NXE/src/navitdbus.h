@@ -2,14 +2,14 @@
 #define NXE_NAVITDBUS_H
 
 #include "navitcontroller.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 
 #include <fruit/macro.h>
 
 namespace NXE {
 
 class NavitDBusPrivate;
-class NavitDBus : public NavitIPCInterface {
+class NavitDBus : public INavitIPC {
 public:
     INJECT(NavitDBus());
     ~NavitDBus();

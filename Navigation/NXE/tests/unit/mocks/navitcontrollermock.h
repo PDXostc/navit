@@ -1,9 +1,9 @@
 #ifndef NAVITCONTROLLERMOCK_H
 #define NAVITCONTROLLERMOCK_H
 
-#include "navitipc.h"
+#include "inavitipc.h"
 
-struct NavitIPCMock : public NXE::NavitIPCInterface
+struct NavitIPCMock : public NXE::INavitIPC
 {
     using Inject = NavitIPCMock();
     GMOCK_METHOD0_(, , , start, void());

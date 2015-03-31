@@ -6,12 +6,12 @@
 
 namespace NXE {
 
-class NavitIPCInterface {
+class INavitIPC {
 public:
     typedef boost::signals2::signal<void (std::string)> SpeechSignal;
     typedef boost::signals2::signal<void ()> InitializedSignal;
 
-    virtual ~NavitIPCInterface() {}
+    virtual ~INavitIPC() {}
 
     //! IPC start/stop
     virtual void start() = 0;

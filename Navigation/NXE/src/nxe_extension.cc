@@ -1,6 +1,6 @@
 #include "nxe_extension.h"
 #include "nxe_instance.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 
 #include "navitprocessimpl.h"
 #include "navitdbus.h"
@@ -61,12 +61,12 @@ common::Instance* NXExtension::CreateInstance()
         return nullptr;
     }
 
-    typedef fruit::Component<NavitIPCInterface, NavitProcess> NXEImplsComponent;
+    typedef fruit::Component<INavitIPC, INavitProcess> NXEImplsComponent;
 
     NXEInstance::DepInInterfaces injector { []() -> NXEImplsComponent {
         return fruit::createComponent()
-                .bind<NavitIPCInterface, NavitDBus>()
-                .bind<NavitProcess, NavitProcessImpl>();
+                .bind<INavitIPC, NavitDBus>()
+                .bind<INavitProcess, NavitProcessImpl>();
     }() } ;
 
     d->instance = new NXEInstance {injector};

@@ -1,15 +1,15 @@
-#ifndef NXE_NAVITPROCESS_H
-#define NXE_NAVITPROCESS_H
+#ifndef INAVITPROCESS_H
+#define INAVITPROCESS_H
 
 #include <list>
 #include <string>
 
 namespace NXE {
 
-class NavitProcess
+class INavitProcess
 {
 public:
-    virtual ~NavitProcess() {}
+    virtual ~INavitProcess() {}
 
     virtual void setProgramPath(const std::string &name) = 0;
 
@@ -22,4 +22,4 @@ public:
 
 } // namespace NXE
 
-#endif // NXE_NAVITPROCESS_H
+#endif // INAVITPROCESS_H

@@ -13,13 +13,13 @@
 using namespace NXE;
 extern bool runNavit;
 
-typedef fruit::Component<NavitIPCInterface, NavitProcess> NXEImpls;
+typedef fruit::Component<INavitIPC, INavitProcess> NXEImpls;
 struct NXEInstanceTest : public ::testing::Test {
 
     NXEInstance::DepInInterfaces injector { []() -> NXEImpls {
         return fruit::createComponent()
-                .bind<NavitIPCInterface, NavitDBus>()
-                .bind<NavitProcess, NavitProcessImpl>();
+                .bind<INavitIPC, NavitDBus>()
+                .bind<INavitProcess, NavitProcessImpl>();
         }() };
     NXEInstance instance {injector};
     JSONMessage respMsg;

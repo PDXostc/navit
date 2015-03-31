@@ -1,5 +1,5 @@
 #include "navitcontroller.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 #include "log.h"
 #include "calls.h"
 
@@ -19,7 +19,7 @@ namespace bpt = boost::property_tree;
 namespace NXE {
 
 struct NavitControllerPrivate {
-    std::shared_ptr<NavitIPCInterface> ipc;
+    std::shared_ptr<INavitIPC> ipc;
     NavitController* q;
     std::thread m_retriggerThread;
     bool m_isRunning = false;
@@ -161,7 +161,7 @@ struct fun {
     const JSONMessage& _data;
 };
 
-NavitController::NavitController(std::shared_ptr<NavitIPCInterface> ipc)
+NavitController::NavitController(const std::shared_ptr<INavitIPC> &ipc)
     : d(new NavitControllerPrivate)
 {
     d->ipc = ipc;

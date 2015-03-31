@@ -23,21 +23,32 @@ include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR} ${DBUSCPP_INCLU
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 set (dbus_library navitdbus.cc)
+
+set(nxe_interfaces
+    inavitprocess.h
+    inavitipc.h
+)
+
 set(NXE_SRCS
+    # interfaces
+    ${nxe_interfaces}
+
     nxe_extension.cc
     nxe_instance.cc
-    navitprocess.h
-    navitipc.h
-    navitprocessimpl.cc
     navitcontroller.cc
     calls.h
     log.h
     log.cc
     dbus_helpers.hpp
-    ${dbus_library}
     jsonmessage.cc
     settings.cc
     settingtags.h
+
+    # dbus interface implementation
+    ${dbus_library}
+
+    # navit posix process controlling implementation
+    navitprocessimpl.cc
 
     # tizen-extension-crosswalk sources
     ../tec/common/extension.cc

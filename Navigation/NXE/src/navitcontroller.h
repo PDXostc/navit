@@ -8,14 +8,14 @@
 namespace NXE {
 
 struct NavitControllerPrivate;
-class NavitIPCInterface;
+class INavitIPC;
 class NavitController
 {
 public:
     typedef std::function<void (const JSONMessage &) > Callback_type;
 
     // basic ctor
-    NavitController(std::shared_ptr<NavitIPCInterface> ipc );
+    NavitController(const std::shared_ptr<INavitIPC> &ipc);
     virtual ~NavitController();
 
     // LBS functions

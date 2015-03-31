@@ -249,13 +249,13 @@ void NavitDBus::setOrientation(int newOrientation)
     d->object->setOrientation(newOrientation);
 }
 
-NavitIPCInterface::SpeechSignal& NavitDBus::speechSignal()
+INavitIPC::SpeechSignal& NavitDBus::speechSignal()
 {
     assert(d && d->object);
     return d->object->speechSignal;
 }
 
-NavitIPCInterface::InitializedSignal& NavitDBus::initializedSignal()
+INavitIPC::InitializedSignal& NavitDBus::initializedSignal()
 {
     assert(d && d->object);
     return d->object->initializedSignal;

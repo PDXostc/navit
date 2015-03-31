@@ -1,12 +1,12 @@
 #include "nxe_instance.h"
-#include "navitprocess.h"
+#include "inavitprocess.h"
 #include "navitcontroller.h"
 #include "jsonmessage.h"
 #include "settings.h"
 #include "settingtags.h"
 #include "log.h"
 #include "calls.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/interprocess/shared_memory_object.hpp>
@@ -34,13 +34,13 @@ namespace NXE {
 
 struct NXEInstancePrivate {
 
-    NXEInstancePrivate(std::shared_ptr<NavitProcess> p, std::shared_ptr<NavitIPCInterface> w, NXEInstance* qptr)
+    NXEInstancePrivate(std::shared_ptr<INavitProcess> p, std::shared_ptr<INavitIPC> w, NXEInstance* qptr)
         : navitProcess(p)
         , q(qptr)
         , controller(w)
     {
     }
-    std::shared_ptr<NavitProcess> navitProcess;
+    std::shared_ptr<INavitProcess> navitProcess;
     NXEInstance* q;
     NavitController controller;
     Settings settings;
@@ -104,8 +104,8 @@ struct NXEInstancePrivate {
 };
 
 NXEInstance::NXEInstance(DepInInterfaces &impls)
-    : d(new NXEInstancePrivate{ impls.get<std::shared_ptr<NavitProcess>>(),
-                                impls.get<std::shared_ptr<NavitIPCInterface>>(), this })
+    : d(new NXEInstancePrivate{ impls.get<std::shared_ptr<INavitProcess>>(),
+                                impls.get<std::shared_ptr<INavitIPC>>(), this })
 {
     using SettingsTags::Navit::Path;
 

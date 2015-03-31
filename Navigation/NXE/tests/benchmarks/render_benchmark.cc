@@ -3,7 +3,7 @@
 #include "nxe_instance.h"
 #include "navitprocessimpl.h"
 #include "navitcontroller.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 #include "navitdbus.h"
 #include "testutils.h"
 #include "settingtags.h"
@@ -20,10 +20,10 @@ namespace bpt = boost::property_tree;
 const std::string navitPath { NAVIT_PATH };
 
 struct RenderTest {
-    NXE::NXEInstance::DepInInterfaces injector { []() -> fruit::Component<NXE::NavitIPCInterface, NXE::NavitProcess> {
+    NXE::NXEInstance::DepInInterfaces injector { []() -> fruit::Component<NXE::INavitIPC, NXE::INavitProcess> {
         return fruit::createComponent()
-                .bind<NXE::NavitIPCInterface, NXE::NavitDBus>()
-                .bind<NXE::NavitProcess, NXE::NavitProcessImpl>();
+                .bind<NXE::INavitIPC, NXE::NavitDBus>()
+                .bind<NXE::INavitProcess, NXE::NavitProcessImpl>();
         }() };
     NXE::NXEInstance instance{injector};
 };
@@ -66,7 +66,7 @@ BENCHMARK(moveBackAndForth);
 
 int main(int argc, char **argv)
 {
-    const std::vector<std::string> arguments(argv + 1, argv + argc);
+    const std::vector<std::string> arguments {argv + 1, argv + argc};
 
     bpt::ptree config;
     config.put(SettingsTags::Navit::Path::name(), navitPath);

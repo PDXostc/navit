@@ -1,10 +1,10 @@
 #ifndef NAVITPROCESSMOCK
 #define NAVITPROCESSMOCK
 
-#include "navitprocess.h"
+#include "inavitprocess.h"
 #include <gmock/gmock.h>
 
-struct NavitProcessMock : public NXE::NavitProcess
+struct NavitProcessMock : public NXE::INavitProcess
 {
     using Inject = NavitProcessMock();
     MOCK_METHOD1(setProgramPath, void(const std::string&));

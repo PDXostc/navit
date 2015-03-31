@@ -4,7 +4,7 @@
 #include "mocks/navitcontrollermock.h"
 #include "nxe_instance.h"
 #include "navitcontroller.h"
-#include "navitipc.h"
+#include "inavitipc.h"
 #include "settingtags.h"
 #include "jsonmessage.h"
 #include "../testutils.h"
@@ -17,20 +17,20 @@ const std::string navitPath{ NAVIT_PATH };
 
 struct NavitInstanceTest : public ::testing::Test {
 
-    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::NavitIPCInterface, NXE::NavitProcess> {
+    NXE::NXEInstance::DepInInterfaces injector{ []() -> fruit::Component<NXE::INavitIPC, NXE::INavitProcess> {
         return fruit::createComponent()
-                .bind<NXE::NavitIPCInterface, NavitIPCMock>()
-                .bind<NXE::NavitProcess, NavitProcessMock>();
+                .bind<NXE::INavitIPC, NavitIPCMock>()
+                .bind<NXE::INavitProcess, NavitProcessMock>();
     }() };
 
-    NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::NavitProcess*>())) };
-    NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::NavitIPCInterface*>())) };
+    NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };
+    NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::INavitIPC*>())) };
 
     bool bData = false;
     std::string response;
 
-    NXE::NavitIPCInterface::SpeechSignal speechS;
-    NXE::NavitIPCInterface::InitializedSignal initS;
+    NXE::INavitIPC::SpeechSignal speechS;
+    NXE::INavitIPC::InitializedSignal initS;
 
     static void SetUpTestCase()
     {

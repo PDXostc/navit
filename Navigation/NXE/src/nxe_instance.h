@@ -8,15 +8,15 @@
 #include <fruit/fruit_forward_decls.h>
 
 namespace NXE {
-class NavitProcess;
+class INavitProcess;
+class INavitIPC;
 class NavitController;
-class NavitIPCInterface;
 
 class NXEInstancePrivate;
 class NXEInstance : public common::Instance
 {
 public:
-    typedef fruit::Injector<NavitIPCInterface, NavitProcess> DepInInterfaces;
+    typedef fruit::Injector<INavitIPC, INavitProcess> DepInInterfaces;
 
     typedef std::function<void (const std::string &)> MessageCb_type;
     NXEInstance() = delete;
