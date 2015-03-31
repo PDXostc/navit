@@ -42,9 +42,7 @@ struct NavitInstanceTest : public ::testing::Test {
         using ::testing::Return;
         using ::testing::ReturnRef;
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
-        EXPECT_CALL(*mock_process, setProgramPath(navitPath));
         EXPECT_CALL(*mock_process, stop());
-        //EXPECT_CALL(*mock_ipc, stop());
     }
 
     void callback(const std::string& str)

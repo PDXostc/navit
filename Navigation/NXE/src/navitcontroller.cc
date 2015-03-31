@@ -43,7 +43,7 @@ struct NavitControllerPrivate {
 
             const int x = message.data.get<int>("x");
             const int y = message.data.get<int>("y");
-            nDebug() << "IPC: Move by " << x << y;
+            nDebug() << "IPC: Move by [x,y] = [" << x << ","  << y << "]";
             ipc->moveBy(x,y);
 
             // TODO: proper success signal
@@ -196,8 +196,8 @@ void NavitController::handleMessage(const JSONMessage &msg)
             return true;
         }
         return false;
-                                              },
-                                              fun(d.get(), msg)));
+    },
+    fun(d.get(), msg)));
 
     if (!bCalled) {
         nFatal() << "Unable to call " << msg.call;

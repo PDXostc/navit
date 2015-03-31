@@ -107,16 +107,9 @@ NXEInstance::NXEInstance(DepInInterfaces &impls)
     : d(new NXEInstancePrivate{ impls.get<std::shared_ptr<INavitProcess>>(),
                                 impls.get<std::shared_ptr<INavitIPC>>(), this })
 {
-    using SettingsTags::Navit::Path;
 
-    nDebug() << "Setting path is" << d->settings.configPath();
-
-    nDebug() << "Creating NXE instance";
-    std::string path{ d->settings.get<Path>() };
-    nInfo() << "Setting navit path = [" << path << "]";
-    d->navitProcess->setProgramPath(path);
-
-    nDebug() << "Connecting to navitprocess signals";
+    nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
+    nTrace() << "Connecting to navitprocess signals";
     auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
     d->controller.addListener(bound);
 }
@@ -152,12 +145,13 @@ void NXEInstance::Initialize()
     if (bAutoRun) {
         bool external = d->settings.get<ExternalNavit>();
         if (!external) {
-
-            // before running navit, kill
-            // all possible running instances
-            system("killall navit");
+            using SettingsTags::Navit::Path;
 
             nInfo() << "Autorun is set, starting Navit";
+            std::string path{ d->settings.get<Path>() };
+            nInfo() << "Setting navit path = [" << path << "]";
+            d->navitProcess->setProgramPath(path);
+
             d->navitProcess->start();
         } else {
             nInfo() << "Navit external is set, won't run";
