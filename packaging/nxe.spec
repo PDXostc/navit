@@ -38,3 +38,4 @@ make install DESTDIR=%{buildroot}
 %files 
 %{_prefix}/lib/tizen-extensions-crosswalk/libnxe.so
 %{_prefix}/share/nxe/nxe.conf
+%{_prefix}/lib/libfruit.so
