@@ -17,15 +17,15 @@ extern bool runNavit;
 typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImpls;
 struct NXEInstanceTest : public ::testing::Test {
 
-    DI::Injector injector { []() -> DI::Components {
+    DI::Injector injector{ []() -> DI::Components {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
                 .bind<INavitProcess, NavitProcessImpl>()
                 .bind<IGPSProvider, GPSDProvider>();
-        }() };
-    NXEInstance instance { injector };
+    }() };
+    NXEInstance instance{ injector };
     JSONMessage respMsg;
-    bool receivedRender {false};
+    bool receivedRender{ false };
     std::size_t numberOfResponses = 0;
 
     static void SetUpTestCase()
@@ -33,7 +33,8 @@ struct NXEInstanceTest : public ::testing::Test {
         TestUtils::createNXEConfFile();
     }
 
-    void callback(const std::string &response) {
+    void callback(const std::string& response)
+    {
         if (response.size() == 7171272) {
             receivedRender = true;
         }
@@ -45,7 +46,8 @@ struct NXEInstanceTest : public ::testing::Test {
         numberOfResponses++;
     }
 
-    void zoom(int factor) {
+    void zoom(int factor)
+    {
         std::string msg{ TestUtils::zoomByMessage(factor) };
         instance.HandleMessage(msg.data());
     }
@@ -61,7 +63,8 @@ TEST_F(NXEInstanceTest, zoomBy)
 }
 
 // TODO: How to enable speech test?
-TEST_F(NXEInstanceTest, DISABLED_speechTest) {
+TEST_F(NXEInstanceTest, DISABLED_speechTest)
+{
     // by default each time we want to draw a
     // speech 'draw' will be triggered
     instance.Initialize();
@@ -107,23 +110,23 @@ TEST_F(NXEInstanceTest, renderOneFrame)
     std::string msg{ TestUtils::renderMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
+    std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     instance.HandleMessage(msg.data());
     std::vector<double> mes = instance.renderMeasurements();
-    double mean = std::accumulate(mes.begin(), mes.end(), 0.0)/mes.size();
+    double mean = std::accumulate(mes.begin(), mes.end(), 0.0) / mes.size();
     perfLog("render") << " mean = " << mean;
     EXPECT_LT(mean, 400.0);
     // Message cannot be properly parsed!
-    EXPECT_EQ(numberOfResponses,1);
+    EXPECT_EQ(numberOfResponses, 1);
 }
 
 TEST_F(NXEInstanceTest, moveByMessage)
 {
-    const std::string msg{ TestUtils::moveByMessage(10,10) };
+    const std::string msg{ TestUtils::moveByMessage(10, 10) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
+    std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     instance.HandleMessage(msg.data());
 }
@@ -134,7 +137,7 @@ TEST_F(NXEInstanceTest, changeOrientation)
     const std::string msg2{ TestUtils::orientationMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
+    std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     instance.HandleMessage(msg.data());
     instance.HandleMessage(msg2.data());
@@ -148,7 +151,7 @@ TEST_F(NXEInstanceTest, position)
     const std::string msg{ TestUtils::positionMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
+    std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     instance.HandleMessage(msg.data());
 
@@ -160,7 +163,7 @@ TEST_F(NXEInstanceTest, changeOrientationToIncorrectValue)
     const std::string msg{ TestUtils::changeOrientationMessage(100) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
-    std::chrono::milliseconds dura( 100 );
+    std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     instance.HandleMessage(msg.data());
 

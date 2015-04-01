@@ -13,5 +13,5 @@
 #define nError() spdlog::get("nxe")->error() << __FILENAME__ << "@" << __LINE__ << " "
 #define nFatal() spdlog::get("nxe")->critical()
 
-spdlog::details::line_logger perfLog(const std::string &name);
+spdlog::details::line_logger perfLog(const std::string& name);
 #endif // LOG_H

@@ -8,7 +8,6 @@
 
 #include <boost/signals2/signal.hpp>
 
-
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
 const std::string navitDBusPath = "/org/navit_project/navit/navit/0";
@@ -42,7 +41,8 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         inProgress = false;
     }
 
-    void quit() {
+    void quit()
+    {
         inProgress = true;
         DBus::call("quit", *this);
         inProgress = false;
@@ -164,7 +164,6 @@ void NavitDBus::start()
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
 
-
     d->m_thread = std::move(std::thread([this]() {
         nTrace() << "Dispatching";
         d->m_threadRunning = true;
@@ -174,7 +173,7 @@ void NavitDBus::start()
 
     // wait until dispatching thread is started
     while (!d->m_threadRunning) {
-        std::chrono::milliseconds dura( 1000 );
+        std::chrono::milliseconds dura(1000);
         std::this_thread::sleep_for(dura);
     }
 
@@ -185,7 +184,7 @@ void NavitDBus::stop()
 {
     while (d && d->object && d->object->inProgress) {
         nInfo() << "A signal processing is in progress we have to wait";
-        std::chrono::milliseconds dura( 30 );
+        std::chrono::milliseconds dura(30);
         std::this_thread::sleep_for(dura);
     }
 
@@ -212,7 +211,7 @@ void NavitDBus::stop()
 
 void NavitDBus::quit()
 {
-    DBus::call("quit",*(d->object.get()));
+    DBus::call("quit", *(d->object.get()));
 }
 
 void NavitDBus::moveBy(int x, int y)
@@ -245,7 +244,7 @@ int NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
-    if (newOrientation != 0 && newOrientation != -1 ) {
+    if (newOrientation != 0 && newOrientation != -1) {
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }
     d->object->setOrientation(newOrientation);

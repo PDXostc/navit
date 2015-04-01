@@ -54,7 +54,7 @@ void emptyMessageParsing(benchmark::State& state)
     }
 }
 
-void parseMoveBy( ::benchmark::State& state)
+void parseMoveBy(::benchmark::State& state)
 {
     using ::testing::AtLeast;
 
@@ -62,15 +62,15 @@ void parseMoveBy( ::benchmark::State& state)
     t.setupMocks();
     t.instance.Initialize();
 
-    EXPECT_CALL(*(t.mock_ipc), moveBy(10,10)).Times(AtLeast(state.max_iterations));
-    const std::string a {TestUtils::moveByMessage(10,10)};
+    EXPECT_CALL(*(t.mock_ipc), moveBy(10, 10)).Times(AtLeast(state.max_iterations));
+    const std::string a{ TestUtils::moveByMessage(10, 10) };
 
     while (state.KeepRunning()) {
         t.instance.HandleMessage(a.c_str());
     }
 }
 
-void zoomBy( ::benchmark::State& state)
+void zoomBy(::benchmark::State& state)
 {
     using ::testing::AtLeast;
 
@@ -79,7 +79,7 @@ void zoomBy( ::benchmark::State& state)
     t.instance.Initialize();
 
     EXPECT_CALL(*(t.mock_ipc), zoomBy(2)).Times(AtLeast(state.max_iterations));
-    const std::string a {TestUtils::zoomByMessage(2)};
+    const std::string a{ TestUtils::zoomByMessage(2) };
 
     while (state.KeepRunning()) {
         t.instance.HandleMessage(a.c_str());

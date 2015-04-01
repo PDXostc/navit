@@ -11,7 +11,8 @@ public:
     Settings();
     ~Settings();
 
-    const std::string &configPath() const noexcept {
+    const std::string& configPath() const noexcept
+    {
         return m_configPath;
     }
 

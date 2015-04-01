@@ -10,13 +10,13 @@ struct GPSDTest : public ::testing::Test {
 TEST_F(GPSDTest, startStop)
 {
     NXE::GPSDProvider gpsd;
-    std::chrono::milliseconds dura( 1000 );
+    std::chrono::milliseconds dura(1000);
     std::this_thread::sleep_for(dura);
 
     // altitude should be nan
-    EXPECT_NE(gpsd.position().altitude,gpsd.position().altitude);
+    EXPECT_NE(gpsd.position().altitude, gpsd.position().altitude);
     // longitude should be nan
-    EXPECT_NE(gpsd.position().longitude,gpsd.position().longitude);
+    EXPECT_NE(gpsd.position().longitude, gpsd.position().longitude);
     // latitude should be nan
-    EXPECT_NE(gpsd.position().latitude,gpsd.position().latitude);
+    EXPECT_NE(gpsd.position().latitude, gpsd.position().latitude);
 }

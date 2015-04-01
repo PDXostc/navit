@@ -34,8 +34,8 @@ namespace NXE {
 
 struct NXEInstancePrivate {
 
-    NXEInstancePrivate(DI::Injector &ifaces, NXEInstance* qptr)
-        : navitProcess(ifaces.get<std::shared_ptr<INavitProcess>>())
+    NXEInstancePrivate(DI::Injector& ifaces, NXEInstance* qptr)
+        : navitProcess(ifaces.get<std::shared_ptr<INavitProcess> >())
         , q(qptr)
         , controller(ifaces)
     {
@@ -51,7 +51,7 @@ struct NXEInstancePrivate {
     bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
     bipc::mapped_region region;
     std::vector<double> perfMeasurement;
-    bool initialized {false};
+    bool initialized{ false };
 
     void postMessage(const JSONMessage& message)
     {
@@ -64,16 +64,17 @@ struct NXEInstancePrivate {
             std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
                 callback(rsp);
             });
-        } catch(const std::exception &ex) {
+        }
+        catch (const std::exception& ex) {
             nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
         }
-
     }
 
     void navitMsgCallback(const JSONMessage& response)
     {
         if (response.call == "render") {
-            nInfo() << "Rendering finished!" << "size=" << sharedMemorySize;
+            nInfo() << "Rendering finished!"
+                    << "size=" << sharedMemorySize;
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
@@ -85,7 +86,8 @@ struct NXEInstancePrivate {
                 std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
                     callback(std::string {mem, sharedMemorySize});
                 });
-            } catch(const std::exception &ex) {
+            }
+            catch (const std::exception& ex) {
                 nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
             }
         }
@@ -105,8 +107,8 @@ struct NXEInstancePrivate {
     }
 };
 
-NXEInstance::NXEInstance(DI::Injector &impls)
-    : d(new NXEInstancePrivate{ impls,this })
+NXEInstance::NXEInstance(DI::Injector& impls)
+    : d(new NXEInstancePrivate{ impls, this })
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
@@ -153,7 +155,8 @@ void NXEInstance::Initialize()
             d->navitProcess->setProgramPath(path);
 
             d->navitProcess->start();
-        } else {
+        }
+        else {
             nInfo() << "Navit external is set, won't run";
         }
         d->controller.tryStart();
@@ -192,9 +195,9 @@ void NXEInstance::HandleMessage(const char* msg)
         }
     }
     catch (const std::exception& ex) {
-        NXE::JSONMessage error{ 0, "", std::string(ex.what() )};
+        NXE::JSONMessage error{ 0, "", std::string(ex.what()) };
         nFatal() << "Unable to deserialize message =" << msg;
-        nFatal() <<", posting error= " << ex.what();
+        nFatal() << ", posting error= " << ex.what();
         d->postMessage(error);
     }
 }

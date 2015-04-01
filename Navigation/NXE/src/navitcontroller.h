@@ -10,22 +10,21 @@ namespace NXE {
 
 struct NavitControllerPrivate;
 class INavitIPC;
-class NavitController
-{
+class NavitController {
 public:
-    typedef std::function<void (const JSONMessage &) > Callback_type;
+    typedef std::function<void(const JSONMessage&)> Callback_type;
 
     // basic ctor
-    NavitController(DI::Injector &ctx);
+    NavitController(DI::Injector& ctx);
     virtual ~NavitController();
 
     // LBS functions
     virtual void positon();
 
     //! Common functions
-    void tryStart() ;
-    void handleMessage(const JSONMessage &msg);
-    void addListener(const Callback_type &cb);
+    void tryStart();
+    void handleMessage(const JSONMessage& msg);
+    void addListener(const Callback_type& cb);
 
 private:
     std::unique_ptr<NavitControllerPrivate> d;

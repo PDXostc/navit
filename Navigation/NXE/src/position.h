@@ -6,9 +6,9 @@
 namespace NXE {
 
 struct Position {
-    double longitude {std::numeric_limits<double>::quiet_NaN() };
-    double latitude {std::numeric_limits<double>::quiet_NaN() };
-    double altitude {std::numeric_limits<double>::quiet_NaN() };
+    double longitude{ std::numeric_limits<double>::quiet_NaN() };
+    double latitude{ std::numeric_limits<double>::quiet_NaN() };
+    double altitude{ std::numeric_limits<double>::quiet_NaN() };
 };
 
 } // NXE

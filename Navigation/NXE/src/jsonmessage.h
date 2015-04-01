@@ -19,10 +19,10 @@ struct JSONMessage {
 };
 
 namespace JSONUtils {
-    JSONMessage deserialize(const std::string &buff);
-    std::string serialize(const JSONMessage &json);
-    std::string serialize(std::uint32_t id, const std::string& call, const std::string &err = "",
-                          boost::property_tree::ptree data = boost::property_tree::ptree());
+    JSONMessage deserialize(const std::string& buff);
+    std::string serialize(const JSONMessage& json);
+    std::string serialize(std::uint32_t id, const std::string& call, const std::string& err = "",
+        boost::property_tree::ptree data = boost::property_tree::ptree());
 }
 } // NXE
 

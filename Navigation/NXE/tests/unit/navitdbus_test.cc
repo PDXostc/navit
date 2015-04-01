@@ -6,15 +6,15 @@
 #include <thread>
 #include <chrono>
 
-const std::string navitPath { NAVIT_PATH };
+const std::string navitPath{ NAVIT_PATH };
 extern bool runNavit;
 
-struct NavitDBusTest : public ::testing::Test
-{
+struct NavitDBusTest : public ::testing::Test {
     NXE::NavitDBus connection;
     NXE::NavitProcessImpl process;
 
-    void SetUp() {
+    void SetUp()
+    {
 
         if (runNavit) {
             nDebug() << "Running navit binary";
@@ -24,9 +24,10 @@ struct NavitDBusTest : public ::testing::Test
         connection.start();
     }
 
-    void TearDown() {
+    void TearDown()
+    {
         connection.stop();
-        if(runNavit) {
+        if (runNavit) {
             process.stop();
         }
     }
@@ -41,8 +42,7 @@ TEST_F(NavitDBusTest, zoom)
         int zoomBy = 2;
         connection.zoomBy(2);
 
-        EXPECT_EQ(defZoom / zoomBy, connection.zoom());
-    );
+        EXPECT_EQ(defZoom / zoomBy, connection.zoom()););
 }
 
 TEST_F(NavitDBusTest, setOrientation)
@@ -52,10 +52,10 @@ TEST_F(NavitDBusTest, setOrientation)
 
     if (orientation == 0) {
         connection.setOrientation(-1);
-    } else {
+    }
+    else {
         connection.setOrientation(0);
     }
-
 
     int newOrientation = connection.orientation();
     EXPECT_NE(orientation, newOrientation);

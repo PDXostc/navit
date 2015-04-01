@@ -7,10 +7,9 @@
 
 namespace NXE {
 
-class IGPSProvider
-{
+class IGPSProvider {
 public:
-    typedef std::function<void (const Position &pos)> PositionUpdateCb;
+    typedef std::function<void(const Position& pos)> PositionUpdateCb;
     virtual ~IGPSProvider() {}
 
     virtual Position position() const = 0;
@@ -19,4 +18,3 @@ public:
 } // NXE
 
 #endif // IGPSPROVIDER_H
-

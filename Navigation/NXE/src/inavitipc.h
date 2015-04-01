@@ -8,14 +8,14 @@ namespace NXE {
 
 class INavitIPC {
 public:
-    typedef boost::signals2::signal<void (std::string)> SpeechSignal;
-    typedef boost::signals2::signal<void ()> InitializedSignal;
+    typedef boost::signals2::signal<void(std::string)> SpeechSignal;
+    typedef boost::signals2::signal<void()> InitializedSignal;
 
     virtual ~INavitIPC() {}
 
     //! IPC start/stop
     virtual void start() = 0;
-    // stops monitoring 
+    // stops monitoring
     virtual void stop() = 0;
 
     virtual void quit() = 0;
@@ -37,4 +37,3 @@ public:
 } // NXE
 
 #endif // NAVITIPC_H
-

@@ -29,8 +29,7 @@ TEST_F(JSONParserTest, moveBy_message_without_args)
     const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
     NXE::JSONMessage msg;
     EXPECT_NO_THROW(
-        msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
-    );
+        msg = std::move(NXE::JSONUtils::deserialize(incomingMessage)););
 
     EXPECT_EQ(msg.id, 0);
     EXPECT_EQ(msg.call, "moveBy");
@@ -41,12 +40,11 @@ TEST_F(JSONParserTest, full_json_message)
 {
     const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\", \"data\":{}}";
     EXPECT_NO_THROW(
-    NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
+        NXE::JSONMessage msg = std::move(NXE::JSONUtils::deserialize(incomingMessage));
 
-    EXPECT_EQ(msg.id, 0);
-    EXPECT_EQ(msg.call, "moveBy");
-    EXPECT_TRUE(msg.data.empty());
-    );
+        EXPECT_EQ(msg.id, 0);
+        EXPECT_EQ(msg.call, "moveBy");
+        EXPECT_TRUE(msg.data.empty()););
 }
 
 // No need to create invalid test case as it's impossible to create invalid JSONMessage

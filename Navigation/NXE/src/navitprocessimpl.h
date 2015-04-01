@@ -8,13 +8,12 @@
 namespace NXE {
 
 struct NavitProcessImplPrivate;
-class NavitProcessImpl : public INavitProcess
-{
+class NavitProcessImpl : public INavitProcess {
 public:
     INJECT(NavitProcessImpl());
     ~NavitProcessImpl();
 
-    virtual void setProgramPath(const std::string &name) override final;
+    virtual void setProgramPath(const std::string& name) override final;
     virtual bool start() override final;
 
     /*!
@@ -25,7 +24,8 @@ public:
      */
     virtual void stop() override final;
     virtual bool isRunning() override final;
-    virtual void setArgs(const std::list<std::string> &args) override final;
+    virtual void setArgs(const std::list<std::string>& args) override final;
+
 private:
     std::unique_ptr<NavitProcessImplPrivate> d;
 };

@@ -8,11 +8,10 @@
 
 #include <gtest/gtest.h>
 
-const std::string navitPath { NAVIT_PATH };
+const std::string navitPath{ NAVIT_PATH };
 extern bool runNavit;
 
-class NavitProcessTest : public ::testing::Test
-{
+class NavitProcessTest : public ::testing::Test {
 protected:
     NXE::NavitProcessImpl process;
 };

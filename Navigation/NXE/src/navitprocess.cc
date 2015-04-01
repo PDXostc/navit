@@ -4,13 +4,10 @@ namespace NXE {
 
 NavitProcess::NavitProcess()
 {
-
 }
 
 NavitProcess::~NavitProcess()
 {
-
 }
 
 } // namespace NXE
-

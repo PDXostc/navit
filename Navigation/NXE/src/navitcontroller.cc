@@ -28,15 +28,15 @@ struct NavitControllerPrivate {
     std::thread m_retriggerThread;
     bool m_isRunning = false;
     boost::signals2::signal<void(const JSONMessage&)> successSignal;
-    map_type m{ boost::fusion::make_pair<MoveByMessage>("moveBy"),
-                boost::fusion::make_pair<ZoomByMessage>("zoomBy"),
-                boost::fusion::make_pair<ZoomMessage>("zoom"),
-                boost::fusion::make_pair<PositionMessage>("position"),
-                boost::fusion::make_pair<RenderMessage>("render"),
-                boost::fusion::make_pair<ExitMessage>("exit"),
-                boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
-                boost::fusion::make_pair<OrientationMessage>("orientation")
-              };
+    map_type m{
+        boost::fusion::make_pair<MoveByMessage>("moveBy"),
+        boost::fusion::make_pair<ZoomByMessage>("zoomBy"),
+        boost::fusion::make_pair<ZoomMessage>("zoom"),
+        boost::fusion::make_pair<PositionMessage>("position"),
+        boost::fusion::make_pair<RenderMessage>("render"),
+        boost::fusion::make_pair<ExitMessage>("exit"),
+        boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
+        boost::fusion::make_pair<OrientationMessage>("orientation") };
 
     map_cb_type cb{
         boost::fusion::make_pair<MoveByMessage>([this](const JSONMessage& message) {
@@ -112,7 +112,6 @@ struct NavitControllerPrivate {
         }),
     };
 
-
     template <typename T>
     void handleMessage(const JSONMessage& data)
     {
@@ -120,10 +119,11 @@ struct NavitControllerPrivate {
         fn(data);
     }
 
-    void speechCallback(const std::string &data) {
+    void speechCallback(const std::string& data)
+    {
         bpt::ptree tree;
         tree.put("text", data);
-        JSONMessage speech {0,"speech", "", tree};
+        JSONMessage speech{ 0, "speech", "", tree };
         successSignal(speech);
     }
 };
@@ -170,11 +170,11 @@ struct fun {
     const JSONMessage& _data;
 };
 
-NavitController::NavitController(DI::Injector &ctx)
+NavitController::NavitController(DI::Injector& ctx)
     : d(new NavitControllerPrivate)
 {
-    d->ipc = ctx.get<std::shared_ptr<INavitIPC>>();
-    d->gps = ctx.get<std::shared_ptr<IGPSProvider>>();
+    d->ipc = ctx.get<std::shared_ptr<INavitIPC> >();
+    d->gps = ctx.get<std::shared_ptr<IGPSProvider> >();
     d->q = this;
 }
 
@@ -192,10 +192,10 @@ void NavitController::tryStart()
     nDebug() << "Trying to start IPC Navit controller";
     d->ipc->start();
     d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
-    d->ipc->initializedSignal().connect([](){});
+    d->ipc->initializedSignal().connect([]() {});
 }
 
-void NavitController::handleMessage(const JSONMessage &msg)
+void NavitController::handleMessage(const JSONMessage& msg)
 {
     bool bCalled = false;
     nDebug() << "Handling message " << msg.call;
@@ -205,8 +205,7 @@ void NavitController::handleMessage(const JSONMessage &msg)
             return true;
         }
         return false;
-    },
-    fun(d.get(), msg)));
+    }, fun(d.get(), msg)));
 
     if (!bCalled) {
         nFatal() << "Unable to call " << msg.call;

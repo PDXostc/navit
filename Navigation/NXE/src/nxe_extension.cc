@@ -18,7 +18,7 @@ NXE::NXExtension* g_extension = nullptr;
 
 struct NXE::NXExtensionPrivate {
     NXEInstance* instance = nullptr;
-    DI::Injector injector {[]() -> DI::Components {
+    DI::Injector injector{ []() -> DI::Components {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
                 .bind<INavitProcess, NavitProcessImpl>()
@@ -32,7 +32,7 @@ common::Extension* CreateExtension()
     const std::string path = s.get<SettingsTags::FileLog>();
     const std::string level = s.get<SettingsTags::LogLevel>();
     std::cout << "logger path= " << path << " level = " << level;
-    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path, true)};
+    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path, true) };
     spdlog::create("nxe", { rot });
 
     if (level == "debug") {
@@ -71,7 +71,7 @@ common::Instance* NXExtension::CreateInstance()
 
     typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImplsComponent;
 
-    d->instance = new NXEInstance { d->injector };
+    d->instance = new NXEInstance{ d->injector };
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;

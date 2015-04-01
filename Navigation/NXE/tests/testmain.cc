@@ -15,7 +15,7 @@ bool runNavit = true;
 
 int main(int argc, char* argv[])
 {
-    const std::vector<std::string> arguments {argv + 1, argv + argc};
+    const std::vector<std::string> arguments{ argv + 1, argv + argc };
 
     bool debug = std::find(arguments.begin(), arguments.end(), "--debug") != arguments.end();
     bool perf = std::find(arguments.begin(), arguments.end(), "--perf") != arguments.end();

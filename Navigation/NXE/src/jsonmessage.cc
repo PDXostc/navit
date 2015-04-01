@@ -11,7 +11,7 @@ namespace bpt = boost::property_tree;
 namespace {
 }
 
-std::string JSONUtils::serialize(const JSONMessage &json)
+std::string JSONUtils::serialize(const JSONMessage& json)
 {
     bpt::ptree tree;
     tree.put("id", json.id);
@@ -28,22 +28,22 @@ std::string JSONUtils::serialize(const JSONMessage &json)
     std::stringstream buff;
     bpt::write_json(buff, tree);
 
-    std::string buffer {buff.str()};
+    std::string buffer{ buff.str() };
     return buffer;
 }
 
-JSONMessage JSONUtils::deserialize(const std::string &buff)
+JSONMessage JSONUtils::deserialize(const std::string& buff)
 {
     bpt::ptree tree;
     std::stringstream stream;
 
-    const std::string copy {buff};
+    const std::string copy{ buff };
 
     stream << copy;
     std::istringstream is(stream.str());
     bpt::read_json(is, tree);
     boost::optional<std::string> error = tree.get_optional<std::string>("error");
-    const std::string errorMsg { error ? error.value(): "" };
+    const std::string errorMsg{ error ? error.value() : "" };
 
     // this will throw an exception if `call` is not present
     std::string call = tree.get<std::string>("call");
@@ -51,14 +51,16 @@ JSONMessage JSONUtils::deserialize(const std::string &buff)
     if (tree.find("data") != tree.not_found()) {
         data = tree.get_child("data");
     }
-    JSONMessage msg{ tree.get<std::uint32_t>("id"),
-                        call,
-                        errorMsg,
-                        data };
+    JSONMessage msg{
+        tree.get<std::uint32_t>("id"),
+        call,
+        errorMsg,
+        data
+    };
     return msg;
 }
 
-std::string NXE::JSONUtils::serialize(std::uint32_t id, const std::string& call, const std::string &err, boost::property_tree::ptree data)
+std::string NXE::JSONUtils::serialize(std::uint32_t id, const std::string& call, const std::string& err, boost::property_tree::ptree data)
 {
     JSONMessage m{ id, call, err, data };
     return serialize(m);

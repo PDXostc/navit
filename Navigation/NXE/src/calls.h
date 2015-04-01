@@ -17,6 +17,7 @@
 #include <boost/property_tree/ptree.hpp>
 
 // Messages handled by application
+// clang-format off
 struct MoveByMessage {};
 struct ZoomByMessage {};
 struct ZoomMessage {};
@@ -25,43 +26,31 @@ struct RenderMessage {};
 struct ExitMessage {};
 struct SetOrientationMessage {};
 struct OrientationMessage {};
+// clang-format on
 
 // Container of all registered messages
 typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage,
-                           PositionMessage, RenderMessage, ExitMessage,
-                           SetOrientationMessage, OrientationMessage
+    PositionMessage, RenderMessage, ExitMessage,
+    SetOrientationMessage, OrientationMessage
 
     > Messages_type;
-typedef std::function<void (const NXE::JSONMessage &data)> JSONMessageParser_type;
+typedef std::function<void(const NXE::JSONMessage& data)> JSONMessageParser_type;
 
-template<typename T>
-struct make_sig_pair
-{
-    typedef typename boost::fusion::result_of::make_pair <T, std::string>::type type;
+template <typename T>
+struct make_sig_pair {
+    typedef typename boost::fusion::result_of::make_pair<T, std::string>::type type;
 };
 
-typedef typename boost::fusion::result_of::as_map
-    <
-        typename boost::mpl::transform
-            <
-                Messages_type,
-                make_sig_pair<boost::mpl::_1>
-            >::type
-    >::type map_type;
+typedef typename boost::fusion::result_of::as_map<
+    typename boost::mpl::transform<Messages_type,
+        make_sig_pair<boost::mpl::_1> >::type>::type map_type;
 
-
-template<typename T>
-struct make_cb_pair
-{
-    typedef typename boost::fusion::result_of::make_pair <T, JSONMessageParser_type>::type type;
+template <typename T>
+struct make_cb_pair {
+    typedef typename boost::fusion::result_of::make_pair<T, JSONMessageParser_type>::type type;
 };
 
-typedef typename boost::fusion::result_of::as_map
-    <
-        typename boost::mpl::transform
-            <
-                Messages_type,
-                make_cb_pair<boost::mpl::_1>
-            >::type
-    >::type map_cb_type;
+typedef typename boost::fusion::result_of::as_map<
+    typename boost::mpl::transform<Messages_type,
+        make_cb_pair<boost::mpl::_1> >::type>::type map_cb_type;
 #endif

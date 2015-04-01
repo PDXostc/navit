@@ -15,7 +15,6 @@
 #include <fruit/component.h>
 #include <fruit/injector.h>
 
-
 namespace bpt = boost::property_tree;
 
 struct RenderTest {

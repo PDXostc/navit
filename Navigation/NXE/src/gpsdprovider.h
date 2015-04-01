@@ -9,13 +9,13 @@
 namespace NXE {
 
 struct GPSDProviderPrivate;
-class GPSDProvider : public IGPSProvider
-{
+class GPSDProvider : public IGPSProvider {
 public:
     INJECT(GPSDProvider());
     ~GPSDProvider();
 
     virtual Position position() const override;
+
 private:
     std::unique_ptr<GPSDProviderPrivate> d;
 };

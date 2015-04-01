@@ -9,9 +9,8 @@ class INavitProcess;
 class IGPSProvider;
 
 namespace DI {
-typedef fruit::Injector<INavitIPC, INavitProcess, IGPSProvider> Injector;
-typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> Components;
+    typedef fruit::Injector<INavitIPC, INavitProcess, IGPSProvider> Injector;
+    typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> Components;
 } // DI
 }
 #endif // CONTEXT_H
-
