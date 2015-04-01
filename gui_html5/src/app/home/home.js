@@ -43,7 +43,7 @@ angular.module( 'navitGui.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, $log, nxeCall ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, $log, $timeout, nxeCall ) {
 
     // Text to speech testing
     $scope.say = function () {
@@ -98,6 +98,13 @@ angular.module( 'navitGui.home', [
     } else {
         $scope.locationControls = {'visibility': 'hidden'};
     }
+
+
+    // load map after 500ms
+    $timeout(function() {
+        $log.log('Trying to load a map after 500ms.');
+        $scope.sendNXE();
+    }, 500);
 
 
 });
