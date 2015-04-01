@@ -67,8 +67,6 @@
 #include <QSvgRenderer>
 #endif
 
-#define QT_QPAINTER_NO_WIDGET
-
 /* Use qt events instead of glib */
 #ifndef QT_QPAINTER_USE_EVENT_QT
 #define QT_QPAINTER_USE_EVENT_QT 1
