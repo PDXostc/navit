@@ -41,6 +41,9 @@ common::Extension* CreateExtension()
     else if (level == "warn") {
         spdlog::set_level(spdlog::level::warn);
     }
+    else if (level == "trace") {
+        spdlog::set_level(spdlog::level::trace);
+    }
     else {
         spdlog::set_level(spdlog::level::err);
     }
@@ -68,8 +71,6 @@ common::Instance* NXExtension::CreateInstance()
         nFatal() << "This plugin does not support more than one instance yet";
         return nullptr;
     }
-
-    typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImplsComponent;
 
     d->instance = new NXEInstance{ d->injector };
 

@@ -20,3 +20,10 @@ TEST_F(GPSDTest, startStop)
     // latitude should be nan
     EXPECT_NE(gpsd.position().latitude, gpsd.position().latitude);
 }
+
+TEST_F(GPSDTest, DISABLED_startStop)
+{
+    NXE::GPSDProvider gpsd;
+    std::chrono::milliseconds dura(10 * 1000);
+    std::this_thread::sleep_for(dura);
+}

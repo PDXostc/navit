@@ -2,6 +2,7 @@
 #include "log.h"
 
 #include <thread>
+#include <gps.h>
 #include <libgpsmm.h>
 #include <cstdint>
 
@@ -15,47 +16,42 @@ struct GPSDProviderPrivate {
 
     void threadRoutine()
     {
-        nTrace() << "Starting gpsd polling gpsd is open " << (m_gpsd.is_open() ? "true" : "false");
+        gps_open("localhost", DEFAULT_GPSD_PORT, &gps_data);
 
-        gps_data_t* streamData{ nullptr }, *newData{ nullptr };
-        streamData = m_gpsd.stream(WATCH_ENABLE | WATCH_JSON);
+        int status = gps_stream(&gps_data, WATCH_ENABLE | WATCH_JSON, nullptr);
 
-        if (streamData == nullptr) {
-            nError() << "GPSD server is not working";
-            // gpsd is not working, stop
+        if (status == -1) {
+            nError() << "GSPD is not running, exiting";
         }
         else {
 
             while (m_bThreadRunning) {
-                if (m_gpsd.waiting(gpsTimeout)) {
-                    newData = m_gpsd.read();
-                    if (newData && newData->status > 0) {
-                        nDebug() << "[longitude, latitude, altitude] [ " << newData->fix.longitude << " , " << newData->fix.latitude << " , " << newData->fix.altitude << " ]";
-                        m_currentPosition.altitude = newData->fix.altitude;
-                        m_currentPosition.longitude = newData->fix.longitude;
-                        m_currentPosition.latitude = newData->fix.latitude;
+                if (gps_waiting(&gps_data, 5000)) {
+                    if (gps_read(&gps_data) != -1) {
+                        nTrace() << "[longitude, latitude, altitude] [ "
+                                 << gps_data.fix.longitude << " , "
+                                 << gps_data.fix.latitude
+                                 << " , " << gps_data.fix.altitude << " ]";
+                        m_currentPosition.altitude = gps_data.fix.altitude;
+                        m_currentPosition.longitude = gps_data.fix.longitude;
+                        m_currentPosition.latitude = gps_data.fix.latitude;
                     }
                 }
-                else {
-                }
             }
-
-            nInfo() << "GPSD thread is exiting";
         }
     }
 
     std::thread m_gpsdThread;
     bool m_bThreadRunning{ true };
-    gpsmm m_gpsd{ "localhost", DEFAULT_GPSD_PORT };
-
     Position m_currentPosition;
+    gps_data_t gps_data;
 };
 
 GPSDProvider::GPSDProvider()
     : d(new GPSDProviderPrivate)
 {
     nTrace() << "GPSDProvider::GPSDProvider()";
-//    d->m_gpsdThread = std::thread{ std::bind(&GPSDProviderPrivate::threadRoutine, d.get()) };
+    d->m_gpsdThread = std::thread{ std::bind(&GPSDProviderPrivate::threadRoutine, d.get()) };
 }
 
 GPSDProvider::~GPSDProvider()
