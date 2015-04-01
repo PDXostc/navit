@@ -55,7 +55,7 @@ GPSDProvider::GPSDProvider()
     : d(new GPSDProviderPrivate)
 {
     nTrace() << "GPSDProvider::GPSDProvider()";
-    d->m_gpsdThread = std::thread{ std::bind(&GPSDProviderPrivate::threadRoutine, d.get()) };
+//    d->m_gpsdThread = std::thread{ std::bind(&GPSDProviderPrivate::threadRoutine, d.get()) };
 }
 
 GPSDProvider::~GPSDProvider()
