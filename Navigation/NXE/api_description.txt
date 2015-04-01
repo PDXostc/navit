@@ -63,6 +63,17 @@ Response:
     "call" : "orientation",
 }
 
+///////////////////// SET CENTER (by geocoordinates) /////////////////////////
+
+Request:
+{
+    "id" : 102,
+    "call" : "setCenter",
+    "data" : {
+        "longitude" : "53.04",
+        "latitude" : "41.055"
+    }
+}
 
 ///////////////////// SPEECH /////////////////////////
 

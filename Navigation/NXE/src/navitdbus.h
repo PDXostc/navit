@@ -24,6 +24,7 @@ public:
     virtual void render() override;
     virtual int orientation() override;
     virtual void setOrientation(int newOrientation) override;
+    virtual void setCenter(double longitude, double latitude) override;
 
     virtual SpeechSignal& speechSignal() override;
     virtual InitializedSignal& initializedSignal() override;

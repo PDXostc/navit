@@ -29,6 +29,8 @@ public:
     virtual int orientation() = 0;
     virtual void setOrientation(int newOrientation) = 0;
 
+    virtual void setCenter(double longitude, double latitude) = 0;
+
     // Signals from IPC
     virtual SpeechSignal& speechSignal() = 0;
     virtual InitializedSignal& initializedSignal() = 0;

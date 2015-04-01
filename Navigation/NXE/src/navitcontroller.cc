@@ -36,7 +36,8 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<RenderMessage>("render"),
         boost::fusion::make_pair<ExitMessage>("exit"),
         boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
-        boost::fusion::make_pair<OrientationMessage>("orientation") };
+        boost::fusion::make_pair<OrientationMessage>("orientation"),
+        boost::fusion::make_pair<SetCenterMessage>("setCenter") };
 
     map_cb_type cb{
         boost::fusion::make_pair<MoveByMessage>([this](const JSONMessage& message) {
@@ -56,7 +57,6 @@ struct NavitControllerPrivate {
         }),
 
         boost::fusion::make_pair<ZoomByMessage>([this](const JSONMessage& message) {
-            nTrace() << "Calling zoomBy";
             int factor = message.data.get<int>("factor");
             ipc->zoomBy(factor);
             JSONMessage response {message.id, message.call};
@@ -82,21 +82,18 @@ struct NavitControllerPrivate {
         }),
 
         boost::fusion::make_pair<RenderMessage>([this](const JSONMessage& message) {
-            nTrace() << "rendering " << message.call;
             ipc->render();
             JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
 
         boost::fusion::make_pair<ExitMessage>([this](const JSONMessage& message) {
-            nTrace() << "exit " << message.call;
             ipc->stop();
             JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
 
         boost::fusion::make_pair<SetOrientationMessage>([this](const JSONMessage& message) {
-            nTrace() << "exit " << message.call;
             int newOrientation = message.data.get<int>("orientation");
             ipc->setOrientation(newOrientation);
             JSONMessage response {message.id, message.call};
@@ -104,10 +101,20 @@ struct NavitControllerPrivate {
         }),
 
         boost::fusion::make_pair<OrientationMessage>([this](const JSONMessage& message) {
-            nTrace() << "exit " << message.call;
             bpt::ptree p;
             p.put("orientation", ipc->orientation());
             JSONMessage response {message.id, message.call, "", p };
+            successSignal(response);
+        }),
+
+        boost::fusion::make_pair<SetCenterMessage>([this](const JSONMessage& message) {
+
+            const double longitude = message.data.get<double>("longitude");
+            const double latitude = message.data.get<double>("latitude");
+
+            ipc->setCenter(longitude, latitude);
+
+            JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
     };

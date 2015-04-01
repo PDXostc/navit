@@ -5,17 +5,19 @@
 
 struct NavitIPCMock : public NXE::INavitIPC {
     using Inject = NavitIPCMock();
-    GMOCK_METHOD0_(, , , start, void());
-    GMOCK_METHOD0_(, , , stop, void());
-    GMOCK_METHOD0_(, , , quit, void());
-    GMOCK_METHOD0_(, , , render, void());
-    GMOCK_METHOD2_(, , , moveBy, void(int, int));
-    GMOCK_METHOD1_(, , , zoomBy, void(int));
-    GMOCK_METHOD0_(, , , zoom, int(void));
-    GMOCK_METHOD0_(, , , speechSignal, SpeechSignal&());
-    GMOCK_METHOD0_(, , , initializedSignal, InitializedSignal&());
+    MOCK_METHOD0(start, void());
+
+    MOCK_METHOD0(stop, void());
+    MOCK_METHOD0(quit, void());
+    MOCK_METHOD0(render, void());
+    MOCK_METHOD2(moveBy, void(int,int));
+    MOCK_METHOD1(zoomBy, void(int));
+    MOCK_METHOD0(zoom, int(void));
+    MOCK_METHOD0(speechSignal, SpeechSignal&());
+    MOCK_METHOD0(initializedSignal, InitializedSignal&());
     MOCK_METHOD1(setOrientation, void(int));
     MOCK_METHOD0(orientation, int());
+    MOCK_METHOD2(setCenter, void(double,double));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

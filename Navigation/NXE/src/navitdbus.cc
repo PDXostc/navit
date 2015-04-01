@@ -7,6 +7,7 @@
 #include "dbus_helpers.hpp"
 
 #include <boost/signals2/signal.hpp>
+#include <boost/format.hpp>
 
 namespace {
 const std::string navitDBusDestination = "org.navit_project.navit";
@@ -24,55 +25,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         nDebug() << "Connect to signal";
         connect_signal(NavitDBusObjectProxy, signal, speechCallback);
         connect_signal(NavitDBusObjectProxy, startup, startupCallback);
-    }
-
-    int zoom()
-    {
-        inProgress = true;
-        int val = NXE::DBus::getAttr<int>("zoom", *this);
-        inProgress = false;
-        return val;
-    }
-
-    void zoomBy(int factor)
-    {
-        inProgress = true;
-        DBus::call("zoom", *this, factor);
-        inProgress = false;
-    }
-
-    void quit()
-    {
-        inProgress = true;
-        DBus::call("quit", *this);
-        inProgress = false;
-    }
-
-    // Implement a generic DBus method
-    void moveBy(int x, int y)
-    {
-        inProgress = true;
-        ::DBus::CallMessage call;
-        ::DBus::MessageIter it = call.writer();
-        call.member("set_center_screen");
-        ::DBus::Struct<int, int> val;
-        val._1 = x;
-        val._2 = y;
-        it << val;
-        ::DBus::Message ret = invoke_method(call);
-        if (ret.is_error()) {
-            nFatal() << "Unable to call "
-                     << "set_center_screen";
-            throw std::runtime_error("Unable to call moveBy");
-        }
-        inProgress = false;
-    }
-
-    void render()
-    {
-        inProgress = true;
-        DBus::call("draw", *this);
-        inProgress = false;
     }
 
     void speechCallback(const ::DBus::SignalMessage& sig)
@@ -103,24 +55,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         nTrace() << "Navit has started";
         initializedSignal();
         inProgress = false;
-    }
-
-    int orientation()
-    {
-        inProgress = true;
-        int orientation = DBus::getAttr<int>("orientation", *this);
-        inProgress = false;
-
-        return orientation;
-    }
-
-    void setOrientation(int newOrientation)
-    {
-        nInfo() << "Changing orientation to " << newOrientation;
-        ::DBus::Variant val;
-        ::DBus::MessageIter ww = val.writer();
-        ww << newOrientation;
-        DBus::setAttr("orientation", *this, val);
     }
 
     boost::signals2::signal<void(std::string)> speechSignal;
@@ -216,30 +150,42 @@ void NavitDBus::quit()
 
 void NavitDBus::moveBy(int x, int y)
 {
-    d->object->moveBy(x, y);
+    ::DBus::CallMessage call;
+    ::DBus::MessageIter it = call.writer();
+    call.member("set_center_screen");
+    ::DBus::Struct<int, int> val;
+    val._1 = x;
+    val._2 = y;
+    it << val;
+    ::DBus::Message ret = d->object->invoke_method(call);
+    if (ret.is_error()) {
+        nFatal() << "Unable to call "
+                 << "set_center_screen";
+        throw std::runtime_error("Unable to call moveBy");
+    }
 }
 
 void NavitDBus::zoomBy(int y)
 {
     nDebug() << "Zooming by " << y;
-    d->object->zoomBy(y);
+    DBus::call("zoom", *(d->object.get()), y);
 }
 
 int NavitDBus::zoom()
 {
     nDebug() << "Getting zoom";
-    return d->object->zoom();
+    return  NXE::DBus::getAttr<int>("zoom", *(d->object.get()));
 }
 
 void NavitDBus::render()
 {
     nDebug() << "Rendering";
-    return d->object->render();
+    DBus::call("draw", *(d->object.get()));
 }
 
 int NavitDBus::orientation()
 {
-    return d->object->orientation();
+    return DBus::getAttr<int>("orientation", *(d->object.get()));
 }
 
 void NavitDBus::setOrientation(int newOrientation)
@@ -247,7 +193,19 @@ void NavitDBus::setOrientation(int newOrientation)
     if (newOrientation != 0 && newOrientation != -1) {
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }
-    d->object->setOrientation(newOrientation);
+    nInfo() << "Changing orientation to " << newOrientation;
+    ::DBus::Variant val;
+    ::DBus::MessageIter ww = val.writer();
+    ww << newOrientation;
+    DBus::setAttr("orientation", *(d->object.get()), val);
+}
+
+void NavitDBus::setCenter(double longitude, double latitude)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+
+    DBus::call("set_center_by_string", *(d->object.get()), message);
 }
 
 INavitIPC::SpeechSignal& NavitDBus::speechSignal()

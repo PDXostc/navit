@@ -60,3 +60,8 @@ TEST_F(NavitDBusTest, setOrientation)
     int newOrientation = connection.orientation();
     EXPECT_NE(orientation, newOrientation);
 }
+
+TEST_F(NavitDBusTest, setCenter)
+{
+    connection.setCenter(24.0,53.0);
+}
