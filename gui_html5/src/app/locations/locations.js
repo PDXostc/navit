@@ -5,7 +5,6 @@
  */
 angular.module( 'navitGui.locations', [
   'ui.router',
-  'placeholders',
   'ui.bootstrap'
 ])
 
