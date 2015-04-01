@@ -141,6 +141,7 @@ struct NavitDBusPrivate {
 NavitDBus::NavitDBus()
     : d(new NavitDBusPrivate)
 {
+    nTrace() << "NavitDBus::NavitDBus()";
 }
 
 NavitDBus::~NavitDBus()
@@ -162,6 +163,7 @@ void NavitDBus::start()
     ::DBus::default_dispatcher = &d->dispatcher;
     d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
     d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
+
 
     d->m_thread = std::move(std::thread([this]() {
         nTrace() << "Dispatching";

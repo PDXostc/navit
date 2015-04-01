@@ -18,6 +18,12 @@ NXE::NXExtension* g_extension = nullptr;
 
 struct NXE::NXExtensionPrivate {
     NXEInstance* instance = nullptr;
+    DI::Injector injector {[]() -> DI::Components {
+        return fruit::createComponent()
+                .bind<INavitIPC, NavitDBus>()
+                .bind<INavitProcess, NavitProcessImpl>()
+                .bind<IGPSProvider, GPSDProvider>();
+    }() };
 };
 
 common::Extension* CreateExtension()
@@ -53,6 +59,7 @@ NXExtension::NXExtension()
 
 NXExtension::~NXExtension()
 {
+    nTrace() << "~NXExtension";
 }
 
 common::Instance* NXExtension::CreateInstance()
@@ -64,14 +71,7 @@ common::Instance* NXExtension::CreateInstance()
 
     typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImplsComponent;
 
-    DI::Injector injector { []() -> DI::Components {
-        return fruit::createComponent()
-                .bind<INavitIPC, NavitDBus>()
-                .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>();
-    }() } ;
-
-    d->instance = new NXEInstance {injector};
+    d->instance = new NXEInstance { d->injector };
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;

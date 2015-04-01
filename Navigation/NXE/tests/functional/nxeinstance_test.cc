@@ -23,7 +23,7 @@ struct NXEInstanceTest : public ::testing::Test {
                 .bind<INavitProcess, NavitProcessImpl>()
                 .bind<IGPSProvider, GPSDProvider>();
         }() };
-    NXEInstance instance {injector};
+    NXEInstance instance { injector };
     JSONMessage respMsg;
     bool receivedRender {false};
     std::size_t numberOfResponses = 0;

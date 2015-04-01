@@ -30,6 +30,7 @@ struct NavitProcessImplPrivate {
 NavitProcessImpl::NavitProcessImpl():
     d(new NavitProcessImplPrivate())
 {
+    nTrace() << "NavitProcessImpl::NavitProcessImpl()";
 }
 
 NavitProcessImpl::~NavitProcessImpl()
@@ -45,7 +46,7 @@ void NavitProcessImpl::setProgramPath(const std::string &name)
 bool NavitProcessImpl::start()
 {
     d->m_lastError = bs::error_code();
-    std::string command = d->m_programPath + "/" + d->m_navitProgramName;
+    const std::string command = d->m_programPath + std::string {"/"} + d->m_navitProgramName;
     nDebug() << "Starting navit process from " << command << " in dir " << d->m_programPath << " with args ";
     bf::path exe = command;
 

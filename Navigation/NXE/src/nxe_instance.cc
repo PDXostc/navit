@@ -39,7 +39,9 @@ struct NXEInstancePrivate {
         , q(qptr)
         , controller(ifaces)
     {
+        nTrace() << "NXEInstancePrivate::NXEInstancePrivate()";
     }
+
     std::shared_ptr<INavitProcess> navitProcess;
     NXEInstance* q;
     NavitController controller;
@@ -106,7 +108,6 @@ struct NXEInstancePrivate {
 NXEInstance::NXEInstance(DI::Injector &impls)
     : d(new NXEInstancePrivate{ impls,this })
 {
-
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
     auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
