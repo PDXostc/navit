@@ -73,8 +73,8 @@ echo "${red}Cleaning previous installation${reset}"
 if [ "$BUILD_NXE" = true ]; then
     try ssh root@$TIZEN_IP rm /root/nxe* -rf
     # remove nxe
-    try ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
-    try ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
 fi
 
 if [ "$BUILD_NAVIT" = true ]; then
