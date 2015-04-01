@@ -19,7 +19,7 @@ angular.module( 'navitGui', [
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider, $compileProvider, localStorageServiceProvider ) {
     // let's rewrite valid href pattern to include 'app' on crosswalk
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|app):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|app):/);
 
     // go to home state when url not reckognized
     $urlRouterProvider.otherwise( '/home' );
