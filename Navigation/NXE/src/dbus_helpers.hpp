@@ -8,6 +8,18 @@
 namespace NXE {
 namespace DBus {
 
+namespace __details {
+    template <typename T>
+    void processOne(::DBus::MessageIter& it, T t)
+    {
+        it << t;
+    }
+
+    void unpack(::DBus::MessageIter&)
+    {
+    }
+}
+
     template <typename R>
     R getAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy)
     {
@@ -32,33 +44,11 @@ namespace DBus {
         return value;
     }
 
-    template <typename Arg>
-    void setAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy, Arg && value)
-    {
-        ::DBus::CallMessage call;
-        ::DBus::MessageIter it = call.writer();
-        call.member("set_attr");
-        it << attrName << value;
-        ::DBus::Message ret = proxy.invoke_method(call);
-
-        if (ret.is_error()) {
-            throw std::runtime_error("Unable to call zoom");
-        }
-    }
-
-    void unpack(::DBus::MessageIter&)
-    {
-    }
-
-    template <typename T>
-    void processOne(::DBus::MessageIter& it, T t)
-    {
-        it << t;
-    }
 
     template <typename T, typename... Args>
     void unpack(::DBus::MessageIter& it, T t, Args... args)
     {
+        using namespace __details;
         processOne(it, t);
         unpack(it, args...);
     }
@@ -66,6 +56,7 @@ namespace DBus {
     template <typename... Args>
     void call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
+        using namespace __details;
         nDebug() << "Calling dbus " << methodName;
         ::DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
@@ -76,6 +67,15 @@ namespace DBus {
             nFatal() << "Unable to call " << methodName;
             throw std::runtime_error("Unable to call" + methodName);
         }
+    }
+
+    template <typename Arg>
+    void setAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy, Arg && value)
+    {
+        ::DBus::Variant val;
+        ::DBus::MessageIter ww = val.writer();
+        ww << value;
+        call("set_attr", proxy, attrName, val);
     }
 
 } // DBus

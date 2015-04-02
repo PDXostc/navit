@@ -156,13 +156,7 @@ void NavitDBus::moveBy(int x, int y)
     ::DBus::Struct<int, int> val;
     val._1 = x;
     val._2 = y;
-    it << val;
-    ::DBus::Message ret = d->object->invoke_method(call);
-    if (ret.is_error()) {
-        nFatal() << "Unable to call "
-                 << "set_center_screen";
-        throw std::runtime_error("Unable to call moveBy");
-    }
+    DBus::call("set_center_streen",*(d->object.get()), val);
 }
 
 void NavitDBus::zoomBy(int y)
@@ -193,11 +187,7 @@ void NavitDBus::setOrientation(int newOrientation)
     if (newOrientation != 0 && newOrientation != -1) {
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }
-    nInfo() << "Changing orientation to " << newOrientation;
-    ::DBus::Variant val;
-    ::DBus::MessageIter ww = val.writer();
-    ww << newOrientation;
-    DBus::setAttr("orientation", *(d->object.get()), val);
+    DBus::setAttr("orientation", *(d->object.get()), newOrientation);
 }
 
 void NavitDBus::setCenter(double longitude, double latitude)
