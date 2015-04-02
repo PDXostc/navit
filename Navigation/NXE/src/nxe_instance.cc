@@ -51,10 +51,14 @@ struct NXEInstancePrivate {
     bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
     bipc::mapped_region region;
     std::vector<double> perfMeasurement;
+
+    // Which messages cause a screen redraw
+    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation"};
     bool initialized{ false };
 
     void postMessage(const JSONMessage& message)
     {
+        nTrace() << "Posting response for " << message.call;
         const std::string rsp = JSONUtils::serialize(message);
         // This is xwalk posting mechanism
         q->PostMessage(rsp.c_str());
@@ -72,15 +76,19 @@ struct NXEInstancePrivate {
 
     void navitMsgCallback(const JSONMessage& response)
     {
-        if (response.call == "render") {
-            nInfo() << "Rendering finished!"
-                    << "size=" << sharedMemorySize;
+
+        auto renderIt = std::find(std::begin(redrawAfterRequest), std::end(redrawAfterRequest), response.call);
+
+        if (renderIt != std::end(redrawAfterRequest)) {
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
             assert(mem);
 
-            q->PostMessage(mem);
+            // post normal response
+            postMessage(response);
 
+            // now post rendered image
+            q->PostMessage(mem);
             // This is our internal post message
             try {
                 std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
@@ -90,8 +98,7 @@ struct NXEInstancePrivate {
             catch (const std::exception& ex) {
                 nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
             }
-        }
-        else {
+        } else {
             postMessage(response);
         }
 
@@ -104,6 +111,7 @@ struct NXEInstancePrivate {
             perfLog(response.call) << " parsing took " << res << " ms";
             timers.erase(it);
         }
+        nTrace() << "Finished posting response";
     }
 };
 

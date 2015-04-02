@@ -60,6 +60,9 @@ TEST_F(NXEInstanceTest, zoomBy)
     zoom(2);
     ASSERT_EQ(respMsg.call, "zoomBy");
     EXPECT_TRUE(respMsg.data.empty());
+    std::chrono::milliseconds dura(1000);
+    std::this_thread::sleep_for(dura);
+    EXPECT_EQ(numberOfResponses, 2);
 }
 
 // TODO: How to enable speech test?
@@ -118,7 +121,7 @@ TEST_F(NXEInstanceTest, renderOneFrame)
     perfLog("render") << " mean = " << mean;
     EXPECT_LT(mean, 400.0);
     // Message cannot be properly parsed!
-    EXPECT_EQ(numberOfResponses, 1);
+    EXPECT_EQ(numberOfResponses, 2);
 }
 
 TEST_F(NXEInstanceTest, moveByMessage)
@@ -142,7 +145,7 @@ TEST_F(NXEInstanceTest, changeOrientation)
     instance.HandleMessage(msg.data());
     instance.HandleMessage(msg2.data());
 
-    EXPECT_EQ(numberOfResponses, 2);
+    EXPECT_EQ(numberOfResponses, 3);
     EXPECT_TRUE(respMsg.error.empty());
 }
 
@@ -168,4 +171,12 @@ TEST_F(NXEInstanceTest, changeOrientationToIncorrectValue)
     instance.HandleMessage(msg.data());
 
     EXPECT_FALSE(respMsg.error.empty());
+}
+
+// run for 10 minutes
+TEST_F(NXEInstanceTest, DISABLED_runNxeInstance)
+{
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura(60 * 1000 * 10 );
+    std::this_thread::sleep_for(dura);
 }
