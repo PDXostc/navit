@@ -152,6 +152,16 @@ module.exports = function ( grunt ) {
           }
         ]
       },
+      build_vendormap: {
+        files: [
+          {
+            src: [ '<%= vendor_files.map %>' ],
+            dest: '<%= build_dir %>/',
+            cwd: '.',
+            expand: true
+          }
+        ]
+      },
       build_vendorcss: {
         files: [
           {
@@ -667,7 +677,7 @@ module.exports = function ( grunt ) {
   grunt.registerTask( 'build', [
     'clean', 'html2js', 'jshint', 'coffeelint', 'coffee', 'less:build',
     'concat:build_css', 'copy:build_app_assets', 'copy:build_vendor_assets',
-    'copy:build_appjs', 'copy:build_vendorjs', 'copy:build_vendorcss',
+    'copy:build_appjs', 'copy:build_vendorjs','copy:build_vendormap', 'copy:build_vendorcss',
     'copy:xwalk_manifest', 'index:build',  'shell:makeDir', 'shell:make_xpk',
     'karmaconfig', 'karma:continuous'
   ]);

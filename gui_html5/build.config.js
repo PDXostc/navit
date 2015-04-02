@@ -72,7 +72,11 @@ module.exports = {
       'vendor/placeholders/angular-placeholders-0.0.1-SNAPSHOT.min.js',
       'vendor/angular-ui-router/release/angular-ui-router.js',
       'vendor/angular-ui-utils/modules/route/route.js',
-      'vendor/angular-local-storage/dist/angular-local-storage.min.js'
+      'vendor/angular-local-storage/dist/angular-local-storage.min.js',
+      'vendor/hammerjs/hammer.min.js'
+    ],
+    map: [
+      'vendor/hammerjs/hammer.min.map'
     ],
     css: [
     ],

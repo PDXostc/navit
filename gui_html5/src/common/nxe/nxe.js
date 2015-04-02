@@ -5,22 +5,34 @@
  * @module nxe
  */
 angular.module( 'nxe', [])
-.factory('nxeCall', ['$window', '$log', function ($window, $log) {
+.factory('nxeCall', ['$window', '$log', 'dateFilter', function ($window, $log, dateFilter) {
+    $log.log("NXE Service::creating factory");
 
-
-    /**
-     * Low level nxe call
-     *
-     * @param {JSON} data json string
-     * @param {function} callback
-     * @returns {undefined}
-     */
+        /**
+         *  Flag to determine that canvas has proper size
+         *
+         * @type Boolean|Boolean
+         */
     var canvasResized = false,
-        call = function (data, callback) {
+        /**
+         * Low level nxe call
+         *
+         * @param {JSON} data json string
+         * @returns {undefined}
+         */
+        call = function (data) {
             $log.log("Calling nxe", data);
             try {
                 if ($window.nxe) {
-                    nxe.render(data, callback);
+                    nxe.render(data, function (data) {
+                        $log.log("Inside a callback... processing response");
+                        $log.log("Type of data", typeof data, "(length="+data.length+")");
+                        if (data[0] === '{') {
+                           $log.log('Got JSON in respnse');
+                        } else {
+                            paintMap(data);
+                        }
+                    });
                 } else {
                     $log.info('NXE is not supported');
                 }
@@ -28,25 +40,32 @@ angular.module( 'nxe', [])
                 $log.error(err);
             }
         },
-        // template data to be send using nxe call
-        jsonData = {
-            id: null,
-            call: ""
-        },
         /**
          * list of nxe handlers
          * render, zoomBy,...
          *
          */
         handlers = {
-            render: function (callback) {
+            render: function (params) {
+                var jsonData = {};
                 $log.log("Render handler invoked");
 
                 resizeCanvas();
 
                 jsonData.call = "render";
                 jsonData.id = 0;
-                call(JSON.stringify(jsonData), callback);
+                call(JSON.stringify(jsonData));
+            },
+            zoomBy: function (params) {
+                var jsonData = {};
+                $log.log("zoomBy handler invoked");
+
+                resizeCanvas();
+
+                jsonData.call = "zoomBy";
+                jsonData.id = 0;
+                jsonData.data = params;
+                call(JSON.stringify(jsonData));
             }
         },
         /**
@@ -84,6 +103,44 @@ angular.module( 'nxe', [])
                 $log.log('Canvas is not created');
             }
         },
+        /**
+         * Render image data as map in canvas
+         *
+         * @param {string} data base64 string
+         * @returns {undefined}
+         */
+        paintMap = function (data) {
+            var canvas = document.getElementById('mapCanvas'),
+                ctx;
+
+            if (canvas && canvas.getContext){
+                $log.log('Creating image data');
+                ctx = canvas.getContext('2d');
+                printTime("TIME CALLBACK START=");
+                var img = new Image(1080,1660);
+                var dataUrl = "data:image/bmp;base64," + data;
+                img.src = dataUrl;
+
+                $log.log("Draw image in canvas");
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0);
+                    printTime("TIME DRAW=");
+                    $log.log('DONE');
+                };
+            } else {
+                $log.log("Canvas not created or not supported");
+            }
+
+        },
+        /**
+         * Simpleutility function to display time with miliseconds
+         *
+         * @param {string} label
+         * @returns {undefined}
+         */
+        printTime = function(label) {
+            $log.log(label+dateFilter(new Date(), 'HH:mm:ss:sss'));
+        },
         debugDocument = function (body, html, height) {
             $log.log("BODY H (client)="+body.clientHeight);
             $log.log("BODY H (scroll)="+body.scrollHeight);
@@ -103,10 +160,10 @@ angular.module( 'nxe', [])
 
 
     // service invocation
-    return function (name, callback) {
+    return function (name, params) {
         $log.log("NXE service requested");
         try {
-            handlers[name](callback);
+            handlers[name](params);
         } catch (err) {
             $log.error('Handler '+ name + ' is not supported!');
         }
