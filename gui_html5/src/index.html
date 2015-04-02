@@ -13,11 +13,11 @@
 <body class="{{backgroundClass}}">
     <!-- Simulate dna system top bar -->
     <div id="dna-top"></div>
-    <div id="applicationWrapper">
+    <div id="applicationWrapper" ng-mousedown="getUserAction($event)">
         <canvas id="mapCanvas" ng-style="mapVisible"></canvas>
 
         <!-- Here we put different views content -->
-        <div class="container-fluid" ui-view="main"></div>
+        <div id="mainWindow" class="container-fluid" ui-view="main"></div>
     </div>
     <!-- Simulate dna system bottom bar -->
     <div id="dna-bottom"></div>

@@ -39,13 +39,23 @@ angular.module( 'nxe', [])
          *
          */
         handlers = {
-            render: function (callback) {
+            render: function (callback, params) {
                 $log.log("Render handler invoked");
 
                 resizeCanvas();
 
                 jsonData.call = "render";
                 jsonData.id = 0;
+                call(JSON.stringify(jsonData), callback);
+            },
+            zoomBy: function (callback, params) {
+                $log.log("zoomBy handler invoked");
+
+                resizeCanvas();
+
+                jsonData.call = "zoomBy";
+                jsonData.id = 0;
+                jsonData.data = params;
                 call(JSON.stringify(jsonData), callback);
             }
         },
@@ -103,10 +113,10 @@ angular.module( 'nxe', [])
 
 
     // service invocation
-    return function (name, callback) {
+    return function (name, callback, params) {
         $log.log("NXE service requested");
         try {
-            handlers[name](callback);
+            handlers[name](callback, params);
         } catch (err) {
             $log.error('Handler '+ name + ' is not supported!');
         }

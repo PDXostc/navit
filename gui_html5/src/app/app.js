@@ -14,10 +14,11 @@ angular.module( 'navitGui', [
   'navitGui.mapload',
   'navitGui.reset',
   'ui.router',
-  'LocalStorageModule'
+  'LocalStorageModule',
+  'behavior'
 ])
 
-.config( function myAppConfig ( $stateProvider, $urlRouterProvider, $compileProvider, localStorageServiceProvider ) {
+.config( function myAppConfig ( $stateProvider, $urlRouterProvider, $compileProvider, localStorageServiceProvider) {
     // let's rewrite valid href pattern to include 'app' on crosswalk
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|file|ftp|mailto|app):/);
 
@@ -34,6 +35,8 @@ angular.module( 'navitGui', [
 .run( function run ($rootScope, $log, $window) {
     $log.log("navitGui starting...");
 
+    $rootScope.mapInitialized = false;
+
     // change background if map shouldn't be displayed
     $rootScope.$on('$stateChangeSuccess',function(event, toState){
         $rootScope.backgroundClass = toState.data.backgroundClass;
@@ -48,10 +51,15 @@ angular.module( 'navitGui', [
 
 })
 
-.controller( 'AppCtrl', function AppCtrl ( $scope, $location ) {
+.controller( 'AppCtrl', function AppCtrl ( $scope, $location, userActions ) {
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     if ( angular.isDefined( toState.data.pageTitle ) ) {
       $scope.pageTitle = toState.data.pageTitle + ' | navitGui' ;
     }
   });
+
+    $scope.getUserAction = function ($event) {
+        userActions($event);
+
+    };
 });

@@ -43,7 +43,11 @@ angular.module( 'navitGui.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $state, $window, $log, $timeout, nxeCall ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $rootScope, $state, $window, $log, $timeout, nxeCall, dateFilter ) {
+
+    function printTime(label) {
+        $log.log(label+dateFilter(new Date(), 'HH:mm:ss:sss'));
+    }
 
     // Text to speech testing
     $scope.say = function () {
@@ -73,17 +77,59 @@ angular.module( 'navitGui.home', [
                 $log.log("Inside a callback... processing response");
                 $log.log("Type of data", typeof data, "(length="+data.length+")");
 
-                $log.log('Creating image data');
-                var img = new Image(1080,1900);
-                var dataUrl = "data:image/bmp;base64," + data;
-                img.src = dataUrl;
+                if (data[0] === '{') {
+                    $log.log('Got JSON in respnse');
+                } else {
+                    $log.log('Creating image data');
+                    var img = new Image(1080,1660);
+                    var dataUrl = "data:image/bmp;base64," + data;
+                    img.src = dataUrl;
 
-                $log.log("Draw image in canvas");
-                img.onload = function() {
-                    ctx.drawImage(img, 0, 0);
-                    $log.log('DONE');
-                };
+                    $log.log("Draw image in canvas");
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                        $log.log('DONE');
+
+                        $rootScope.mapInitialized = true;
+                    };
+                }
             });
+
+        } else {
+            $log.log("Canvas not created or not supported");
+        }
+
+    };
+
+    $scope.sendNXEZoom = function (factor) {
+
+        var canvas = document.getElementById('mapCanvas'),
+            ctx;
+
+        if (canvas && canvas.getContext){
+            ctx = canvas.getContext('2d');
+
+            nxeCall("zoomBy", function (data) {
+                printTime("TIME CALLBACK START=");
+                $log.log("Inside a callback... processing response");
+                $log.log("Type of data", typeof data, "(length="+data.length+")");
+
+                if (data[0] === '{') {
+                    $log.log('Got JSON in respnse');
+                } else {
+                    $log.log('Creating image data');
+                    var img = new Image(1080,1660);
+                    var dataUrl = "data:image/bmp;base64," + data;
+                    img.src = dataUrl;
+
+                    $log.log("Draw image in canvas");
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                        $log.log('DONE');
+                        printTime("TIME DRAW=");
+                    };
+                }
+            }, {factor: factor});
 
         } else {
             $log.log("Canvas not created or not supported");
@@ -99,12 +145,13 @@ angular.module( 'navitGui.home', [
         $scope.locationControls = {'visibility': 'hidden'};
     }
 
-
-    // load map after 500ms
-    $timeout(function() {
-        $log.log('Trying to load a map after 500ms.');
-        $scope.sendNXE();
-    }, 500);
+    if (!$rootScope.mapInitialized) {
+        // load map after 500ms
+        $timeout(function() {
+            $log.log('Trying to load a map after 500ms.');
+            $scope.sendNXE();
+        }, 500);
+    }
 
 
 });
