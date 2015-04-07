@@ -17,6 +17,7 @@ BuildRequires:  cmake
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libdbus-c++-devel
 BuildRequires:  gpsd-devel
+BuildRequires:  curl
 
 Requires:	dbus
 Requires:	dbus-glib

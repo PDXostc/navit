@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node name="/org/nxe/MapDownloader">
+    <interface name="org.nxe.MapDownloader">
+     <method name="setOutputDirectory">
+        <arg type="s" name="path" direction="in" />
+    </method>
+    <method name="download">
+        <arg type="s" name="mapName" direction="in" />
+        <arg type="b" name="success" direction="out" />
+    </method>
+    <method name="cancel">
+    </method>
+    <method name="reportProgress">
+        <arg type="b" name="enable" direction="in" />
+    </method>
+    <signal name="progress">
+        <arg type="s" name="uuid" />
+        <arg type="i" name="progress" />
+    </signal>
+    <signal name="finished">
+        <arg type="s" name="uuid" />
+    </signal>
+    <signal name="error">
+        <arg type="s" name="uuid" />
+        <arg type="s" name="errorString" />
+    </signal>
+    </interface>
+</node>

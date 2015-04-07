@@ -37,7 +37,9 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<ExitMessage>("exit"),
         boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
         boost::fusion::make_pair<OrientationMessage>("orientation"),
-        boost::fusion::make_pair<SetCenterMessage>("setCenter") };
+        boost::fusion::make_pair<SetCenterMessage>("setCenter"),
+        boost::fusion::make_pair<DownloadMessage>("download")
+    };
 
     map_cb_type cb{
         boost::fusion::make_pair<MoveByMessage>([this](const JSONMessage& message) {
@@ -116,6 +118,12 @@ struct NavitControllerPrivate {
 
             JSONMessage response {message.id, message.call};
             successSignal(response);
+        }),
+
+        boost::fusion::make_pair<DownloadMessage>([this](const JSONMessage& message) {
+            // Janusz start download here
+            const std::string region = message.data.get<std::string>("region");
+            nTrace() << "Download message with region";
         }),
     };
 
