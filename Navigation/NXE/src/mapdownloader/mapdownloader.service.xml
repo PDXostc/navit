@@ -9,19 +9,20 @@
         <arg type="b" name="success" direction="out" />
     </method>
     <method name="cancel">
+        <arg type="s" name="mapName" direction="in"/>
     </method>
     <method name="reportProgress">
         <arg type="b" name="enable" direction="in" />
     </method>
     <signal name="progress">
-        <arg type="s" name="uuid" />
+        <arg type="s" name="mapName" />
         <arg type="i" name="progress" />
     </signal>
     <signal name="finished">
-        <arg type="s" name="uuid" />
+        <arg type="s" name="mapName" />
     </signal>
     <signal name="error">
-        <arg type="s" name="uuid" />
+        <arg type="s" name="mapName" />
         <arg type="s" name="errorString" />
     </signal>
     </interface>

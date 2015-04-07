@@ -22,12 +22,14 @@ public:
     //                          url                 progress    all
     typedef std::function<void(const std::string&, long, long)> CbOnProgress;
 
+    typedef std::function<void(const std::string&)> CbOnFinished;
+
     MapDownloader();
     virtual ~MapDownloader();
 
     std::string download(const std::string& name);
 
-    void cancel();
+    void cancel(const std::string &reqUrl);
 
     long getEstimatedSize(const std::string& name);
 
@@ -46,8 +48,14 @@ public:
         cbOnProgress = cb;
     }
 
+    inline void setCbOnFinished(const CbOnFinished &cb)
+    {
+        cbOnFinished = cb;
+    }
+
     CbOnError cbOnError;
     CbOnProgress cbOnProgress;
+    CbOnFinished cbOnFinished;
 
 private:
     static size_t dataWrite(void* buffer, size_t size, size_t nmemb, void* stream);

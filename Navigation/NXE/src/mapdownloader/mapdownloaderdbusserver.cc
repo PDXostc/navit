@@ -2,16 +2,11 @@
 #include "mapdownloader.h"
 #include "mdlog.h"
 
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
-namespace bu = boost::uuids;
-
 namespace md {
 
 struct MapDownloaderDBusServerPrivate {
-    std::vector<bu::uuid> currentRequests;
+    //          mapName     mapUrl
+    std::map<std::string, std::string> requests;
     MapDownloader downloader;
 };
 
@@ -24,14 +19,26 @@ MapDownloaderDBusServer::MapDownloaderDBusServer(DBus::Connection& connection)
     });
 
     d->downloader.setCbProgress([this](const std::string& url, long p, long t) {
-        mdInfo() << "Progress [ " << p << "/" << t << " ] for url= " << url;;
+        mdInfo() << "Progress [ " << p << "/" << t << " ] for url= " << url;
         this->progress(url, p);
+    });
+
+    d->downloader.setCbOnFinished([this](const std::string& url) {
+        mdInfo() << "Request " << url << " finished";
+        auto it = std::find_if(d->requests.begin(), d->requests.end(), [&url](const std::pair<std::string, std::string> &p) {
+            return p.second == url;
+        });
+        if (it != d->requests.end() ) {
+            d->requests.erase(it);
+        }
     });
 }
 
 MapDownloaderDBusServer::~MapDownloaderDBusServer()
 {
-    mdTrace() << __PRETTY_FUNCTION__;
+    std::for_each(d->requests.begin(), d->requests.end(),[this](const std::pair<std::string, std::string> &p) {
+        cancel(p.first);
+    });
 }
 
 void MapDownloaderDBusServer::setOutputDirectory(const std::string& path)
@@ -42,9 +49,16 @@ void MapDownloaderDBusServer::setOutputDirectory(const std::string& path)
 
 bool MapDownloaderDBusServer::download(const std::string& mapName)
 {
-    const std::string url = d->downloader.download(mapName);
-    mdInfo() << "Downloading " << mapName << " url is= " << url;
-    return !url.empty();
+    auto it = d->requests.find(mapName);
+    if (it == d->requests.end() ) {
+        const std::string url = d->downloader.download(mapName);
+        d->requests[mapName] = url;
+        mdInfo() << "Downloading " << mapName << " url is= " << url;
+        return !url.empty();
+    } else {
+        mdError() << "Already downloading " << mapName;
+        return false;
+    }
 }
 
 void MapDownloaderDBusServer::reportProgress(const bool& enable)
@@ -52,9 +66,16 @@ void MapDownloaderDBusServer::reportProgress(const bool& enable)
     d->downloader.enableReportProgress(enable);
 }
 
-void MapDownloaderDBusServer::cancel()
+void MapDownloaderDBusServer::cancel(const std::string &mapName)
 {
-    d->downloader.cancel();
+    mdDebug() << "Trying to cancel " << mapName;
+    auto it = d->requests.find(mapName);
+    if (it != d->requests.end()) {
+        d->downloader.cancel(it->second);
+        d->requests.erase(it);
+    } else {
+        mdError() << "Unable to find " << mapName;
+    }
 }
 
 } // namespace md

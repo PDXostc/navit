@@ -3,6 +3,7 @@
 
 #include "mapdownloaderadaptor.h"
 #include <memory>
+#include <string>
 
 namespace md {
 
@@ -17,9 +18,9 @@ public:
     ~MapDownloaderDBusServer();
 
     virtual void setOutputDirectory(const std::string& path) override;
-    virtual bool download(const std::string& mapName) override;
+    bool download(const std::string& mapName) override;
     virtual void reportProgress(const bool& enable) override;
-    virtual void cancel() override;
+    virtual void cancel(const std::string &mapName) override;
 private:
     std::unique_ptr<MapDownloaderDBusServerPrivate> d;
 };

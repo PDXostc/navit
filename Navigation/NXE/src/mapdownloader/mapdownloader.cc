@@ -30,12 +30,6 @@ const std::vector<std::string> mapDescriptionFilePaths{ "/usr/share/nxe/", "/hom
     getenv("HOME"), boost::filesystem::current_path().string(),
     boost::filesystem::current_path().string() + "/src/mapdownloader" };
 
-enum class Status {
-    idle = 0,
-    downloading,
-    canceling,
-    stopped
-};
 } // anonymous namespace
 
 struct MapFile {
@@ -47,10 +41,12 @@ struct MapFile {
 };
 
 struct MapDownloaderPrivate {
-    std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
-    Status status;
+    //           url                       // thread                // data
+    std::map<std::string, std::unique_ptr<std::thread>> urlThreads;
+
     std::string mapFilePath;
     std::string mapDescFilePath;
+    std::vector<std::string> cancelRequests;
 
     void prepareFile(const std::string& fileName)
     {
@@ -92,12 +88,11 @@ MapDownloader::MapDownloader()
     setMapFileDir(std::string{ getenv("HOME") } + std::string{ "/" } + std::string{ "maps" });
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
-    d->status = Status::idle;
 }
 
 MapDownloader::~MapDownloader()
 {
-    cancel();
+    cancel("");
     curl_global_cleanup();
     mdDebug() << __PRETTY_FUNCTION__;
 }
@@ -147,22 +142,25 @@ int MapDownloader::onDownloadProgress(void* clientp, curl_off_t dltotal, curl_of
 {
     if (dlnow == 0 || dltotal == 0) {
         //progress is 0, nothing to notify
+        return CURLE_OK;
     }
-    else {
-        MapFile* pDownloader = reinterpret_cast<MapFile*>(clientp);
-        if (pDownloader->this_->d->status == Status::canceling) {
-            pDownloader->this_->d->status = Status::stopped;
-            return 10;
-        }
-        const std::uint32_t progress = (static_cast<double>(dlnow * 100) / static_cast<double>(dltotal));
-        if (progress != pDownloader->currentProgress) {
-            mdDebug() << "Download Progress: " << progress;
-            pDownloader->currentProgress = progress;
 
-            // notify
-            if (pDownloader && pDownloader->this_ && pDownloader->this_->cbOnProgress) {
-                pDownloader->this_->cbOnProgress(pDownloader->url, dlnow, dltotal);
-            }
+    MapFile* pDownloader = reinterpret_cast<MapFile*>(clientp);
+
+    auto vec = pDownloader->this_->d->cancelRequests;
+    if (std::find(vec.begin(), vec.end(), pDownloader->url) != vec.end() ) {
+        mdInfo() << "Need to cancel request " << pDownloader->url;
+        return 10;
+    };
+
+    const std::uint32_t progress = (static_cast<double>(dlnow * 100) / static_cast<double>(dltotal));
+    if (progress != pDownloader->currentProgress) {
+        mdDebug() << "Download Progress: " << progress;
+        pDownloader->currentProgress = progress;
+
+        // notify
+        if (pDownloader && pDownloader->this_ && pDownloader->this_->cbOnProgress) {
+            pDownloader->this_->cbOnProgress(pDownloader->url, dlnow, dltotal);
         }
     }
 
@@ -213,7 +211,7 @@ std::string MapDownloader::download(const std::string& name)
         return "";
     }
 
-    d->urlThreads[req] = std::unique_ptr<std::thread>{ new std::thread{ [req, name, this]() {
+    auto thread = std::unique_ptr<std::thread>{ new std::thread{ [req, name, this]() {
         const std::string mapFileName{ d->mapFilePath + std::string {"/"} + name + std::string{".bin"} };
         d->prepareFile(mapFileName);
         mdDebug() << "Download starting. Url= " << req << " result filename= " << mapFileName;
@@ -240,7 +238,6 @@ std::string MapDownloader::download(const std::string& name)
             curl_easy_setopt(curl, CURLOPT_NOPROGRESS, m_reportProgess ? 0 : 1);
 
             // This blocks
-            d->status = Status::downloading;
             res = curl_easy_perform(curl);
             curl_easy_cleanup(curl);
 
@@ -256,25 +253,27 @@ std::string MapDownloader::download(const std::string& name)
                     fclose(mapfile.stream);
                 }
                 mdInfo() << " Downloading " << req << " finished";
+                if(cbOnFinished) {
+                    cbOnFinished(req);
+                }
             }
         }
     } } };
 
+    d->urlThreads[req] = std::move(thread);
     return req;
 }
 
-void MapDownloader::cancel()
+void MapDownloader::cancel(const std::string &reqUrl)
 {
-    mdInfo() << "Canceling all downloads";
-    d->status = Status::canceling;
-    std::for_each(d->urlThreads.begin(),
-        d->urlThreads.end(),
-        [this](std::pair<const std::string, std::unique_ptr<std::thread> >& t) {
-        mdDebug() << "Waiting for " << t.first << " to finish";
-        t.second->join();
-        });
-
-    d->urlThreads.clear();
+    mdInfo() << "Canceling download " << reqUrl;
+    auto it = d->urlThreads.find(reqUrl);
+    if (it != d->urlThreads.end()) {
+        auto it2 = d->cancelRequests.insert(d->cancelRequests.end(), reqUrl);
+        (*it).second->join();
+        d->urlThreads.erase(it);
+        d->cancelRequests.erase(it2);
+    }
 }
 
 void MapDownloader::enableReportProgress(bool flag)
