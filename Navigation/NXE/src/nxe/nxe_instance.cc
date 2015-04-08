@@ -53,7 +53,7 @@ struct NXEInstancePrivate {
     std::vector<double> perfMeasurement;
 
     // Which messages cause a screen redraw
-    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation"};
+    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation", "moveBy"};
     bool initialized{ false };
 
     void postMessage(const JSONMessage& message)
@@ -76,7 +76,6 @@ struct NXEInstancePrivate {
 
     void navitMsgCallback(const JSONMessage& response)
     {
-
         auto renderIt = std::find(std::begin(redrawAfterRequest), std::end(redrawAfterRequest), response.call);
 
         if (renderIt != std::end(redrawAfterRequest)) {
@@ -177,10 +176,10 @@ void NXEInstance::HandleMessage(const char* msg)
     // lock shared ptr
     std::string message{ msg };
 
-    nTrace() << "Message = " << msg;
     boost::algorithm::erase_all(message, " ");
     boost::algorithm::erase_all(message, "\n");
     boost::algorithm::erase_all(message, "\t");
+    nTrace() << "Message = " << message;
 
     nDebug() << "Handling message " << message;
 

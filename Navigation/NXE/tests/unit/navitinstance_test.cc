@@ -44,7 +44,11 @@ struct NavitInstanceTest : public ::testing::Test {
         using ::testing::Return;
         using ::testing::ReturnRef;
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
+        EXPECT_CALL(*mock_process, setProgramPath(::testing::_));
         EXPECT_CALL(*mock_process, stop());
+        EXPECT_CALL(*mock_ipc, start());
+        EXPECT_CALL(*mock_ipc, speechSignal()).WillRepeatedly(ReturnRef(speechS));
+        EXPECT_CALL(*mock_ipc, initializedSignal()).WillRepeatedly(ReturnRef(initS));
     }
 
     void callback(const std::string& str)
@@ -62,6 +66,7 @@ TEST_F(NavitInstanceTest, moveBy_without_data)
     setupMocks();
 
     NXE::NXEInstance instance{ injector };
+    instance.Initialize();
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
     const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
     EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
@@ -77,6 +82,7 @@ TEST_F(NavitInstanceTest, moveBy_with_data)
     EXPECT_CALL(*mock_ipc, moveBy(-15, -15));
 
     NXE::NXEInstance instance{ injector };
+    instance.Initialize();
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
     const std::string incomingMessage = "{ \
                 \"id\":0, \
@@ -101,6 +107,7 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
     EXPECT_CALL(*mock_ipc, zoom()).WillOnce(Return(10));
 
     NXE::NXEInstance instance{ injector };
+    instance.Initialize();
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
     const std::string incomingMessage = "{ \
                 \"id\":15, \
