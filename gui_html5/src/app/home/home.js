@@ -43,11 +43,7 @@ angular.module( 'navitGui.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $rootScope, $state, $window, $log, $timeout, nxeCall, dateFilter ) {
-
-    function printTime(label) {
-        $log.log(label+dateFilter(new Date(), 'HH:mm:ss:sss'));
-    }
+.controller( 'HomeCtrl', function HomeController( $scope, $rootScope, $state, $window, $log, $timeout, nxeCall ) {
 
     // Text to speech testing
     $scope.say = function () {
@@ -65,6 +61,11 @@ angular.module( 'navitGui.home', [
         }
     };
 
+    // handling map orientation
+    $scope.setOrientation = function () {
+        nxeCall("setOrientation", {orientation: "-1"});
+    };
+
     // hide or show location controls if in home.location state
     if($state.is('home.location')) {
         $scope.locationControls = {'visibility': 'visible'};
@@ -76,8 +77,13 @@ angular.module( 'navitGui.home', [
         // load map after 500ms
         $timeout(function() {
             $log.log('Trying to load a map after 500ms.');
-            nxeCall("render");
+            nxeCall("render", null, null);
             $rootScope.mapInitialized = true;
+
+            // get orientatatoin
+            nxeCall("orientation", null, function (data) {
+                $log.log('data=', data);
+            });
         }, 500);
     }
 

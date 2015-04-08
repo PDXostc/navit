@@ -18,20 +18,29 @@ angular.module( 'nxe', [])
          * Low level nxe call
          *
          * @param {JSON} data json string
+         * @param {function} callback for json response
          * @returns {undefined}
          */
-        call = function (data) {
+        call = function (data, callback) {
             $log.log("Calling nxe", data);
             try {
                 if ($window.nxe) {
-                    nxe.render(data, function (data) {
+                    nxe.render(data, function (response) {
                         $log.log("Inside a callback... processing response");
-                        $log.log("Type of data", typeof data, "(length="+data.length+")");
-                        if (data[0] === '{') {
-                           $log.log('Got JSON in respnse');
+                        $log.log("HAVE ADDITIONAL CALLBACK ?", typeof callback);
+                        $log.log("Type of data", typeof response, "(length="+response.length+")");
+
+                        if (response[0] === '{') {
+                            response = angular.fromJson(response);
+                            $log.log('Got JSON in respnse');
+                            $log.log(response);
+                            if (typeof callback === "function") {
+                                callback(response.data);
+                            }
                         } else {
-                            paintMap(data);
+                            paintMap(response);
                         }
+
                     });
                 } else {
                     $log.info('NXE is not supported');
@@ -42,8 +51,7 @@ angular.module( 'nxe', [])
         },
         /**
          * list of nxe handlers
-         * render, zoomBy,...
-         *
+         * render, zoomBy, moveBy, setOrientation...
          */
         handlers = {
             render: function (params) {
@@ -54,7 +62,7 @@ angular.module( 'nxe', [])
 
                 jsonData.call = "render";
                 jsonData.id = 0;
-                call(JSON.stringify(jsonData));
+                call(angular.toJson(jsonData), null);
             },
             zoomBy: function (params) {
                 var jsonData = {};
@@ -65,7 +73,37 @@ angular.module( 'nxe', [])
                 jsonData.call = "zoomBy";
                 jsonData.id = 0;
                 jsonData.data = params;
-                call(JSON.stringify(jsonData));
+                call(angular.toJson(jsonData));
+            },
+            moveBy: function (params) {
+                var jsonData = {};
+                $log.log("moveBy handler invoked");
+
+                resizeCanvas();
+
+                jsonData.call = "moveBy";
+                jsonData.id = 0;
+                jsonData.data = params;
+                call(angular.toJson(jsonData));
+            },
+            orientation: function (params, callback) {
+                var jsonData = {};
+                $log.log("get orientation handler invoked");
+
+                jsonData.call = "orientation";
+                jsonData.id = 0;
+                call(angular.toJson(jsonData), callback);
+            },
+            setOrientation: function (params) {
+                var jsonData = {};
+                $log.log("setOrientation handler invoked");
+
+                resizeCanvas();
+
+                jsonData.call = "setOrientation";
+                jsonData.id = 0;
+                jsonData.data = params;
+                call(angular.toJson(jsonData));
             }
         },
         /**
@@ -160,10 +198,10 @@ angular.module( 'nxe', [])
 
 
     // service invocation
-    return function (name, params) {
+    return function (name, params, callback) {
         $log.log("NXE service requested");
         try {
-            handlers[name](params);
+            handlers[name](params, callback);
         } catch (err) {
             $log.error('Handler '+ name + ' is not supported!');
         }
