@@ -5,7 +5,6 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/gtest/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/gmock/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/benchmark/include)
 
-
 set(MINI_MAIN
     testmain.cc
     testutils.cc

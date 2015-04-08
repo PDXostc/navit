@@ -34,3 +34,10 @@ add_executable(mapdownloader ${mapdownloader_src})
 target_link_libraries(mapdownloader ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} ${CURL_LIBRARIES} ${Boost_LIBRARIES})
 
 file(COPY ${CMAKE_SOURCE_DIR}/osm_maps.xml DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+install(TARGETS mapdownloader
+        DESTINATION bin/nxe)
+
+install (FILES ${CMAKE_SOURCE_DIR}/osm_maps.xml
+         DESTINATION share/nxe
+ )

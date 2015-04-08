@@ -36,8 +36,6 @@ public:
     void enableReportProgress(bool flag);
     void setMapFileDir(const std::string& dir);
 
-    void setMapDescFilePath(const std::string& path);
-
     inline void setCbError(CbOnError cb)
     {
         cbOnError = cb;
@@ -66,10 +64,8 @@ private:
 
     std::string createMapRequestString(const std::string& name);
 
-    bool mapDirOk() const;
 
     std::unique_ptr<MapDownloaderPrivate> d;
-
 
     bool m_reportProgess;
 };

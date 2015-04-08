@@ -9,6 +9,9 @@
 #define MAPDESC_H_
 
 #include <string>
+#include <vector>
+#include <boost/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 struct MapData {
 	std::string name;
@@ -20,13 +23,19 @@ struct MapData {
 	int  level;
 };
 
-
 class MapDesc {
 public:
 	MapDesc();
 	virtual ~MapDesc();
 
-	bool getMapData(const std::string& name, const std::string& datafile, MapData& res);
+    void setDataFilePath(const std::string &datafile);
+    boost::optional<MapData> getMapData(const std::string& name);
+    std::vector<std::string> availableMaps() const;
+
+private:
+    std::string m_datafile;
+    boost::property_tree::ptree tree;
+    std::vector<MapData> mapData;
 };
 
 #endif /* MAPDESC_H_ */

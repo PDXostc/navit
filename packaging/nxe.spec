@@ -17,7 +17,7 @@ BuildRequires:  cmake
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libdbus-c++-devel
 BuildRequires:  gpsd-devel
-BuildRequires:  curl
+BuildRequires:  curl-devel
 
 Requires:	dbus
 Requires:	dbus-glib
@@ -40,4 +40,6 @@ make install DESTDIR=%{buildroot}
 %files 
 %{_prefix}/lib/tizen-extensions-crosswalk/libnxe.so
 %{_prefix}/share/nxe/nxe.conf
+%{_prefix}/share/nxe/osm_maps.xml
 %{_prefix}/lib/libfruit.so
+%{_prefix}/bin/nxe/mapdownloader

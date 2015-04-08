@@ -42,11 +42,11 @@ struct MapFile {
 
 struct MapDownloaderPrivate {
     //           url                       // thread                // data
-    std::map<std::string, std::unique_ptr<std::thread>> urlThreads;
+    std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
 
     std::string mapFilePath;
-    std::string mapDescFilePath;
     std::vector<std::string> cancelRequests;
+    MapDesc mdesc;
 
     void prepareFile(const std::string& fileName)
     {
@@ -61,6 +61,10 @@ struct MapDownloaderPrivate {
             mdInfo() << "File " << mapFilePartPath.string() << " exists, remove before downloading";
             bfs::remove(mapFilePartPath);
         }
+    }
+    bool mapDirOk() const
+    {
+        return bfs::exists(mapFilePath) && bfs::is_directory(mapFilePath);
     }
 };
 
@@ -79,9 +83,12 @@ MapDownloader::MapDownloader()
         mdError() << "Unable to find osm_maps.xml";
         throw std::runtime_error("Unable to find osm_maps.xml");
     }
+
     mdInfo() << "Reading " << mapDescFilename << " from " << *firstPath;
-    d->mapDescFilePath = *firstPath + "/" + mapDescFilename;
-    mdTrace() << "Map desc file is=" << d->mapDescFilePath;
+    const std::string descFilePath = *firstPath + "/" + mapDescFilename;
+
+    mdTrace() << "Map desc file is=" << descFilePath;
+    d->mdesc.setDataFilePath(descFilePath);
 
     // try to create directory
     // default map dir is $HOME/maps
@@ -148,7 +155,7 @@ int MapDownloader::onDownloadProgress(void* clientp, curl_off_t dltotal, curl_of
     MapFile* pDownloader = reinterpret_cast<MapFile*>(clientp);
 
     auto vec = pDownloader->this_->d->cancelRequests;
-    if (std::find(vec.begin(), vec.end(), pDownloader->url) != vec.end() ) {
+    if (std::find(vec.begin(), vec.end(), pDownloader->url) != vec.end()) {
         mdInfo() << "Need to cancel request " << pDownloader->url;
         return 10;
     };
@@ -169,24 +176,21 @@ int MapDownloader::onDownloadProgress(void* clientp, curl_off_t dltotal, curl_of
 
 long MapDownloader::getEstimatedSize(const std::string& name)
 {
-    MapDesc mdesc;
-    MapData m;
 
-    if (mdesc.getMapData(name, d->mapDescFilePath, m)) {
-        return m.size;
+    boost::optional<MapData> m = d->mdesc.getMapData(name);
+    if (m) {
+        return m->size;
     }
     return 0;
 }
 
 std::string MapDownloader::createMapRequestString(const std::string& name)
 {
-    MapDesc mdesc;
-    MapData m;
-
     std::string res = "http://maps5.navit-project.org/api/map/?bbox=";
 
-    if (mdesc.getMapData(name, d->mapDescFilePath, m)) {
-        res += m.lon1 + "," + m.lat1 + "," + m.lon2 + "," + m.lat2 + "&timestamp=150320";
+    boost::optional<MapData> m = d->mdesc.getMapData(name);
+    if (m) {
+        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + "&timestamp=150320";
         mdDebug() << "createMapRequestString : " << res;
     }
     else {
@@ -264,7 +268,7 @@ std::string MapDownloader::download(const std::string& name)
     return req;
 }
 
-void MapDownloader::cancel(const std::string &reqUrl)
+void MapDownloader::cancel(const std::string& reqUrl)
 {
     mdInfo() << "Canceling download " << reqUrl;
     auto it = d->urlThreads.find(reqUrl);
@@ -301,14 +305,4 @@ void MapDownloader::setMapFileDir(const std::string& dir)
     }
 
     d->mapFilePath = mapPath.string();
-}
-
-void MapDownloader::setMapDescFilePath(const std::string& path)
-{
-    d->mapDescFilePath = path;
-}
-
-bool MapDownloader::mapDirOk() const
-{
-    return bfs::exists(d->mapFilePath) && bfs::is_directory(d->mapFilePath);
 }

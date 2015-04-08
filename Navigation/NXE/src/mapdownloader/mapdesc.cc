@@ -10,53 +10,53 @@
 #include <iostream>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
 
 using namespace std;
 
-MapDesc::MapDesc() {
+MapDesc::MapDesc()
+{
 }
 
-MapDesc::~MapDesc() {
+MapDesc::~MapDesc()
+{
 }
 
-bool MapDesc::getMapData(const std::string& name, const std::string& datafile, MapData& m) {
+void MapDesc::setDataFilePath(const string& datafile)
+{
+    using boost::property_tree::ptree;
+    m_datafile = datafile;
+    boost::property_tree::read_xml(datafile, tree);
 
-	using boost::property_tree::ptree;
-	ptree pt;
+    BOOST_FOREACH (ptree::value_type const& v, tree.get_child("Mapset")) {
+        if (v.first == "Mapdata") {
+            mapData.emplace_back(MapData {
+                                     v.second.get<std::string>("Name"),
+                                     v.second.get<std::string>("Lon1"),
+                                     v.second.get<std::string>("Lat1"),
+                                     v.second.get<std::string>("Lon2"),
+                                     v.second.get<std::string>("Lat2"),
+                                     v.second.get<long>("size"),
+                                     v.second.get<int>("Level"),
+                                 });
+        }
+    }
+}
 
-	std::filebuf fb;
+boost::optional<MapData> MapDesc::getMapData(const std::string& name)
+{
+    using boost::property_tree::ptree;
+    MapData m;
 
-	if (!fb.open(datafile.c_str(),std::ios::in)) {
-		return false;
-	}
+    auto it = std::find_if(mapData.begin(), mapData.end(), [&name](const MapData &md) -> bool {
+        return md.name == name;
+    });
 
-	std::istream is(&fb);
+    auto bo = it != mapData.end() ? boost::optional<MapData> {} :
+                                    boost::optional<MapData> {*it};
+    return bo;
+}
 
-	read_xml(is, pt);
-
-	BOOST_FOREACH( ptree::value_type const& v, pt.get_child("Mapset") ) {
-		if( v.first == "Mapdata" ) {
-			std::string n = v.second.get<std::string>("Name");
-	        if (n == name) {
-	        	m.name = v.second.get<std::string>("Name");
-	        	m.lon1 = v.second.get<std::string>("Lon1");
-	        	m.lat1 = v.second.get<std::string>("Lat1");
-	        	m.lon2 = v.second.get<std::string>("Lon2");
-	        	m.lat2 = v.second.get<std::string>("Lat2");
-	        	m.size = v.second.get<long>("Size");
-	        	m.level = v.second.get<int>("Level");
-
-                mdDebug() << "Found map:" << m.name << ", lon1: " << m.lon1 << ", lat1: "
-	        			<<  m.lat1 << ", lon2: " << m.lon2 << ", lat2: " <<  m.lat2
-	        			<<  ", size: " << m.size << ", level: " << m.level;
-
-	        	fb.close();
-	        	return true;
-	        }
-		}
-	}
-
-	fb.close();
-	return false;
+std::vector<std::string> MapDesc::availableMaps() const
+{
+    return std::vector<std::string>{};
 }
