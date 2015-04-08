@@ -156,7 +156,7 @@ void NavitDBus::moveBy(int x, int y)
     ::DBus::Struct<int, int> val;
     val._1 = x;
     val._2 = y;
-    DBus::call("set_center_streen",*(d->object.get()), val);
+    DBus::call("set_center_screen",*(d->object.get()), val);
 }
 
 void NavitDBus::zoomBy(int y)
