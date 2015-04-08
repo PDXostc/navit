@@ -78,4 +78,10 @@ void MapDownloaderDBusServer::cancel(const std::string &mapName)
     }
 }
 
+std::vector<std::string> MapDownloaderDBusServer::availableMaps()
+{
+    return d->downloader.availableMaps();
+
+}
+
 } // namespace md

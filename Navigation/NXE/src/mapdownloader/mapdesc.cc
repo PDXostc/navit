@@ -35,8 +35,8 @@ void MapDesc::setDataFilePath(const string& datafile)
                                      v.second.get<std::string>("Lat1"),
                                      v.second.get<std::string>("Lon2"),
                                      v.second.get<std::string>("Lat2"),
-                                     v.second.get<long>("size"),
-                                     v.second.get<int>("Level"),
+                                     v.second.get<std::uint64_t>("Size"),
+                                     v.second.get<std::uint8_t>("Level"),
                                  });
         }
     }
@@ -58,5 +58,9 @@ boost::optional<MapData> MapDesc::getMapData(const std::string& name)
 
 std::vector<std::string> MapDesc::availableMaps() const
 {
-    return std::vector<std::string>{};
+    std::vector<std::string> ret{};
+    std::for_each(mapData.begin(), mapData.end(), [&ret](const MapData &md) {
+        ret.push_back(md.name);
+    });
+    return ret;
 }

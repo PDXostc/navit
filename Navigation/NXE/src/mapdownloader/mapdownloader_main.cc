@@ -23,11 +23,12 @@ int main(int argc, char* argv[])
 
     std::shared_ptr<spdlog::sinks::sink> out{ new spdlog::sinks::stdout_sink_mt{} };
     std::shared_ptr<spdlog::sinks::sink> fileOut{ new spdlog::sinks::simple_file_sink_mt{"/tmp/md.log"} };
-    spdlog::create("md", { out, fileOut });
+    std::shared_ptr<spdlog::sinks::sink> syslogOut{ new spdlog::sinks::syslog_sink {"md", 0, LOG_DAEMON	} };
+    spdlog::create("md", { out, fileOut, syslogOut });
     if(debug) {
         spdlog::set_level(spdlog::level::trace);
     } else {
-        spdlog::set_level(spdlog::level::warn);
+        spdlog::set_level(spdlog::level::info);
     }
 
     ::DBus::default_dispatcher = &dispatcher;

@@ -268,6 +268,11 @@ std::string MapDownloader::download(const std::string& name)
     return req;
 }
 
+std::vector<std::string> MapDownloader::availableMaps() const
+{
+    return d->mdesc.availableMaps();
+}
+
 void MapDownloader::cancel(const std::string& reqUrl)
 {
     mdInfo() << "Canceling download " << reqUrl;

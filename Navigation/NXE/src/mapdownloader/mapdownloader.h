@@ -12,6 +12,7 @@
 #include <string>
 #include <functional>
 #include <memory>
+#include <vector>
 
 struct MapDownloaderPrivate;
 class MapDownloader {
@@ -28,6 +29,7 @@ public:
     virtual ~MapDownloader();
 
     std::string download(const std::string& name);
+    std::vector<std::string> availableMaps() const;
 
     void cancel(const std::string &reqUrl);
 

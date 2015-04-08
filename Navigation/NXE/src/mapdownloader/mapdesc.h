@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
 #include <boost/optional.hpp>
 #include <boost/property_tree/ptree.hpp>
 
@@ -19,8 +20,9 @@ struct MapData {
 	std::string lat1;
 	std::string lon2;
 	std::string lat2;
-	long size;
-	int  level;
+    // It has to be fixed size
+    std::uint64_t size;
+    std::uint8_t level;
 };
 
 class MapDesc {

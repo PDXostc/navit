@@ -21,6 +21,7 @@ public:
     bool download(const std::string& mapName) override;
     virtual void reportProgress(const bool& enable) override;
     virtual void cancel(const std::string &mapName) override;
+    virtual std::vector< std::string > availableMaps() override;
 private:
     std::unique_ptr<MapDownloaderDBusServerPrivate> d;
 };
