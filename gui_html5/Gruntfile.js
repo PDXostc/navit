@@ -737,7 +737,9 @@ module.exports = function ( grunt ) {
           data: {
             scripts: jsFiles,
             styles: cssFiles,
-            version: grunt.config( 'pkg.version' )
+            version: grunt.config( 'pkg.version' ),
+            // enable or disable osing mous only as input
+            mouse: grunt.option('mouse') || false
           }
         });
       }

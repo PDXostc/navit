@@ -5,7 +5,8 @@
  */
 angular.module( 'navitGui.home', [
   'ui.router',
-  'nxe'
+  'navitGui.navit',
+  'navitGui.map'
 ])
 
 /**
@@ -40,12 +41,77 @@ angular.module( 'navitGui.home', [
   });
 })
 
+.run( function run ($log, $rootScope, guinxe) {
+    $log.log("HomeCtrl::running...");
+
+    //true=nort-up, false=head-up
+    $rootScope.orientation = true;
+
+    // setting proper icon for map orientation
+    var promise = guinxe.get({
+            id: 0,
+            call: "orientation"
+        });
+
+    promise.then(
+        function (response) {
+            if (response.data) {
+                $log.log("HomeCtrl::getOrientation::success");
+                $log.log(response.data);
+                $rootScope.orientation = response.data.orientation === -1 ? true : false;
+            }
+        },
+        function (reason) {
+            $log.log("HomeCtrl::Error while getOrientation::"+reason);
+        }
+    );
+
+})
+
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, $rootScope, $state, $window, $log, $timeout, nxeCall ) {
+.controller( 'HomeCtrl', function HomeController( $scope, $rootScope, $state, $window, $log, $timeout, guinxe, map) {
 
-    // Text to speech testing
+    var timeout = 500;
+
+    /**
+     * Loads a map for the firs time
+     *
+     * @returns {undefined}
+     */
+    function initializeMap () {
+        $log.log("HomeCtrl::initializeMap::before nxe call");
+        var promise = guinxe.call({
+                id: 0,
+                call: "render"
+            });
+
+        promise.then(
+            function (response) {
+                if (response.image) {
+                    $log.log("HomeCtrl::initializeMap::success (image)");
+                    // invoke map service
+                    map.render(response.data);
+                }
+            },
+            function (reason) {
+                $log.log("HomeCtrl::Error when initializing a map::"+reason);
+            },
+            function (response) {
+                // for now we skip json responses
+                $log.log("HomeCtrl::initializeMap::notify (json) skipping"+response);
+            }
+        );
+
+        $rootScope.mapInitialized = true;
+    }
+
+    /**
+     * Text to Speech testing method
+     *
+     * @returns {undefined}
+     */
     $scope.say = function () {
         var text = 'After 50 meters turn left',
             msg;
@@ -61,9 +127,35 @@ angular.module( 'navitGui.home', [
         }
     };
 
-    // handling map orientation
     $scope.setOrientation = function () {
-        nxeCall("setOrientation", {orientation: "-1"});
+        $log.log("HomeCtrl::setOrientation::before nxe call");
+        var orientation = $rootScope.orientation === true ? 0 : -1;
+        var promise = guinxe.call({
+                id: 0,
+                call: "setOrientation",
+                data: {
+                    orientation: orientation
+                }
+            });
+
+        promise.then(
+            function (response) {
+                if (response.image) {
+                    $log.log("HomeCtrl::setOrientation::success (image)");
+                    // invoke map service
+                    map.render(response.data);
+                }
+            },
+            function (reason) {
+                $log.log("HomeCtrl::Error while setOrientation::"+reason);
+            },
+            function (response) {
+                // here we can change orientation icon
+                $log.log("HomeCtrl::setOrientation::notify (json) skipping", response);
+                $rootScope.orientation = !$rootScope.orientation;
+
+            }
+        );
     };
 
     // hide or show location controls if in home.location state
@@ -73,18 +165,11 @@ angular.module( 'navitGui.home', [
         $scope.locationControls = {'visibility': 'hidden'};
     }
 
+    // for now map is loaded after some time to properly calculate canvas
+    // dimensions for tizen platform
     if (!$rootScope.mapInitialized) {
-        // load map after 500ms
-        $timeout(function() {
-            $log.log('Trying to load a map after 500ms.');
-            nxeCall("render", null, null);
-            $rootScope.mapInitialized = true;
-
-            // get orientatatoin
-            nxeCall("orientation", null, function (data) {
-                $log.log('data=', data);
-            });
-        }, 500);
+        $log.log('HomeCtrl::Trying to load a map after '+timeout+'ms.');
+        $timeout(initializeMap, timeout);
     }
 
 

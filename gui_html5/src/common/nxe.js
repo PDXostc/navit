@@ -1,4 +1,6 @@
 /**
+ * DEPRECATED, will be removed soon
+ *
  * Module responsible for handling communication with NXE.
  * Supported only on Tizen platform with special Crosswalk extension enabled.
  *

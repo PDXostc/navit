@@ -8,6 +8,11 @@
     <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
     <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
+
+    <script>
+    var useOnlyMouseInput = <%= mouse %>;
+    </script>
+
 </head>
 
 <body class="{{backgroundClass}}">
