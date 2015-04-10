@@ -65,3 +65,20 @@ TEST_F(NavitDBusTest, setCenter)
 {
     connection.setCenter(24.0,53.0);
 }
+
+TEST_F(NavitDBusTest, setPosition)
+{
+    connection.setPosition(24.0,53.0);
+}
+
+TEST_F(NavitDBusTest, setDestination)
+{
+    connection.setDestination(24.10,53.10,"dest1");
+}
+
+
+TEST_F(NavitDBusTest, clearDestination)
+{
+    connection.clearDestination();
+}
+

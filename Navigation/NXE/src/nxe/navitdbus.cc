@@ -198,6 +198,30 @@ void NavitDBus::setCenter(double longitude, double latitude)
     DBus::call("set_center_by_string", *(d->object.get()), message);
 }
 
+void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+
+    DBus::call("set_destination", *(d->object.get()), message, description);
+}
+
+void NavitDBus::setPosition(double longitude, double latitude)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+
+    DBus::call("set_position", *(d->object.get()), message);
+}
+
+
+
+void NavitDBus::clearDestination()
+{
+	DBus::call("clear_destination", *(d->object.get()));
+}
+
+
 INavitIPC::SpeechSignal& NavitDBus::speechSignal()
 {
     assert(d && d->object);

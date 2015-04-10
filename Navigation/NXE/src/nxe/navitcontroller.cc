@@ -43,7 +43,10 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<SetCenterMessage>("setCenter"),
         boost::fusion::make_pair<DownloadMessage>("downloadMap"),
         boost::fusion::make_pair<CancelDownloadMessage>("cancelDownloadMap"),
-        boost::fusion::make_pair<AvailableMapsMessage>("availableMaps")
+        boost::fusion::make_pair<AvailableMapsMessage>("availableMaps"),
+        boost::fusion::make_pair<SetDestinationMessage>("setDestination"),
+        boost::fusion::make_pair<ClearDestinationMessage>("clearDestination"),
+        boost::fusion::make_pair<SetPositionMessage>("setPosition")
     };
 
     map_cb_type cb{
@@ -155,6 +158,39 @@ struct NavitControllerPrivate {
 
             successSignal(JSONMessage {message.id, message.call, "", p});
         }),
+
+        boost::fusion::make_pair<SetDestinationMessage>([this](const JSONMessage& message) {
+
+            const double longitude = message.data.get<double>("longitude");
+            const double latitude = message.data.get<double>("latitude");
+            const std::string description = message.data.get<std::string>("description");
+
+            ipc->setDestination(longitude, latitude, description);
+
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+
+        boost::fusion::make_pair<ClearDestinationMessage>([this](const JSONMessage& message) {
+
+            ipc->clearDestination();
+
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+
+        boost::fusion::make_pair<SetPositionMessage>([this](const JSONMessage& message) {
+
+            const double longitude = message.data.get<double>("longitude");
+            const double latitude = message.data.get<double>("latitude");
+
+            ipc->setPosition(longitude, latitude);
+
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
+
+
     };
 
     // A listener for IMapDownloader, all functions are lambda

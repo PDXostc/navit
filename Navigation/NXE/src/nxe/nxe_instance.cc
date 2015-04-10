@@ -53,7 +53,7 @@ struct NXEInstancePrivate {
     std::vector<double> perfMeasurement;
 
     // Which messages cause a screen redraw
-    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation", "moveBy"};
+    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation", "moveBy", "setDestination", "clearDestination", "setPosition"};
     bool initialized{ false };
 
     void postMessage(const JSONMessage& message)
