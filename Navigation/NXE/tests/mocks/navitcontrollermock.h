@@ -18,6 +18,9 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD1(setOrientation, void(int));
     MOCK_METHOD0(orientation, int());
     MOCK_METHOD2(setCenter, void(double,double));
+    MOCK_METHOD3(setDestination, void(double,double,const std::string&));
+    MOCK_METHOD0(clearDestination, void());
+    MOCK_METHOD2(setPosition, void(double,double));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

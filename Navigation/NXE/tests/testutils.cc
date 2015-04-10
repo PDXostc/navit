@@ -38,6 +38,36 @@ std::string TestUtils::zoomByMessage(int factor)
     return NXE::JSONUtils::serialize(msg);
 }
 
+std::string TestUtils::setDestinationMessage(double lon, double lat, const std::string& description)
+{
+    boost::property_tree::ptree p;
+    p.put("longitude", lon);
+    p.put("latitude", lat);
+    p.put("description", description);
+
+    NXE::JSONMessage msg{ 1, "setDestination", "", p };
+    return NXE::JSONUtils::serialize(msg);
+}
+
+std::string TestUtils::setPositionMessage(double lon, double lat)
+{
+    boost::property_tree::ptree p;
+    p.put("longitude", lon);
+    p.put("latitude", lat);
+
+    NXE::JSONMessage msg{ 1, "setPosition", "", p };
+    return NXE::JSONUtils::serialize(msg);
+}
+
+
+std::string TestUtils::clearDestinationMessage()
+{
+    NXE::JSONMessage msg{ 1, "clearDestination" };
+    return NXE::JSONUtils::serialize(msg);
+}
+
+
+
 std::string TestUtils::zoomMessage()
 {
     NXE::JSONMessage msg{ 3, "zoom" };

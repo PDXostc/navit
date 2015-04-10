@@ -18,6 +18,9 @@ std::string positionMessage();
 std::string downloadMessage(const std::string &country);
 std::string cancelDownloadMessage(const std::string &country);
 std::string availableMessages();
+std::string setDestinationMessage(double lon, double lat, const std::string& description);
+std::string setPositionMessage(double lon, double lat);
+std::string clearDestinationMessage();
 
 void createNXEConfFile();
 

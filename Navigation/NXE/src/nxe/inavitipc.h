@@ -30,6 +30,9 @@ public:
     virtual void setOrientation(int newOrientation) = 0;
 
     virtual void setCenter(double longitude, double latitude) = 0;
+    virtual void setDestination(double longitude, double latitude, const std::string& description) = 0;
+    virtual void setPosition(double longitude, double latitude) = 0;
+    virtual void clearDestination() = 0;
 
     // Signals from IPC
     virtual SpeechSignal& speechSignal() = 0;
