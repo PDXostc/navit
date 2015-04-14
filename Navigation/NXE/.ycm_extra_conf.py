@@ -20,6 +20,8 @@ flags = [
     '-I', '3rdParty/benchmark/include',
     '-I', '3rdParty/gmock/include',
     '-I', '3rdParty/gmock/gtest/include',
+    '-I', 'src/nxe',
+    '-I', 'src/mapdownloader',
     # This path will only work on OS X, but extra paths that don't exist are not
     # harmful
     '-isystem', '/System/Library/Frameworks/Python.framework/Headers',

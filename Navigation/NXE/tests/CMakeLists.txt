@@ -10,6 +10,7 @@ set(MINI_MAIN
     testutils.cc
     mocks/navitprocessmock.h
     mocks/navitcontrollermock.h
+    mocks/mapdownloadermock.h
 )
 add_definitions(-DNAVIT_PATH=\"${NAVIT_PATH}/\")
 

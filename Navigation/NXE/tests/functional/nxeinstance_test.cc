@@ -2,6 +2,7 @@
 #include "navitprocessimpl.h"
 #include "navitcontroller.h"
 #include "navitdbus.h"
+#include "mapdownloaderdbus.h"
 #include "gpsdprovider.h"
 #include "testutils.h"
 
@@ -21,7 +22,8 @@ struct NXEInstanceTest : public ::testing::Test {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
                 .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>();
+                .bind<IGPSProvider, GPSDProvider>()
+                .bind<IMapDownloader, MapDownloaderDBus>();
     }() };
     NXEInstance instance{ injector };
     JSONMessage respMsg;
@@ -53,7 +55,7 @@ struct NXEInstanceTest : public ::testing::Test {
     }
 };
 
-TEST_F(NXEInstanceTest, zoomBy)
+TEST_F(NXEInstanceTest, zoomByMessage_zoomIn_correct)
 {
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     instance.Initialize();
@@ -74,7 +76,7 @@ TEST_F(NXEInstanceTest, DISABLED_speechTest)
     zoom(2);
 }
 
-TEST_F(NXEInstanceTest, zoomOut)
+TEST_F(NXEInstanceTest, zoomByMessage_zoomOut_correct)
 {
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
@@ -83,7 +85,7 @@ TEST_F(NXEInstanceTest, zoomOut)
     EXPECT_TRUE(respMsg.data.empty());
 }
 
-TEST_F(NXEInstanceTest, zoom)
+TEST_F(NXEInstanceTest, zoomMessage_correct)
 {
     std::string msg{ TestUtils::zoomMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -108,7 +110,7 @@ TEST_F(NXEInstanceTest, DISABLED_zoomInAndOut)
     EXPECT_EQ(respMsg.call, "zoomBy");
 }
 
-TEST_F(NXEInstanceTest, renderOneFrame)
+TEST_F(NXEInstanceTest, renderMessage_correct)
 {
     std::string msg{ TestUtils::renderMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -124,7 +126,7 @@ TEST_F(NXEInstanceTest, renderOneFrame)
     EXPECT_EQ(numberOfResponses, 2);
 }
 
-TEST_F(NXEInstanceTest, moveByMessage)
+TEST_F(NXEInstanceTest, moveByMessage_correct)
 {
     const std::string msg{ TestUtils::moveByMessage(10, 10) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -134,7 +136,7 @@ TEST_F(NXEInstanceTest, moveByMessage)
     instance.HandleMessage(msg.data());
 }
 
-TEST_F(NXEInstanceTest, changeOrientation)
+TEST_F(NXEInstanceTest, changeOrientation_correct)
 {
     const std::string msg{ TestUtils::changeOrientationMessage(-1) };
     const std::string msg2{ TestUtils::orientationMessage() };
@@ -149,7 +151,7 @@ TEST_F(NXEInstanceTest, changeOrientation)
     EXPECT_TRUE(respMsg.error.empty());
 }
 
-TEST_F(NXEInstanceTest, position)
+TEST_F(NXEInstanceTest, positionMessage_correct)
 {
     const std::string msg{ TestUtils::positionMessage() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -161,7 +163,7 @@ TEST_F(NXEInstanceTest, position)
     EXPECT_TRUE(respMsg.error.empty());
 }
 
-TEST_F(NXEInstanceTest, changeOrientationToIncorrectValue)
+TEST_F(NXEInstanceTest, changeOrientationMessage_incorrectValue)
 {
     const std::string msg{ TestUtils::changeOrientationMessage(100) };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
@@ -173,6 +175,60 @@ TEST_F(NXEInstanceTest, changeOrientationToIncorrectValue)
     EXPECT_FALSE(respMsg.error.empty());
 }
 
+TEST_F(NXEInstanceTest, availableMessages_correct)
+{
+    const std::string msg{ TestUtils::availableMessages() };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura(100);
+    std::this_thread::sleep_for(dura);
+    instance.HandleMessage(msg.data());
+
+    EXPECT_TRUE(respMsg.error.empty());
+    EXPECT_EQ(respMsg.call, "availableMaps");
+    EXPECT_FALSE(respMsg.data.empty());
+}
+
+TEST_F(NXEInstanceTest, downloadMessage_incorrect_country)
+{
+    // Arrange
+    const std::string msg{ TestUtils::downloadMessage("this country does not exists") };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura(100);
+    std::this_thread::sleep_for(dura);
+
+    // Act
+    instance.HandleMessage(msg.data());
+
+    // Assert
+    EXPECT_FALSE(respMsg.error.empty());
+}
+
+TEST_F(NXEInstanceTest, downloadMessage_correct_country)
+{
+    // Arrange
+    const std::string msg{ TestUtils::downloadMessage("Hawaii") };
+    const std::string msg2{ TestUtils::cancelDownloadMessage("Hawaii") };
+    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
+    EXPECT_NO_THROW(instance.Initialize());
+    std::chrono::milliseconds dura(100);
+    std::this_thread::sleep_for(dura);
+
+    // Act
+    instance.HandleMessage(msg.data());
+
+    while (true) {
+        std::this_thread::sleep_for(dura);
+    }
+
+    // Assert
+    EXPECT_TRUE(respMsg.error.empty());
+    EXPECT_EQ(respMsg.call, "downloadMap");
+
+    instance.HandleMessage(msg2.data());
+
+}
 // run for 10 minutes
 TEST_F(NXEInstanceTest, DISABLED_runNxeInstance)
 {
@@ -180,3 +236,4 @@ TEST_F(NXEInstanceTest, DISABLED_runNxeInstance)
     std::chrono::milliseconds dura(60 * 1000 * 10 );
     std::this_thread::sleep_for(dura);
 }
+

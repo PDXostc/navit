@@ -15,6 +15,9 @@ std::string renderMessage();
 std::string changeOrientationMessage(int orientation);
 std::string orientationMessage();
 std::string positionMessage();
+std::string downloadMessage(const std::string &country);
+std::string cancelDownloadMessage(const std::string &country);
+std::string availableMessages();
 
 void createNXEConfFile();
 

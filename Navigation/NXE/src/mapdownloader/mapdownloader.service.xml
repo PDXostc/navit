@@ -3,6 +3,7 @@
     <interface name="org.nxe.MapDownloader">
      <method name="setOutputDirectory">
         <arg type="s" name="path" direction="in" />
+        <arg type="b" name="ok" direction="out" />
     </method>
     <method name="download">
         <arg type="s" name="mapName" direction="in" />
@@ -19,7 +20,8 @@
     </method>
     <signal name="progress">
         <arg type="s" name="mapName" />
-        <arg type="i" name="progress" />
+        <arg type="t" name="now" />
+        <arg type="t" name="total" />
     </signal>
     <signal name="finished">
         <arg type="s" name="mapName" />

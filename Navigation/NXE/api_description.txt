@@ -98,6 +98,49 @@ Response:
     }
 }
 
+///////////////////// DOWNLOAD MAP /////////////////////////
+
+{
+    "id": 1023,
+    "call" : "downloadMap",
+    "data" : {
+        "region" : "Hawaii"
+    }
+}
+
+Response:
+{
+    "id": 1023,
+    "call" : "downloadMap",
+}
+
+Callbacks:
+
+Progress callback
+{
+    "id": 1023,
+    "call" : "downloadMap",
+    "data" : {
+        "mapName": "Hawaii",
+        "now": 120, // Size in bytes
+        "total: 123123123123123 // Size in bytes
+    }
+
+}
+
+///////////////////// AVAILABLE MAPS /////////////////////////
+
+{
+    "id": 1023,
+    "call" : "availableMaps",
+}
+
+Response:
+{
+    "id": 1023,
+    "call" : "availableMaps,
+    "data": [ asd, asd, asd, asd, asd, asd, asd]
+}
 
 ///////////////////// ERRORS /////////////////////////
 

@@ -13,7 +13,7 @@ class INavitIPC;
 class NavitController;
 class IGPSProvider;
 
-class NXEInstancePrivate;
+struct NXEInstancePrivate;
 class NXEInstance : public common::Instance {
 public:
     typedef std::function<void(const std::string&)> MessageCb_type;

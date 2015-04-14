@@ -69,3 +69,28 @@ std::string TestUtils::positionMessage()
     NXE::JSONMessage msg{ 100, "position" };
     return NXE::JSONUtils::serialize(msg);
 }
+
+
+std::string TestUtils::downloadMessage(const std::string &country)
+{
+    boost::property_tree::ptree p;
+    p.put("region", country);
+    NXE::JSONMessage msg {401, "downloadMap", "", p};
+    return NXE::JSONUtils::serialize(msg);
+}
+
+
+std::string TestUtils::availableMessages()
+{
+    NXE::JSONMessage msg{ 100, "availableMaps" };
+    return NXE::JSONUtils::serialize(msg);
+}
+
+
+std::string TestUtils::cancelDownloadMessage(const std::string &country)
+{
+    boost::property_tree::ptree p;
+    p.put("region", country);
+    NXE::JSONMessage msg {401, "cancelDownloadMap", "", p};
+    return NXE::JSONUtils::serialize(msg);
+}

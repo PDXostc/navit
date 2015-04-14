@@ -36,7 +36,7 @@ public:
     long getEstimatedSize(const std::string& name);
 
     void enableReportProgress(bool flag);
-    void setMapFileDir(const std::string& dir);
+    bool setMapFileDir(const std::string& dir);
 
     inline void setCbError(CbOnError cb)
     {

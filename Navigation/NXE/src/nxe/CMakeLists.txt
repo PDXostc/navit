@@ -24,12 +24,16 @@ include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR} ${DBUSCPP_INCLU
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE__SOURCE_DIR}/src/)
 
-set (dbus_library navitdbus.cc)
+set (dbus_library 
+    navitdbus.cc
+    mapdownloaderdbus.cc
+    )
 
 set(nxe_interfaces
     inavitprocess.h
     inavitipc.h
     igpsprovider.h
+    imapdownloader.h
 )
 
 set(NXE_SRCS

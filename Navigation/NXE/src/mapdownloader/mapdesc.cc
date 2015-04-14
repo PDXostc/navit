@@ -51,9 +51,12 @@ boost::optional<MapData> MapDesc::getMapData(const std::string& name)
         return md.name == name;
     });
 
-    auto bo = it != mapData.end() ? boost::optional<MapData> {} :
-                                    boost::optional<MapData> {*it};
-    return bo;
+    boost::optional<MapData> md;
+    if (it != mapData.end()) {
+        md = *it;
+    }
+
+    return md;
 }
 
 std::vector<std::string> MapDesc::availableMaps() const

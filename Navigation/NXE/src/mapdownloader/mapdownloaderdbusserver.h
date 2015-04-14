@@ -17,7 +17,7 @@ public:
     MapDownloaderDBusServer(DBus::Connection& connection);
     ~MapDownloaderDBusServer();
 
-    virtual void setOutputDirectory(const std::string& path) override;
+    virtual bool setOutputDirectory(const std::string& path) override;
     bool download(const std::string& mapName) override;
     virtual void reportProgress(const bool& enable) override;
     virtual void cancel(const std::string &mapName) override;

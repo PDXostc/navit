@@ -1,12 +1,14 @@
 #include "benchmark/benchmark.h"
 
 #include "nxe_instance.h"
+#include "context.h"
 #include "navitprocessimpl.h"
 #include "navitcontroller.h"
 #include "inavitipc.h"
 #include "navitdbus.h"
 #include "testutils.h"
 #include "mocks/gpsmock.h"
+#include "mocks/mapdownloadermock.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -22,7 +24,8 @@ struct RenderTest {
         return fruit::createComponent()
                 .bind<NXE::INavitIPC, NXE::NavitDBus>()
                 .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
-                .bind<NXE::IGPSProvider, GPSMock>();
+                .bind<NXE::IGPSProvider, GPSMock>()
+                .bind<NXE::IMapDownloader, MapDownloaderMock>();
     }() };
     NXE::NXEInstance instance{ injector };
 };

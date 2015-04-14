@@ -3,7 +3,6 @@
 
 #include <dbus-c++/interface.h>
 #include <dbus-c++/message.h>
-#include "log.h"
 
 namespace NXE {
 namespace DBus {
@@ -15,7 +14,7 @@ namespace __details {
         it << t;
     }
 
-    void unpack(::DBus::MessageIter&)
+    inline void unpack(::DBus::MessageIter&)
     {
     }
 }
@@ -39,8 +38,6 @@ namespace __details {
         ::DBus::Variant v;
         retIter >> v;
         R value = static_cast<R>(v);
-        nDebug() << attrName << "= " << value;
-
         return value;
     }
 
@@ -54,19 +51,19 @@ namespace __details {
     }
 
     template <typename... Args>
-    void call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
+    ::DBus::Message call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
         using namespace __details;
-        nDebug() << "Calling dbus " << methodName;
         ::DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member(methodName.c_str());
         unpack(it, attr...);
         ::DBus::Message ret = proxy.invoke_method(call);
+
         if (ret.is_error()) {
-            nFatal() << "Unable to call " << methodName;
             throw std::runtime_error("Unable to call" + methodName);
         }
+        return ret;
     }
 
     template <typename Arg>

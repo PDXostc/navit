@@ -28,13 +28,16 @@ struct SetOrientationMessage {};
 struct OrientationMessage {};
 struct SetCenterMessage {};
 struct DownloadMessage {};
+struct CancelDownloadMessage {};
+struct AvailableMapsMessage {};
 // clang-format on
 
 // Container of all registered messages
 typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage,
     PositionMessage, RenderMessage, ExitMessage,
     SetOrientationMessage, OrientationMessage,
-    SetCenterMessage, DownloadMessage
+    SetCenterMessage, DownloadMessage, CancelDownloadMessage,
+    AvailableMapsMessage
     > Messages_type;
 
 typedef std::function<void(const NXE::JSONMessage& data)> JSONMessageParser_type;

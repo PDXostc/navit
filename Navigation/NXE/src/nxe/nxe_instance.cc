@@ -76,8 +76,18 @@ struct NXEInstancePrivate {
 
     void navitMsgCallback(const JSONMessage& response)
     {
-        auto renderIt = std::find(std::begin(redrawAfterRequest), std::end(redrawAfterRequest), response.call);
+        // At first try to calculate processign time
+        auto it = timers.find(response.call);
+        if (it != timers.end()) {
+            auto now = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> diff = now - timers[response.call];
+            double res = diff.count();
+            perfMeasurement.push_back(res);
+            perfLog(response.call) << " parsing took " << res << " ms";
+            timers.erase(it);
+        }
 
+        auto renderIt = std::find(std::begin(redrawAfterRequest), std::end(redrawAfterRequest), response.call);
         if (renderIt != std::end(redrawAfterRequest)) {
             // read shared memory
             const char* mem = static_cast<const char*>(region.get_address());
@@ -101,15 +111,6 @@ struct NXEInstancePrivate {
             postMessage(response);
         }
 
-        auto it = timers.find(response.call);
-        if (it != timers.end()) {
-            auto now = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> diff = now - timers[response.call];
-            double res = diff.count();
-            perfMeasurement.push_back(res);
-            perfLog(response.call) << " parsing took " << res << " ms";
-            timers.erase(it);
-        }
         nTrace() << "Finished posting response";
     }
 };
@@ -174,14 +175,13 @@ void NXEInstance::Initialize()
 void NXEInstance::HandleMessage(const char* msg)
 {
     // lock shared ptr
-    std::string message{ msg };
+    const std::string message{ msg };
+    std::string printedMessage{ msg };
 
-    boost::algorithm::erase_all(message, " ");
-    boost::algorithm::erase_all(message, "\n");
-    boost::algorithm::erase_all(message, "\t");
-    nTrace() << "Message = " << message;
-
-    nDebug() << "Handling message " << message;
+    boost::algorithm::erase_all(printedMessage, "\n");
+    boost::algorithm::erase_all(printedMessage, "\t");
+    boost::algorithm::erase_all(printedMessage, " ");
+    nDebug() << "Handling message " << printedMessage;
 
     // Eat all exceptions!
     try {

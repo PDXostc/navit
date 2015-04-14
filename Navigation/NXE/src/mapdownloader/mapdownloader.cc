@@ -41,7 +41,7 @@ struct MapFile {
 };
 
 struct MapDownloaderPrivate {
-    //           url                       // thread                // data
+    //           url                       thread
     std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
 
     std::string mapFilePath;
@@ -62,6 +62,7 @@ struct MapDownloaderPrivate {
             bfs::remove(mapFilePartPath);
         }
     }
+
     bool mapDirOk() const
     {
         return bfs::exists(mapFilePath) && bfs::is_directory(mapFilePath);
@@ -99,7 +100,6 @@ MapDownloader::MapDownloader()
 
 MapDownloader::~MapDownloader()
 {
-    cancel("");
     curl_global_cleanup();
     mdDebug() << __PRETTY_FUNCTION__;
 }
@@ -129,6 +129,9 @@ std::string MapDownloader::getDownloadErrorStr(CURLcode err)
 
     case CURLE_COULDNT_CONNECT:
         return connectionErrorStr;
+
+    case CURLE_ABORTED_BY_CALLBACK:
+        return "Request cancelled";
 
     default:
         return unknownErrorStr;
@@ -192,6 +195,7 @@ std::string MapDownloader::createMapRequestString(const std::string& name)
     if (m) {
         res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + "&timestamp=150320";
         mdDebug() << "createMapRequestString : " << res;
+        mdInfo() << "Size for map " << name << " is " << m->size/1024/1024 << " MB";
     }
     else {
         mdError() << "Unable to get address for " << name;
@@ -270,7 +274,9 @@ std::string MapDownloader::download(const std::string& name)
 
 std::vector<std::string> MapDownloader::availableMaps() const
 {
-    return d->mdesc.availableMaps();
+    auto maps = d->mdesc.availableMaps();
+    mdDebug() << "Available maps size= " << maps.size();
+    return maps;
 }
 
 void MapDownloader::cancel(const std::string& reqUrl)
@@ -278,6 +284,7 @@ void MapDownloader::cancel(const std::string& reqUrl)
     mdInfo() << "Canceling download " << reqUrl;
     auto it = d->urlThreads.find(reqUrl);
     if (it != d->urlThreads.end()) {
+        mdTrace() << "Request canceling " << it->first;
         auto it2 = d->cancelRequests.insert(d->cancelRequests.end(), reqUrl);
         (*it).second->join();
         d->urlThreads.erase(it);
@@ -290,24 +297,31 @@ void MapDownloader::enableReportProgress(bool flag)
     m_reportProgess = flag;
 }
 
-void MapDownloader::setMapFileDir(const std::string& dir)
+bool MapDownloader::setMapFileDir(const std::string& dir)
 {
     const bfs::path mapPath{ dir };
 
-    if (!bfs::exists(mapPath)) {
-        mdDebug() << "Path " << mapPath.string() << " doesn't exists yet, try to create it";
+    try {
 
-        if (!bfs::create_directories(mapPath)) {
-            mdError() << "Unable to create path " << mapPath.string() << " Caller have to properly set a path";
-            return;
+        if (!bfs::exists(mapPath)) {
+            mdDebug() << "Path " << mapPath.string() << " doesn't exists yet, try to create it";
+
+            if (!bfs::create_directories(mapPath)) {
+                mdError() << "Unable to create path " << mapPath.string() << " Caller have to properly set a path";
+                return false;
+            }
         }
-    }
 
-    if (bfs::exists(mapPath) && !bfs::is_directory(mapPath)) {
-        // path is not directory, but it should be
-        mdError() << "Path " << mapPath.string() << " is not a directory";
-        return;
+        if (bfs::exists(mapPath) && !bfs::is_directory(mapPath)) {
+            // path is not directory, but it should be
+            mdError() << "Path " << mapPath.string() << " is not a directory";
+            return false;
+        }
+    } catch (const std::exception& err) {
+        mdError() << "An error= " << err.what() << " happened ";
+        return false;
     }
 
     d->mapFilePath = mapPath.string();
+    return true;
 }

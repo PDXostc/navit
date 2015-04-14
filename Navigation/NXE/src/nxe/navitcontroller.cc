@@ -3,6 +3,7 @@
 #include "log.h"
 #include "calls.h"
 #include "igpsprovider.h"
+#include "imapdownloader.h"
 
 #include <functional>
 #include <map>
@@ -24,6 +25,8 @@ namespace NXE {
 struct NavitControllerPrivate {
     std::shared_ptr<INavitIPC> ipc;
     std::shared_ptr<IGPSProvider> gps;
+    std::shared_ptr<IMapDownloader> mapDownloaderIPC;
+    std::map<std::string, std::uint32_t> mapDownloadIds;
     NavitController* q;
     std::thread m_retriggerThread;
     bool m_isRunning = false;
@@ -38,7 +41,9 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<SetOrientationMessage>("setOrientation"),
         boost::fusion::make_pair<OrientationMessage>("orientation"),
         boost::fusion::make_pair<SetCenterMessage>("setCenter"),
-        boost::fusion::make_pair<DownloadMessage>("download")
+        boost::fusion::make_pair<DownloadMessage>("downloadMap"),
+        boost::fusion::make_pair<CancelDownloadMessage>("cancelDownloadMap"),
+        boost::fusion::make_pair<AvailableMapsMessage>("availableMaps")
     };
 
     map_cb_type cb{
@@ -124,7 +129,74 @@ struct NavitControllerPrivate {
             // Janusz start download here
             const std::string region = message.data.get<std::string>("region");
             nTrace() << "Download message with region";
+            bool ok = mapDownloaderIPC->download(region);
+            if (ok) {
+                successSignal(JSONMessage {message.id, message.call});
+                mapDownloadIds[region] = message.id;
+            } else {
+                successSignal(JSONMessage {message.id, message.call, "An error happened"});
+            }
         }),
+        boost::fusion::make_pair<CancelDownloadMessage>([this](const JSONMessage& message) {
+            // Janusz start download here
+            const std::string region = message.data.get<std::string>("region");
+            nTrace() << "Canceling download region= " << region;
+            mapDownloaderIPC->cancel(region);
+            successSignal(JSONMessage {message.id, message.call});
+        }),
+
+        boost::fusion::make_pair<AvailableMapsMessage>([this](const JSONMessage& message) {
+            auto maps = mapDownloaderIPC->availableMaps();
+            nDebug() << "Available map size=" << maps.size();
+            bpt::ptree p;
+            std::for_each(maps.begin(), maps.end(), [&p](const std::string &ctr) {
+                p.add("country", ctr);
+            });
+
+            successSignal(JSONMessage {message.id, message.call, "", p});
+        }),
+    };
+
+    // A listener for IMapDownloader, all functions are lambda
+    MapDownloaderListener listener{
+        [this](const std::string& mapName, std::uint64_t now, std::uint64_t total) // progress callback
+        {
+            nTrace() << "Map download " << mapName << " progress callback";
+            auto it = mapDownloadIds.find(mapName);
+            if (it == mapDownloadIds.end()) {
+                nInfo() << "Progress callback for " << mapName << " received but on id found";
+                return;
+            }
+
+            bpt::ptree p;
+            p.put("mapName", mapName);
+            p.put("now", now);
+            p.put("total", total);
+            successSignal(JSONMessage{it->second, "downloadMap", "", p});
+        },
+        [this](const std::string& mapName, const std::string& errorStr) // error callback
+        {
+            auto it = mapDownloadIds.find(mapName);
+            if (it == mapDownloadIds.end()) {
+                nInfo() << "Error callback for " << mapName << " received but on id found";
+                return;
+            }
+
+            successSignal(JSONMessage{it->second, "downloadMap", errorStr});
+        },
+        [this](const std::string& mapName) // finished callback
+        {
+            auto it = mapDownloadIds.find(mapName);
+            if (it == mapDownloadIds.end()) {
+                nInfo() << "Finished callback for " << mapName << " received but on id found";
+                return;
+            }
+
+            bpt::ptree p;
+            p.put("mapName", mapName);
+            p.put("finished", true);
+            successSignal(JSONMessage{it->second, "downloadMap", "", p});
+        },
     };
 
     template <typename T>
@@ -190,7 +262,9 @@ NavitController::NavitController(DI::Injector& ctx)
 {
     d->ipc = ctx.get<std::shared_ptr<INavitIPC> >();
     d->gps = ctx.get<std::shared_ptr<IGPSProvider> >();
+    d->mapDownloaderIPC = ctx.get<std::shared_ptr<IMapDownloader> >();
     d->q = this;
+
 }
 
 NavitController::~NavitController()
@@ -208,6 +282,9 @@ void NavitController::tryStart()
     d->ipc->start();
     d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
     d->ipc->initializedSignal().connect([]() {});
+
+    d->mapDownloaderIPC->start();
+    d->mapDownloaderIPC->setListener(d->listener);
 }
 
 void NavitController::handleMessage(const JSONMessage& msg)

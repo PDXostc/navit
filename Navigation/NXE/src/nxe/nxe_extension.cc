@@ -5,6 +5,7 @@
 #include "navitprocessimpl.h"
 #include "navitdbus.h"
 #include "gpsdprovider.h"
+#include "mapdownloaderdbus.h"
 #include "log.h"
 #include "settings.h"
 #include "settingtags.h"
@@ -22,7 +23,8 @@ struct NXE::NXExtensionPrivate {
         return fruit::createComponent()
                 .bind<INavitIPC, NavitDBus>()
                 .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>();
+                .bind<IGPSProvider, GPSDProvider>()
+                .bind<IMapDownloader, MapDownloaderDBus>();
     }() };
 };
 

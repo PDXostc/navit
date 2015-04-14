@@ -9,6 +9,7 @@
 #include "mocks/navitprocessmock.h"
 #include "mocks/navitcontrollermock.h"
 #include "mocks/gpsmock.h"
+#include "mocks/mapdownloadermock.h"
 #include "testutils.h"
 
 #include <fruit/component.h>
@@ -22,7 +23,8 @@ struct RenderTest {
         return fruit::createComponent()
                 .bind<NXE::INavitIPC, NavitIPCMock>()
                 .bind<NXE::INavitProcess, NavitProcessMock>()
-                .bind<NXE::IGPSProvider, GPSMock>();
+                .bind<NXE::IGPSProvider, GPSMock>()
+                .bind<NXE::IMapDownloader, MapDownloaderMock>();
     }() };
 
     NXE::NXEInstance instance{ injector };
