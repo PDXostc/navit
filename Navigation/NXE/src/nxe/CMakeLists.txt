@@ -66,5 +66,7 @@ set(NXE_SRCS
 add_library(nxe SHARED ${NXE_SRCS})
 target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
 
+#install(TARGETS nxe
+#        DESTINATION lib/tizen-extensions-crosswalk)
 install(TARGETS nxe
-        DESTINATION lib/tizen-extensions-crosswalk)
+        DESTINATION lib)

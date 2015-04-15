@@ -185,6 +185,7 @@ int NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
+    nDebug() << "Changing orientation to " << newOrientation;
     if (newOrientation != 0 && newOrientation != -1) {
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }

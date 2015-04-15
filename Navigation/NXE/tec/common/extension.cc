@@ -197,7 +197,7 @@ Instance::~Instance() {
 
 void Instance::PostMessage(const char* msg) {
   if (!xw_instance_) {
-    nError() << "Ignoring PostMessage() in the constructor or after the "
+    nDebug() << "Ignoring PostMessage() in the constructor or after the "
               << "instance was destroyed.";
     return;
   }

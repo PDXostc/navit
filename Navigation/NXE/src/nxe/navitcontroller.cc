@@ -97,9 +97,12 @@ struct NavitControllerPrivate {
 
         boost::fusion::make_pair<SetOrientationMessage>([this](const JSONMessage& message) {
             int newOrientation = message.data.get<int>("orientation");
-            ipc->setOrientation(newOrientation);
-            JSONMessage response {message.id, message.call};
-            successSignal(response);
+            try {
+                ipc->setOrientation(newOrientation);
+                JSONMessage response {message.id, message.call,"", message.data};
+                successSignal(response);
+            } catch (const std::exception &) {
+            }
         }),
 
         boost::fusion::make_pair<OrientationMessage>([this](const JSONMessage& message) {

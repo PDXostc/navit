@@ -18,6 +18,7 @@ class NXEInstancePrivate;
 class NXEInstance : public common::Instance {
 public:
     typedef std::function<void(const std::string&)> MessageCb_type;
+    typedef std::function<void(const NXE::JSONMessage&)> MessageCbJSON_type;
 
     NXEInstance() = delete;
     NXEInstance(DI::Injector& impls);
@@ -27,8 +28,9 @@ public:
 
     void HandleMessage(const char* msg) override;
     void registerMessageCallback(const MessageCb_type& cb);
+    void registerMessageCallback(const MessageCbJSON_type& cb);
 
-    void HandleMessage(const NXE::JSONMessage& msg);
+    bool HandleMessage(const NXE::JSONMessage& msg);
 
     std::vector<double> renderMeasurements() const;
 

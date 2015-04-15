@@ -47,6 +47,7 @@ struct NXEInstancePrivate {
     NavitController controller;
     Settings settings;
     std::vector<NXEInstance::MessageCb_type> callbacks;
+    std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
     std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
     bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
     bipc::mapped_region region;
@@ -56,10 +57,18 @@ struct NXEInstancePrivate {
     std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation", "moveBy"};
     bool initialized{ false };
 
+    // This is for all messages but 'render'
     void postMessage(const JSONMessage& message)
     {
         nTrace() << "Posting response for " << message.call;
         const std::string rsp = JSONUtils::serialize(message);
+
+        std::string tmpmessage{ rsp };
+
+        boost::algorithm::erase_all(tmpmessage, " ");
+        boost::algorithm::erase_all(tmpmessage, "\n");
+        boost::algorithm::erase_all(tmpmessage, "\t");
+        nTrace() << "Message = " << tmpmessage;
         // This is xwalk posting mechanism
         q->PostMessage(rsp.c_str());
 
@@ -67,6 +76,9 @@ struct NXEInstancePrivate {
         try {
             std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
                 callback(rsp);
+            });
+            std::for_each(callbacksJSon.begin(), callbacksJSon.end(), [&message](const NXEInstance::MessageCbJSON_type& callback) {
+                callback(message);
             });
         }
         catch (const std::exception& ex) {
@@ -181,8 +193,6 @@ void NXEInstance::HandleMessage(const char* msg)
     boost::algorithm::erase_all(message, "\t");
     nTrace() << "Message = " << message;
 
-    nDebug() << "Handling message " << message;
-
     // Eat all exceptions!
     try {
         NXE::JSONMessage jsonMsg = JSONUtils::deserialize(message);
@@ -202,11 +212,17 @@ void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
     d->callbacks.push_back(cb);
 }
 
-void NXEInstance::HandleMessage(const JSONMessage &msg)
+void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type &cb)
+{
+    d->callbacksJSon.push_back(cb);
+}
+
+bool NXEInstance::HandleMessage(const JSONMessage &msg)
 {
     try {
         d->timers[msg.call] = std::chrono::high_resolution_clock::now();
         d->controller.handleMessage(msg);
+        return true;
     }
     catch (const std::exception& ex) {
         nFatal() << "Unable to handle message " << msg.call << ", error=" << ex.what();
@@ -217,6 +233,7 @@ void NXEInstance::HandleMessage(const JSONMessage &msg)
         }
         d->postMessage(error);
     }
+    return false;
 }
 
 std::vector<double> NXEInstance::renderMeasurements() const

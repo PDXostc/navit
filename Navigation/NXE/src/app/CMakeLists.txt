@@ -25,3 +25,6 @@ add_executable(nxe-app ${srcs} ${qrcs})
 target_link_libraries(nxe-app Qt5::Core Qt5::Qml Qt5::Quick Qt5::Gui nxe)
 
 file(COPY ${CMAKE_SOURCE_DIR}/nxe.conf DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+install(TARGETS nxe-app
+        DESTINATION bin)

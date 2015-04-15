@@ -18,6 +18,34 @@ BuildRequires:  dbus-glib-devel
 BuildRequires:  libdbus-c++-devel
 BuildRequires:  gpsd-devel
 BuildRequires:  curl-devel
+BuildRequires:  pkgconfig(dbus-glib-1)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(fontconfig)
+BuildRequires:  pkgconfig(freetype2)
+BuildRequires: 	qt5-plugin-bearer-connman
+BuildRequires: 	qt5-plugin-bearer-generic
+BuildRequires: 	qt5-plugin-bearer-nm
+BuildRequires: 	qt5-plugin-generic-evdev
+BuildRequires: 	qt5-plugin-imageformat-gif
+BuildRequires: 	qt5-plugin-imageformat-ico
+BuildRequires: 	qt5-plugin-imageformat-jpeg
+BuildRequires: 	qt5-plugin-platform-eglfs
+BuildRequires: 	qt5-plugin-platforminputcontext-ibus
+BuildRequires: 	qt5-plugin-platform-linuxfb
+BuildRequires: 	qt5-plugin-platform-minimal
+BuildRequires: 	qt5-plugin-platform-minimalegl
+BuildRequires: 	qt5-plugin-platform-offscreen
+BuildRequires: 	qt5-qtdeclarative
+BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5Gui)
+BuildRequires:  pkgconfig(Qt5Widgets)
+BuildRequires:  pkgconfig(Qt5Xml)
+BuildRequires:  pkgconfig(Qt5DBus)
+BuildRequires:  pkgconfig(Qt5Quick)
+BuildRequires:  pkgconfig(Qt5OpenGL)
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(glesv2)
 
 Requires:	dbus
 Requires:	dbus-glib
@@ -38,9 +66,10 @@ make %{?_smp_mflags}
 make install DESTDIR=%{buildroot}
 
 %files 
-%{_prefix}/lib/tizen-extensions-crosswalk/libnxe.so
+%{_prefix}/lib/libnxe.so
 %{_prefix}/share/nxe/nxe.conf
 %{_prefix}/share/nxe/osm_maps.xml
 %{_prefix}/lib/libfruit.so
 %{_prefix}/bin/mapdownloader
+%{_prefix}/bin/nxe-app
 %{_prefix}/share/dbus-1/services/org.nxe.MapDownloader.service
