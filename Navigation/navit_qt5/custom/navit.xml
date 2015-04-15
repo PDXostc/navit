@@ -36,7 +36,7 @@
 	<navit center="4531 N 12240 W" zoom="128" tracking="1" orientation="-1" recent_dest="10">
 		<!-- Use one of gtk_drawing_area, qt_qpainter or sdl. 
 		     On windows systems, use win32 -->
-		<graphics type="qt_offscreen"/>
+        <graphics type="qt_qpainter"/>
 		<!-- The following line let you select which graphical user interface you'd like to use.
 		Options include internal (optimized for touch screen devices), gtk (useful for desktop computers).
 		If you don't like the internal gui, set enabled=yes for the following tag and enabled=no for the gui internal tag -->

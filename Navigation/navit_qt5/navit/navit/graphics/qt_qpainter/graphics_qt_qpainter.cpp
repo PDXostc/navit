@@ -575,7 +575,7 @@ fullscreen(struct window *win, int on)
     if (on)
         _outerWidget->showFullScreen();
     else
-        _outerWidget->showMaximized();
+        _outerWidget->showFullScreen();
 #endif
 	return 1;
 }
@@ -620,10 +620,10 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		if (xid.length()>0) {
 			_outerWidget->embedInto(xid.toULong(&ok,0));
 		}
-        _outerWidget->show();
+        _outerWidget->showMaximized();
 #endif /* QT_QPAINTER_USE_EMBEDDING */
         if (this_->w && this_->h)
-            this_->widget->show();
+            this_->widget->showMaximized();
         else
             this_->widget->showMaximized();
 #endif /* QT_QPAINTER_NO_WIDGET */

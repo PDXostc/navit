@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
     spdlog::create("app", {out});
 
     NXE::NXExtension::createLogger();
-    spdlog::set_level(spdlog::level::err);
 
     Context cxt;
     cxt.instance = new NXE::NXEInstance {cxt.injector};
@@ -51,10 +50,13 @@ int main(int argc, char *argv[])
     NavitQuickProxy proxy;
 
     QQuickView view;
+    view.setColor(Qt::transparent);
+    view.setOpacity(0.999);
+    view.setFlags(Qt::FramelessWindowHint);
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.rootContext()->setContextProperty("navitProxy", &proxy);
     view.setSource(QUrl("qrc:///qml/MainView.qml"));
-    view.show();
+    view.showMaximized();
 
     return app.exec();
 }
