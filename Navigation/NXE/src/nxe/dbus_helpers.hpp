@@ -3,7 +3,6 @@
 
 #include <dbus-c++/interface.h>
 #include <dbus-c++/message.h>
-#include "log.h"
 
 namespace NXE {
 namespace DBus {
@@ -39,7 +38,6 @@ namespace __details {
         ::DBus::Variant v;
         retIter >> v;
         R value = static_cast<R>(v);
-        nDebug() << attrName << "= " << value;
 
         return value;
     }
@@ -57,7 +55,6 @@ namespace __details {
     void call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
         using namespace __details;
-        nDebug() << "Calling dbus " << methodName;
         ::DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member(methodName.c_str());

@@ -27,7 +27,7 @@ namespace bipc = boost::interprocess;
 
 namespace {
 const std::string sharedMemoryName{ "Navit_shm" };
-const std::uint32_t sharedMemorySize = 7171272;
+const std::uint32_t sharedMemorySize = 7171200;
 }
 
 namespace NXE {
@@ -186,20 +186,7 @@ void NXEInstance::HandleMessage(const char* msg)
     // Eat all exceptions!
     try {
         NXE::JSONMessage jsonMsg = JSONUtils::deserialize(message);
-
-        try {
-            d->timers[jsonMsg.call] = std::chrono::high_resolution_clock::now();
-            d->controller.handleMessage(jsonMsg);
-        }
-        catch (const std::exception& ex) {
-            nFatal() << "Unable to handle message " << jsonMsg.call << ", error=" << ex.what();
-            NXE::JSONMessage error{ jsonMsg.id, jsonMsg.call, ex.what() };
-            auto it = d->timers.find(jsonMsg.call);
-            if (it != d->timers.end()) {
-                d->timers.erase(it);
-            }
-            d->postMessage(error);
-        }
+        HandleMessage(jsonMsg);
     }
     catch (const std::exception& ex) {
         NXE::JSONMessage error{ 0, "", std::string(ex.what()) };
@@ -213,6 +200,23 @@ void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
 {
     nTrace() << "registering cb";
     d->callbacks.push_back(cb);
+}
+
+void NXEInstance::HandleMessage(const JSONMessage &msg)
+{
+    try {
+        d->timers[msg.call] = std::chrono::high_resolution_clock::now();
+        d->controller.handleMessage(msg);
+    }
+    catch (const std::exception& ex) {
+        nFatal() << "Unable to handle message " << msg.call << ", error=" << ex.what();
+        NXE::JSONMessage error{ msg.id, msg.call, ex.what() };
+        auto it = d->timers.find(msg.call);
+        if (it != d->timers.end()) {
+            d->timers.erase(it);
+        }
+        d->postMessage(error);
+    }
 }
 
 std::vector<double> NXEInstance::renderMeasurements() const

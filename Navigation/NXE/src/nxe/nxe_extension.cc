@@ -28,25 +28,7 @@ struct NXE::NXExtensionPrivate {
 
 common::Extension* CreateExtension()
 {
-    Settings s;
-    const std::string path = s.get<SettingsTags::FileLog>();
-    const std::string level = s.get<SettingsTags::LogLevel>();
-    std::cout << "logger path= " << path << " level = " << level;
-    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path, true) };
-    spdlog::create("nxe", { rot });
-
-    if (level == "debug") {
-        spdlog::set_level(spdlog::level::debug);
-    }
-    else if (level == "warn") {
-        spdlog::set_level(spdlog::level::warn);
-    }
-    else if (level == "trace") {
-        spdlog::set_level(spdlog::level::trace);
-    }
-    else {
-        spdlog::set_level(spdlog::level::err);
-    }
+    NXE::NXExtension::createLogger();
     g_extension = new NXExtension();
     nInfo() << "Plugin loaded. Addr" << static_cast<void*>(g_extension);
     return g_extension;
@@ -76,4 +58,29 @@ common::Instance* NXExtension::CreateInstance()
 
     nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
     return d->instance;
+}
+
+void NXExtension::createLogger()
+{
+    Settings s;
+    const std::string path = s.get<SettingsTags::FileLog>();
+    const std::string level = s.get<SettingsTags::LogLevel>();
+    std::cout << "logger path= " << path << " level = " << level;
+    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path, true) };
+    std::shared_ptr<spdlog::sinks::sink> out{ new spdlog::sinks::stdout_sink_mt() };
+    spdlog::create("nxe", { rot, out});
+
+    if (level == "debug") {
+        spdlog::set_level(spdlog::level::debug);
+    }
+    else if (level == "warn") {
+        spdlog::set_level(spdlog::level::warn);
+    }
+    else if (level == "trace") {
+        spdlog::set_level(spdlog::level::trace);
+    }
+    else {
+        spdlog::set_level(spdlog::level::err);
+    }
+
 }

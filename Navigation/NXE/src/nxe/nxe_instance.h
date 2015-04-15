@@ -12,6 +12,7 @@ class INavitProcess;
 class INavitIPC;
 class NavitController;
 class IGPSProvider;
+struct JSONMessage;
 
 class NXEInstancePrivate;
 class NXEInstance : public common::Instance {
@@ -26,6 +27,8 @@ public:
 
     void HandleMessage(const char* msg) override;
     void registerMessageCallback(const MessageCb_type& cb);
+
+    void HandleMessage(const NXE::JSONMessage& msg);
 
     std::vector<double> renderMeasurements() const;
 

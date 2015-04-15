@@ -175,6 +175,7 @@ void NavitDBus::render()
 {
     nDebug() << "Rendering";
     DBus::call("draw", *(d->object.get()));
+    nDebug() << "Rendering finished";
 }
 
 int NavitDBus::orientation()
