@@ -13,6 +13,7 @@ Source0:        %{name}-%{version}.tar.gz
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: 	boost-devel
+BuildRequires: 	tts-devel
 BuildRequires:  cmake
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libdbus-c++-devel
@@ -62,7 +63,7 @@ A simple desc
 %setup -q
 
 %build
-cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} 
+cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_SPEECH=Tizen
 make %{?_smp_mflags}
 
 %install

@@ -7,6 +7,11 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/fruit/include)
 
+if (NOT NXE_SPEECH)
+    message(STATUS "Setting null speech backend")
+    set(NXE_SPEECH "null")
+endif()
+
 # add __FILENAME__ macro definition
 # however this doesn't work for Ninja, so we need to
 # use GCC __BASE_FILE__ macro

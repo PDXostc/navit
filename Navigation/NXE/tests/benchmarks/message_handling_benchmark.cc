@@ -11,6 +11,7 @@
 #include "mocks/gpsmock.h"
 #include "mocks/mapdownloadermock.h"
 #include "testutils.h"
+#include "speechimpl.h"
 
 #include <fruit/component.h>
 #include <fruit/injector.h>
@@ -24,7 +25,8 @@ struct RenderTest {
                 .bind<NXE::INavitIPC, NavitIPCMock>()
                 .bind<NXE::INavitProcess, NavitProcessMock>()
                 .bind<NXE::IGPSProvider, GPSMock>()
-                .bind<NXE::IMapDownloader, MapDownloaderMock>();
+                .bind<NXE::IMapDownloader, MapDownloaderMock>()
+                .bind<NXE::ISpeech,NXE::SpeechImpl>();
     }() };
 
     NXE::NXEInstance instance{ injector };

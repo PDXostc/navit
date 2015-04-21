@@ -36,6 +36,8 @@ set(nxe_interfaces
     imapdownloader.h
 )
 
+string(TOLOWER ${NXE_SPEECH} NXE_SPEECH_IMPL)
+
 set(NXE_SRCS
     # interfaces
     ${nxe_interfaces}
@@ -51,6 +53,8 @@ set(NXE_SRCS
     settingtags.h
     position.h
     context.h
+    speechimpl.h
+    speechimpl_${NXE_SPEECH_IMPL}.cc
 
     # dbus interface implementation
     ${dbus_library}
@@ -69,8 +73,14 @@ set(NXE_SRCS
     ${CMAKE_BINARY_DIR}/src/nxe/generated_api.cc
 )
 
+set(libraries ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
+
 add_library(nxe SHARED ${NXE_SRCS})
-target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
+if ("${NXE_SPEECH_IMPL}" STREQUAL "tizen")
+    list(APPEND libraries tts)
+endif()
+
+target_link_libraries(nxe ${libraries})
 
 #install(TARGETS nxe
 #        DESTINATION lib/tizen-extensions-crosswalk)

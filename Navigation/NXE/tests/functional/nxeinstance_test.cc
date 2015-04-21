@@ -6,6 +6,7 @@
 #include "gpsdprovider.h"
 #include "testutils.h"
 #include "dbuscontroller.h"
+#include "speechimpl.h"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -26,7 +27,8 @@ struct NXEInstanceTest : public ::testing::Test {
                 .bindInstance(*ipc)
                 .bindInstance(*md)
                 .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>();
+                .bind<IGPSProvider, GPSDProvider>()
+                .bind<ISpeech,SpeechImpl>();
     }() };
     NXEInstance instance{ injector };
     JSONMessage respMsg;

@@ -10,6 +10,7 @@
 #include "log.h"
 #include "settings.h"
 #include "settingtags.h"
+#include "speechimpl.h"
 
 #include <fruit/fruit.h>
 
@@ -28,7 +29,8 @@ struct NXE::NXExtensionPrivate {
                 .bindInstance(*ipc)
                 .bind<INavitProcess, NavitProcessImpl>()
                 .bind<IGPSProvider, GPSDProvider>()
-                .bindInstance(*md);
+                .bindInstance(*md)
+                .bind<ISpeech, SpeechImpl>();
     }() };
 };
 

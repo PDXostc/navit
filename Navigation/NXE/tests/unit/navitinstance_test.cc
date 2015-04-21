@@ -4,6 +4,7 @@
 #include "mocks/navitcontrollermock.h"
 #include "mocks/gpsmock.h"
 #include "mocks/mapdownloadermock.h"
+#include "mocks/speechmock.h"
 #include "nxe_instance.h"
 #include "navitcontroller.h"
 #include "inavitipc.h"
@@ -24,7 +25,8 @@ struct NavitInstanceTest : public ::testing::Test {
                 .bind<NXE::INavitIPC, NavitIPCMock>()
                 .bind<NXE::INavitProcess, NavitProcessMock>()
                 .bind<NXE::IGPSProvider, GPSMock>()
-                .bind<NXE::IMapDownloader, MapDownloaderMock>();
+                .bind<NXE::IMapDownloader, MapDownloaderMock>()
+                .bind<NXE::ISpeech, SpeechMock>();
     }() };
 
     NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };

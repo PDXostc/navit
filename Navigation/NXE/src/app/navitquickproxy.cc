@@ -8,6 +8,7 @@
 #include "gpsdprovider.h"
 #include "mapdownloaderdbus.h"
 #include "dbuscontroller.h"
+#include "speechimpl.h"
 
 #include <functional>
 
@@ -20,7 +21,8 @@ struct Context {
                 .bindInstance(*ipc)
                 .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
                 .bind<NXE::IGPSProvider, NXE::GPSDProvider>()
-                .bindInstance(*md);
+                .bindInstance(*md)
+                .bind<NXE::ISpeech,NXE::SpeechImpl>();
     }() };
 };
 

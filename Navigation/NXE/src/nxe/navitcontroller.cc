@@ -4,6 +4,7 @@
 #include "calls.h"
 #include "igpsprovider.h"
 #include "imapdownloader.h"
+#include "ispeech.h"
 
 #include <functional>
 #include <map>
@@ -26,6 +27,7 @@ struct NavitControllerPrivate {
     std::shared_ptr<INavitIPC> ipc;
     std::shared_ptr<IGPSProvider> gps;
     std::shared_ptr<IMapDownloader> mapDownloaderIPC;
+    std::shared_ptr<ISpeech> speech;
     std::map<std::string, std::uint32_t> mapDownloadIds;
     NavitController* q;
     std::thread m_retriggerThread;
@@ -244,10 +246,7 @@ struct NavitControllerPrivate {
 
     void speechCallback(const std::string& data)
     {
-        bpt::ptree tree;
-        tree.put("text", data);
-        JSONMessage speech{ 0, "speech", "", tree };
-        successSignal(speech);
+        speech->say(data);
     }
 };
 
@@ -300,8 +299,6 @@ NavitController::NavitController(DI::Injector& ctx)
     d->gps = ctx.get<std::shared_ptr<IGPSProvider> >();
     d->mapDownloaderIPC = ctx.get<std::shared_ptr<IMapDownloader> >();
     d->q = this;
-
-
 }
 
 NavitController::~NavitController()
