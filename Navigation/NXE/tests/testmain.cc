@@ -23,10 +23,11 @@ int main(int argc, char* argv[])
 
     auto logger = spdlog::stdout_logger_mt("nxe");
     auto perfLogger = spdlog::stdout_logger_mt("perf");
-    if (perf)
+    if (perf) {
         perfLogger->set_level(spdlog::level::info);
-    else
+    } else {
         perfLogger->set_level(spdlog::level::off);
+    }
     if (debug) {
         logger->set_level(spdlog::level::trace);
         perfLogger->set_level(spdlog::level::info);

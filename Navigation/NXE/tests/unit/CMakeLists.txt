@@ -3,7 +3,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tec)
 
 set( TEST_SRCS
     navitprocess_test.cc
-    jsonparser_test.cc
     navitdbus_test.cc
     navitinstance_test.cc
     gpsd_test.cc

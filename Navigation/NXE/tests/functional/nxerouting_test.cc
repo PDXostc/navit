@@ -41,36 +41,25 @@ struct NXEInstanceTest : public ::testing::Test {
         TestUtils::createNXEConfFile();
     }
 
-    void callback(const std::string& response)
+    void callback(const JSONMessage& resp)
     {
-        if (response.size() == 7171272) {
-            receivedRender = true;
-        }
-
-        else {
-            respMsg = NXE::JSONUtils::deserialize(response);
-        }
-
+        respMsg = resp;
         numberOfResponses++;
     }
 
-
     void setDestination(double lon, double lat, const char* desc)
     {
-         std::string msg{ TestUtils::setDestinationMessage(lon,lat,desc) };
-         instance.HandleMessage(msg.data());
+         instance.HandleMessage(TestUtils::setDestinationMessage(lon,lat,desc));
     }
 
     void setPosition(double lon, double lat)
     {
-         std::string msg{ TestUtils::setPositionMessage(lon,lat) };
-         instance.HandleMessage(msg.data());
+         instance.HandleMessage(TestUtils::setPositionMessage(lon,lat));
     }
 
     void clearDestination()
     {
-    	std::string msg{ TestUtils::clearDestinationMessage() };
-    	instance.HandleMessage(msg.data());
+        instance.HandleMessage(TestUtils::clearDestinationMessage());
     }
 };
 

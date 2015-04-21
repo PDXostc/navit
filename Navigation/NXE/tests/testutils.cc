@@ -11,13 +11,13 @@ const std::string navitPath{ NAVIT_PATH };
 
 extern bool runNavit;
 
-std::string TestUtils::moveByMessage(int x, int y)
+NXE::JSONMessage TestUtils::moveByMessage(int x, int y)
 {
     bpt::ptree data;
     data.put("x", x);
     data.put("y", y);
     NXE::JSONMessage msg{ 1, "moveBy", "", data };
-    return NXE::JSONUtils::serialize(msg);
+    return msg;
 }
 
 void TestUtils::createNXEConfFile()
@@ -33,15 +33,15 @@ void TestUtils::createNXEConfFile()
     bpt::write_json("nxe.conf", config);
 }
 
-std::string TestUtils::zoomByMessage(int factor)
+NXE::JSONMessage TestUtils::zoomByMessage(int factor)
 {
     boost::property_tree::ptree p;
     p.put("factor", factor);
     NXE::JSONMessage msg{ 1, "zoomBy", "", p };
-    return NXE::JSONUtils::serialize(msg);
+    return msg;
 }
 
-std::string TestUtils::setDestinationMessage(double lon, double lat, const std::string& description)
+NXE::JSONMessage TestUtils::setDestinationMessage(double lon, double lat, const std::string& description)
 {
     boost::property_tree::ptree p;
     p.put("longitude", lon);
@@ -49,85 +49,78 @@ std::string TestUtils::setDestinationMessage(double lon, double lat, const std::
     p.put("description", description);
 
     NXE::JSONMessage msg{ 1, "setDestination", "", p };
-    return NXE::JSONUtils::serialize(msg);
+    return msg;
 }
 
-std::string TestUtils::setPositionMessage(double lon, double lat)
+NXE::JSONMessage TestUtils::setPositionMessage(double lon, double lat)
 {
     boost::property_tree::ptree p;
     p.put("longitude", lon);
     p.put("latitude", lat);
 
     NXE::JSONMessage msg{ 1, "setPosition", "", p };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-
-std::string TestUtils::clearDestinationMessage()
+NXE::JSONMessage TestUtils::clearDestinationMessage()
 {
     NXE::JSONMessage msg{ 1, "clearDestination" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-
-
-std::string TestUtils::zoomMessage()
+NXE::JSONMessage TestUtils::zoomMessage()
 {
     NXE::JSONMessage msg{ 3, "zoom" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-std::string TestUtils::renderMessage()
+NXE::JSONMessage TestUtils::renderMessage()
 {
     NXE::JSONMessage msg{ 3, "render" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-std::string TestUtils::changeOrientationMessage(int orientation)
+NXE::JSONMessage TestUtils::changeOrientationMessage(int orientation)
 {
     boost::property_tree::ptree p;
     p.put("orientation", orientation);
     NXE::JSONMessage msg{ 3, "setOrientation", "", p };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-std::string TestUtils::orientationMessage()
+NXE::JSONMessage TestUtils::orientationMessage()
 {
     NXE::JSONMessage msg{ 3, "orientation" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-std::string TestUtils::positionMessage()
+NXE::JSONMessage TestUtils::positionMessage()
 {
     NXE::JSONMessage msg{ 100, "position" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-
-std::string TestUtils::downloadMessage(const std::string &country)
+NXE::JSONMessage TestUtils::downloadMessage(const std::string &country)
 {
     boost::property_tree::ptree p;
     p.put("region", country);
     NXE::JSONMessage msg {401, "downloadMap", "", p};
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-
-std::string TestUtils::availableMessages()
+NXE::JSONMessage TestUtils::availableMessages()
 {
     NXE::JSONMessage msg{ 100, "availableMaps" };
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
 
-
-std::string TestUtils::cancelDownloadMessage(const std::string &country)
+NXE::JSONMessage TestUtils::cancelDownloadMessage(const std::string &country)
 {
     boost::property_tree::ptree p;
     p.put("region", country);
     NXE::JSONMessage msg {401, "cancelDownloadMap", "", p};
-    return NXE::JSONUtils::serialize(msg);
+    return (msg);
 }
-
 
 void TestUtils::removeNXEConfFile()
 {

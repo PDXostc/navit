@@ -8,19 +8,19 @@
 
 namespace TestUtils {
 
-std::string moveByMessage(int x, int y);
-std::string zoomByMessage(int factor);
-std::string zoomMessage();
-std::string renderMessage();
-std::string changeOrientationMessage(int orientation);
-std::string orientationMessage();
-std::string positionMessage();
-std::string downloadMessage(const std::string &country);
-std::string cancelDownloadMessage(const std::string &country);
-std::string availableMessages();
-std::string setDestinationMessage(double lon, double lat, const std::string& description);
-std::string setPositionMessage(double lon, double lat);
-std::string clearDestinationMessage();
+NXE::JSONMessage moveByMessage(int x, int y);
+NXE::JSONMessage zoomByMessage(int factor);
+NXE::JSONMessage zoomMessage();
+NXE::JSONMessage renderMessage();
+NXE::JSONMessage changeOrientationMessage(int orientation);
+NXE::JSONMessage orientationMessage();
+NXE::JSONMessage positionMessage();
+NXE::JSONMessage downloadMessage(const std::string &country);
+NXE::JSONMessage cancelDownloadMessage(const std::string &country);
+NXE::JSONMessage availableMessages();
+NXE::JSONMessage setDestinationMessage(double lon, double lat, const std::string& description);
+NXE::JSONMessage setPositionMessage(double lon, double lat);
+NXE::JSONMessage clearDestinationMessage();
 
 void createNXEConfFile();
 void removeNXEConfFile();

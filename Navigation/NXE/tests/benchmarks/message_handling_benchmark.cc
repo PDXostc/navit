@@ -47,17 +47,6 @@ struct RenderTest {
     }
 };
 
-void emptyMessageParsing(benchmark::State& state)
-{
-    RenderTest t;
-    t.setupMocks();
-    t.instance.Initialize();
-
-    while (state.KeepRunning()) {
-        t.instance.HandleMessage("");
-    }
-}
-
 void parseMoveBy(::benchmark::State& state)
 {
     using ::testing::AtLeast;
@@ -67,10 +56,9 @@ void parseMoveBy(::benchmark::State& state)
     t.instance.Initialize();
 
     EXPECT_CALL(*(t.mock_ipc), moveBy(10, 10)).Times(AtLeast(state.max_iterations));
-    const std::string a{ TestUtils::moveByMessage(10, 10) };
 
     while (state.KeepRunning()) {
-        t.instance.HandleMessage(a.c_str());
+        t.instance.HandleMessage(TestUtils::moveByMessage(10, 10)) ;
     }
 }
 

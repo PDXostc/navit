@@ -39,10 +39,6 @@ struct RenderTest {
 
 void renderOneFrame(benchmark::State& state)
 {
-    const NXE::JSONMessage msg{ 3, "render" };
-    const std::string sMsg{ NXE::JSONUtils::serialize(msg) };
-
-
     RenderTest t;
     EXPECT_CALL(*(t.mock_mapd), setListener(::testing::_));
 
@@ -50,7 +46,7 @@ void renderOneFrame(benchmark::State& state)
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     while (state.KeepRunning()) {
-        t.instance.HandleMessage(sMsg.data());
+        t.instance.HandleMessage(TestUtils::renderMessage());
     }
 }
 
@@ -61,8 +57,6 @@ void moveBackAndForth(benchmark::State& state)
     backTree.put("y", 900);
     fwdTree.put("x", 500);
     fwdTree.put("y", 900);
-    const std::string back{ NXE::JSONUtils::serialize(NXE::JSONMessage{ 3, "moveBy", "", backTree }) };
-    const std::string forth{ NXE::JSONUtils::serialize(NXE::JSONMessage{ 3, "moveBy", "", fwdTree }) };
 
     RenderTest t;
     EXPECT_CALL(*(t.mock_mapd), setListener(::testing::_));
@@ -71,8 +65,8 @@ void moveBackAndForth(benchmark::State& state)
     std::this_thread::sleep_for(dura);
 
     while (state.KeepRunning()) {
-        t.instance.HandleMessage(back.data());
-        t.instance.HandleMessage(forth.data());
+        t.instance.HandleMessage(NXE::JSONMessage{ 3, "moveBy", "", backTree });
+        t.instance.HandleMessage(NXE::JSONMessage{ 3, "moveBy", "", fwdTree });
     }
 }
 

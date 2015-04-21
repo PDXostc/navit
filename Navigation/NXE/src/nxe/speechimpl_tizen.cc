@@ -18,7 +18,7 @@ struct SpeechImplPrivate {
         std::string buff;
         buff.reserve(4);
         char* b = const_cast<char*>(buff.data());
-        tts_get_default_voice(handle, &b, &voiceType);
+        ts_get_default_voice(handle, &b, &voiceType);
     }
 
     std::function<void(tts_state_e, tts_state_e)> stateCb = { [](tts_state_e previous, tts_state_e current) {

@@ -4,7 +4,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests)
 
 set(BENCH_SRCS
     render_benchmark.cc
-    message_handling_benchmark.cc
 )
 
 set(bench_main

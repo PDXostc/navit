@@ -1,7 +1,6 @@
 #ifndef NXE_NXEINSTANCE_H
 #define NXE_NXEINSTANCE_H
 
-#include "common/extension.h"
 #include "context.h"
 
 #include <memory>
@@ -15,19 +14,16 @@ class IGPSProvider;
 struct JSONMessage;
 
 struct NXEInstancePrivate;
-class NXEInstance : public common::Instance {
+class NXEInstance {
 public:
-    typedef std::function<void(const std::string&)> MessageCb_type;
     typedef std::function<void(const NXE::JSONMessage&)> MessageCbJSON_type;
 
     NXEInstance() = delete;
     NXEInstance(DI::Injector& impls);
     ~NXEInstance();
 
-    virtual void Initialize() override;
+    virtual void Initialize();
 
-    void HandleMessage(const char* msg) override;
-    void registerMessageCallback(const MessageCb_type& cb);
     void registerMessageCallback(const MessageCbJSON_type& cb);
 
     bool HandleMessage(const NXE::JSONMessage& msg);

@@ -47,23 +47,15 @@ struct NXEInstanceTest : public ::testing::Test {
         std::this_thread::sleep_for(dura);
     }
 
-    void callback(const std::string& response)
+    void callback(const JSONMessage& rsp)
     {
-        if (response.size() == 7171272) {
-            receivedRender = true;
-        }
-
-        else {
-            respMsg = NXE::JSONUtils::deserialize(response);
-        }
-
+        respMsg = rsp;
         numberOfResponses++;
     }
 
     void zoom(int factor)
     {
-        std::string msg{ TestUtils::zoomByMessage(factor) };
-        instance.HandleMessage(msg.data());
+        instance.HandleMessage(TestUtils::zoomByMessage(factor));
     }
 };
 
@@ -93,8 +85,7 @@ TEST_F(NXEInstanceTest, zoomByMessage_zoomOut_correct)
 
 TEST_F(NXEInstanceTest, zoomMessage_correct)
 {
-    std::string msg{ TestUtils::zoomMessage() };
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::zoomMessage());
 
     EXPECT_EQ(respMsg.error.size(), 0);
     EXPECT_FALSE(respMsg.data.empty());
@@ -102,11 +93,9 @@ TEST_F(NXEInstanceTest, zoomMessage_correct)
 
 TEST_F(NXEInstanceTest, zoomInAndOut)
 {
-    std::string msg1{ TestUtils::zoomByMessage(2) };
-    std::string msg2{ TestUtils::zoomByMessage(-2) };
 
-    instance.HandleMessage(msg1.data());
-    instance.HandleMessage(msg2.data());
+    instance.HandleMessage(TestUtils::zoomByMessage(2));
+    instance.HandleMessage(TestUtils::zoomByMessage(-2));
 
     EXPECT_TRUE(respMsg.data.empty());
     EXPECT_EQ(respMsg.call, "zoomBy");
@@ -114,8 +103,7 @@ TEST_F(NXEInstanceTest, zoomInAndOut)
 
 TEST_F(NXEInstanceTest, renderMessage_correct)
 {
-    std::string msg{ TestUtils::renderMessage() };
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::renderMessage());
     std::vector<double> mes = instance.renderMeasurements();
     double mean = std::accumulate(mes.begin(), mes.end(), 0.0) / mes.size();
     perfLog("render") << " mean = " << mean;
@@ -126,18 +114,15 @@ TEST_F(NXEInstanceTest, renderMessage_correct)
 
 TEST_F(NXEInstanceTest, moveByMessage_correct)
 {
-    const std::string msg{ TestUtils::moveByMessage(10, 10) };
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::moveByMessage(10, 10));
 }
 
 TEST_F(NXEInstanceTest, changeOrientation_correct)
 {
-    const std::string msg{ TestUtils::changeOrientationMessage(-1) };
-    const std::string msg2{ TestUtils::orientationMessage() };
-    instance.HandleMessage(msg.data());
-    instance.HandleMessage(msg2.data());
+    instance.HandleMessage(TestUtils::changeOrientationMessage(-1));
+    instance.HandleMessage(TestUtils::orientationMessage());
 
     EXPECT_EQ(numberOfResponses, 2);
     EXPECT_TRUE(respMsg.error.empty());
@@ -145,27 +130,25 @@ TEST_F(NXEInstanceTest, changeOrientation_correct)
 
 TEST_F(NXEInstanceTest, positionMessage_correct)
 {
-    const std::string msg{ TestUtils::positionMessage() };
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::positionMessage());
     EXPECT_TRUE(respMsg.error.empty());
 }
 
 TEST_F(NXEInstanceTest, changeOrientationMessage_incorrectValue)
 {
-    const std::string msg{ TestUtils::changeOrientationMessage(100) };
-    instance.HandleMessage(msg.data());
+    const std::string msg{  };
+    instance.HandleMessage(TestUtils::changeOrientationMessage(100));
 
     EXPECT_FALSE(respMsg.error.empty());
 }
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
 {
-    const std::string msg{ TestUtils::availableMessages() };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::availableMessages());
 
     EXPECT_TRUE(respMsg.error.empty());
     EXPECT_EQ(respMsg.call, "availableMaps");
@@ -175,14 +158,13 @@ TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
 {
     // Arrange
-    const std::string msg{ TestUtils::downloadMessage("this country does not exists") };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
 
     // Act
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::downloadMessage("this country does not exists"));
 
     // Assert
     EXPECT_FALSE(respMsg.error.empty());
@@ -191,15 +173,13 @@ TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_correct_country)
 {
     // Arrange
-    const std::string msg{ TestUtils::downloadMessage("Hawaii") };
-    const std::string msg2{ TestUtils::cancelDownloadMessage("Hawaii") };
     instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
 
     // Act
-    instance.HandleMessage(msg.data());
+    instance.HandleMessage(TestUtils::downloadMessage("Hawaii"));
 
     while (true) {
         std::this_thread::sleep_for(dura);
@@ -209,6 +189,6 @@ TEST_F(NXEInstanceTest, DISABLED_downloadMessage_correct_country)
     EXPECT_TRUE(respMsg.error.empty());
     EXPECT_EQ(respMsg.call, "downloadMap");
 
-    instance.HandleMessage(msg2.data());
+    instance.HandleMessage(TestUtils::cancelDownloadMessage("Hawaii"));
 
 }

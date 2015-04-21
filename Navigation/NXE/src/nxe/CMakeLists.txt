@@ -1,21 +1,4 @@
 
-set( Python_ADDITIONAL_VERSIONS 2.7 )
-set(Python_FIND_VERSION 2)
-set(Python_FIND_VERSION_MAJOR 2)
-set(API_CONSTANT_NAME kAscii_nxe_api)
-
-# Find Python interpreter
-find_package(PythonInterp REQUIRED)
-
-include_directories(${CMAKE_SOURCE_DIR}/tec)
-add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/src/nxe/generated_api.cc
-                   COMMAND ${PYTHON_EXECUTABLE}
-                   ARGS ${CMAKE_SOURCE_DIR}/tec/tools/generate_api.py
-                        ${CMAKE_SOURCE_DIR}/js/nxe_api.js
-                        ${API_CONSTANT_NAME}
-                        generated_api.cc
-)
-
 # find DBus
 find_package(DBus REQUIRED)
 find_package(DBusCpp REQUIRED)
@@ -65,12 +48,6 @@ set(NXE_SRCS
 
     # gps providers
     gpsdprovider.cc
-
-    # tizen-extension-crosswalk sources
-    ../../tec/common/extension.cc
-
-    # generated sources
-    ${CMAKE_BINARY_DIR}/src/nxe/generated_api.cc
 )
 
 set(libraries ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})

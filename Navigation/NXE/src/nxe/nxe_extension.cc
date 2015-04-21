@@ -16,58 +16,6 @@
 
 using namespace NXE;
 
-extern const char kAscii_nxe_api[];
-NXE::NXExtension* g_extension = nullptr;
-
-struct NXE::NXExtensionPrivate {
-    NXEInstance* instance = nullptr;
-    DBusController dbusController;
-    INavitIPC * ipc { new NavitDBus{dbusController}};
-    IMapDownloader * md { new MapDownloaderDBus{dbusController}};
-    DI::Injector injector{ [this]() -> DI::Components {
-        return fruit::createComponent()
-                .bindInstance(*ipc)
-                .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>()
-                .bindInstance(*md)
-                .bind<ISpeech, SpeechImpl>();
-    }() };
-};
-
-common::Extension* CreateExtension()
-{
-    NXE::NXExtension::createLogger();
-    g_extension = new NXExtension();
-    nInfo() << "Plugin loaded. Addr" << static_cast<void*>(g_extension);
-    return g_extension;
-}
-
-NXExtension::NXExtension()
-    : d(new NXExtensionPrivate)
-{
-    nDebug() << "Creating NXE extension";
-    SetExtensionName("nxe");
-    SetJavaScriptAPI(kAscii_nxe_api);
-}
-
-NXExtension::~NXExtension()
-{
-    nTrace() << "~NXExtension";
-}
-
-common::Instance* NXExtension::CreateInstance()
-{
-    if (d->instance) {
-        nFatal() << "This plugin does not support more than one instance yet";
-        return nullptr;
-    }
-
-    d->instance = new NXEInstance{ d->injector };
-
-    nDebug() << "Created instance. Ptr= " << static_cast<void*>(d->instance);
-    return d->instance;
-}
-
 void NXExtension::createLogger()
 {
     Settings s;

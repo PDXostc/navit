@@ -34,7 +34,7 @@ struct NavitInstanceTest : public ::testing::Test {
     MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
 
     bool bData = false;
-    std::string response;
+    NXE::JSONMessage response;
 
     NXE::INavitIPC::SpeechSignal speechS;
     NXE::INavitIPC::InitializedSignal initS;
@@ -55,12 +55,10 @@ struct NavitInstanceTest : public ::testing::Test {
         EXPECT_CALL(*mock_mapd, setListener(::testing::_));
     }
 
-    void callback(const std::string& str)
+    void callback(const NXE::JSONMessage& resp)
     {
-        ASSERT_NE(str, "error");
-        nDebug() << "Callback data=" << str;
         bData = true;
-        response = str;
+        response = resp;
     }
 };
 
@@ -71,30 +69,7 @@ TEST_F(NavitInstanceTest, moveBy_without_data)
     NXE::NXEInstance instance{ injector };
     instance.Initialize();
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
-    const std::string incomingMessage = "{\"id\":0, \"call\":\"moveBy\"}";
-    EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
-    EXPECT_TRUE(bData);
-}
-
-TEST_F(NavitInstanceTest, moveBy_with_data)
-{
-    // Arrange
-    ASSERT_FALSE(bData);
-    setupMocks();
-    EXPECT_CALL(*mock_ipc, moveBy(-15, -15));
-
-    NXE::NXEInstance instance{ injector };
-    instance.Initialize();
-    instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
-    const std::string incomingMessage = "{ \
-                \"id\":0, \
-                \"call\":\"moveBy\", \
-                \"data\": { \
-                    \"x\": -15,\
-                    \"y\": -15 \
-                } \
-            }";
-    EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
+    EXPECT_NO_THROW(instance.HandleMessage(NXE::JSONMessage{0, "moveBy"}));
     EXPECT_TRUE(bData);
 }
 
@@ -110,18 +85,13 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
     NXE::NXEInstance instance{ injector };
     instance.Initialize();
     instance.registerMessageCallback(std::bind(&NavitInstanceTest::callback, this, std::placeholders::_1));
-    const std::string incomingMessage = "{ \
-                \"id\":15, \
-                \"call\":\"zoom\" \
-            }";
 
     // Act
-    EXPECT_NO_THROW(instance.HandleMessage(incomingMessage.data()));
+    EXPECT_NO_THROW(instance.HandleMessage(TestUtils::zoomMessage()));
     EXPECT_TRUE(bData);
-    EXPECT_NE(response, "");
-    NXE::JSONMessage json = NXE::JSONUtils::deserialize(response);
 
     // Assert
-    ASSERT_FALSE(json.data.empty());
-    EXPECT_EQ(json.data.get<double>("zoom"), 10);
+    EXPECT_EQ(response.error, "");
+    ASSERT_FALSE(response.data.empty());
+    EXPECT_EQ(response.data.get<double>("zoom"), 10);
 }

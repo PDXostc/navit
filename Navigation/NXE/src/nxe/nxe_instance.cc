@@ -41,7 +41,6 @@ struct NXEInstancePrivate {
     NXEInstance* q;
     NavitController controller;
     Settings settings;
-    std::vector<NXEInstance::MessageCb_type> callbacks;
     std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
     std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
     std::vector<double> perfMeasurement;
@@ -53,21 +52,9 @@ struct NXEInstancePrivate {
     void postMessage(const JSONMessage& message)
     {
         nTrace() << "Posting response for " << message.call;
-        const std::string rsp = JSONUtils::serialize(message);
-
-        std::string tmpmessage{ rsp };
-
-        boost::algorithm::erase_all(tmpmessage, "\n");
-        boost::algorithm::erase_all(tmpmessage, "\t");
-        nTrace() << "Message = " << tmpmessage;
-        // This is xwalk posting mechanism
-        q->PostMessage(rsp.c_str());
 
         // This is our internal post message
         try {
-            std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
-                callback(rsp);
-            });
             std::for_each(callbacksJSon.begin(), callbacksJSon.end(), [&message](const NXEInstance::MessageCbJSON_type& callback) {
                 callback(message);
             });
@@ -138,38 +125,6 @@ void NXEInstance::Initialize()
         d->controller.tryStart();
     }
     d->initialized = true;
-}
-
-void NXEInstance::HandleMessage(const char* msg)
-{
-    // lock shared ptr
-    const std::string message{ msg };
-    std::string printedMessage{ msg };
-    boost::algorithm::erase_all(printedMessage, "\t");
-    boost::algorithm::erase_all(printedMessage, " ");
-    nDebug() << "Handling message " << printedMessage;
-
-    boost::algorithm::erase_all(printedMessage, "\n");
-    boost::algorithm::erase_all(printedMessage, "\t");
-    boost::algorithm::erase_all(printedMessage, " ");
-    nDebug() << "Handling message " << printedMessage;
-    // Eat all exceptions!
-    try {
-        NXE::JSONMessage jsonMsg = JSONUtils::deserialize(message);
-        HandleMessage(jsonMsg);
-    }
-    catch (const std::exception& ex) {
-        NXE::JSONMessage error{ 0, "", std::string(ex.what()) };
-        nFatal() << "Unable to deserialize message =" << msg;
-        nFatal() << ", posting error= " << ex.what();
-        d->postMessage(error);
-    }
-}
-
-void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
-{
-    nTrace() << "registering cb";
-    d->callbacks.push_back(cb);
 }
 
 void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type &cb)
