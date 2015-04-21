@@ -20,7 +20,7 @@ public:
     NXExtension();
     ~NXExtension();
 
-private:
+public:
     // From common::Extension
 
     /*!
@@ -28,6 +28,8 @@ private:
      * \return Pointer to newly created object. Ownership is transferred to xwalk
      */
     virtual common::Instance* CreateInstance() override;
+
+    static void createLogger();
 
 private:
     std::unique_ptr<NXExtensionPrivate> d;

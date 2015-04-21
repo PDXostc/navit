@@ -6,14 +6,14 @@
 #include <memory>
 
 namespace NXE {
+class DBusController;
 struct MapDownloaderDBusPrivate;
 class MapDownloaderDBus : public IMapDownloader
 {
 public:
-    INJECT(MapDownloaderDBus());
+    INJECT(MapDownloaderDBus(DBusController&));
     ~MapDownloaderDBus();
 
-    virtual void start() override;
     virtual std::vector<std::string> availableMaps() override;
     virtual bool download(const std::string &region) override;
     virtual void setListener(const MapDownloaderListener & listener) override;

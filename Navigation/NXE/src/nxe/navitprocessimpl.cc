@@ -1,11 +1,16 @@
 #include "navitprocessimpl.h"
 #include "log.h"
+#include "settings.h"
+#include "settingtags.h"
 
 #include <boost/process.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/system/error_code.hpp>
 
+#include <boost/program_options/environment_iterator.hpp>
+
 #include <iostream>
+#include <set>
 
 namespace bp = boost::process;
 namespace bs = boost::system;
@@ -19,8 +24,7 @@ namespace NXE {
 struct NavitProcessImplPrivate {
 
     const std::string m_navitProgramName = "navit";
-    std::string m_programPath = "";
-    std::list<std::string> m_args = {};
+    std::string socketName = "";
     bp::child m_child = bp::child(invalidPid);
     bs::error_code m_lastError = bs::error_code(2, bs::generic_category());
     std::thread m_monitor;
@@ -38,26 +42,48 @@ NavitProcessImpl::~NavitProcessImpl()
     stop();
 }
 
-void NavitProcessImpl::setProgramPath(const std::string& name)
-{
-    d->m_programPath = name;
-}
-
 bool NavitProcessImpl::start()
 {
-    d->m_lastError = bs::error_code();
-    const std::string command = d->m_programPath + std::string{ "/" } + d->m_navitProgramName;
-    nDebug() << "Starting navit process from " << command << " in dir " << d->m_programPath << " with args ";
-    bf::path exe = command;
-
+    std::set<std::string> newEnv;
+    Settings settings;
+    const std::string commandPath = settings.get<SettingsTags::Navit::Path>();
+    const std::string command = commandPath + std::string{ "/" } + d->m_navitProgramName;
     boost::iostreams::file_descriptor_sink sinkOut("/tmp/navit.out");
     boost::iostreams::file_descriptor_sink sinkErr("/tmp/navit.err");
-    d->m_child = bp::execute(bp::initializers::run_exe(exe),
-        bp::initializers::start_in_dir(d->m_programPath),
-        bp::initializers::inherit_env(),
-        bp::initializers::set_on_error(d->m_lastError),
-        bp::initializers::bind_stdout(sinkOut),
-        bp::initializers::bind_stderr(sinkErr));
+
+    d->m_lastError = bs::error_code();
+    nDebug() << "Starting navit process from " << command << " in dir " << commandPath << " with args ";
+    bf::path exe = command;
+
+    try {
+        const std::string platform = settings.get<SettingsTags::Navit::GraphicPlatform>();
+
+        int i = 1;
+        char* s = *environ;
+
+        for (; s; i++) {
+            newEnv.insert(s);
+            s = *(environ + i);
+        }
+
+        const std::string waylandSocket = "WAYLAND_CLIENT=" + d->socketName;
+        newEnv.insert(waylandSocket);
+        if (!platform.empty()) {
+            const std::string qt_qpa = "QT_QPA_PLATFORM=" + platform;
+            newEnv.insert(qt_qpa);
+        }
+
+        d->m_child = bp::execute(bp::initializers::run_exe(exe),
+            bp::initializers::start_in_dir(commandPath),
+            bp::initializers::set_env(newEnv),
+            bp::initializers::throw_on_error(),
+            bp::initializers::bind_stdout(sinkOut),
+            bp::initializers::bind_stderr(sinkErr));
+    }
+    catch (const boost::system::system_error& ex) {
+        nFatal() << "An exception occured while launching navit from " << exe.string();
+        throw ex;
+    }
 
     if (!d->m_lastError) {
         nDebug() << "Navit process properly started";
@@ -66,6 +92,7 @@ bool NavitProcessImpl::start()
                 nTrace() << "Start monitoring thread";
                 int exitVal = bp::wait_for_exit(d->m_child);
                 nDebug() << "Navit process exited with " << exitVal;
+                d->m_child.pid = invalidPid;
             } catch (const std::exception &ex) {
                 nError() << "Exception during waiting, probably because stop() call";
             }
@@ -84,9 +111,12 @@ void NavitProcessImpl::stop()
     nDebug() << "Stopping navit Pid=" << d->m_child.pid;
     if (d->m_child.pid != invalidPid) {
         bp::terminate(d->m_child);
+    }
+    if (d->m_monitor.joinable()) {
         d->m_monitor.join();
     }
     d->m_child.pid = invalidPid;
+    nDebug() << "Navit stopped";
 }
 
 bool NavitProcessImpl::isRunning()
@@ -94,9 +124,9 @@ bool NavitProcessImpl::isRunning()
     return !(d->m_lastError) && d->m_child.pid != invalidPid;
 }
 
-void NavitProcessImpl::setArgs(const std::list<std::string>& args)
+void NavitProcessImpl::setSocketName(const std::string& socket)
 {
-    d->m_args = args;
+    d->socketName = socket;
 }
 
 } // namespace NXE

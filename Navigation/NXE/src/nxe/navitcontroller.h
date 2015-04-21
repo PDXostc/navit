@@ -18,9 +18,6 @@ public:
     NavitController(DI::Injector& ctx);
     virtual ~NavitController();
 
-    // LBS functions
-    virtual void positon();
-
     //! Common functions
     void tryStart();
     void handleMessage(const JSONMessage& msg);

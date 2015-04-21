@@ -12,11 +12,13 @@ class INavitProcess;
 class INavitIPC;
 class NavitController;
 class IGPSProvider;
+struct JSONMessage;
 
 struct NXEInstancePrivate;
 class NXEInstance : public common::Instance {
 public:
     typedef std::function<void(const std::string&)> MessageCb_type;
+    typedef std::function<void(const NXE::JSONMessage&)> MessageCbJSON_type;
 
     NXEInstance() = delete;
     NXEInstance(DI::Injector& impls);
@@ -26,8 +28,13 @@ public:
 
     void HandleMessage(const char* msg) override;
     void registerMessageCallback(const MessageCb_type& cb);
+    void registerMessageCallback(const MessageCbJSON_type& cb);
+
+    bool HandleMessage(const NXE::JSONMessage& msg);
 
     std::vector<double> renderMeasurements() const;
+
+    void setWaylandSocketName(const std::string& socketName);
 
 private:
     std::unique_ptr<NXEInstancePrivate> d;

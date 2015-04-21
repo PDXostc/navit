@@ -1,5 +1,6 @@
 #include "navitprocessimpl.h"
 #include "nxe_extension.h"
+#include "testutils.h"
 #include <navitdbus.h>
 
 #include <iostream>
@@ -8,27 +9,40 @@
 
 #include <gtest/gtest.h>
 
-const std::string navitPath{ NAVIT_PATH };
-extern bool runNavit;
-
 class NavitProcessTest : public ::testing::Test {
 protected:
     NXE::NavitProcessImpl process;
 };
 
-TEST_F(NavitProcessTest, failure_start_pathNotSet)
+TEST_F(NavitProcessTest, failure_nxe_file_not_present)
 {
-    if (runNavit) {
-        EXPECT_FALSE(process.start());
-        EXPECT_FALSE(process.isRunning());
-    }
+    TestUtils::removeNXEConfFile();
+    EXPECT_ANY_THROW(process.start());
+    EXPECT_FALSE(process.isRunning());
 }
 
 TEST_F(NavitProcessTest, success_start_pathSet)
 {
-    if (runNavit) {
-        process.setProgramPath(navitPath);
-        EXPECT_TRUE(process.start());
-        EXPECT_TRUE(process.isRunning());
-    }
+    TestUtils::createNXEConfFile();
+    EXPECT_TRUE(process.start());
+    EXPECT_TRUE(process.isRunning());
+    TestUtils::removeNXEConfFile();
+}
+
+TEST_F(NavitProcessTest, process_externally_killed)
+{
+    TestUtils::createNXEConfFile();
+
+    EXPECT_TRUE(process.start());
+    EXPECT_TRUE(process.isRunning());
+
+    std::thread t { [](){
+                    system("killall navit");
+    }};
+
+    std::chrono::milliseconds dura(1000 * 2);
+    std::this_thread::sleep_for(dura);
+
+    t.join();
+    TestUtils::removeNXEConfFile();
 }

@@ -23,18 +23,8 @@ std::string setPositionMessage(double lon, double lat);
 std::string clearDestinationMessage();
 
 void createNXEConfFile();
+void removeNXEConfFile();
 
-struct Timer {
-    typedef std::chrono::high_resolution_clock clock_t;
-    clock_t::time_point t1{ clock_t::now() };
-
-    ~Timer()
-    {
-        auto t2 = clock_t::now();
-        std::chrono::duration<double, std::milli> diff = t2 - t1;
-        nDebug() << diff.count();
-    }
-};
-}
+} //TestUtils
 
 #endif // TESTUTILS_H

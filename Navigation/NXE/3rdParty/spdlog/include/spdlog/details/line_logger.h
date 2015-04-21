@@ -101,7 +101,7 @@ public:
     //
     line_logger& operator<<(const char* what)
     {
-        if (_enabled)
+        if (_enabled && what)
             _log_msg.raw << what;
         return *this;
     }

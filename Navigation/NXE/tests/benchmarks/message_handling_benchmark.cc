@@ -30,18 +30,18 @@ struct RenderTest {
     NXE::NXEInstance instance{ injector };
     NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };
     NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::INavitIPC*>())) };
+    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
     NXE::INavitIPC::SpeechSignal speechS;
     NXE::INavitIPC::InitializedSignal initS;
 
     void setupMocks()
     {
         using ::testing::ReturnRef;
-        EXPECT_CALL(*(mock_process), setProgramPath(::testing::_));
         EXPECT_CALL(*(mock_process), start());
         EXPECT_CALL(*(mock_process), stop());
-        EXPECT_CALL(*(mock_ipc), start());
         EXPECT_CALL(*(mock_ipc), speechSignal()).WillOnce(ReturnRef(speechS));
         EXPECT_CALL(*(mock_ipc), initializedSignal()).WillOnce(ReturnRef(initS));
+        EXPECT_CALL(*(mock_mapd), setListener(::testing::_));
     }
 };
 

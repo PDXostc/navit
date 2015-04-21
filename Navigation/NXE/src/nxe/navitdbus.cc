@@ -1,5 +1,6 @@
 #include "navitdbus.h"
 #include "log.h"
+#include "dbuscontroller.h"
 
 #include <thread>
 #include <chrono>
@@ -63,84 +64,19 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 };
 
 struct NavitDBusPrivate {
-
-    std::shared_ptr< ::DBus::Connection> con;
     std::shared_ptr<NavitDBusObjectProxy> object;
-    ::DBus::BusDispatcher dispatcher;
-
-    bool m_threadRunning = false;
-    std::thread m_thread;
 };
 
-NavitDBus::NavitDBus()
+NavitDBus::NavitDBus(DBusController& ctrl)
     : d(new NavitDBusPrivate)
 {
     nTrace() << "NavitDBus::NavitDBus()";
+    d->object.reset(new NavitDBusObjectProxy(ctrl.connection()));
 }
 
 NavitDBus::~NavitDBus()
 {
     nTrace() << "Destroying navit dbus";
-    stop();
-    if (d->m_thread.joinable()) {
-        d->m_thread.join();
-    }
-}
-
-void NavitDBus::start()
-{
-    nTrace() << "Staring DBus dispatching";
-    if (d->m_threadRunning) {
-        return;
-    }
-
-    ::DBus::default_dispatcher = &d->dispatcher;
-    d->con.reset(new ::DBus::Connection{ ::DBus::Connection::SessionBus() });
-    d->object.reset(new NavitDBusObjectProxy(*(d->con.get())));
-
-    d->m_thread = std::move(std::thread([this]() {
-        nTrace() << "Dispatching";
-        d->m_threadRunning = true;
-        ::DBus::default_dispatcher->enter();
-        nTrace() << "EOF dispatching";
-    }));
-
-    // wait until dispatching thread is started
-    while (!d->m_threadRunning) {
-        std::chrono::milliseconds dura(1000);
-        std::this_thread::sleep_for(dura);
-    }
-
-    nTrace() << "Navit DBus started";
-}
-
-void NavitDBus::stop()
-{
-    while (d && d->object && d->object->inProgress) {
-        nInfo() << "A signal processing is in progress we have to wait";
-        std::chrono::milliseconds dura(30);
-        std::this_thread::sleep_for(dura);
-    }
-
-    nTrace() << "Signal processing is done!";
-
-    if (!d->m_threadRunning) {
-        // nothing to do really ;)
-        nInfo() << "Navit DBus Already stopped";
-        return;
-    }
-
-    nDebug() << "Stopping Navit DBus client";
-    if (d->con) {
-        d->con->disconnect();
-        nTrace() << "Object disconnected";
-    }
-
-    ::DBus::default_dispatcher->leave();
-    nTrace() << "Dispatcher leave";
-
-    d->m_threadRunning = false;
-    nDebug() << "Done stoping dbus";
 }
 
 void NavitDBus::quit()
@@ -175,6 +111,7 @@ void NavitDBus::render()
 {
     nDebug() << "Rendering";
     DBus::call("draw", *(d->object.get()));
+    nDebug() << "Rendering finished";
 }
 
 int NavitDBus::orientation()
@@ -184,7 +121,9 @@ int NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
+    nDebug() << "Changing orientation to " << newOrientation;
     if (newOrientation != 0 && newOrientation != -1) {
+        nError() << "Unable to change orientation to " << newOrientation;
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }
     DBus::setAttr("orientation", *(d->object.get()), newOrientation);

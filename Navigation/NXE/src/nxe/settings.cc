@@ -57,8 +57,9 @@ Settings::Settings()
     bpt::read_json(m_configPath, m_tree);
 }
 
-Settings::~Settings()
+void Settings::save()
 {
+    bpt::write_json(m_configPath, m_tree);
 }
 
 } // namespace NXE

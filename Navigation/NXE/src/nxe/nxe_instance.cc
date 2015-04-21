@@ -25,11 +25,6 @@
 
 namespace bipc = boost::interprocess;
 
-namespace {
-const std::string sharedMemoryName{ "Navit_shm" };
-const std::uint32_t sharedMemorySize = 7171272;
-}
-
 namespace NXE {
 
 struct NXEInstancePrivate {
@@ -47,19 +42,24 @@ struct NXEInstancePrivate {
     NavitController controller;
     Settings settings;
     std::vector<NXEInstance::MessageCb_type> callbacks;
+    std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
     std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
-    bipc::shared_memory_object shMem{ bipc::open_or_create, sharedMemoryName.c_str(), bipc::read_write };
-    bipc::mapped_region region;
     std::vector<double> perfMeasurement;
 
     // Which messages cause a screen redraw
-    std::vector<std::string> redrawAfterRequest {"render", "zoomBy", "setOrientation", "moveBy", "setDestination", "clearDestination", "setPosition"};
     bool initialized{ false };
 
+    // This is for all messages but 'render'
     void postMessage(const JSONMessage& message)
     {
         nTrace() << "Posting response for " << message.call;
         const std::string rsp = JSONUtils::serialize(message);
+
+        std::string tmpmessage{ rsp };
+
+        boost::algorithm::erase_all(tmpmessage, "\n");
+        boost::algorithm::erase_all(tmpmessage, "\t");
+        nTrace() << "Message = " << tmpmessage;
         // This is xwalk posting mechanism
         q->PostMessage(rsp.c_str());
 
@@ -67,6 +67,9 @@ struct NXEInstancePrivate {
         try {
             std::for_each(callbacks.begin(), callbacks.end(), [&rsp](const NXEInstance::MessageCb_type& callback) {
                 callback(rsp);
+            });
+            std::for_each(callbacksJSon.begin(), callbacksJSon.end(), [&message](const NXEInstance::MessageCbJSON_type& callback) {
+                callback(message);
             });
         }
         catch (const std::exception& ex) {
@@ -86,31 +89,7 @@ struct NXEInstancePrivate {
             perfLog(response.call) << " parsing took " << res << " ms";
             timers.erase(it);
         }
-
-        auto renderIt = std::find(std::begin(redrawAfterRequest), std::end(redrawAfterRequest), response.call);
-        if (renderIt != std::end(redrawAfterRequest)) {
-            // read shared memory
-            const char* mem = static_cast<const char*>(region.get_address());
-            assert(mem);
-
-            // post normal response
-            postMessage(response);
-
-            // now post rendered image
-            q->PostMessage(mem);
-            // This is our internal post message
-            try {
-                std::for_each(callbacks.begin(), callbacks.end(), [&mem](const NXEInstance::MessageCb_type& callback) {
-                    callback(std::string {mem, sharedMemorySize});
-                });
-            }
-            catch (const std::exception& ex) {
-                nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
-            }
-        } else {
-            postMessage(response);
-        }
-
+        postMessage(response);
         nTrace() << "Finished posting response";
     }
 };
@@ -132,10 +111,8 @@ NXEInstance::~NXEInstance()
 
     nTrace() << "Stopping controller. external navit=" << external;
 
-    d->navitProcess->stop();
-
     if (!external) {
-        bipc::shared_memory_object::remove(sharedMemoryName.c_str());
+        d->navitProcess->stop();
     }
 }
 
@@ -150,18 +127,9 @@ void NXEInstance::Initialize()
 
     nDebug() << "Initializing NXEInstance";
     bool bAutoRun = d->settings.get<AutoStart>();
-    d->shMem.truncate(sharedMemorySize);
-    d->region = bipc::mapped_region(d->shMem, bipc::read_only);
     if (bAutoRun) {
         bool external = d->settings.get<ExternalNavit>();
         if (!external) {
-            using SettingsTags::Navit::Path;
-
-            nInfo() << "Autorun is set, starting Navit";
-            std::string path{ d->settings.get<Path>() };
-            nInfo() << "Setting navit path = [" << path << "]";
-            d->navitProcess->setProgramPath(path);
-
             d->navitProcess->start();
         }
         else {
@@ -177,29 +145,18 @@ void NXEInstance::HandleMessage(const char* msg)
     // lock shared ptr
     const std::string message{ msg };
     std::string printedMessage{ msg };
+    boost::algorithm::erase_all(printedMessage, "\t");
+    boost::algorithm::erase_all(printedMessage, " ");
+    nDebug() << "Handling message " << printedMessage;
 
     boost::algorithm::erase_all(printedMessage, "\n");
     boost::algorithm::erase_all(printedMessage, "\t");
     boost::algorithm::erase_all(printedMessage, " ");
     nDebug() << "Handling message " << printedMessage;
-
     // Eat all exceptions!
     try {
         NXE::JSONMessage jsonMsg = JSONUtils::deserialize(message);
-
-        try {
-            d->timers[jsonMsg.call] = std::chrono::high_resolution_clock::now();
-            d->controller.handleMessage(jsonMsg);
-        }
-        catch (const std::exception& ex) {
-            nFatal() << "Unable to handle message " << jsonMsg.call << ", error=" << ex.what();
-            NXE::JSONMessage error{ jsonMsg.id, jsonMsg.call, ex.what() };
-            auto it = d->timers.find(jsonMsg.call);
-            if (it != d->timers.end()) {
-                d->timers.erase(it);
-            }
-            d->postMessage(error);
-        }
+        HandleMessage(jsonMsg);
     }
     catch (const std::exception& ex) {
         NXE::JSONMessage error{ 0, "", std::string(ex.what()) };
@@ -215,9 +172,38 @@ void NXEInstance::registerMessageCallback(const NXEInstance::MessageCb_type& cb)
     d->callbacks.push_back(cb);
 }
 
+void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type &cb)
+{
+    d->callbacksJSon.push_back(cb);
+}
+
+bool NXEInstance::HandleMessage(const JSONMessage &msg)
+{
+    try {
+        d->timers[msg.call] = std::chrono::high_resolution_clock::now();
+        d->controller.handleMessage(msg);
+        return true;
+    }
+    catch (const std::exception& ex) {
+        nFatal() << "Unable to handle message " << msg.call << ", error=" << ex.what();
+        NXE::JSONMessage error{ msg.id, msg.call, ex.what() };
+        auto it = d->timers.find(msg.call);
+        if (it != d->timers.end()) {
+            d->timers.erase(it);
+        }
+        d->postMessage(error);
+    }
+    return false;
+}
+
 std::vector<double> NXEInstance::renderMeasurements() const
 {
     return d->perfMeasurement;
+}
+
+void NXEInstance::setWaylandSocketName(const std::string &socketName)
+{
+    d->navitProcess->setSocketName(socketName);
 }
 
 } // namespace NXE

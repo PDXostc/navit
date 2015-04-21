@@ -29,6 +29,7 @@ struct NavitInstanceTest : public ::testing::Test {
 
     NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };
     NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::INavitIPC*>())) };
+    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
 
     bool bData = false;
     std::string response;
@@ -46,11 +47,10 @@ struct NavitInstanceTest : public ::testing::Test {
         using ::testing::Return;
         using ::testing::ReturnRef;
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
-        EXPECT_CALL(*mock_process, setProgramPath(::testing::_));
         EXPECT_CALL(*mock_process, stop());
-        EXPECT_CALL(*mock_ipc, start());
         EXPECT_CALL(*mock_ipc, speechSignal()).WillRepeatedly(ReturnRef(speechS));
         EXPECT_CALL(*mock_ipc, initializedSignal()).WillRepeatedly(ReturnRef(initS));
+        EXPECT_CALL(*mock_mapd, setListener(::testing::_));
     }
 
     void callback(const std::string& str)
@@ -64,7 +64,6 @@ struct NavitInstanceTest : public ::testing::Test {
 
 TEST_F(NavitInstanceTest, moveBy_without_data)
 {
-    TestUtils::Timer t;
     setupMocks();
 
     NXE::NXEInstance instance{ injector };
@@ -77,7 +76,6 @@ TEST_F(NavitInstanceTest, moveBy_without_data)
 
 TEST_F(NavitInstanceTest, moveBy_with_data)
 {
-    TestUtils::Timer t;
     // Arrange
     ASSERT_FALSE(bData);
     setupMocks();
@@ -100,7 +98,6 @@ TEST_F(NavitInstanceTest, moveBy_with_data)
 
 TEST_F(NavitInstanceTest, zoomBy_proper)
 {
-    TestUtils::Timer t;
     using ::testing::Return;
 
     // Arrange

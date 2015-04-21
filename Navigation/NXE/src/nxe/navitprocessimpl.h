@@ -13,7 +13,6 @@ public:
     INJECT(NavitProcessImpl());
     ~NavitProcessImpl();
 
-    virtual void setProgramPath(const std::string& name) override final;
     virtual bool start() override final;
 
     /*!
@@ -24,7 +23,7 @@ public:
      */
     virtual void stop() override final;
     virtual bool isRunning() override final;
-    virtual void setArgs(const std::list<std::string>& args) override final;
+    virtual void setSocketName(const std::string& socket) override;
 
 private:
     std::unique_ptr<NavitProcessImplPrivate> d;

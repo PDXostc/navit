@@ -3,17 +3,19 @@
 #include <thread>
 
 #include "mapdownloaderdbus.h"
+#include "dbuscontroller.h"
 #include "log.h"
 
 struct MapDownloaderDBusTest : public ::testing::Test 
 {
     void SetUp()
     {
-        dbus.start();
         dbus.setListener(listener);
+        ASSERT_NO_THROW(dbus.availableMaps());
     }
 
-    NXE::MapDownloaderDBus dbus;
+    NXE::DBusController controller;
+    NXE::MapDownloaderDBus dbus {controller};
     NXE::MapDownloaderListener listener {
         [this](const std::string &str, std::uint64_t now, std::uint64_t total) {
             nTrace() << "Received progress callback ";

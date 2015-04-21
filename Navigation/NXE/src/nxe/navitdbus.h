@@ -7,16 +7,15 @@
 #include <fruit/macro.h>
 
 namespace NXE {
+class DBusController;
 
 class NavitDBusPrivate;
 class NavitDBus : public INavitIPC {
 public:
-    INJECT(NavitDBus());
+    INJECT(NavitDBus(DBusController& ctrl));
     ~NavitDBus();
 
     //! This will block until startup signal is received
-    virtual void start() override;
-    virtual void stop() override;
     virtual void quit() override;
     virtual void moveBy(int x, int y) override;
     virtual void zoomBy(int y) override;

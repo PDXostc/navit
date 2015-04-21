@@ -5,9 +5,7 @@
 
 struct NavitIPCMock : public NXE::INavitIPC {
     using Inject = NavitIPCMock();
-    MOCK_METHOD0(start, void());
 
-    MOCK_METHOD0(stop, void());
     MOCK_METHOD0(quit, void());
     MOCK_METHOD0(render, void());
     MOCK_METHOD2(moveBy, void(int,int));

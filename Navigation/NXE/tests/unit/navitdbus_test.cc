@@ -1,6 +1,8 @@
 #include "navitdbus.h"
 #include "log.h"
 #include "navitprocessimpl.h"
+#include "testutils.h"
+#include "dbuscontroller.h"
 
 #include <gtest/gtest.h>
 #include <thread>
@@ -10,23 +12,27 @@ const std::string navitPath{ NAVIT_PATH };
 extern bool runNavit;
 
 struct NavitDBusTest : public ::testing::Test {
-    NXE::NavitDBus connection;
+
+    NXE::DBusController controller;
+    NXE::NavitDBus connection {controller};
     NXE::NavitProcessImpl process;
 
     void SetUp()
     {
-
+        TestUtils::createNXEConfFile();
         if (runNavit) {
             nDebug() << "Running navit binary";
-            process.setProgramPath(navitPath);
+            // TODO: Add settings here
             process.start();
+            std::chrono::milliseconds dura(500);
+            std::this_thread::sleep_for(dura);
         }
-        connection.start();
+        nTrace() << "Controller start";
+        controller.start();
     }
 
     void TearDown()
     {
-        connection.stop();
         if (runNavit) {
             process.stop();
         }

@@ -19,3 +19,4 @@ gui_html5/bin/
 gui_html5/node_modules/
 gui_html5/vendor/
 gui_html5/nbproject/
+.DS_Store

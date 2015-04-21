@@ -572,10 +572,14 @@ fullscreen(struct window *win, int on)
 	_outerWidget=this_->widget;
 
 #endif /* QT_QPAINTER_USE_EMBEDDING */
-    if (on)
+    if (on) {
+        qDebug() << "Fullscreen";
         _outerWidget->showFullScreen();
-    else
+    }
+    else {
+        qDebug() << "Maximized";
         _outerWidget->showMaximized();
+    }
 #endif
 	return 1;
 }
@@ -606,7 +610,6 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		this_->widget->do_resize(size);
 	}
 
-
 	if (!strcmp(type, "qt_widget")) 
 	    return this_->widget;
 	if (!strcmp(type, "qt_pixmap")) 
@@ -622,8 +625,11 @@ static void * get_data(struct graphics_priv *this_, const char *type)
 		}
         _outerWidget->show();
 #endif /* QT_QPAINTER_USE_EMBEDDING */
-        if (this_->w && this_->h)
+        if (this_->w && this_->h) {
+//            qDebug() << "show" << this_->w << this_->h;
+            this_->widget->setGeometry(0,0,1060, 1000);
             this_->widget->show();
+        }
         else
             this_->widget->showMaximized();
 #endif /* QT_QPAINTER_NO_WIDGET */
@@ -926,8 +932,8 @@ static struct graphics_priv * graphics_qt_qpainter_new(struct navit *nav, struct
 #ifdef QT_QPAINTER_USE_EVENT_QT
 	event_gr=ret;
 #endif
-	ret->w=800;
-	ret->h=600;
+    ret->w=800;
+    ret->h=600;
 	if ((attr=attr_search(attrs, NULL, attr_w)))
 		ret->w=attr->u.num;
 	if ((attr=attr_search(attrs, NULL, attr_h)))

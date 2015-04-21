@@ -1,4 +1,5 @@
 #include "mapdownloaderdbus.h"
+#include "dbuscontroller.h"
 #include "dbus_helpers.hpp"
 #include "log.h"
 
@@ -58,61 +59,17 @@ struct Proxy : public ::DBus::InterfaceProxy, public ::DBus::ObjectProxy
 };
 
 struct MapDownloaderDBusPrivate {
-    std::unique_ptr<::DBus::Connection> con;
     std::unique_ptr<Proxy> proxy;
-    ::DBus::BusDispatcher dispatcher;
-    std::thread dispatchingThread;
-    bool ownDispatching {false};
-    bool threadRunning {false};
 };
 
-MapDownloaderDBus::MapDownloaderDBus():
+MapDownloaderDBus::MapDownloaderDBus(DBusController& ctrl):
     d(new MapDownloaderDBusPrivate)
 {
+    d->proxy.reset(new Proxy {ctrl.connection()});
 }
 
 MapDownloaderDBus::~MapDownloaderDBus()
 {
-    nTrace() << __PRETTY_FUNCTION__;
-    d->proxy.reset();
-    d->con.reset();
-    if (d->ownDispatching) {
-        nInfo() << "Removing dispatchers";
-        ::DBus::default_dispatcher = nullptr;
-        d->dispatcher.leave();
-        d->dispatchingThread.join();
-    }
-}
-
-void MapDownloaderDBus::start()
-{
-    if (d->con || d->proxy) {
-        nDebug() << "MapDownloaderDBus already initialized";
-    }
-
-    nDebug() << "Starting MapDownloaderDBus";
-    if (!::DBus::default_dispatcher) {
-        d->ownDispatching = true;
-        nInfo() << "MapDownloaderDBus don't have a dispatcher, we need one";
-        ::DBus::default_dispatcher = &(d->dispatcher);
-
-        d->dispatchingThread = std::move(std::thread {  [this]()
-        {
-            nInfo() << "Dispatching";
-            d->threadRunning = true;
-            d->dispatcher.enter();
-        } });
-
-        while(!d->threadRunning) {
-            std::chrono::milliseconds dura(100);
-            std::this_thread::sleep_for(dura);
-        }
-    }
-
-
-    //TODO: What about a dispatcher?
-    d->con.reset(new ::DBus::Connection {::DBus::Connection::SessionBus()});
-    d->proxy.reset(new Proxy {*(d->con.get())});
 }
 
 std::vector<std::string> MapDownloaderDBus ::availableMaps() 

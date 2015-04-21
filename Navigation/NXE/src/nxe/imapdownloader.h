@@ -21,7 +21,6 @@ class IMapDownloader {
 public:
     ~IMapDownloader() {}
 
-    virtual void start() = 0;
     virtual std::vector<std::string> availableMaps() = 0;
     virtual bool download(const std::string& region) = 0;
     virtual void setListener(const MapDownloaderListener& listener) = 0;

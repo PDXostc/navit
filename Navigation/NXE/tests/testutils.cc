@@ -2,6 +2,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem/operations.hpp>
 #include "settingtags.h"
 #include "jsonmessage.h"
 
@@ -26,7 +27,9 @@ void TestUtils::createNXEConfFile()
     config.put(SettingsTags::Navit::Path::name(), navitPath);
     config.put(SettingsTags::Navit::AutoStart::name(), true);
     config.put(SettingsTags::Navit::ExternalNavit::name(), !runNavit);
-    config.put(SettingsTags::FileLog::name(), "/tmp/log.file");
+    // xcb is default QT_QPA_PLATFORM for X11
+    config.put(SettingsTags::Navit::GraphicPlatform::name(), "xcb");
+    config.put(SettingsTags::LogPath::name(), "/tmp/");
     bpt::write_json("nxe.conf", config);
 }
 
@@ -123,4 +126,10 @@ std::string TestUtils::cancelDownloadMessage(const std::string &country)
     p.put("region", country);
     NXE::JSONMessage msg {401, "cancelDownloadMap", "", p};
     return NXE::JSONUtils::serialize(msg);
+}
+
+
+void TestUtils::removeNXEConfFile()
+{
+    boost::filesystem::remove("nxe.conf");
 }

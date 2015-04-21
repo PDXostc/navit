@@ -39,7 +39,8 @@ void event_qt_remove_timeout(event_timeout*);
 namespace {
 const std::uint16_t defaultWidth = 1080;
 const std::uint16_t defaultHeight = 1660;
-const std::uint32_t sharedMemorySize = 72 + (defaultHeight * defaultWidth * 4); // 7171272
+//const std::uint32_t sharedMemorySize = 72 + (defaultHeight * defaultWidth * 4); // 7171272
+const std::uint32_t sharedMemorySize = 0 + (defaultHeight * defaultWidth * 4); // 7171200
 const std::string sharedMemoryName = "Navit_shm";
 int sharedMemoryFd = -1;
 static graphics_priv* event_gr;
@@ -152,14 +153,16 @@ qt_offscreen_draw(graphics_priv* gr)
 
     qDebug() << "QImage size=" << img.byteCount();
 
-    QByteArray ba;
-    QBuffer b { &ba };
-    img.save(&b, "bmp");
-    QByteArray newBa = ba.toBase64();
-    qDebug() << "BMP size=" << newBa.size();
+//    QByteArray ba;
+//    QBuffer b { &ba };
+//    img.save(&b, "bmp");
+//    QByteArray newBa = ba.toBase64();
+//    qDebug() << "BMP size=" << newBa.size();
 
-    void *to = mmap(0, newBa.size(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
-    const char *from = reinterpret_cast<char*>(newBa.data());
+//    void *to = mmap(0, newBa.size(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
+    void *to = mmap(0, img.byteCount(), PROT_READ | PROT_WRITE, MAP_SHARED, sharedMemoryFd, 0);
+//    const char *from = reinterpret_cast<char*>(newBa.data());
+    const char *from = reinterpret_cast<char*>(img.bits());
     std::memcpy(to, from, img.byteCount());
     char *cc = reinterpret_cast<char*>(to);
 

@@ -6,10 +6,9 @@
 namespace NXE {
 
 // DO NOT USE nDebug, nLog or other logging macros here!
-class Settings {
+struct Settings {
 public:
     Settings();
-    ~Settings();
 
     const std::string& configPath() const noexcept
     {
@@ -21,6 +20,14 @@ public:
     {
         return m_tree.get<typename T::type>(T::name());
     }
+
+    template <typename T>
+    void set(const typename T::type& value)
+    {
+        m_tree.put(T::name(), value);
+    }
+
+    void save();
 
 private:
     boost::property_tree::ptree m_tree;

@@ -13,11 +13,6 @@ public:
 
     virtual ~INavitIPC() {}
 
-    //! IPC start/stop
-    virtual void start() = 0;
-    // stops monitoring
-    virtual void stop() = 0;
-
     virtual void quit() = 0;
 
     // Actuall interface description

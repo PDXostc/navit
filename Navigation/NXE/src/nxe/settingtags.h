@@ -20,11 +20,16 @@ namespace Navit {
         typedef bool type;
         static std::string name() noexcept { return "navit.external"; }
     };
+
+    struct GraphicPlatform {
+        typedef std::string type;
+        static std::string name() noexcept { return "navit.platform"; }
+    };
 } // Navit
 
-struct FileLog {
+struct LogPath {
     typedef std::string type;
-    static std::string name() noexcept { return "logFile"; }
+    static std::string name() noexcept { return "logPath"; }
 };
 struct LogLevel {
     typedef std::string type;

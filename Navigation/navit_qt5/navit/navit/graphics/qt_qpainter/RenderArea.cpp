@@ -50,6 +50,7 @@ RenderArea::RenderArea(struct graphics_priv *priv, QT_QPAINTER_RENDERAREA_PARENT
 #ifndef QT_QPAINTER_NO_WIDGET
 	if (!overlay) {
 #if QT_VERSION >= 0x040700                                                 
+        qDebug() << "Registering gestures";
 		grabGesture(Qt::PinchGesture);
 		grabGesture(Qt::SwipeGesture);
 		grabGesture(Qt::PanGesture);

@@ -98,7 +98,7 @@ struct NavitControllerPrivate {
         }),
 
         boost::fusion::make_pair<ExitMessage>([this](const JSONMessage& message) {
-            ipc->stop();
+            ipc->quit();
             JSONMessage response {message.id, message.call};
             successSignal(response);
         }),
@@ -106,7 +106,7 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<SetOrientationMessage>([this](const JSONMessage& message) {
             int newOrientation = message.data.get<int>("orientation");
             ipc->setOrientation(newOrientation);
-            JSONMessage response {message.id, message.call};
+            JSONMessage response {message.id, message.call,"", message.data};
             successSignal(response);
         }),
 
@@ -301,25 +301,19 @@ NavitController::NavitController(DI::Injector& ctx)
     d->mapDownloaderIPC = ctx.get<std::shared_ptr<IMapDownloader> >();
     d->q = this;
 
+
 }
 
 NavitController::~NavitController()
 {
 }
 
-void NavitController::positon()
-{
-    // TODO: Ask for LBS position
-}
-
 void NavitController::tryStart()
 {
     nDebug() << "Trying to start IPC Navit controller";
-    d->ipc->start();
     d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
     d->ipc->initializedSignal().connect([]() {});
 
-    d->mapDownloaderIPC->start();
     d->mapDownloaderIPC->setListener(d->listener);
 }
 

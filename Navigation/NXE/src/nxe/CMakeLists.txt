@@ -22,11 +22,11 @@ find_package(DBusCpp REQUIRED)
 find_package(GPSD REQUIRED)
 include_directories(${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR} ${DBUSCPP_INCLUDE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE__SOURCE_DIR}/src/)
 
 set (dbus_library 
     navitdbus.cc
     mapdownloaderdbus.cc
+    dbuscontroller.cc
     )
 
 set(nxe_interfaces
@@ -50,6 +50,7 @@ set(NXE_SRCS
     settings.cc
     settingtags.h
     position.h
+    context.h
 
     # dbus interface implementation
     ${dbus_library}
@@ -71,5 +72,7 @@ set(NXE_SRCS
 add_library(nxe SHARED ${NXE_SRCS})
 target_link_libraries(nxe ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
 
+#install(TARGETS nxe
+#        DESTINATION lib/tizen-extensions-crosswalk)
 install(TARGETS nxe
-        DESTINATION lib/tizen-extensions-crosswalk)
+        DESTINATION lib)

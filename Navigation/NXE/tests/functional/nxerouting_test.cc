@@ -5,6 +5,7 @@
 #include "mapdownloaderdbus.h"
 #include "gpsdprovider.h"
 #include "testutils.h"
+#include "dbuscontroller.h"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -18,12 +19,15 @@ extern bool runNavit;
 typedef fruit::Component<INavitIPC, INavitProcess, IGPSProvider> NXEImpls;
 struct NXEInstanceTest : public ::testing::Test {
 
-    DI::Injector injector{ []() -> DI::Components {
+    DBusController dbusController;
+    INavitIPC * ipc { new NavitDBus{dbusController}};
+    IMapDownloader * md { new MapDownloaderDBus{dbusController}};
+    DI::Injector injector{ [this]() -> DI::Components {
         return fruit::createComponent()
-                .bind<INavitIPC, NavitDBus>()
+                .bindInstance(*ipc)
+                .bindInstance(*md)
                 .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>()
-                .bind<IMapDownloader, MapDownloaderDBus>();
+                .bind<IGPSProvider, GPSDProvider>();
     }() };
     NXEInstance instance{ injector };
     JSONMessage respMsg;
