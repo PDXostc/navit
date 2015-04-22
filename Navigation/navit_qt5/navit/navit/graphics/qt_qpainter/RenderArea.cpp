@@ -21,6 +21,10 @@
 
 #include "RenderArea.moc"
 
+#include <QtWidgets/QGestureEvent>
+
+bool touchStarted = false;
+bool zoomIn = false;
 #ifdef QT_QPAINTER_USE_EMBEDDING
 EmbeddedWidget::EmbeddedWidget(struct graphics_priv *priv, QWidget* child, QWidget *parent) 
 : QX11EmbedWidget(parent) {
@@ -66,6 +70,7 @@ RenderArea::RenderArea(struct graphics_priv *priv, QT_QPAINTER_RENDERAREA_PARENT
 	watches=g_hash_table_new(NULL, NULL);
 #ifndef QT_QPAINTER_NO_WIDGET
 	setAttribute(Qt::WA_OpaquePaintEvent, true);
+    setAttribute(Qt::WA_AcceptTouchEvents, true);
 #endif
 #endif
 }
@@ -85,13 +90,38 @@ void RenderArea::closeEvent(QCloseEvent* event)
 
 bool RenderArea::event(QEvent *event)
 {
-#if QT_VERSION >= 0x040700                                                 
 	if (event->type() == QEvent::Gesture) {
-		dbg(lvl_debug,"gesture\n");
-		return true;
-	}
-#endif
-	return QWidget::event(event);
+        qDebug() << Q_FUNC_INFO<< "Gesture";
+        QGestureEvent* gest = static_cast<QGestureEvent*>(event);
+        if( QGesture* pinch = gest->gesture(Qt::PinchGesture) ) {
+            // pinch gesture
+            QPinchGesture *pinchEve = static_cast<QPinchGesture *>(pinch);
+            qDebug() << "Pinch " << pinchEve  << pinchEve->state() << pinchEve->scaleFactor() << pinchEve->lastScaleFactor();
+            struct point p;
+            int button = 4;
+            if (pinchEve->state() == Qt::GestureFinished ) {
+                qDebug() << pinchEve->totalScaleFactor();
+                touchStarted = false;
+                if (pinchEve->totalScaleFactor() > 1 ) {
+                    button = 4;
+                } else {
+                    button = 5;
+                }
+
+                qDebug() << pinchEve->startCenterPoint();
+                qDebug() << pinchEve->lastCenterPoint();
+                p.x = pinchEve->lastCenterPoint().x();
+                p.y = pinchEve->lastCenterPoint().y();
+
+                callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(1), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
+                callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(0), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
+            }
+            event->accept();
+        }
+        return true;
+    } else {
+        return QWidget::event(event);
+    }
 }
 //##############################################################################################################
 //# Description: QWidget:sizeHint
@@ -148,7 +178,10 @@ void RenderArea::resizeEvent(QResizeEvent * event)
 //##############################################################################################################
 void RenderArea::mouseEvent(int pressed, QMouseEvent *event)
 {
-	struct point p;
+    if (touchStarted)
+        return;
+    qDebug() << Q_FUNC_INFO;
+    struct point p;
 	p.x=event->x();
 	p.y=event->y();
 	switch (event->button()) {
@@ -168,12 +201,14 @@ void RenderArea::mouseEvent(int pressed, QMouseEvent *event)
 
 void RenderArea::mousePressEvent(QMouseEvent *event)
 {
-	mouseEvent(1, event);
+    qDebug() << Q_FUNC_INFO;
+    mouseEvent(1, event);
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 {
-	mouseEvent(0, event);
+    qDebug() << Q_FUNC_INFO;
+    mouseEvent(0, event);
 }
 
 //##############################################################################################################
@@ -183,12 +218,17 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 //##############################################################################################################
 void RenderArea::mouseMoveEvent(QMouseEvent *event)
 {
+    qDebug() << Q_FUNC_INFO;
 	struct point p;
 	p.x=event->x();
 	p.y=event->y();
-	callback_list_call_attr_1(this->cbl, attr_motion, (void *)&p);
+    callback_list_call_attr_1(this->cbl, attr_motion, (void *)&p);
 }
 
+void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    qDebug() << Q_FUNC_INFO;
+}
 
 //##############################################################################################################
 //# Description: Qt Event :: Zoom in/out with the mouse's scrollwheel
@@ -197,7 +237,8 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
 //##############################################################################################################
 void RenderArea::wheelEvent(QWheelEvent *event)
 {
-	struct point p;
+    qDebug() << Q_FUNC_INFO;
+    struct point p;
 	int button;
 	
 	p.x=event->x();	// xy-coordinates of the mouse pointer
@@ -222,7 +263,8 @@ void RenderArea::wheelEvent(QWheelEvent *event)
 
 void RenderArea::keyPressEvent(QKeyEvent *event)
 {
-	QString str=event->text();
+    qDebug() << Q_FUNC_INFO;
+    QString str=event->text();
 	const char *text=str.toUtf8().constData();
 	dbg(lvl_debug,"enter text='%s' 0x%x (%zu) key=%d\n", text, text[0], strlen(text), event->key());
 	if (!text || !text[0] || text[0] == 0x7f) {
