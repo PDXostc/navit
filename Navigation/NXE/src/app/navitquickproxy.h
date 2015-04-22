@@ -15,7 +15,7 @@ class NavitQuickProxy : public QObject
     Q_OBJECT
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
 public:
-    explicit NavitQuickProxy(QObject *parent = 0);
+    explicit NavitQuickProxy(const QString& socketName, QObject *parent = 0);
 
     int orientation();
     void setOrientation(int);

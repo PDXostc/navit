@@ -9,7 +9,6 @@ NavitSubCompositor::NavitSubCompositor()
     , m_fullscreenSurface(nullptr)
 {
     setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
-//    setSource(QUrl("/home/bata/Projects/navit/Navigation/NXE/src/app/qml/CompositorMainView.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::white);
     winId();

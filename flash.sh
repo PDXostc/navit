@@ -1,15 +1,14 @@
 #!/bin/bash
 
-VERBOSE=true
+VERBOSE=false
 # it can be also a name of the host
 TIZEN_IP="192.168.41.64"
 GBS_ROOT="$HOME/GBS-ROOT"
 BUILD_NAVIT=true
 BUILD_NXE=true
-BUILD_DEBUGINFO=true
 
 # getopt section
-TEMP=`getopt -o v,h,i:,g:,n,x,d --long verbose,help,tizen-ip:,gbs-root:,no-navit,no-nxe,no-debuginfo -n 'flash.sh' -- "$@"`
+TEMP=`getopt -o v,h,i:,g:,n,x --long verbose,help,tizen-ip:,gbs-root:,no-navit,no-nxe -n 'flash.sh' -- "$@"`
 eval set -- "$TEMP"
 while true; do
     case "$1" in
@@ -38,10 +37,6 @@ while true; do
         BUILD_NXE=false;
         shift ;
         ;;
-    -d|--no-debuginfo)
-        BUILD_DEBUGINFO=false;
-        shift ;
-        ;;
     --)
         shift;
         break;
@@ -64,23 +59,13 @@ unalias gbs > /dev/null 2>&1
 # remove all rpms from target
 echo "${red}Cleaning previous installation${reset}"
 
-if [ "$BUILD_NXE" = true ]; then
-    try ssh root@$TIZEN_IP rm /root/nxe* -rf
-    # remove nxe
-    ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
-fi
-
 if [ "$BUILD_NAVIT" = true ]; then
+    # clean navi
     ssh root@$TIZEN_IP zypper -n -q rm navit > /dev/null 2>&1
     ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource > /dev/null 2>&1
-    if [ "$BUILD_DEBUGINFO" = true ]; then
-        ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
-    fi
-fi
-
-if [ "$BUILD_NAVIT" = true ]; then
+    ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
     ssh root@$TIZEN_IP rm /root/navit* -rf
+
     # build navit
 
     echo "${red}Building navit${reset}"
@@ -91,13 +76,19 @@ if [ "$BUILD_NAVIT" = true ]; then
     fi
 
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    if [ "$BUILD_DEBUGINFO" = true ]; then
-        try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    fi
+    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
     try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    try ssh root@$TIZEN_IP rpm -ivh /root/navit*
 fi
 
 if [ "$BUILD_NXE" = true ]; then
+
+    # clean
+    try ssh root@$TIZEN_IP rm /root/nxe* -rf
+    ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
+    ssh root@$TIZEN_IP zypper -n -q rm nxe-debuginfo > /dev/null 2>&1
+
     # build nxe
     echo "${red}Building nxe${reset}"
     if [ "$VERBOSE" = true ]; then
@@ -106,15 +97,6 @@ if [ "$BUILD_NXE" = true ]; then
         try gbs build -A i586 --spec nxe.spec --include-all --keep-packs > /dev/null 2>&1
     fi
 
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-0.1-1.i686.rpm root@$TIZEN_IP:/root
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-debugsource-0.1-1.i686.rpm root@$TIZEN_IP:/root
-fi
-
-# install both
-if [ "$BUILD_NAVIT" = true ]; then
-    try ssh root@$TIZEN_IP rpm -ivh /root/navit*
-fi
-
-if [ "$BUILD_NXE" = true ]; then
+    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-*.rpm root@$TIZEN_IP:/root
     try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
 fi

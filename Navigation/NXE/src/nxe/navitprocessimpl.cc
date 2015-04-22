@@ -66,11 +66,15 @@ bool NavitProcessImpl::start()
             s = *(environ + i);
         }
 
-        const std::string waylandSocket = "WAYLAND_CLIENT=" + d->socketName;
+        const std::string waylandSocket = "WAYLAND_DISPLAY=" + d->socketName;
         newEnv.insert(waylandSocket);
         if (!platform.empty()) {
             const std::string qt_qpa = "QT_QPA_PLATFORM=" + platform;
             newEnv.insert(qt_qpa);
+        }
+        nDebug() << "env = ";
+        for (auto const& v : newEnv) {
+            nTrace() << v;
         }
 
         d->m_child = bp::execute(bp::initializers::run_exe(exe),

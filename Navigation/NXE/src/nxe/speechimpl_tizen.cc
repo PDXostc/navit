@@ -18,7 +18,7 @@ struct SpeechImplPrivate {
         std::string buff;
         buff.reserve(4);
         char* b = const_cast<char*>(buff.data());
-        ts_get_default_voice(handle, &b, &voiceType);
+        tts_get_default_voice(handle, &b, &voiceType);
     }
 
     std::function<void(tts_state_e, tts_state_e)> stateCb = { [](tts_state_e previous, tts_state_e current) {
@@ -41,6 +41,7 @@ SpeechImpl::SpeechImpl()
         }
         else {
             d->usable = true;
+            nInfo() << "Tizen TTS properly initialized";
         }
     }
 

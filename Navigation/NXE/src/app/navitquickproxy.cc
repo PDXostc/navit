@@ -26,12 +26,13 @@ struct Context {
     }() };
 };
 
-NavitQuickProxy::NavitQuickProxy(QObject* parent)
+NavitQuickProxy::NavitQuickProxy(const QString &socketName, QObject* parent)
     : QObject(parent)
     , context(new Context)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
     , m_orientation(0)
 {
+    nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
     nxeInstance->Initialize();
     nxeInstance->registerMessageCallback([this](const NXE::JSONMessage& msg) {
         aTrace() << "Callback in app";

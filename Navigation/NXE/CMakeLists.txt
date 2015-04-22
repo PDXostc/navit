@@ -53,3 +53,6 @@ endif()
 install (FILES nxe.conf
          DESTINATION share/nxe
  )
+install (FILES org.nxe.navit.desktop
+         DESTINATION share/applications
+ )

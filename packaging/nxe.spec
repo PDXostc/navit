@@ -2,7 +2,7 @@
 %define nxe_dir Navigation/NXE
 
 Name:           nxe
-Version:        0.1
+Version:        1.4
 Release:        1
 Summary:        Crosswalk extension to control Navit
 
@@ -77,3 +77,4 @@ make install DESTDIR=%{buildroot}
 %{_prefix}/bin/mapdownloader
 %{_prefix}/bin/nxe-app
 %{_prefix}/share/dbus-1/services/org.nxe.MapDownloader.service
+%{_prefix}/share/applications/org.nxe.navit.desktop

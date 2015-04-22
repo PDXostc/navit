@@ -5,6 +5,8 @@
 #include <QtCore/QCommandLineOption>
 
 #include <memory>
+#include <vector>
+#include <numeric>
 
 #include "navititem.h"
 #include "navitquickproxy.h"
@@ -58,8 +60,6 @@ void createLoggers()
 
 int main(int argc, char *argv[])
 {
-    const QByteArray waylandSocketName = QByteArray{ "navit-"} + QUuid::createUuid().toByteArray();
-
     QGuiApplication app(argc, argv);
     QCoreApplication::setApplicationName("nxe-app");
     QCoreApplication::setApplicationVersion("1.0");
@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
 
     // Create subcompositor
     try {
-        aInfo() << "Starting nxe-app with wayland socket name= " << waylandSocketName.data();
         NavitSubCompositor view;
-        NavitQuickProxy proxy;
+        aInfo() << "Starting nxe-app with wayland socket name= " << view.socketName();
+        NavitQuickProxy proxy {view.socketName()};
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("compositor", &view);
         view.show();
