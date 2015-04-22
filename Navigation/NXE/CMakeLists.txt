@@ -7,9 +7,8 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/fruit/include)
 
-if (NOT NXE_SPEECH)
-    message(STATUS "Setting null speech backend")
-    set(NXE_SPEECH "null")
+if (NOT NXE_TARGET_OS)
+    set (NXE_TARGET_OS "Linux")
 endif()
 
 # add __FILENAME__ macro definition
@@ -48,6 +47,10 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/fruit)
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
     add_subdirectory(tests)
+endif()
+
+if("${NXE_TARGET_OS}" STREQUAL "Tizen")
+    add_subdirectory(tests/tizen-tests)
 endif()
 
 install (FILES nxe.conf

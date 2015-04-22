@@ -10,7 +10,7 @@
 #include "mocks/gpsmock.h"
 #include "mocks/mapdownloadermock.h"
 #include "dbuscontroller.h"
-#include "speechimpl.h"
+#include "mocks/speechmock.h"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
@@ -31,7 +31,7 @@ struct RenderTest {
                 .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
                 .bind<NXE::IGPSProvider, GPSMock>()
                 .bind<NXE::IMapDownloader, MapDownloaderMock>()
-                .bind<NXE::ISpeech,NXE::SpeechImpl>();
+                .bind<NXE::ISpeech,SpeechMock>();
     }() };
     NXE::NXEInstance instance{ injector };
     MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };

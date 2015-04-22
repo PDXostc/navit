@@ -63,7 +63,7 @@ A simple desc
 %setup -q
 
 %build
-cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_SPEECH=Tizen
+cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_TARGET_OS=Tizen
 make %{?_smp_mflags}
 
 %install

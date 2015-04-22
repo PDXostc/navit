@@ -1,8 +1,8 @@
 include_directories(.)
 
-string(TOUPPER ${NXE_SPEECH} nxe_speech_string)
-set( speech_definition "-DNXE_SPEECH_${nxe_speech_string}")
-add_definitions(${speech_definition})
+string(TOUPPER ${NXE_TARGET_OS} nxe_target_os_string)
+set( nxe_os_definition "-DNXE_OS_${nxe_target_os_string}")
+add_definitions(${nxe_os_definition})
 
 add_subdirectory(nxe)
 add_subdirectory(mapdownloader)
