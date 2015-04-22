@@ -4,8 +4,8 @@
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandSurfaceItem>
 
-NavitSubCompositor::NavitSubCompositor()
-    : QWaylandQuickCompositor(this, 0, QWaylandCompositor::DefaultExtensions | QWaylandCompositor::SubSurfaceExtension)
+NavitSubCompositor::NavitSubCompositor(const QString& socketName /*=""*/)
+    : QWaylandQuickCompositor(this, socketName.isEmpty() ? 0 : socketName.toLatin1().data(), QWaylandCompositor::DefaultExtensions | QWaylandCompositor::SubSurfaceExtension)
     , m_fullscreenSurface(nullptr)
 {
     setSource(QUrl("qrc:///qml/CompositorMainView.qml"));

@@ -12,7 +12,7 @@ class NavitSubCompositor : public QQuickView, public QWaylandQuickCompositor {
     Q_OBJECT
     Q_PROPERTY(QWaylandQuickSurface* fullscreenSurface READ fullscreenSurface WRITE setFullscreenSurface NOTIFY fullscreenSurfaceChanged)
 public:
-    NavitSubCompositor();
+    NavitSubCompositor(const QString& socketName = "");
 public slots:
     QWaylandSurfaceItem *item(QWaylandSurface* surf);
     QWaylandQuickSurface* fullscreenSurface() const;
