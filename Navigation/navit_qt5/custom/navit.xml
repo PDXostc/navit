@@ -151,13 +151,13 @@ Waypoint</text></img>
 		<!-- for a debug log -->
 		<log enabled="no" type="textfile_debug" data="debug_%Y%m%d-%i.txt" flush_size="1000" flush_time="30"/>
 		<!-- osd items allow to position display and control items directly on top of the map: -->
-		<osd enabled="yes" type="compass" x="0" y="-560"/>
+        <osd enabled="no" type="compass" x="0" y="-560"/>
 		<osd enabled="no" type="eta"/> 
 		<osd enabled="yes" type="navigation_distance_to_target"/> 
 		<osd enabled="yes" type="navigation"/> 
 		<osd enabled="no" type="navigation_distance_to_next"/> 
 		<osd enabled="yes" type="navigation_next_turn" x="0" y="-480" />
-		<osd enabled="yes" type="gps_status" x="0" y="0" /> 
+        <osd enabled="no" type="gps_status" x="0" y="0" />
 
 		<!-- Commands include gui_internal_menu, gui_internal_fullscreen, zoom_in and zoom_out.
 			Usage of negative values change the button origins. x="0" y="0" specifies the top left, x="-0" y="-0" the bottom right corner.
@@ -166,8 +166,8 @@ Waypoint</text></img>
 		<osd enabled="no" type="button" x="-96" y="0" command="gui.menu(1)" src="menu.png"/>
 		<osd enabled="no" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.png"/>
 		<osd enabled="no" type="button" x="0" y="-96" command="zoom_out()" src="zoom_out.png"/> 
-		<osd enabled="yes" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.svg"/>
-		<osd enabled="yes" type="button" x="36" y="-96" command="zoom_out()" src="zoom_out.svg"/> 
+        <osd enabled="no" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.svg"/>
+        <osd enabled="no" type="button" x="36" y="-96" command="zoom_out()" src="zoom_out.svg"/>
 
 		<!-- Vehicle with GPS enabled for gpsd on unix -->
 		<vehicle name="Local GPS" profilename="car" enabled="no" active="1" source="gpsd://localhost" gpsd_query="w+xj">
