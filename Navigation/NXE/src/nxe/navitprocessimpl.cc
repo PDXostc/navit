@@ -72,10 +72,6 @@ bool NavitProcessImpl::start()
             const std::string qt_qpa = "QT_QPA_PLATFORM=" + platform;
             newEnv.insert(qt_qpa);
         }
-        nDebug() << "env = ";
-        for (auto const& v : newEnv) {
-            nTrace() << v;
-        }
 
         d->m_child = bp::execute(bp::initializers::run_exe(exe),
             bp::initializers::start_in_dir(commandPath),
