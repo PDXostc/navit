@@ -99,6 +99,9 @@ bool RenderArea::event(QEvent *event)
             qDebug() << "Pinch " << pinchEve  << pinchEve->state() << pinchEve->scaleFactor() << pinchEve->lastScaleFactor();
             struct point p;
             int button = 4;
+            if(pinchEve->state() == Qt::GestureStarted) {
+                touchStarted = true;
+            }
             if (pinchEve->state() == Qt::GestureFinished ) {
                 qDebug() << pinchEve->totalScaleFactor();
                 touchStarted = false;
