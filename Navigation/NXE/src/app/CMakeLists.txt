@@ -15,7 +15,7 @@ find_package(Qt5Quick REQUIRED)
 find_package(Qt5Compositor REQUIRED)
 
 set( srcs
-    main.cc
+    app-main.cc
     navitsubcompositor.cc
     navitquickproxy.cc
 )
