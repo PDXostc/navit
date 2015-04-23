@@ -15,6 +15,7 @@ public:
     ~GPSDProvider();
 
     virtual Position position() const override;
+    virtual void addPostionUpdate(const PositionUpdateCb& position) override;
 
 private:
     std::unique_ptr<GPSDProviderPrivate> d;

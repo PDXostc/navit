@@ -39,6 +39,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.fill: parent
                 iconSource: "search_icon_white_sm.png"
+                onClicked: root.clicked("search")
             }
         }
         Item {

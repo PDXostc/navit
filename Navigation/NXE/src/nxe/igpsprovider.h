@@ -13,6 +13,7 @@ public:
     virtual ~IGPSProvider() {}
 
     virtual Position position() const = 0;
+    virtual void addPostionUpdate(const PositionUpdateCb& position) = 0;
 };
 
 } // NXE

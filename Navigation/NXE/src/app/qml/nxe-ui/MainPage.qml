@@ -16,6 +16,8 @@ Item {
                 pushToStack(settingsView)
             } else if(item === 'orientation') {
                 navitProxy.orientation = -1;
+            } else if(item === "search") {
+                pushToStack(searchPageView)
             }
         }
     }
@@ -34,7 +36,22 @@ Item {
             font.pixelSize: 18
             color: "white"
         }
+    }
 
+    Rectangle {
+        width: 300
+        height: 100
+        opacity: 0.7
+        anchors.bottom: parent.bottom
+        anchors.left:parent.left
+        color: "black"
+
+        Text {
+            anchors.centerIn: parent
+            text: navitProxy.position
+            font.pixelSize: 18
+            color: "white"
+        }
     }
 
     Component {
@@ -42,6 +59,12 @@ Item {
 
         SettingsView {
             onBackToMapRequest: rootStack.pop()
+        }
+    }
+
+    Component {
+        id: searchPageView
+        SearchPage {
         }
     }
 }

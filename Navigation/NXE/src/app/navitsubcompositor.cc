@@ -3,12 +3,13 @@
 
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandSurfaceItem>
+#include <QtQml/QQmlEngine>
 
 NavitSubCompositor::NavitSubCompositor(const QString& socketName /*=""*/)
     : QWaylandQuickCompositor(this, socketName.isEmpty() ? 0 : socketName.toLatin1().data(), QWaylandCompositor::DefaultExtensions | QWaylandCompositor::SubSurfaceExtension)
     , m_fullscreenSurface(nullptr)
 {
-    setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
+    engine()->setOutputWarningsToStandardError(true);
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::white);
     winId();
@@ -16,6 +17,11 @@ NavitSubCompositor::NavitSubCompositor(const QString& socketName /*=""*/)
     addDefaultShell();
 
     connect(this, &NavitSubCompositor::afterRendering, this, &NavitSubCompositor::sendCallbacks);
+    connect(engine(), &QQmlEngine::warnings, [](const QList<QQmlError>& warns) {
+        std::for_each(warns.begin(), warns.end(), []( const QQmlError& err) {
+            aError() << err.toString().toLatin1().data();
+        });
+    });
 }
 
 QWaylandSurfaceItem *NavitSubCompositor::item(QWaylandSurface *surf)

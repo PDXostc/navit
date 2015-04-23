@@ -15,6 +15,7 @@ class NavitQuickProxy : public QObject
     Q_OBJECT
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QString version READ version CONSTANT)
+    Q_PROPERTY(QString position READ position NOTIFY positionChanged)
 public:
     explicit NavitQuickProxy(const QString& socketName, QObject *parent = 0);
 
@@ -22,9 +23,11 @@ public:
     void setOrientation(int);
 
     QString version() const;
+    QString position() const;
 
 signals:
     void orientationChanged();
+    void positionChanged();
 
 public slots:
     void zoomIn();
@@ -36,6 +39,7 @@ private:
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     int m_orientation;
+    QString m_position;
 };
 
 #endif // NAVITQUICKPROXY_H

@@ -104,13 +104,14 @@ int main(int argc, char *argv[])
         NavitQuickProxy proxy {view.socketName()};
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("compositor", &view);
+        view.setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
         view.showMaximized();
 
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));
         QObject::connect(&view, SIGNAL(windowResized(QVariant)), view.rootObject(), SLOT(windowResized(QVariant)));
-
         ret = app.exec();
+
     } catch(const std::exception& ex) {
         aFatal() << "An error ocurred while running nxe-app. Error code= " << ex.what();
         ret =-1;

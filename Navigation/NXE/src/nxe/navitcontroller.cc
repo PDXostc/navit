@@ -299,6 +299,16 @@ NavitController::NavitController(DI::Injector& ctx)
     d->gps = ctx.get<std::shared_ptr<IGPSProvider> >();
     d->mapDownloaderIPC = ctx.get<std::shared_ptr<IMapDownloader> >();
     d->q = this;
+
+    d->gps->addPostionUpdate([this]( const Position& p) {
+        nDebug() << "Position changed";
+        bpt::ptree values;
+        values.put("altitude", p.altitude);
+        values.put("longitude", p.longitude);
+        values.put("latitude", p.latitude);
+        JSONMessage response {0, "position", "", values };
+        d->successSignal(response);
+    });
 }
 
 NavitController::~NavitController()

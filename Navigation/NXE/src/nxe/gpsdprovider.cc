@@ -35,6 +35,11 @@ struct GPSDProviderPrivate {
                         m_currentPosition.altitude = gps_data.fix.altitude;
                         m_currentPosition.longitude = gps_data.fix.longitude;
                         m_currentPosition.latitude = gps_data.fix.latitude;
+                        std::for_each(callbacks.begin(), callbacks.end(), [this](const GPSDProvider::PositionUpdateCb& cb) {
+                            if(cb) {
+                                cb(m_currentPosition);
+                            }
+                        });
                     }
                 }
             }
@@ -45,6 +50,7 @@ struct GPSDProviderPrivate {
     bool m_bThreadRunning{ true };
     Position m_currentPosition;
     gps_data_t gps_data;
+    std::vector<GPSDProvider::PositionUpdateCb> callbacks;
 };
 
 GPSDProvider::GPSDProvider()
@@ -64,6 +70,11 @@ GPSDProvider::~GPSDProvider()
 Position GPSDProvider::position() const
 {
     return d->m_currentPosition;
+}
+
+void GPSDProvider::addPostionUpdate(const IGPSProvider::PositionUpdateCb &position)
+{
+    d->callbacks.push_back(position);
 }
 
 } // namespace NXE

@@ -37,5 +37,6 @@
         <file>qml/nxe-ui/SettingsListView.qml</file>
         <file>qml/nxe-ui/SettingsView.qml</file>
         <file>qml/nxe-ui/tick.png</file>
+        <file>qml/nxe-ui/SearchPage.qml</file>
     </qresource>
 </RCC>

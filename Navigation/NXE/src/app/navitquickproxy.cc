@@ -45,6 +45,14 @@ NavitQuickProxy::NavitQuickProxy(const QString &socketName, QObject* parent)
                 aTrace() << "New orientation is " << m_orientation;
                 emit orientationChanged();
             }
+        } else if(msg.call== "position") {
+//            m_position = msg.data.get
+            aDebug() << "Received position update";
+            double lat = msg.data.get<double>("latitude");
+            double lon = msg.data.get<double>("longitude");
+            double alt = msg.data.get<double>("altitude");
+            m_position = QString("%1 %2 %3").arg(lat).arg(lon).arg(alt);
+            emit positionChanged();
         }
     });
 }
@@ -65,6 +73,11 @@ void NavitQuickProxy::setOrientation(int orientation)
 QString NavitQuickProxy::version() const
 {
     return QString::fromStdString(gNXEVersion);
+}
+
+QString NavitQuickProxy::position() const
+{
+    return m_position;
 }
 
 void NavitQuickProxy::zoomIn()
