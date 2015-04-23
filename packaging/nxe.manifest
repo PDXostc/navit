@@ -1,0 +1,8 @@
+<manifest>
+    <request>
+        <domain name="_"/>
+    </request>
+    <assign>
+        <filesystem path="/usr/share/dbus-1/services/org.nxe.mapdownloader.service" exec_label="_" />
+    </assign>
+</manifest>
