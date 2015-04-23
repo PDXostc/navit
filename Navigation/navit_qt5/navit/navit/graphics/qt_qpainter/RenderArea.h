@@ -51,11 +51,10 @@ protected:
      QSize sizeHint() const;
      void paintEvent(QPaintEvent *event);
      void resizeEvent(QResizeEvent *event);
-     void mouseEvent(int pressed, QMouseEvent *event);
+     void mouseEvent(int pressed, QPoint p);
      void mousePressEvent(QMouseEvent *event);
      void mouseReleaseEvent(QMouseEvent *event);
      void mouseMoveEvent(QMouseEvent *event);
-     void mouseDoubleClickEvent(QMouseEvent *event);
      void wheelEvent(QWheelEvent *event);
      void keyPressEvent(QKeyEvent *event);
      void closeEvent(QCloseEvent *event);
@@ -65,6 +64,7 @@ protected:
 #endif
  protected slots:
      void watchEvent(int fd);
+     void mouseTimer();
  };
 
 #endif /* __RENDERAREA_H */

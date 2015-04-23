@@ -25,6 +25,10 @@
 
 bool touchStarted = false;
 bool zoomIn = false;
+bool gestureInProgress = false;
+int numberOfTaps =0;
+bool mouseTimerRunning = false;
+QPoint lastTouchEvent;
 #ifdef QT_QPAINTER_USE_EMBEDDING
 EmbeddedWidget::EmbeddedWidget(struct graphics_priv *priv, QWidget* child, QWidget *parent) 
 : QX11EmbedWidget(parent) {
@@ -58,6 +62,8 @@ RenderArea::RenderArea(struct graphics_priv *priv, QT_QPAINTER_RENDERAREA_PARENT
 		grabGesture(Qt::PinchGesture);
 		grabGesture(Qt::SwipeGesture);
 		grabGesture(Qt::PanGesture);
+        grabGesture(Qt::TapAndHoldGesture);
+        grabGesture(Qt::TapGesture);
 #endif
 		setWindowTitle(priv->window_title);
 	}
@@ -91,8 +97,8 @@ void RenderArea::closeEvent(QCloseEvent* event)
 bool RenderArea::event(QEvent *event)
 {
 	if (event->type() == QEvent::Gesture) {
-        qDebug() << Q_FUNC_INFO<< "Gesture";
         QGestureEvent* gest = static_cast<QGestureEvent*>(event);
+        qDebug() << Q_FUNC_INFO<< "Gesture" << gest;
         if( QGesture* pinch = gest->gesture(Qt::PinchGesture) ) {
             // pinch gesture
             QPinchGesture *pinchEve = static_cast<QPinchGesture *>(pinch);
@@ -100,19 +106,16 @@ bool RenderArea::event(QEvent *event)
             struct point p;
             int button = 4;
             if(pinchEve->state() == Qt::GestureStarted) {
-                touchStarted = true;
+                gestureInProgress = true;
             }
             if (pinchEve->state() == Qt::GestureFinished ) {
-                qDebug() << pinchEve->totalScaleFactor();
-                touchStarted = false;
+                gestureInProgress = false;
                 if (pinchEve->totalScaleFactor() > 1 ) {
                     button = 4;
                 } else {
                     button = 5;
                 }
 
-                qDebug() << pinchEve->startCenterPoint();
-                qDebug() << pinchEve->lastCenterPoint();
                 p.x = pinchEve->lastCenterPoint().x();
                 p.y = pinchEve->lastCenterPoint().y();
 
@@ -120,8 +123,41 @@ bool RenderArea::event(QEvent *event)
                 callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(0), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
             }
             event->accept();
+        } else if(QGesture* tap = gest->gesture(Qt::TapGesture) ) {
+            if (tap->state() == Qt::GestureFinished ) {
+                QTapGesture* gest = static_cast<QTapGesture*>(tap);
+                qDebug() << "tap tap" << tap->state();
+                lastTouchEvent = gest->position().toPoint();
+                numberOfTaps++;
+                if(!mouseTimerRunning) {
+                    mouseTimerRunning = true;
+                    QTimer::singleShot(500,this, SLOT(mouseTimer()));
+                }
+            }
         }
         return true;
+    } else if(event->type() == QEvent::TouchBegin) {
+        if (!gestureInProgress) {
+            qDebug() << "Touch begin";
+            QTouchEvent* te = static_cast<QTouchEvent*>(event);
+            QTouchEvent::TouchPoint p = te->touchPoints().at(0);
+            mouseEvent(1, p.pos().toPoint());
+        }
+    } else if (event->type() == QEvent::TouchUpdate) {
+        if (!gestureInProgress) {
+            QTouchEvent* te = static_cast<QTouchEvent*>(event);
+            QTouchEvent::TouchPoint point = te->touchPoints().at(0);
+            struct point p;
+            p.x=point.pos().x();
+            p.y=point.pos().y();
+            callback_list_call_attr_1(this->cbl, attr_motion, (void *)&p);
+        }
+    } else if (event->type() == QEvent::TouchEnd) {
+        if (!gestureInProgress) {
+            QTouchEvent* te = static_cast<QTouchEvent*>(event);
+            QTouchEvent::TouchPoint p = te->touchPoints().at(0);
+            mouseEvent(0, p.pos().toPoint());
+        }
     } else {
         return QWidget::event(event);
     }
@@ -179,39 +215,26 @@ void RenderArea::resizeEvent(QResizeEvent * event)
 //# Comment: Delegate of QWidget::mousePressEvent and QWidget::mouseReleaseEvent (see below)
 //# Authors: Martin Schaller (04/2008)
 //##############################################################################################################
-void RenderArea::mouseEvent(int pressed, QMouseEvent *event)
+void RenderArea::mouseEvent(int pressed, QPoint point)
 {
     if (touchStarted)
         return;
     qDebug() << Q_FUNC_INFO;
     struct point p;
-	p.x=event->x();
-	p.y=event->y();
-	switch (event->button()) {
-	case Qt::LeftButton:
-		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(pressed), GINT_TO_POINTER(1), GINT_TO_POINTER(&p));
-		break;
-	case Qt::MidButton:
-		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(pressed), GINT_TO_POINTER(2), GINT_TO_POINTER(&p));
-		break;
-	case Qt::RightButton:
-		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(pressed), GINT_TO_POINTER(3), GINT_TO_POINTER(&p));
-		break;
-	default:
-		break;
-	}
+    p.x=point.x();
+    p.y=point.y();
+    callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(pressed), GINT_TO_POINTER(1), GINT_TO_POINTER(&p));
 }
 
 void RenderArea::mousePressEvent(QMouseEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
-    mouseEvent(1, event);
+//    qDebug() << Q_FUNC_INFO;
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
-    mouseEvent(0, event);
+//    qDebug() << Q_FUNC_INFO;
+//    mouseEvent(0, event);
 }
 
 //##############################################################################################################
@@ -221,16 +244,7 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 //##############################################################################################################
 void RenderArea::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
-	struct point p;
-	p.x=event->x();
-	p.y=event->y();
-    callback_list_call_attr_1(this->cbl, attr_motion, (void *)&p);
-}
-
-void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
-{
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
 }
 
 //##############################################################################################################
@@ -240,94 +254,94 @@ void RenderArea::mouseDoubleClickEvent(QMouseEvent *event)
 //##############################################################################################################
 void RenderArea::wheelEvent(QWheelEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
-    struct point p;
-	int button;
+//    qDebug() << Q_FUNC_INFO;
+//    struct point p;
+//	int button;
 	
-	p.x=event->x();	// xy-coordinates of the mouse pointer
-	p.y=event->y();
+//	p.x=event->x();	// xy-coordinates of the mouse pointer
+//	p.y=event->y();
 	
-	if (event->delta() > 0)	// wheel movement away from the person
-		button=4;
-	else if (event->delta() < 0) // wheel movement towards the person
-		button=5;
-	else
-		button=-1;
+//	if (event->delta() > 0)	// wheel movement away from the person
+//		button=4;
+//	else if (event->delta() < 0) // wheel movement towards the person
+//		button=5;
+//	else
+//		button=-1;
 	
-	if (button != -1) {
-		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(1), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
-		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(0), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
-	}
+//	if (button != -1) {
+//		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(1), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
+//		callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(0), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
+//	}
 	
-	event->accept();
+//	event->accept();
 }
 
 #define CASE(x) case x:
 
 void RenderArea::keyPressEvent(QKeyEvent *event)
 {
-    qDebug() << Q_FUNC_INFO;
-    QString str=event->text();
-	const char *text=str.toUtf8().constData();
-	dbg(lvl_debug,"enter text='%s' 0x%x (%zu) key=%d\n", text, text[0], strlen(text), event->key());
-	if (!text || !text[0] || text[0] == 0x7f) {
-		dbg(lvl_debug,"special key\n");
-		switch (event->key()) {
-		case 4099:
-			{
-				char text_backspace[] = {NAVIT_KEY_BACKSPACE,'\0'};
-				text=text_backspace;
-			}
-			break;
-		case 4101:
-#ifdef QT_QPAINTER_CUSTOM_RETURN
-		QT_QPAINTER_CUSTOM_RETURN
-#endif
-			{
-				char text_return[] = {NAVIT_KEY_RETURN,'\0'};
-				text=text_return;
-			}
-			break;
-		case 4114:
-#ifdef QT_QPAINTER_CUSTOM_LEFT
-		QT_QPAINTER_CUSTOM_LEFT
-#endif
-			{
-				char text_left[] = {NAVIT_KEY_LEFT,'\0'};
-				text=text_left;
-			}
-			break;
-		case 4115:
-#ifdef QT_QPAINTER_CUSTOM_UP
-		QT_QPAINTER_CUSTOM_UP
-#endif
-			{
-				char text_up[] = {NAVIT_KEY_UP,'\0'};
-				text=text_up;
-			}
-			break;
-		case 4116:
-#ifdef QT_QPAINTER_CUSTOM_RIGHT
-		QT_QPAINTER_CUSTOM_RIGHT
-#endif
-			{
-				char text_right[] = {NAVIT_KEY_RIGHT,'\0'};
-				text=text_right;
-			}
-			break;
-		case 4117:
-#ifdef QT_QPAINTER_CUSTOM_DOWN
-		QT_QPAINTER_CUSTOM_DOWN
-#endif
-			{
-				char text_down[] = {NAVIT_KEY_DOWN,'\0'};
-				text=text_down;
-			}
-			break;
-		}
-	}
-	callback_list_call_attr_1(this->cbl, attr_keypress, (void *)text);
-	event->accept();
+//    qDebug() << Q_FUNC_INFO;
+//    QString str=event->text();
+//	const char *text=str.toUtf8().constData();
+//	dbg(lvl_debug,"enter text='%s' 0x%x (%zu) key=%d\n", text, text[0], strlen(text), event->key());
+//	if (!text || !text[0] || text[0] == 0x7f) {
+//		dbg(lvl_debug,"special key\n");
+//		switch (event->key()) {
+//		case 4099:
+//			{
+//				char text_backspace[] = {NAVIT_KEY_BACKSPACE,'\0'};
+//				text=text_backspace;
+//			}
+//			break;
+//		case 4101:
+//#ifdef QT_QPAINTER_CUSTOM_RETURN
+//		QT_QPAINTER_CUSTOM_RETURN
+//#endif
+//			{
+//				char text_return[] = {NAVIT_KEY_RETURN,'\0'};
+//				text=text_return;
+//			}
+//			break;
+//		case 4114:
+//#ifdef QT_QPAINTER_CUSTOM_LEFT
+//		QT_QPAINTER_CUSTOM_LEFT
+//#endif
+//			{
+//				char text_left[] = {NAVIT_KEY_LEFT,'\0'};
+//				text=text_left;
+//			}
+//			break;
+//		case 4115:
+//#ifdef QT_QPAINTER_CUSTOM_UP
+//		QT_QPAINTER_CUSTOM_UP
+//#endif
+//			{
+//				char text_up[] = {NAVIT_KEY_UP,'\0'};
+//				text=text_up;
+//			}
+//			break;
+//		case 4116:
+//#ifdef QT_QPAINTER_CUSTOM_RIGHT
+//		QT_QPAINTER_CUSTOM_RIGHT
+//#endif
+//			{
+//				char text_right[] = {NAVIT_KEY_RIGHT,'\0'};
+//				text=text_right;
+//			}
+//			break;
+//		case 4117:
+//#ifdef QT_QPAINTER_CUSTOM_DOWN
+//		QT_QPAINTER_CUSTOM_DOWN
+//#endif
+//			{
+//				char text_down[] = {NAVIT_KEY_DOWN,'\0'};
+//				text=text_down;
+//			}
+//			break;
+//		}
+//	}
+//	callback_list_call_attr_1(this->cbl, attr_keypress, (void *)text);
+//	event->accept();
 }
 
 void RenderArea::watchEvent(int fd)
@@ -337,6 +351,32 @@ void RenderArea::watchEvent(int fd)
 	dbg(lvl_debug,"fd=%d ev=%p cb=%p\n", fd, ev, ev->cb);
 	callback_call_0(ev->cb);
 #endif
+}
+
+void RenderArea::mouseTimer()
+{
+    mouseTimerRunning = false;
+    qDebug() << Q_FUNC_INFO<< numberOfTaps << lastTouchEvent;
+    int button {0};
+    struct point p;
+
+    if (numberOfTaps > 3 || numberOfTaps == 1) {
+        // don't do anything
+        numberOfTaps = 0;
+        return;
+    }
+    p.x = lastTouchEvent.x();
+    p.y = lastTouchEvent.y();
+    if(numberOfTaps == 2) {
+        qDebug() <<  "zoom in";
+        button = 4;
+    } else if (numberOfTaps == 3) {
+        qDebug() <<  "zoom out";
+        button = 5;
+    }
+
+    callback_list_call_attr_3(this->cbl, attr_button, GINT_TO_POINTER(1), GINT_TO_POINTER(button), GINT_TO_POINTER(&p));
+    numberOfTaps = 0;
 }
 
 #ifdef QT_QPAINTER_USE_EVENT_QT

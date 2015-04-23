@@ -109,10 +109,6 @@ qt_qpainter_draw(struct graphics_priv *gr, const QRect *r, int paintev)
 		}
 		overlay=overlay->next;
 	}
-//    QByteArray bytes;
-//    QBuffer buffer (&bytes);
-//    buffer.open(QIODevice::WriteOnly);
-//    pixmap.save(&buffer);
 
 #ifndef QT_QPAINTER_NO_WIDGET
     QPainter painterw(gr->widget);
