@@ -1,4 +1,3 @@
 [D-BUS Service]
-Name=org.nxe.MapDownloader
+Name=org.nxe.mapdownloader
 Exec=/usr/bin/mapdownloader
-User=app

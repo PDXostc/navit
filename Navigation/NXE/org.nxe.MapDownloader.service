@@ -1,3 +1,0 @@
-[D-Bus Service]
-Name=org.nxe.MapDownloader
-Exec=/usr/bin/mapdownloader

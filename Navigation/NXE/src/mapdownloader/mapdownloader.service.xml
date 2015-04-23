@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<node name="/org/nxe/MapDownloader">
-    <interface name="org.nxe.MapDownloader">
+<node name="/org/nxe/mapdownloader">
+    <interface name="org.nxe.mapdownloader">
      <method name="setOutputDirectory">
         <arg type="s" name="path" direction="in" />
         <arg type="b" name="ok" direction="out" />

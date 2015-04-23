@@ -6,7 +6,7 @@
 #include "gpsdprovider.h"
 #include "testutils.h"
 #include "dbuscontroller.h"
-#include "speechimpl.h"
+#include "mocks/speechmock.h"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -28,7 +28,9 @@ struct NXEInstanceTest : public ::testing::Test {
                 .bindInstance(*md)
                 .bind<INavitProcess, NavitProcessImpl>()
                 .bind<IGPSProvider, GPSDProvider>()
-                .bind<ISpeech,SpeechImpl>();
+                // We have to use speech mock here, as there's no
+                // SRS service on Linux
+                .bind<ISpeech,SpeechMock>();
     }() };
     NXEInstance instance{ injector };
     JSONMessage respMsg;

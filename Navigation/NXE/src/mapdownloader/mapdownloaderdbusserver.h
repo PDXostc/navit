@@ -8,7 +8,7 @@
 namespace md {
 
 struct MapDownloaderDBusServerPrivate;
-class MapDownloaderDBusServer : public org::nxe::MapDownloader_adaptor,
+class MapDownloaderDBusServer : public org::nxe::mapdownloader_adaptor,
                                 public DBus::IntrospectableAdaptor,
                                 public DBus::ObjectAdaptor
 

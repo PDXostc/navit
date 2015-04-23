@@ -1,16 +1,8 @@
 #include "nxe_extension.h"
-#include "nxe_instance.h"
-#include "inavitipc.h"
-#include "dbuscontroller.h"
 
-#include "navitprocessimpl.h"
-#include "navitdbus.h"
-#include "gpsdprovider.h"
-#include "mapdownloaderdbus.h"
 #include "log.h"
 #include "settings.h"
 #include "settingtags.h"
-#include "speechimpl.h"
 
 #include <fruit/fruit.h>
 

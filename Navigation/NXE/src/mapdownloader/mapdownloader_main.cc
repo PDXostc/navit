@@ -22,25 +22,28 @@ int main(int argc, char* argv[])
     signal(SIGINT, signalHandler);
 
     std::shared_ptr<spdlog::sinks::sink> out{ new spdlog::sinks::stdout_sink_mt{} };
-    std::shared_ptr<spdlog::sinks::sink> fileOut{ new spdlog::sinks::simple_file_sink_mt{"/tmp/md.log"} };
-    std::shared_ptr<spdlog::sinks::sink> syslogOut{ new spdlog::sinks::syslog_sink {"md", 0, LOG_DAEMON	} };
+    std::shared_ptr<spdlog::sinks::sink> fileOut{ new spdlog::sinks::simple_file_sink_mt{ "/tmp/nxe-md.log" } };
+    std::shared_ptr<spdlog::sinks::sink> syslogOut{ new spdlog::sinks::syslog_sink{ "nxe-mapdownloader", 0, LOG_DAEMON } };
     spdlog::create("md", { out, fileOut, syslogOut });
-    if(debug) {
+    if (debug) {
         spdlog::set_level(spdlog::level::trace);
-    } else {
+    }
+    else {
         spdlog::set_level(spdlog::level::info);
     }
+    mdInfo() << "DBus starting";
 
     ::DBus::default_dispatcher = &dispatcher;
     ::DBus::Connection con = ::DBus::Connection::SessionBus();
-    con.request_name("org.nxe.MapDownloader");
+    con.request_name("org.nxe.mapdownloader");
 
     try {
         md::MapDownloaderDBusServer server{ con };
 
         mdInfo() << "Starting dbus map downloader service";
         dispatcher.enter();
-    } catch( const std::exception &ex)  {
+    }
+    catch (const std::exception& ex) {
         mdError() << "An error occured while starting DBus service. Err= " << ex.what();
         return -1;
     }

@@ -42,6 +42,6 @@ install (FILES ${CMAKE_SOURCE_DIR}/osm_maps.xml
          DESTINATION share/nxe
 )
 
-install (FILES ${CMAKE_SOURCE_DIR}/org.nxe.MapDownloader.service
+install (FILES ${CMAKE_SOURCE_DIR}/org.nxe.mapdownloader.service
          DESTINATION share/dbus-1/services
 )

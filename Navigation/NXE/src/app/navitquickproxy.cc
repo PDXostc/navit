@@ -8,7 +8,7 @@
 #include "gpsdprovider.h"
 #include "mapdownloaderdbus.h"
 #include "dbuscontroller.h"
-#include "speechimpl.h"
+#include "speechimpldbus.h"
 
 #include <functional>
 
@@ -16,13 +16,14 @@ struct Context {
     NXE::DBusController dbusController;
     NXE::INavitIPC * ipc { new NXE::NavitDBus{dbusController}};
     NXE::IMapDownloader * md { new NXE::MapDownloaderDBus{dbusController}};
+    NXE::ISpeech* speech { new NXE::SpeechImplDBus{dbusController}};
     NXE::DI::Injector injector{ [this]() -> NXE::DI::Components {
         return fruit::createComponent()
                 .bindInstance(*ipc)
                 .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
                 .bind<NXE::IGPSProvider, NXE::GPSDProvider>()
                 .bindInstance(*md)
-                .bind<NXE::ISpeech,NXE::SpeechImpl>();
+                .bindInstance(*speech);
     }() };
 };
 

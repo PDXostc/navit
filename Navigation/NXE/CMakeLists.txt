@@ -7,9 +7,8 @@ include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/fruit/include)
 
-if (NOT NXE_SPEECH)
-    message(STATUS "Setting null speech backend")
-    set(NXE_SPEECH "null")
+if (NOT NXE_TARGET_OS)
+    set (NXE_TARGET_OS "Linux")
 endif()
 
 # add __FILENAME__ macro definition
@@ -33,7 +32,6 @@ if(NOT DISABLE_TESTS)
     else()
         message(STATUS "Navit path set to" ${NAVIT_PATH})
     endif()
-    add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
     set (BENCHMARK_ENABLE_TESTING OFF)
     add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/benchmark)
 endif()
@@ -44,10 +42,16 @@ set(boost_components system filesystem thread chrono iostreams timer)
 find_package(Boost 1.57.0 EXACT REQUIRED COMPONENTS ${boost_components})
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/fruit)
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
     add_subdirectory(tests)
+endif()
+
+if("${NXE_TARGET_OS}" STREQUAL "Tizen")
+    add_subdirectory(tests/tizen-tests)
 endif()
 
 install (FILES nxe.conf

@@ -12,8 +12,8 @@ namespace NXE {
 struct Proxy : public ::DBus::InterfaceProxy, public ::DBus::ObjectProxy 
 {
     Proxy(::DBus::Connection con)
-        : ::DBus::InterfaceProxy("org.nxe.MapDownloader")
-        , ::DBus::ObjectProxy(con, "/org/nxe/MapDownloader", "org.nxe.MapDownloader")
+        : ::DBus::InterfaceProxy("org.nxe.mapdownloader")
+        , ::DBus::ObjectProxy(con, "/org/nxe/mapdownloader", "org.nxe.mapdownloader")
     {
         connect_signal(Proxy, progress, progressCallback);
         connect_signal(Proxy, finished, finishedCallback);

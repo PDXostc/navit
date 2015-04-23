@@ -11,7 +11,7 @@ struct MapDownloaderDBusServerPrivate {
 };
 
 MapDownloaderDBusServer::MapDownloaderDBusServer(DBus::Connection& connection)
-    : DBus::ObjectAdaptor(connection, "/org/nxe/MapDownloader")
+    : DBus::ObjectAdaptor(connection, "/org/nxe/mapdownloader")
     , d(new MapDownloaderDBusServerPrivate)
 {
     d->downloader.setCbError([this](const std::string& url, const std::string& errorStr) {

@@ -47,7 +47,7 @@ void createLoggers()
 
     const std::string path = s.get<SettingsTags::LogPath>();
     std::shared_ptr<spdlog::sinks::sink> out{ new spdlog::sinks::stdout_sink_mt() };
-    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path + "/nxe.log", true) };
+    std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path + "/nxe-app.log", true) };
     spdlog::create("app", {out, rot});
     spdlog::create("Qt", {out, rot});
     spdlog::create("QtQuick", {out, rot});

@@ -10,16 +10,16 @@ set (dbus_library
     navitdbus.cc
     mapdownloaderdbus.cc
     dbuscontroller.cc
-    )
+    speechimpldbus.cc
+)
 
 set(nxe_interfaces
     inavitprocess.h
     inavitipc.h
     igpsprovider.h
     imapdownloader.h
+    ispeech.h
 )
-
-string(TOLOWER ${NXE_SPEECH} NXE_SPEECH_IMPL)
 
 set(NXE_SRCS
     # interfaces
@@ -36,8 +36,6 @@ set(NXE_SRCS
     settingtags.h
     position.h
     context.h
-    speechimpl.h
-    speechimpl_${NXE_SPEECH_IMPL}.cc
 
     # dbus interface implementation
     ${dbus_library}

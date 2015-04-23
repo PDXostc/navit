@@ -1,4 +1,3 @@
-
 %define nxe_dir Navigation/NXE
 
 Name:           nxe
@@ -10,6 +9,7 @@ Group:          System/Libraries
 License:        GPL-3.0
 URL:            http://navit.sourceforge.net/
 Source0:        %{name}-%{version}.tar.gz
+Source1:        nxe.manifest
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: 	boost-devel
@@ -63,18 +63,21 @@ A simple desc
 %setup -q
 
 %build
-cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_SPEECH=Tizen
+cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_TARGET_OS=Tizen
 make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
 
 %files 
+%defattr(-,root,root,-)
+%manifest nxe.manifest
 %{_prefix}/lib/libnxe.so
 %{_prefix}/share/nxe/nxe.conf
 %{_prefix}/share/nxe/osm_maps.xml
 %{_prefix}/lib/libfruit.so
 %{_prefix}/bin/mapdownloader
 %{_prefix}/bin/nxe-app
-%{_prefix}/share/dbus-1/services/org.nxe.MapDownloader.service
+%{_prefix}/share/dbus-1/services/org.nxe.mapdownloader.service
 %{_prefix}/share/applications/org.nxe.navit.desktop
+%{_prefix}/bin/nxe-tizen-test
