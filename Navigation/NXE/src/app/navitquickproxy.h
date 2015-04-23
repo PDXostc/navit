@@ -14,11 +14,14 @@ class NavitQuickProxy : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
+    Q_PROPERTY(QString version READ version CONSTANT)
 public:
     explicit NavitQuickProxy(const QString& socketName, QObject *parent = 0);
 
     int orientation();
     void setOrientation(int);
+
+    QString version() const;
 
 signals:
     void orientationChanged();

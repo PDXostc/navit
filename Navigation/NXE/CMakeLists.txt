@@ -3,6 +3,12 @@ project(NXE CXX)
 cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
+if(NOT NXE_VERSION)
+    set(NXE_VERSION "git version")
+endif()
+
+message(STATUS "Version=" ${NXE_VERSION})
+
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/boost-process)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/spdlog/include)
 include_directories(${CMAKE_SOURCE_DIR}/3rdParty/fruit/include)

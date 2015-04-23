@@ -1,8 +1,8 @@
 %define nxe_dir Navigation/NXE
 
 Name:           nxe
-Version:        1.4
-Release:        1
+Version:        1.0
+Release:        4
 Summary:        Crosswalk extension to control Navit
 
 Group:          System/Libraries
@@ -13,7 +13,6 @@ Source1:        nxe.manifest
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: 	boost-devel
-BuildRequires: 	tts-devel
 BuildRequires:  cmake
 BuildRequires:  dbus-glib-devel
 BuildRequires:  libdbus-c++-devel
@@ -53,8 +52,8 @@ BuildRequires:  pkgconfig(glesv2)
 
 Requires:	dbus
 Requires:	dbus-glib
-Requires:	crosswalk
 Requires:	navit
+Requires:   qt5-qtwayland
 
 %description 
 A simple desc
@@ -63,7 +62,7 @@ A simple desc
 %setup -q
 
 %build
-cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_TARGET_OS=Tizen
+cmake %{nxe_dir} -DDISABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=%{_prefix} -DNXE_TARGET_OS=Tizen -DNXE_VERSION="%{version}.%{release}"
 make %{?_smp_mflags}
 
 %install

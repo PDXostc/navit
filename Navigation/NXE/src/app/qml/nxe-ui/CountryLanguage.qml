@@ -58,7 +58,7 @@ Rectangle {
     CLDialog {
         id: dialog
         width: parent.width
-        height: 200
+        height: 400
         numberOfDowloads: count
         onStartDownloadClicked: downloadMaps()
     }

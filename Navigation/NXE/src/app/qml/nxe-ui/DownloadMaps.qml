@@ -119,6 +119,7 @@ Page {
             LayoutMirroring.enabled: true
 
             onClicked: {
+                rootStack.pop();
             }
         }
     }

@@ -9,6 +9,7 @@
 #include "mapdownloaderdbus.h"
 #include "dbuscontroller.h"
 #include "speechimpldbus.h"
+#include "nxe_version.h"
 
 #include <functional>
 
@@ -59,6 +60,11 @@ void NavitQuickProxy::setOrientation(int orientation)
     p.put("orientation", orientation);
     NXE::JSONMessage msg{ 1, "setOrientation", "", p };
     nxeInstance->HandleMessage(msg);
+}
+
+QString NavitQuickProxy::version() const
+{
+    return QString::fromStdString(gNXEVersion);
 }
 
 void NavitQuickProxy::zoomIn()

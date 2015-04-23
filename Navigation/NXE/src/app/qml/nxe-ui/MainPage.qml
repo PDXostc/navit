@@ -20,6 +20,23 @@ Item {
         }
     }
 
+    Rectangle {
+        width: 300
+        height: 100
+        opacity: 0.7
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        color: "black"
+
+        Text {
+            anchors.centerIn: parent
+            text: navitProxy.version
+            font.pixelSize: 18
+            color: "white"
+        }
+
+    }
+
     Component {
         id: settingsView
 

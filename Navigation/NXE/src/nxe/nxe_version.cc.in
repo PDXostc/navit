@@ -1,0 +1,4 @@
+
+#include "nxe_version.h"
+
+const std::string gNXEVersion { "@NXE_VERSION@" };

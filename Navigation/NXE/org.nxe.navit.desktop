@@ -2,6 +2,6 @@
 Name=NavIt
 Type=Application
 Exec=/usr/bin/nxe-app
-Version=1.4
+Version=1.0
 X-TIZEN-Removable=True
 X-TIZEN-PkgID=org.nxe.tizen

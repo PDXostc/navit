@@ -16,6 +16,7 @@
 #include "settingtags.h"
 #include "alog.h"
 #include "navitsubcompositor.h"
+#include "nxe_version.h"
 
 
 void qtLogOutput(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
@@ -79,6 +80,8 @@ int main(int argc, char *argv[])
 
     createLoggers();
 
+    aInfo() << "NXE version is= " << gNXEVersion;
+
     qDebug() << " args=" << app.arguments();
     parser.parse(app.arguments());
     if (parser.isSet("navit-path")) {
@@ -101,7 +104,7 @@ int main(int argc, char *argv[])
         NavitQuickProxy proxy {view.socketName()};
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("compositor", &view);
-        view.show();
+        view.showMaximized();
 
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));
