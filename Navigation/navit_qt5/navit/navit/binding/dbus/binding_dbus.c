@@ -809,6 +809,8 @@ request_set_add_remove_attr(DBusConnection *connection, DBusMessage *message, ch
     	struct attr attr;
 	int ret;
 
+	printf("\n ********************* request_set_add_remove_attr \n");
+
 	if (! data)
 		data = object_get_from_message(message, type);
 	if (! data)
@@ -1629,6 +1631,46 @@ request_navit_set_position(DBusConnection *connection, DBusMessage *message)
 	return empty_reply(connection, message);
 }
 
+
+void
+set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore)
+{
+	struct pcoord *dst;
+	char buffer[1024];
+	int i, dstcount_new;
+	sprintf(buffer, _("Waypoint %d"), visitbefore+1);
+	dstcount_new=navit_get_destination_count(nav)+1;
+	dst=g_alloca(dstcount_new*sizeof(struct pcoord));
+	navit_get_destinations(nav,dst,dstcount_new);
+	for (i=dstcount_new-1;i>visitbefore;i--){
+		dst[i]=dst[i-1];
+	}
+	dst[visitbefore]=*pc;
+	navit_add_destination_description(nav,pc,buffer);
+	navit_set_destinations(nav, dst, dstcount_new, buffer, 1);
+}
+
+static DBusHandlerResult
+request_navit_add_waypoint(DBusConnection *connection, DBusMessage *message)
+{
+	struct pcoord pc;
+	struct navit *navit;
+	DBusMessageIter iter;
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	dbus_message_iter_init(message, &iter);
+	if (!pcoord_get_from_message(message, &iter, &pc))
+    		return dbus_error_invalid_parameter(connection, message);
+
+	set_visitbefore(navit, &pc,0);
+
+	return empty_reply(connection, message);
+}
+
+
 static DBusHandlerResult
 request_navit_set_destination(DBusConnection *connection, DBusMessage *message)
 {
@@ -1964,6 +2006,7 @@ struct dbus_method {
 	{".navit",  "set_destination",     "(is)s",   "(projection,coordinates)comment",         "",   "",      request_navit_set_destination},
 	{".navit",  "set_destination",     "(iii)s",  "(projection,longitude,latitude)comment",  "",   "",      request_navit_set_destination},
 	{".navit",  "clear_destination",   "",        "",                                        "",   "",      request_navit_clear_destination},
+	{".navit",  "add_waypoint",        "s",       "(coordinates)",                           "",   "",      request_navit_add_waypoint},
 	{".navit",  "evaluate", 	   "s",	      "command",				 "s",  "",      request_navit_evaluate},
 	{".layout", "get_attr",		   "s",	      "attribute",                               "sv",  "attrname,value", request_layout_get_attr},
 	{".map",    "get_attr",            "s",       "attribute",                               "sv",  "attrname,value", request_map_get_attr},
@@ -2083,7 +2126,8 @@ navit_handler_func(DBusConnection *connection, DBusMessage *message, void *user_
 {
 	int i;
 	char *path;
-	dbg(lvl_debug,"type=%s interface=%s path=%s member=%s signature=%s\n", dbus_message_type_to_string(dbus_message_get_type(message)), dbus_message_get_interface(message), dbus_message_get_path(message), dbus_message_get_member(message), dbus_message_get_signature(message));
+	//dbg(lvl_debug,"type=%s interface=%s path=%s member=%s signature=%s\n", dbus_message_type_to_string(dbus_message_get_type(message)), dbus_message_get_interface(message), dbus_message_get_path(message), dbus_message_get_member(message), dbus_message_get_signature(message));
+	printf("type=%s interface=%s path=%s member=%s signature=%s\n", dbus_message_type_to_string(dbus_message_get_type(message)), dbus_message_get_interface(message), dbus_message_get_path(message), dbus_message_get_member(message), dbus_message_get_signature(message));
 	if (dbus_message_is_method_call (message, "org.freedesktop.DBus.Introspectable", "Introspect")) {
 		DBusMessage *reply;
             	char *navitintrospectxml = generate_navitintrospectxml(dbus_message_get_path(message));
