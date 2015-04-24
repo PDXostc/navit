@@ -8,6 +8,7 @@
 
 namespace TestUtils {
 
+
 std::string moveByMessage(int x, int y);
 std::string zoomByMessage(int factor);
 std::string zoomMessage();
@@ -21,6 +22,7 @@ std::string availableMessages();
 std::string setDestinationMessage(double lon, double lat, const std::string& description);
 std::string setPositionMessage(double lon, double lat);
 std::string clearDestinationMessage();
+std::string addWaypointMessage(double lon, double lat);
 
 void createNXEConfFile();
 

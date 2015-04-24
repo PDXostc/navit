@@ -59,13 +59,22 @@ std::string TestUtils::setPositionMessage(double lon, double lat)
     return NXE::JSONUtils::serialize(msg);
 }
 
+std::string TestUtils::addWaypointMessage(double lon, double lat)
+{
+    boost::property_tree::ptree p;
+    p.put("longitude", lon);
+    p.put("latitude", lat);
+
+    NXE::JSONMessage msg{ 1, "addWaypoint", "", p };
+    return NXE::JSONUtils::serialize(msg);
+}
+
 
 std::string TestUtils::clearDestinationMessage()
 {
     NXE::JSONMessage msg{ 1, "clearDestination" };
     return NXE::JSONUtils::serialize(msg);
 }
-
 
 
 std::string TestUtils::zoomMessage()

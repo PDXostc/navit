@@ -1629,6 +1629,28 @@ request_navit_set_position(DBusConnection *connection, DBusMessage *message)
 	return empty_reply(connection, message);
 }
 
+
+static DBusHandlerResult
+request_navit_add_waypoint(DBusConnection *connection, DBusMessage *message)
+{
+	struct pcoord pc;
+	struct navit *navit;
+	DBusMessageIter iter;
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	dbus_message_iter_init(message, &iter);
+	if (!pcoord_get_from_message(message, &iter, &pc))
+    		return dbus_error_invalid_parameter(connection, message);
+
+	navit_set_visitbefore(navit, &pc,0);
+
+	return empty_reply(connection, message);
+}
+
+
 static DBusHandlerResult
 request_navit_set_destination(DBusConnection *connection, DBusMessage *message)
 {
@@ -1964,6 +1986,7 @@ struct dbus_method {
 	{".navit",  "set_destination",     "(is)s",   "(projection,coordinates)comment",         "",   "",      request_navit_set_destination},
 	{".navit",  "set_destination",     "(iii)s",  "(projection,longitude,latitude)comment",  "",   "",      request_navit_set_destination},
 	{".navit",  "clear_destination",   "",        "",                                        "",   "",      request_navit_clear_destination},
+	{".navit",  "add_waypoint",        "s",       "(coordinates)",                           "",   "",      request_navit_add_waypoint},
 	{".navit",  "evaluate", 	   "s",	      "command",				 "s",  "",      request_navit_evaluate},
 	{".layout", "get_attr",		   "s",	      "attribute",                               "sv",  "attrname,value", request_layout_get_attr},
 	{".map",    "get_attr",            "s",       "attribute",                               "sv",  "attrname,value", request_map_get_attr},
@@ -2035,7 +2058,7 @@ introspect_path(const char *object)
 static char *
 generate_navitintrospectxml(const char *object)
 {
-    int i,methods_size,n=0;
+    unsigned long i,methods_size,n=0;
     char *navitintrospectxml;
     char *path=introspect_path(object);
     if (!path)

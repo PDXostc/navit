@@ -1600,6 +1600,23 @@ navit_add_destination_description(struct navit *this_, struct pcoord *c, const c
 	}
 }
 
+void
+navit_set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore)
+{
+	struct pcoord *dst;
+	char buffer[1024];
+	int i, dstcount_new;
+	sprintf(buffer, _("Waypoint %d"), visitbefore+1);
+	dstcount_new=navit_get_destination_count(nav)+1;
+	dst=g_alloca(dstcount_new*sizeof(struct pcoord));
+	navit_get_destinations(nav,dst,dstcount_new);
+	for (i=dstcount_new-1;i>visitbefore;i--){
+		dst[i]=dst[i-1];
+	}
+	dst[visitbefore]=*pc;
+	navit_add_destination_description(nav,pc,buffer);
+	navit_set_destinations(nav, dst, dstcount_new, buffer, 1);
+}
 
 /**
  * Start the route computing to a given set of coordinates including waypoints
