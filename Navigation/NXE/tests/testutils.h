@@ -21,6 +21,7 @@ NXE::JSONMessage availableMessages();
 NXE::JSONMessage setDestinationMessage(double lon, double lat, const std::string& description);
 NXE::JSONMessage setPositionMessage(double lon, double lat);
 NXE::JSONMessage clearDestinationMessage();
+NXE::JSONMessage addWaypointMessage(double lon, double lat);
 
 void createNXEConfFile();
 void removeNXEConfFile();

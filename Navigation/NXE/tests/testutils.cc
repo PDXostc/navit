@@ -62,6 +62,17 @@ NXE::JSONMessage TestUtils::setPositionMessage(double lon, double lat)
     return (msg);
 }
 
+NXE::JSONMessage TestUtils::addWaypointMessage(double lon, double lat)
+{
+    boost::property_tree::ptree p;
+    p.put("longitude", lon);
+    p.put("latitude", lat);
+
+    NXE::JSONMessage msg{ 1, "addWaypoint", "", p };
+    return (msg);
+}
+
+
 NXE::JSONMessage TestUtils::clearDestinationMessage()
 {
     NXE::JSONMessage msg{ 1, "clearDestination" };

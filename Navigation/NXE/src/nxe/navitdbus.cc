@@ -153,6 +153,13 @@ void NavitDBus::setPosition(double longitude, double latitude)
     DBus::call("set_position", *(d->object.get()), message);
 }
 
+void NavitDBus::addWaypoint(double longitude, double latitude)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+
+    DBus::call("add_waypoint", *(d->object.get()), message);
+}
 
 
 void NavitDBus::clearDestination()

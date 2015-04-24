@@ -48,7 +48,8 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<AvailableMapsMessage>("availableMaps"),
         boost::fusion::make_pair<SetDestinationMessage>("setDestination"),
         boost::fusion::make_pair<ClearDestinationMessage>("clearDestination"),
-        boost::fusion::make_pair<SetPositionMessage>("setPosition")
+        boost::fusion::make_pair<SetPositionMessage>("setPosition"),
+        boost::fusion::make_pair<AddWaypointMessage>("addWaypoint")
     };
 
     map_cb_type cb{
@@ -192,7 +193,16 @@ struct NavitControllerPrivate {
             successSignal(response);
         }),
 
+        boost::fusion::make_pair<AddWaypointMessage>([this](const JSONMessage& message) {
 
+            const double longitude = message.data.get<double>("longitude");
+            const double latitude = message.data.get<double>("latitude");
+
+            ipc->addWaypoint(longitude, latitude);
+
+            JSONMessage response {message.id, message.call};
+            successSignal(response);
+        }),
     };
 
     // A listener for IMapDownloader, all functions are lambda
