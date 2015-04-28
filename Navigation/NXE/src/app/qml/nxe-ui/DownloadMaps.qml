@@ -3,6 +3,7 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 
 Page {
+    id: page1
 
     property var maps
 
@@ -107,20 +108,12 @@ Page {
 
     Item {
         id: item1
-        width: parent.width
-        height: 40
+        width: 100
+        height: 62
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: rect.bottom
 
-        Button {
-            text: "Cancel"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            iconSource: "next_icon_white.png"
-            LayoutMirroring.enabled: true
 
-            onClicked: {
-                rootStack.pop();
-            }
-        }
+
     }
 }

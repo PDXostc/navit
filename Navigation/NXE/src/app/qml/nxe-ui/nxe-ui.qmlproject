@@ -3,7 +3,7 @@
 import QmlProject 1.1
 
 Project {
-    mainFile: "NxeUI.qml"
+    mainFile: "nxe-ui.qml"
 
     /* Include .qml, .js, and image files from current directory and subdirectories */
     QmlFiles {

@@ -12,7 +12,7 @@ Item {
     property string iconSource
     property int iconWidth: 32
     property int iconHeight: 32
-
+    property bool isActive: false
     Image {
         source: iconSource
         anchors.centerIn: parent

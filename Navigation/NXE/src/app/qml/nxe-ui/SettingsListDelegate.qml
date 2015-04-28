@@ -4,7 +4,7 @@ import QtQuick.Controls.Styles 1.2
 
 Item {
     id: root
-    width: settingListView.width
+    width: settingsListView.width
     height: 50
 
     signal subMenuRequested(string url)

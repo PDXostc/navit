@@ -7,6 +7,9 @@ Rectangle {
     color: "black"
 
     signal downloadMap()
+    signal cancelDownload()
+
+
 
     Rectangle {
         id: blue
@@ -32,12 +35,14 @@ Rectangle {
 
 
         Item {
+            x: 195
+            y: 230
             width: 157
             height: 60
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 10
             anchors.right: parent.right
-            anchors.rightMargin: 10
+            anchors.rightMargin: 48
 
             Item {
                 width: 162
@@ -64,6 +69,31 @@ Rectangle {
                 }
             }
         }
+        
+        Item {
+            id: item1
+            x: 33
+            y: 240
+            width: 112
+            height: 40
+            
+            Text {
+                id: text1
+                y: 3
+                color: "#ffffff"
+                text: qsTr("Cancel")
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.pointSize: 17
+            }
+
+            MouseArea {
+                id: cancelMouseArea
+                width: 112
+                height: 40
+                onClicked: {cancelDownload()}
+            }
+        }
     }
 
     Image {
@@ -74,7 +104,7 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         source: "download_hex_icon.png"
     }
-        Text {
+    Text {
             anchors.top: logo.bottom
             text: "Welcome"
             font.bold: true
@@ -82,6 +112,8 @@ Rectangle {
             anchors.topMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
             color: "white"
-        }
+     }
+
 }
+
 

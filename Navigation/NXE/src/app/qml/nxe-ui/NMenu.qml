@@ -55,7 +55,17 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.fill: parent
                 iconSource: "northup_icon_white.png"
-                onClicked: root.clicked('orientation')
+                onClicked: {
+                    if(isActive == false) {
+                        isActive = true
+                        iconSource = "headup_icon_white.png"
+                        root.clicked("headOrientation")
+                    } else {
+                        isActive = false
+                        iconSource = "northup_icon_white.png"
+                        root.clicked("northOrientation")
+                    }
+                }
             }
         }
         Item {
@@ -66,6 +76,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.fill: parent
                 iconSource: "car_icon_white.png"
+                onClicked: root.clicked("currentLocation")
             }
         }
     }

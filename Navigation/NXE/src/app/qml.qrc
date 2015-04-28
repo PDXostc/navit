@@ -1,16 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/CompositorMainView.qml</file>
-        <file>qml/MainView.qml</file>
-        <file>qml/WindowContainer.qml</file>
-        <file>qml/WindowChrome.qml</file>
-        <file>qml/ContrastEffect.qml</file>
-        <file>qml/closebutton.png</file>
-        <file>qml/compositor.js</file>
-        <file>qml/background.jpg</file>
-        <file>qml/Menu.qml</file>
-        <file>qml/nxe-ui/MainPage.qml</file>
-        <file>qml/nxe-ui/NxeUI.qml</file>
         <file>qml/nxe-ui/back_icon_white_lg.png</file>
         <file>qml/nxe-ui/back_icon_white_sm.png</file>
         <file>qml/nxe-ui/car_icon_white.png</file>
@@ -20,23 +9,52 @@
         <file>qml/nxe-ui/CountryLanguage.qml</file>
         <file>qml/nxe-ui/download_hex_icon.png</file>
         <file>qml/nxe-ui/DownloadMaps.qml</file>
+        <file>qml/nxe-ui/DownloadMaps.qml.orig</file>
         <file>qml/nxe-ui/FTUMainPage.qml</file>
-        <file>qml/nxe-ui/map_icon_white.png</file>
+        <file>qml/nxe-ui/MainPage.qml</file>
+        <file>qml/nxe-ui/MainPage.qml.orig</file>
         <file>qml/nxe-ui/map.jpg</file>
-        <file>qml/nxe-ui/menu_icon_white.png</file>
+        <file>qml/nxe-ui/map_icon_white.png</file>
         <file>qml/nxe-ui/MenuHeaderButton.qml</file>
+        <file>qml/nxe-ui/menu_icon_white.png</file>
         <file>qml/nxe-ui/NButton.qml</file>
         <file>qml/nxe-ui/next_icon_white.png</file>
         <file>qml/nxe-ui/NMenu.qml</file>
         <file>qml/nxe-ui/northup_icon_white.png</file>
         <file>qml/nxe-ui/nxe-ui.qmlproject</file>
+        <file>qml/nxe-ui/NxeUI.qml</file>
         <file>qml/nxe-ui/Page.qml</file>
         <file>qml/nxe-ui/search_icon_white_sm.png</file>
+        <file>qml/nxe-ui/SearchPage.qml</file>
         <file>qml/nxe-ui/SettingsListDelegate.qml</file>
         <file>qml/nxe-ui/SettingsListModel.qml</file>
         <file>qml/nxe-ui/SettingsListView.qml</file>
         <file>qml/nxe-ui/SettingsView.qml</file>
         <file>qml/nxe-ui/tick.png</file>
-        <file>qml/nxe-ui/SearchPage.qml</file>
+        <file>qml/background.jpg</file>
+        <file>qml/closebutton.png</file>
+        <file>qml/compositor.js</file>
+        <file>qml/CompositorMainView.qml</file>
+        <file>qml/ContrastEffect.qml</file>
+        <file>qml/MainView.qml</file>
+        <file>qml/Menu.qml</file>
+        <file>qml/WindowChrome.qml</file>
+        <file>qml/WindowContainer.qml</file>
+        <file>qml/nxe-ui/alert_hex_icon.png</file>
+        <file>qml/nxe-ui/FTUCancelPrompt.qml</file>
+        <file>qml/nxe-ui/headup_icon_white.png</file>
+        <file>qml/nxe-ui/LocationsListDelegate.qml</file>
+        <file>qml/nxe-ui/LocationsListModel.qml</file>
+        <file>qml/nxe-ui/LocationsListView.qml</file>
+        <file>qml/nxe-ui/LocationsResult.qml</file>
+        <file>qml/nxe-ui/LocationsResultDelegate.qml</file>
+        <file>qml/nxe-ui/LocationsResultModel.qml</file>
+        <file>qml/nxe-ui/LocationsSearch.qml</file>
+        <file>qml/nxe-ui/LocationsView.qml</file>
+        <file>qml/nxe-ui/MapLocationInfo.qml</file>
+        <file>qml/nxe-ui/navigate_icon_white.png</file>
+        <file>qml/nxe-ui/nxe-ui.qml</file>
+        <file>qml/nxe-ui/search_button_bg.png</file>
+        <file>qml/nxe-ui/star_icon_solid_white.png</file>
     </qresource>
 </RCC>

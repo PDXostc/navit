@@ -5,9 +5,7 @@ import QtQuick.Controls.Styles 1.2
 Item {
     width: 400
     height: 800
-
     property bool ftu: false
-
     StackView {
         id: rootStack
         anchors.fill: parent
@@ -24,7 +22,10 @@ Item {
             Connections {
                 target: ftu ? mainPageLoader.item : null
                 onDownloadMap: {
-          //          rootStack.push(Qt.resolvedUrl("SettingsView.qml"))
+                    rootStack.push(Qt.resolvedUrl("SettingsView.qml"))
+                }
+                onCancelDownload: {
+                    rootStack.push(Qt.resolvedUrl("FTUCancelPrompt.qml"))
                 }
             }
 

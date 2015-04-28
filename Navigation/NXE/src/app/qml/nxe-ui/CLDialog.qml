@@ -4,8 +4,6 @@ import QtQuick 2.0
 // Blueish dialog
 Item {
     id: dialog
-    width: 500
-    height: 600
     property int numberOfDowloads: 0
     property real downloadSize: 0
 
@@ -14,7 +12,7 @@ Item {
     Rectangle {
         id: rectangle1
         width: parent.width
-        height: parent.height -20
+        height: 167
         color: "#09bcdf"
         anchors.bottom: parent.bottom
 
@@ -23,7 +21,8 @@ Item {
             text: "(" + count + ") Downloads (" + downloadSize + "MB)"
             anchors.left: parent.left
             anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 60
             font.pixelSize: 16
         }
 
@@ -32,7 +31,8 @@ Item {
             height: 50
             anchors.right: parent.right
             anchors.rightMargin: 25
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 48
 
             onClicked: startDownloadClicked()
 
