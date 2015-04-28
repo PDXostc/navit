@@ -54,6 +54,8 @@ Requires:	dbus
 Requires:	dbus-glib
 Requires:	navit
 Requires:   qt5-qtwayland
+Requires:   qt5-qtdeclarative-import-window2
+Requires:   qt5-qtdeclarative-import-qtquick2plugin
 
 %description 
 A simple desc
