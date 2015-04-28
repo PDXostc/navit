@@ -107,15 +107,6 @@ if (DEFINED NAVIT_COMPILE_FLAGS)
    set_target_properties(${NAVIT_LIBNAME} PROPERTIES COMPILE_FLAGS "${NAVIT_COMPILE_FLAGS}")
 endif()
 
-# Subversion revision
-ADD_CUSTOM_TARGET(
-   version
-   ${CMAKE_COMMAND} -D SRC=${CMAKE_CURRENT_SOURCE_DIR}/version.h.in
-                    -D DST=${CMAKE_CURRENT_BINARY_DIR}/version.h
-                    -D NAME=SVN_VERSION
-                    -P ${PROJECT_SOURCE_DIR}/cmake/version.cmake
-)
-
 # additional parameter are passed to the stylesheet processor as parameter
 macro(process_xslt SRC_XML DEST_XML)
    set(XSLT_COMMANDS COMMAND ${CMAKE_COMMAND} -E copy ${SRC_XML} ${DEST_XML}
@@ -153,7 +144,6 @@ else()
    add_custom_target( navit_config_xml ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/navit.xml)
 endif()
 
-ADD_DEPENDENCIES(${NAVIT_LIBNAME} version)
 if (USE_LIBGNUINTL AND NOT HAVE_GLIB)
    ADD_DEPENDENCIES(support_glib support_gettext_intl)
 endif()
