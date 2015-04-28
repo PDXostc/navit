@@ -25,8 +25,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2014-11-07 03:58+0000\n"
-"Last-Translator: Sybren Stüvel <Unknown>\n"
+"PO-Revision-Date: 2015-04-09 12:39+0000\n"
+"Last-Translator: jan <jandegr1@hotmail.com>\n"
 "Language-Team: afaber\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -206,7 +206,7 @@ msgstr "zeer scherp "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "onbekende "
+msgstr ""
 
 msgid "When possible, please turn around"
 msgstr "Indien mogelijk omkeren"
@@ -245,20 +245,20 @@ msgstr "nu"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "neem daarna de %1$s weg naar %2$s"
+msgstr "neem daarna de %1$s straat naar %2$s"
 
 msgid "error"
-msgstr "fout"
+msgstr ""
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "Ga %3$s %1$s naar %2$s %4$s"
+msgstr "Ga %3$s%1$s naar %2$s%4$s"
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "daarna ga %3$s %1$s naar %2$s %4$s"
+msgstr "daarna ga %3$s%1$s naar %2$s%4$s"
 
 #, c-format
 msgid "You have reached your destination %s"
@@ -665,7 +665,7 @@ msgstr "Gambia"
 
 #. 324
 msgid "Guinea"
-msgstr "Papoea-Nieuw-Guinea"
+msgstr "Guinee"
 
 #. 312
 msgid "Guadeloupe"
@@ -1326,19 +1326,14 @@ msgstr "* Onbekend, voeg een is_in-label toe aan deze steden"
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
-"navit gebruik:\n"
-"navit [opties] [configuratiebestand]\n"
-"\t -c <bestand>: gebruik <bestand> als configuratie bestand.\n"
-"\t -d <n>: zet het foutmeldingen niveau op <n> (0-3). Dit gaat boven de "
-"instellingen van het configuratie bestand.\n"
-"\t -h toon deze gebruiks informatie en sluit af.\n"
-"\t -v toon de versie en sluit af.\n"
 
 #. We have not found an existing config file from all possibilities
 msgid "No config file navit.xml, navit.xml.local found\n"
@@ -1491,7 +1486,7 @@ msgid "Test"
 msgstr "Test"
 
 msgid "_Quit"
-msgstr "Beëindigen"
+msgstr ""
 
 msgid "Quit the application"
 msgstr "Het programma afsluiten"
@@ -1527,46 +1522,46 @@ msgid "Data"
 msgstr "Gegevens"
 
 msgid "Pharmacy"
-msgstr ""
+msgstr "Apotheek"
 
 msgid "Restaurant"
-msgstr ""
+msgstr "Restaurant"
 
 msgid "Restaurant. Fast food"
 msgstr ""
 
 msgid "Hotel"
-msgstr ""
+msgstr "Hotel"
 
 msgid "Car parking"
 msgstr ""
 
 msgid "Fuel station"
-msgstr ""
+msgstr "Tankstation"
 
 msgid "Bank"
-msgstr ""
+msgstr "Bank"
 
 msgid "Hospital"
-msgstr ""
+msgstr "Ziekenhuis"
 
 msgid "Cinema"
-msgstr ""
+msgstr "Bioscoop"
 
 msgid "Train station"
-msgstr ""
+msgstr "Treinstation"
 
 msgid "School"
-msgstr ""
+msgstr "School"
 
 msgid "Police"
-msgstr ""
+msgstr "Politie"
 
 msgid "Justice"
 msgstr ""
 
 msgid "Taxi"
-msgstr ""
+msgstr "Taxi"
 
 msgid "Shopping"
 msgstr ""
@@ -1594,7 +1589,7 @@ msgid "POI search"
 msgstr ""
 
 msgid "Select a category"
-msgstr ""
+msgstr "Kies een categorie"
 
 msgid "Select a distance to look for (km)"
 msgstr ""
@@ -1603,19 +1598,19 @@ msgid "Select a POI"
 msgstr ""
 
 msgid " "
-msgstr ""
+msgstr " "
 
 msgid "Category"
-msgstr ""
+msgstr "Categorie"
 
 msgid "Direction"
-msgstr ""
+msgstr "Richting"
 
 msgid "Distance(m)"
-msgstr ""
+msgstr "Afstand(m)"
 
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 msgid "Visit Before"
 msgstr ""
@@ -1931,11 +1926,37 @@ msgstr "route hiernaartoe"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr "kaart gegevens (c) OpenStreetMap contributeurs, ODBL"
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+"Huidige locatie %s voor opslag van de kaart is niet beschikbaar.\n"
+"Herstart Navit na dat U een SD kaart heeft geplaatst of een andere\n"
+"locatie voor opslag heeft gekozen."
+
 msgid "Downloaded maps"
 msgstr "Gedownloade kaarten"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+"Kaarten gorter dan 3,8GB zijn momenteel niet ondersteund op Android.\r\n"
+"Kies a.u.b. een kleinere kaart."
+
 msgid "Cancel"
 msgstr "Annuleer"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
+"%s is als nieuwe locatie ingesteld.\n"
+"Herstart a.u.b. Navit om de wijzigingen door te voeren."
 
 msgid "Whole Planet"
 msgstr "de hele aarde"
@@ -2307,12 +2328,15 @@ msgstr "aan het downloaden"
 msgid "ready"
 msgstr "klaar"
 
-msgid "Error downloading map!"
-msgstr "Kaart downloaden mislukt!"
+msgid "Media selected for map storage is not available"
+msgstr "De gekozen locatie voor opslag van de kaarten is niet beschikbaar."
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "Niet genoeg vrije ruimte"
+
+msgid "Error downloading map!"
+msgstr "Kaart downloaden mislukt!"
 
 msgid "Error writing map!"
 msgstr "Wegschrijven van kaart mislukt!"
@@ -2493,6 +2517,10 @@ msgstr "Verlaat Navit"
 msgid "Backup / Restore"
 msgstr "Back-up maken / terugzetten"
 
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr "Kaart locatie kiezen"
+
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
 msgstr "Verwijder deze kaart?"
@@ -2620,3 +2648,17 @@ msgstr "Back-up"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "Terugzetten"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""
+"Navit kan elke tekst naar spraak-engine geïnstalleerd op uw apparaat "
+"gebruiken . De momenteel geselecteerde engine meldt dat het niet in uw taal "
+"kan spreken . Wil U de  spraak download dialoog van Uw toestel starten?"

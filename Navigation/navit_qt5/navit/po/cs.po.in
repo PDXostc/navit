@@ -5,6 +5,7 @@
 # 72ka https://launchpad.net/~2hp
 # Aleš Janda https://launchpad.net/~kyblicek
 # Ivan Kološ https://launchpad.net/~ivan-kolos
+# Jakuje https://launchpad.net/~jakuje
 # MMlosh https://launchpad.net/~mmlosh
 # Mike Crash https://launchpad.net/~mike-mikecrash
 # T.lama https://launchpad.net/~klacl
@@ -19,8 +20,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2013-12-09 13:46+0000\n"
-"Last-Translator: MMlosh <Unknown>\n"
+"PO-Revision-Date: 2015-03-15 14:56+0000\n"
+"Last-Translator: Jakuje <jakuje@gmail.com>\n"
 "Language-Team: Čeština\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -197,11 +198,11 @@ msgstr "silně "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
-msgstr "opravdu silně "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "neurčitě "
+msgstr ""
 
 msgid "When possible, please turn around"
 msgstr "Až to bude možné, otočte se"
@@ -216,11 +217,11 @@ msgstr "Najeďte na kruhový objezd %s"
 
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "pak sjeďte na %s"
+msgstr ""
 
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "Sjeďte na %s"
+msgstr ""
 
 #, c-format
 msgid "Follow the road for the next %s"
@@ -243,20 +244,20 @@ msgstr "nyní"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "pak jeďte %1$s silnici %2$s"
+msgstr ""
 
 msgid "error"
-msgstr "chyba"
+msgstr ""
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "Zabočte %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "pak odbočte %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #, c-format
 msgid "You have reached your destination %s"
@@ -1323,19 +1324,14 @@ msgstr "* Není známo, přidejte is_in atributy do těchto měst"
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
-"Použití navit:\n"
-"navit [volby] [konfigurační soubor]\n"
-"\t-c <soubor>: Použijte <soubor> jako konfigurační soubor\n"
-"\t-d <n>: Nastavení souhrnné výstupní ladící úrovně v <n> (0-3). Přepíše "
-"nastavení z konfiguračního souboru.\n"
-"\t-h: Zobrazí tuto nápovědu a skončí.\n"
-"\t-v: Zobrazí verzy a skončí.\n"
 
 #. We have not found an existing config file from all possibilities
 msgid "No config file navit.xml, navit.xml.local found\n"
@@ -1351,7 +1347,7 @@ msgstr "Používáte konfigurační soubor '% s'\n"
 
 #, c-format
 msgid "Error: No configuration found in config file '%s'\n"
-msgstr ""
+msgstr "Chyba: Nenalezena žádná konfigurace v konfiguračním souboru '%s'\n"
 
 msgid ""
 "Internal initialization failed, exiting. Check previous error messages.\n"
@@ -1477,7 +1473,7 @@ msgid "_POI search"
 msgstr ""
 
 msgid "Opens POI search dialog"
-msgstr ""
+msgstr "Otevře dialog vyhledávání POI"
 
 msgid "_Stop Navigation"
 msgstr "Přestat navigovat"
@@ -1522,49 +1518,49 @@ msgid "Data"
 msgstr "Data"
 
 msgid "Pharmacy"
-msgstr ""
+msgstr "Lékárna"
 
 msgid "Restaurant"
-msgstr ""
+msgstr "Restaurace"
 
 msgid "Restaurant. Fast food"
-msgstr ""
+msgstr "Restaurace. Rychlé občerstvení"
 
 msgid "Hotel"
-msgstr ""
+msgstr "Hotel"
 
 msgid "Car parking"
-msgstr ""
+msgstr "Parkoviště"
 
 msgid "Fuel station"
-msgstr ""
+msgstr "Čerpací stanice"
 
 msgid "Bank"
-msgstr ""
+msgstr "Banka"
 
 msgid "Hospital"
-msgstr ""
+msgstr "Nemocnice"
 
 msgid "Cinema"
-msgstr ""
+msgstr "Kino"
 
 msgid "Train station"
-msgstr ""
+msgstr "Vlaková stanice"
 
 msgid "School"
-msgstr ""
+msgstr "Škola"
 
 msgid "Police"
-msgstr ""
+msgstr "Policie"
 
 msgid "Justice"
 msgstr ""
 
 msgid "Taxi"
-msgstr ""
+msgstr "Taxi"
 
 msgid "Shopping"
-msgstr ""
+msgstr "Nakupování"
 
 msgid "Distance from screen center (km)"
 msgstr ""
@@ -1575,45 +1571,45 @@ msgstr ""
 
 #, c-format
 msgid "Set destination to %ld, %ld \n"
-msgstr ""
+msgstr "Nastav cíl na %ld, %ld \n"
 
 #, c-format
 msgid "Set map to %ld, %ld \n"
-msgstr ""
+msgstr "Posuň mapu na %ld, %ld \n"
 
 #, c-format
 msgid "Set next visit to %ld, %ld \n"
-msgstr ""
+msgstr "Nastav další zastavení na %ld, %ld \n"
 
 msgid "POI search"
-msgstr ""
+msgstr "Vyhledávání POI"
 
 msgid "Select a category"
-msgstr ""
+msgstr "Vyberte kategorii"
 
 msgid "Select a distance to look for (km)"
-msgstr ""
+msgstr "Vyberte vzdálenost ve které hledat (km)"
 
 msgid "Select a POI"
-msgstr ""
+msgstr "Vyberte POI"
 
 msgid " "
-msgstr ""
+msgstr " "
 
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 msgid "Direction"
-msgstr ""
+msgstr "Směr"
 
 msgid "Distance(m)"
-msgstr ""
+msgstr "Vzdálenost (m)"
 
 msgid "Name"
-msgstr ""
+msgstr "Název"
 
 msgid "Visit Before"
-msgstr ""
+msgstr "Navštívit před"
 
 msgid "N"
 msgstr "S"
@@ -1832,7 +1828,7 @@ msgstr "Zadejte souřadnice"
 #. we=gui_internal_box_new(this, gravity_left_center|orientation_horizontal|flags_fill)
 #. gui_internal_widget_append(w, we)
 msgid "Latitude Longitude"
-msgstr ""
+msgstr "Zeměpisná délka a šířka"
 
 msgid "Enter coordinates, for example:"
 msgstr "Zadejte souřadnice, například:"
@@ -1926,11 +1922,30 @@ msgstr "Cestovat sem"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr "Mapová data (c) přispěvatelé OpenStreetMap, ODBL"
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+
 msgid "Downloaded maps"
 msgstr "Stažené mapy"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+
 msgid "Cancel"
 msgstr "Storno"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
 
 msgid "Whole Planet"
 msgstr "Celá planeta"
@@ -2302,12 +2317,15 @@ msgstr "stahuji"
 msgid "ready"
 msgstr "mapa připravena"
 
-msgid "Error downloading map!"
-msgstr "Chyba při stahování mapy!"
+msgid "Media selected for map storage is not available"
+msgstr ""
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "Není dostatek volného místa"
+
+msgid "Error downloading map!"
+msgstr "Chyba při stahování mapy!"
 
 msgid "Error writing map!"
 msgstr "Chyba při zápisu mapy!"
@@ -2488,6 +2506,10 @@ msgstr "Ukončit Navit"
 msgid "Backup / Restore"
 msgstr "Zálohovat / Obnovit"
 
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr ""
+
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
 msgstr "Smazat tuto mapu?"
@@ -2615,3 +2637,14 @@ msgstr "Zálohování"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "Obnova"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""

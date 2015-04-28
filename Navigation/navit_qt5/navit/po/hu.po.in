@@ -188,11 +188,11 @@ msgstr "élesen "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
-msgstr "nagyon élesen "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "ismeretlen "
+msgstr ""
 
 msgid "When possible, please turn around"
 msgstr "Amint lehet, fordujon meg"
@@ -207,11 +207,11 @@ msgstr "Hajtson be a körforgalomba %s"
 
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "majd hagyja el a körforgalmat a(z) %s"
+msgstr ""
 
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "Hagyja el a körforgalmat a(z) %s"
+msgstr ""
 
 #, c-format
 msgid "Follow the road for the next %s"
@@ -234,20 +234,20 @@ msgstr "most"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "aztán a(z) %1$s útnál forduljon %2$s"
+msgstr ""
 
 msgid "error"
-msgstr "hiba"
+msgstr ""
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "Forduljon %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "aztán forduljon %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #, c-format
 msgid "You have reached your destination %s"
@@ -1314,19 +1314,14 @@ msgstr "*Ismeretlen, is_in címkék hozzáadása ezekhez a városokhoz"
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
-"navit használata:\n"
-"navit [opciók] [konfigurációs állomány]\n"
-"\t-c <file>: használja a <file>-t mint konfigurációs állomány\n"
-"\t-d <n>: a globális hibakeresési kimeneti szintet <n>-re állítja (0-3). "
-"Felülbírálja a konfigurációs állomány beállításait.\n"
-"\t-h: kinyomtatja ezt a használati útmutatót és kilép.\n"
-"\t-v: kinyomtatja a verzióinformációt és kilép.\n"
 
 #. We have not found an existing config file from all possibilities
 msgid "No config file navit.xml, navit.xml.local found\n"
@@ -1917,11 +1912,30 @@ msgstr "Útvonal ide"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr "Térkép adatok (c) OpenStreeMap közreműködők, ODBL"
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+
 msgid "Downloaded maps"
 msgstr "Letöltött térképek"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+
 msgid "Cancel"
 msgstr "Mégse"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
 
 msgid "Whole Planet"
 msgstr "Teljes bolygó"
@@ -2293,12 +2307,15 @@ msgstr "letöltés"
 msgid "ready"
 msgstr "kész"
 
-msgid "Error downloading map!"
-msgstr "Hiba térképletöltés közben!"
+msgid "Media selected for map storage is not available"
+msgstr ""
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "Kevés a szabad terület"
+
+msgid "Error downloading map!"
+msgstr "Hiba térképletöltés közben!"
 
 msgid "Error writing map!"
 msgstr "Hiba a térkép mentése közben!"
@@ -2472,6 +2489,10 @@ msgstr "Kilépés"
 msgid "Backup / Restore"
 msgstr "Mentés / Visszaállítás"
 
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr ""
+
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
 msgstr "Töröljük ezt a térképet?"
@@ -2599,3 +2620,14 @@ msgstr "Biztonsági mentés"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "Visszaállítás"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""

@@ -59,12 +59,20 @@ public class NavitDownloadSelectMapActivity extends ExpandableListActivity {
 		updateDownloadedMaps();
 		updateMapsForLocation(NavitMapDownloader.osm_maps);
 		setListAdapter(adapter);
-		setTitle(String.valueOf(getFreeSpace() / 1024 / 1024) + "MB available");
+		try {
+			setTitle(String.valueOf(getFreeSpace() / 1024 / 1024) + "MB available");
+		} catch (Exception e) {
+			Log.e("Navit","Exception "+e.getClass().getName()+" during getFreeSpace, reporting 'no sdcard present'");
+			NavitDialogs.sendDialogMessage(NavitDialogs.MSG_TOAST_LONG, null, 
+				String.format(Navit._("Current map location %s is not available\nPlease restart Navit after you attach an SD card or select a different map location."),Navit.map_filename_path),
+				 -1, 0, 0);
+			finish();
+		}
 	}
 
 	protected long getFreeSpace()
 	{
-		StatFs fsInfo = new StatFs(NavitMapDownloader.MAP_FILENAME_PATH);
+		StatFs fsInfo = new StatFs(Navit.map_filename_path);
 		return (long)fsInfo.getAvailableBlocks() * fsInfo.getBlockSize();
 	}
 
@@ -177,8 +185,15 @@ public class NavitDownloadSelectMapActivity extends ExpandableListActivity {
 
 		String map_index = child.get("map_index");
 		if (map_index != null) {
+			int mi=Integer.parseInt(map_index);
+			if(NavitMapDownloader.osm_maps[mi].est_size_bytes/1024/1024/950>=4) {
+				NavitDialogs.sendDialogMessage(NavitDialogs.MSG_TOAST_LONG, null, 
+					Navit._("Sorry, we currently do not support maps above 3.8G on Android, please select a smaller one."),
+					 -1, 0, 0);
+				return true;
+			}
 			Intent resultIntent = new Intent();
-			resultIntent.putExtra("map_index", Integer.parseInt(map_index));
+			resultIntent.putExtra("map_index", mi);
 			setResult(Activity.RESULT_OK, resultIntent);
 			finish();
 		} else {

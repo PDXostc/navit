@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"PO-Revision-Date: 2014-11-07 17:39+0000\n"
+"PO-Revision-Date: 2015-01-05 13:24+0000\n"
 "Last-Translator: Stendec <Unknown>\n"
 "Language-Team: Latvian <lv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -189,11 +189,11 @@ msgstr "strauji "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
-msgstr "nepārāk strauji "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "neznāms "
+msgstr ""
 
 msgid "When possible, please turn around"
 msgstr "Kad iespējams apgriezieties"
@@ -208,11 +208,11 @@ msgstr "Uzbraukt uz apļa pēc %s"
 
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "pēc tam izbraukt no apļa pa %s"
+msgstr ""
 
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "Nobraukt no apļa pa %s"
+msgstr ""
 
 #, c-format
 msgid "Follow the road for the next %s"
@@ -235,20 +235,20 @@ msgstr "tagad"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "pēc tam %1$s ceļā pa %2$s"
+msgstr ""
 
 msgid "error"
-msgstr "kļūda"
+msgstr ""
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "Pagriezties %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "pēc tam griežaties %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #, c-format
 msgid "You have reached your destination %s"
@@ -1315,19 +1315,14 @@ msgstr "* Nezināms, pievienot is_in tagus šīm pilsētām"
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
-"navit lietošana:\n"
-"navit [options] [configfile]\n"
-"\t-c <file>: lietot <file> kā konfigurācijas failu\n"
-"\t-d <n>: iestatīt globālo atkļūdošanas izvadi uz <n> (0-3). Ignorēt "
-"uzstādijumus konfigurācijas failā.\n"
-"\t-h: pdrukāt lietošanas informāciju un iziet.\n"
-"\t-v: Drukāt versiju un iziet.\n"
 
 #. We have not found an existing config file from all possibilities
 msgid "No config file navit.xml, navit.xml.local found\n"
@@ -1466,10 +1461,10 @@ msgid "Opens address search dialog"
 msgstr "Atvērt adreses meklēšanas dialogu"
 
 msgid "_POI search"
-msgstr ""
+msgstr "I_P neklēšana"
 
 msgid "Opens POI search dialog"
-msgstr ""
+msgstr "Atver IP meklēšanas dialogu"
 
 msgid "_Stop Navigation"
 msgstr "_Apturēt Navigāciju"
@@ -1514,98 +1509,98 @@ msgid "Data"
 msgstr "Dati"
 
 msgid "Pharmacy"
-msgstr ""
+msgstr "Farmācija"
 
 msgid "Restaurant"
-msgstr ""
+msgstr "Restorāns"
 
 msgid "Restaurant. Fast food"
-msgstr ""
+msgstr "Restorāns. Bistro"
 
 msgid "Hotel"
-msgstr ""
+msgstr "Viesnīca"
 
 msgid "Car parking"
-msgstr ""
+msgstr "Auto novietne"
 
 msgid "Fuel station"
-msgstr ""
+msgstr "Benzīntanks"
 
 msgid "Bank"
-msgstr ""
+msgstr "Banka"
 
 msgid "Hospital"
-msgstr ""
+msgstr "Slimnīca"
 
 msgid "Cinema"
-msgstr ""
+msgstr "Kino"
 
 msgid "Train station"
-msgstr ""
+msgstr "Vilcienu stacija"
 
 msgid "School"
-msgstr ""
+msgstr "Skola"
 
 msgid "Police"
-msgstr ""
+msgstr "Policija"
 
 msgid "Justice"
-msgstr ""
+msgstr "Tiesībsargi"
 
 msgid "Taxi"
-msgstr ""
+msgstr "Taksometrs"
 
 msgid "Shopping"
-msgstr ""
+msgstr "Iepirkšanās"
 
 msgid "Distance from screen center (km)"
-msgstr ""
+msgstr "Attālums no ekrāna centra (km)"
 
 #, c-format
 msgid "POI %s. %s"
-msgstr ""
+msgstr "IP %s. %s"
 
 #, c-format
 msgid "Set destination to %ld, %ld \n"
-msgstr ""
+msgstr "Iestatīt galamērķi - %ld, %ld \n"
 
 #, c-format
 msgid "Set map to %ld, %ld \n"
-msgstr ""
+msgstr "Iestatīt karti %ld, %ld \n"
 
 #, c-format
 msgid "Set next visit to %ld, %ld \n"
-msgstr ""
+msgstr "Iestatīt nākamo apmeklējumu %ld, %ld \n"
 
 msgid "POI search"
-msgstr ""
+msgstr "IP meklēšana"
 
 msgid "Select a category"
-msgstr ""
+msgstr "Izvēlieties kategoriju"
 
 msgid "Select a distance to look for (km)"
 msgstr ""
 
 msgid "Select a POI"
-msgstr ""
+msgstr "Izvēlaties IP"
 
 msgid " "
-msgstr ""
+msgstr " "
 
 msgid "Category"
-msgstr ""
+msgstr "Kategorija"
 
 msgid "Direction"
-msgstr ""
+msgstr "Norādes"
 
 msgid "Distance(m)"
-msgstr ""
+msgstr "Attālums (m)"
 
 msgid "Name"
-msgstr ""
+msgstr "Vārds"
 
 msgid "Visit Before"
-msgstr ""
+msgstr "Apmeklēt vispirms"
 
 msgid "N"
 msgstr "Z"
@@ -1918,11 +1913,30 @@ msgstr "Ceļš uz šejieni"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr "Karte (c) OpenStreetMap contributors, ODBL"
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+
 msgid "Downloaded maps"
 msgstr "Lejuplādētās kartes"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+
 msgid "Cancel"
 msgstr "Atcelt"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
 
 msgid "Whole Planet"
 msgstr "Visa Planēta"
@@ -2105,7 +2119,7 @@ msgid "Thueringen"
 msgstr ""
 
 msgid "Mallorca"
-msgstr ""
+msgstr "Maljorka"
 
 msgid "Galicia"
 msgstr ""
@@ -2294,12 +2308,15 @@ msgstr "lejupielādē"
 msgid "ready"
 msgstr "gatavs"
 
-msgid "Error downloading map!"
-msgstr "Kļūda lejuplādējot karti!"
+msgid "Media selected for map storage is not available"
+msgstr ""
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "Nav brīvas vietas"
+
+msgid "Error downloading map!"
+msgstr "Kļūda lejuplādējot karti!"
 
 msgid "Error writing map!"
 msgstr "Kļūda rakstot karti!"
@@ -2408,7 +2425,7 @@ msgid "horse"
 msgstr "zirgs"
 
 msgid "Truck"
-msgstr ""
+msgstr "Kravas automašīna"
 
 #. Strings from android/res/values/strings.xml
 #. Android resource: @strings/yes
@@ -2479,6 +2496,10 @@ msgstr "Iziet no Navit"
 #. Android resource: @strings/optionsmenu_backup_restore
 msgid "Backup / Restore"
 msgstr "Rezerves kopija/Atjaunot"
+
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr ""
 
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
@@ -2607,3 +2628,14 @@ msgstr "Rezerves kopija"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "Atjaunot"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""

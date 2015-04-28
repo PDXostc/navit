@@ -169,12 +169,6 @@ int main_real(int argc, char * const* argv)
 		list = g_list_append(list,g_strjoin(NULL,getenv("NAVIT_USER_DATADIR"), "/navit.xml" , NULL));
 		list = g_list_append(list,g_strdup("navit.xml.local"));
 		list = g_list_append(list,g_strdup("navit.xml"));
-#ifdef HAVE_API_ANDROID
-		// new preferred location (the new one should have priority over the legacy!)
-		list = g_list_append(list,g_strdup("/sdcard/navit/navit.xml"));
-		// legacy location, still supported
-		list = g_list_append(list,g_strdup("/sdcard/navit.xml"));
-#endif
 		list = g_list_append(list,g_strjoin(NULL,getenv("NAVIT_SHAREDIR"), "/navit.xml.local" , NULL));
 		list = g_list_append(list,g_strjoin(NULL,getenv("NAVIT_SHAREDIR"), "/navit.xml" , NULL));
 #ifndef _WIN32
@@ -219,13 +213,20 @@ int main_real(int argc, char * const* argv)
 	conf.type=attr_config;
 	conf.u.config=config;
 	if (startup_file) {
-		FILE *f=fopen(startup_file,"r");
+		FILE *f = fopen(startup_file,"r");
 		if (f) {
 			char buffer[4096];
+			int fclose_ret;
 			while(fgets(buffer, sizeof(buffer), f)) {
 				command_evaluate(&conf, buffer);
 			}
-		}
+                        fclose_ret = fclose(f);
+                        if (fclose_ret != 0) {
+				dbg(lvl_error, "Could not close the specified startup file: %s\n", startup_file);
+			}
+		} else {
+			dbg(lvl_error, "Could not open the specified startup file: %s", startup_file);
+                }
 	}
 	if (command) {
 		command_evaluate(&conf, command);

@@ -202,11 +202,11 @@ msgstr "بكل شدة "
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "really strongly "
-msgstr "بشدة حادة "
+msgstr ""
 
 #. TRANSLATORS: Don't forget the ending space
 msgid "unknown "
-msgstr "غير معروف "
+msgstr ""
 
 msgid "When possible, please turn around"
 msgstr "حيث ممكن الرجاء اللف"
@@ -221,11 +221,11 @@ msgstr "أدخل المسافة %s إلى المستديرة"
 
 #, c-format
 msgid "then leave the roundabout at the %s"
-msgstr "ثم أخرج من المستديرة عند الــ%s"
+msgstr ""
 
 #, c-format
 msgid "Leave the roundabout at the %s"
-msgstr "أخرج من المستديرة عند الــ  %s"
+msgstr ""
 
 #, c-format
 msgid "Follow the road for the next %s"
@@ -248,20 +248,20 @@ msgstr "الآن"
 
 #, c-format
 msgid "then take the %1$s road to the %2$s"
-msgstr "ثم خذ الطريق %1$s إلى ال- %2$s"
+msgstr ""
 
 msgid "error"
-msgstr "خطء"
+msgstr ""
 
 #. TRANSLATORS: The first argument is strength, the second direction, the third distance and the fourth destination Example: 'Turn 'slightly' 'left' in '100 m' 'onto baker street'
 #, c-format
 msgid "Turn %1$s%2$s %3$s%4$s"
-msgstr "حوّل %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #. TRANSLATORS: First argument is strength, second direction, third how many roads to skip, fourth destination
 #, c-format
 msgid "then turn %1$s%2$s %3$s%4$s"
-msgstr "ثم حوّل %1$s%2$s %3$s%4$s"
+msgstr ""
 
 #, c-format
 msgid "You have reached your destination %s"
@@ -1328,11 +1328,13 @@ msgstr "* غير معروف، أضف تسميات  is_in إلى تلك المد�
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
 
 #. We have not found an existing config file from all possibilities
@@ -1922,11 +1924,30 @@ msgstr "الطريق إلى هنا"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr ""
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+
 msgid "Downloaded maps"
 msgstr "الخرائط المنزلة"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+
 msgid "Cancel"
 msgstr "إلغاء"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
 
 msgid "Whole Planet"
 msgstr "كامل القرة الأرضية"
@@ -2298,12 +2319,15 @@ msgstr "يُنزّل"
 msgid "ready"
 msgstr "جاهز"
 
-msgid "Error downloading map!"
-msgstr "خطأ أثناء تنزيل الخريطة!"
+msgid "Media selected for map storage is not available"
+msgstr ""
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "لا يوجد مجال فارغ كافي"
+
+msgid "Error downloading map!"
+msgstr "خطأ أثناء تنزيل الخريطة!"
 
 msgid "Error writing map!"
 msgstr "خطأ عند كتابة الخريطة!"
@@ -2469,6 +2493,10 @@ msgstr "أخرج من نافيت"
 msgid "Backup / Restore"
 msgstr ""
 
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr ""
+
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
 msgstr "حذف هذه الخريطة ؟"
@@ -2594,3 +2622,14 @@ msgstr "حفظ احتياطي"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "استعادة"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""

@@ -18,19 +18,19 @@
 # Sergey Shilov https://launchpad.net/~sss-s-s-s
 # Takuto https://launchpad.net/~takutoatmorgue
 # Usul https://launchpad.net/~usul1
-# Vlad https://launchpad.net/~send-me-letter
 # cmdrhenner https://launchpad.net/~cmdrhenner
 # jmb_kz https://launchpad.net/~jmb-kz
 # kisaa https://launchpad.net/~alex-kisaa
 # kisaa https://launchpad.net/~kisaa-mail
+# tryagain https://launchpad.net/~mdankov
 # zcc https://launchpad.net/~zcc
 # Павел https://launchpad.net/~pavel-sgn
+
 msgid ""
 msgstr ""
 "Project-Id-Version: navit 0.5.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-14 23:10-0800\n"
-"PO-Revision-Date: 2014-12-21 21:24+0000\n"
+"PO-Revision-Date: 2015-04-20 20:06+0000\n"
 "Last-Translator: tryagain <mdankov@yandex.ru>\n"
 "Language-Team: Rustam T. Usmanov\n"
 "MIME-Version: 1.0\n"
@@ -38,8 +38,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Launchpad-Export-Date: 2014-12-21 21:28+0000\n"
-"X-Generator: Launchpad (build 17286)\n"
 "Language: ru\n"
 "X-Report-Errors: https://translations.launchpad.net/navit/trunk/+pots/navit\n"
 
@@ -1337,19 +1335,14 @@ msgstr "* Неизвестный, для выбора городов добав�
 msgid ""
 "navit usage:\n"
 "navit [options] [configfile]\n"
-"\t-c <file>: use <file> as config file\n"
-"\t-d <n>: set the global debug output level to <n> (0-3). Overrides setting "
-"from config file.\n"
+"\t-c <file>: use <file> as config file, instead of using the default file.\n"
+"\t-d <n>: set the global debug output level to <n> (0=error, 1=warning, "
+"2=info, 3=debug).\n"
+"\tSettings from config file will still take effect where they set a higher "
+"level.\n"
 "\t-h: print this usage info and exit.\n"
-"\t-v: Print the version and exit.\n"
+"\t-v: print the version and exit.\n"
 msgstr ""
-"Использование navit:\n"
-"navit [параметры] [файл_настроек]\n"
-"\t-c <файл>: использовать <файл> с настройками\n"
-"\t-d <n>: установить уровень отладочных сообщений <n> (0-3). Имеет приоритет "
-"над параметром в файле настроек.\n"
-"\t-h: показать эту подсказку и выйти.\n"
-"\t-v: показать информацию о версии и выйти.\n"
 
 #. We have not found an existing config file from all possibilities
 msgid "No config file navit.xml, navit.xml.local found\n"
@@ -1609,7 +1602,7 @@ msgid "Select a distance to look for (km)"
 msgstr "Выберите расстояние для поиска (км)"
 
 msgid "Select a POI"
-msgstr ""
+msgstr "Выберите POI"
 
 msgid " "
 msgstr " "
@@ -1940,11 +1933,37 @@ msgstr "Ехать сюда"
 msgid "Map data (c) OpenStreetMap contributors, ODBL"
 msgstr "Данные карты (c) участники OpenStreetMap, ODBL"
 
+msgid ""
+"Current map location %s is not available\n"
+"Please restart Navit after you attach an SD card or select a different map "
+"location."
+msgstr ""
+"Папка s, выбранная для хранения карт, недоступна.\n"
+"Пожалуйста, перезагрузите Navit после подключения SD карты, или выберите "
+"другую папку."
+
 msgid "Downloaded maps"
 msgstr "Загруженные карты"
 
+msgid ""
+"Sorry, we currently do not support maps above 3.8G on Android, please select "
+"a smaller one."
+msgstr ""
+"К сожалению, карты свыше 3.8 Гб не поддерживаются в Android версии. Выберите "
+"другую карту."
+
 msgid "Cancel"
 msgstr "Отмена"
+
+msgid "filenamePath"
+msgstr ""
+
+msgid ""
+"New location set to %s\n"
+"Restart Navit to apply the changes."
+msgstr ""
+"Выбрана папка %s\n"
+"Перезапустите Navit для применения изменений."
 
 msgid "Whole Planet"
 msgstr "Вся планета"
@@ -2316,12 +2335,15 @@ msgstr "загружаем"
 msgid "ready"
 msgstr "готово"
 
-msgid "Error downloading map!"
-msgstr "Ошибка загрузки карты!"
+msgid "Media selected for map storage is not available"
+msgstr "Устройство для хранения карт недоступно."
 
 #. Android resource: @strings/map_download_not_enough_free_space
 msgid "Not enough free space"
 msgstr "Не достаточно места"
+
+msgid "Error downloading map!"
+msgstr "Ошибка загрузки карты!"
 
 msgid "Error writing map!"
 msgstr "Ошибка записи карты!"
@@ -2502,6 +2524,10 @@ msgstr "Выйти из Navit"
 msgid "Backup / Restore"
 msgstr "Копировать / Восстановить"
 
+#. Android resource: @strings/optionsmenu_set_map_location
+msgid "Set map location"
+msgstr "Выбрать папку для хранения карт"
+
 #. Android resource: @strings/map_delete
 msgid "Delete this map?"
 msgstr "Удалить эту карту?"
@@ -2629,3 +2655,18 @@ msgstr "Резервное копирование"
 #. Android resource: @strings/restore
 msgid "Restore"
 msgstr "Восстановление из копии"
+
+#. Android resource: @strings/TTS_title_data_missing
+msgid "System text to speech engine data is missing"
+msgstr ""
+
+#. Android resource: @strings/TTS_qery_install_data
+msgid ""
+"Navit can use any text to speech engine installed on your device. The "
+"currently selected engine reports it is unable to speak in your language. "
+"Should we ask the system to show voice download dialog?"
+msgstr ""
+"Navit может использовать любое установленное в системе приложение "
+"преобразования текста в речь. Выбранное сейчас приложение сообщает о "
+"невозможности работы на выбранном языке. Попросим систему показать диалог "
+"загрузки голосовых данных?"
