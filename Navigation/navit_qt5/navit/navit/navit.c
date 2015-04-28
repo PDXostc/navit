@@ -134,7 +134,7 @@ struct navit {
 	GList *windows_items;
 	struct navit_vehicle *vehicle;
 	struct callback_list *attr_cbl;
-	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb;
+	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb, *clicked_point_cb;
 	struct datawindow *roadbook_window;
 	struct map *former_destination;
 	struct point pressed, last, current;
@@ -199,6 +199,75 @@ static int navit_set_vehicleprofile(struct navit *this_, struct vehicleprofile *
 struct object_func navit_func;
 
 struct navit *global_navit;
+
+
+struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
+{
+	struct displaylist_handle *dlh;
+	struct displaylist *display;
+	struct displayitem *di;
+	struct attr **attr_list=NULL;
+	struct attr attr;
+	struct coord_geo g;
+
+	struct transformation *trans;
+    struct coord c;
+
+    // transform pixel coordinates to geo coordinates
+    trans=navit_get_trans(this_);
+    transform_reverse(trans, p, &c);
+	transform_to_geo(transform_get_projection(trans), &c, &g);
+
+	attr.u.coord_geo=&g;
+	attr.type=attr_click_coord_geo;
+
+    // add clicked point geo coordinates to atrributes list:
+    attr_list=attr_generic_add_attr(attr_list, &attr);
+
+	display=navit_get_displaylist(this_);
+	dlh=graphics_displaylist_open(display);
+	while ((di=graphics_displaylist_next(dlh))) {
+		struct item *item=graphics_displayitem_get_item(di);
+		//if (item_is_point(*item) && graphics_displayitem_get_displayed(di) &&
+		if (graphics_displayitem_get_displayed(di) &&
+			graphics_displayitem_within_dist(display, di, p, this_->radius)) {
+			struct map_rect *mr=map_rect_new(item->map, NULL);
+			struct item *itemo=map_rect_get_item_byid(mr, item->id_hi, item->id_lo);
+			if (itemo) {
+				attr.type = attr_item_type;
+				attr.u.item_type = item->type;
+				attr_list=attr_generic_add_attr(attr_list, &attr);
+
+				if (!item_attr_get(itemo, attr_label, &attr)) {
+					attr.type = attr_label;
+					attr.u.str = "";
+				}
+
+				attr_list=attr_generic_add_attr(attr_list, &attr);
+			}
+			map_rect_destroy(mr);
+		}
+	}
+	graphics_displaylist_close(dlh);
+
+	return attr_list;
+}
+
+static
+void navit_dbus_send_point_info(void* data, struct point *p)
+{
+	struct navit *this=data;
+	struct attr cb, **attr_list=NULL;
+	int valid=0;
+
+	attr_list = navit_get_point_attr_list(this,p);
+
+	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
+		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+
+	attr_list_free(attr_list);
+}
+
 
 void
 navit_add_mapset(struct navit *this_, struct mapset *ms)
@@ -1481,6 +1550,9 @@ navit_set_graphics(struct navit *this_, struct graphics *gra)
 	graphics_add_callback(gra, this_->motion_callback);
 	this_->predraw_callback=callback_new_attr_1(callback_cast(navit_predraw), attr_predraw, this_);
 	graphics_add_callback(gra, this_->predraw_callback);
+	this_->clicked_point_cb=callback_new_attr_1(callback_cast(navit_dbus_send_point_info), attr_signal_on_map_click, this_);
+	graphics_add_callback(gra, this_->clicked_point_cb);
+
 	return 1;
 }
 

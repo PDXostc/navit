@@ -51,6 +51,7 @@ struct transformation;
 struct vehicleprofile;
 struct command_table;
 struct item;
+struct coord_geo;
 void navit_add_mapset(struct navit *this_, struct mapset *ms);
 struct mapset *navit_get_mapset(struct navit *this_);
 struct tracking *navit_get_tracking(struct navit *this_);
@@ -125,6 +126,7 @@ void navit_destroy(struct navit *this_);
 void navit_command_add_table(struct navit*this_, struct command_table *commands, int count);
 struct navit * navit_ref(struct navit *this_);
 void navit_unref(struct navit *this_);
+struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p);
 /* end of prototypes */
 #ifdef __cplusplus
 }

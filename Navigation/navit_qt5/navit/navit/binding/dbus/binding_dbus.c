@@ -256,6 +256,7 @@ encode_variant_string(DBusMessageIter *iter, char *str)
 	dbus_message_iter_close_container(iter, &variant);
 }
 
+
 static void
 encode_dict_string_variant_string(DBusMessageIter *iter, char *key, char *value)
 {
@@ -272,33 +273,51 @@ encode_attr(DBusMessageIter *iter1, struct attr *attr)
 	char *name=attr_to_name(attr->type);
 	DBusMessageIter iter2,iter3;
 	dbus_message_iter_append_basic(iter1, DBUS_TYPE_STRING, &name);
+
 	if (attr->type >= attr_type_int_begin && attr->type < attr_type_boolean_begin) {
 		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, DBUS_TYPE_INT32_AS_STRING, &iter2);
 		dbus_message_iter_append_basic(&iter2, DBUS_TYPE_INT32, &attr->u.num);
 		dbus_message_iter_close_container(iter1, &iter2);
 	}
+
 	if (attr->type >= attr_type_boolean_begin && attr->type <= attr_type_int_end) {
 		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, DBUS_TYPE_BOOLEAN_AS_STRING, &iter2);
 		dbus_message_iter_append_basic(&iter2, DBUS_TYPE_BOOLEAN, &attr->u.num);
 		dbus_message_iter_close_container(iter1, &iter2);
 	}
+
 	if (attr->type >= attr_type_string_begin && attr->type <= attr_type_string_end) {
 		encode_variant_string(iter1, attr->u.str);
 	}
+
 	if ((attr->type >= attr_type_item_type_begin && attr->type <= attr_type_item_type_end) || attr->type == attr_item_type) {
 		encode_variant_string(iter1, item_to_name(attr->u.item_type));
+		attr->u.data = NULL;
 	}
-	if (attr->type >= attr_type_pcoord_begin && attr->type <= attr_type_pcoord_end) {
-		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ai", &iter2);
-		dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "i", &iter3);
-		if (attr->u.pcoord) {
-			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->pro);
-			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->x);
-			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->y);
+
+	if (attr->type >= attr_type_coord_geo_begin && attr->type <= attr_type_coord_geo_end) {
+		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ad", &iter2);
+		dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "d", &iter3);
+		if (attr->u.coord_geo) {
+			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lat);
+			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lng);
 		}
 		dbus_message_iter_close_container(&iter2, &iter3);
 		dbus_message_iter_close_container(iter1, &iter2);
 	}
+
+	if (attr->type >= attr_type_pcoord_begin && attr->type <= attr_type_pcoord_end) {
+			dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ai", &iter2);
+			dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "i", &iter3);
+			if (attr->u.pcoord) {
+				dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->pro);
+				dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->x);
+				dbus_message_iter_append_basic(&iter3, DBUS_TYPE_INT32, &attr->u.pcoord->y);
+			}
+			dbus_message_iter_close_container(&iter2, &iter3);
+			dbus_message_iter_close_container(iter1, &iter2);
+	}
+
 	if (attr->type >= attr_type_object_begin && attr->type <= attr_type_object_end) {
 		char *object=object_new(attr_to_name(attr->type), attr->u.data);
 		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, DBUS_TYPE_OBJECT_PATH_AS_STRING, &iter2);
@@ -2159,6 +2178,7 @@ dbus_cmd_send_signal(struct navit *navit, char *command, struct attr **in, struc
 	char *opath=object_new("navit",navit);
 	char *interface=g_strdup_printf("%s%s", service_name, ".navit");
 	dbg(lvl_debug,"enter %s %s %s\n",opath,command,interface);
+
 	msg = dbus_message_new_signal(opath, interface, "signal");
 	if (msg) {
 		DBusMessageIter iter1,iter2,iter3;
@@ -2180,6 +2200,7 @@ dbus_cmd_send_signal(struct navit *navit, char *command, struct attr **in, struc
 	g_free(interface);
 	return 0;
 }
+
 
 
 static struct command_table commands[] = {
