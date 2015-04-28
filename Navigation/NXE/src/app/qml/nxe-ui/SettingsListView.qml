@@ -7,5 +7,16 @@ ListView {
 
     delegate: SettingsListDelegate {
         onSubMenuRequested: subMenuRequest(url)
+
+        onValueChanged: {
+            console.debug("Changed " + label + "to " + value);
+            if (label === 'Point of Interest') {
+                if (value ==='on') {
+                    navitProxy.enablePoi = true;
+                } else {
+                    navitProxy.enablePoi = false;
+                }
+            }
+        }
     }
 }

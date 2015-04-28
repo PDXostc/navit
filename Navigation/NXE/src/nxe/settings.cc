@@ -13,7 +13,6 @@ namespace {
 const std::list<std::string> settingPaths{
     "/usr/share/nxe/nxe.conf",
     "/etc/nxe/nxe.conf",
-    "$HOME/.nxe/nxe.conf"
 };
 
 //! This will return first path in settingPaths that does exists and is readable

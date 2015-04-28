@@ -18,6 +18,7 @@ set( srcs
     app-main.cc
     navitsubcompositor.cc
     navitquickproxy.cc
+    appsettings.cc
 )
 
 file(GLOB qml_files qml/*.qml qml/*.js qml/nxe-ui/*.qml)

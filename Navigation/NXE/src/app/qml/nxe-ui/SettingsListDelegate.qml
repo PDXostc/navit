@@ -9,6 +9,7 @@ Item {
 
     signal subMenuRequested(string url)
     signal clicked(string menuItem)
+    signal valueChanged(string label, string value)
 
     MouseArea {
         anchors.fill: parent
@@ -58,6 +59,7 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 16
+                onTextChanged: root.valueChanged(mainTextItem.text, option.text)
             }
 
             Item {

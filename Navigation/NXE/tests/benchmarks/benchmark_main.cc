@@ -18,14 +18,11 @@ int main(int argc, char** argv)
     bool externalServer = std::find(arguments.begin(), arguments.end(), "--no-navit") != arguments.end();
 
     auto logger = spdlog::stdout_logger_mt("nxe");
-    auto perfLogger = spdlog::stdout_logger_mt("perf");
     if (debug) {
         logger->set_level(spdlog::level::trace);
-        perfLogger->set_level(spdlog::level::info);
     }
     else {
         logger->set_level(spdlog::level::off);
-        perfLogger->set_level(spdlog::level::off);
     }
 
     runNavit = !externalServer;

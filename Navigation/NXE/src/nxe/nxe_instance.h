@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <vector>
+#include <tuple>
 
 namespace NXE {
 class INavitProcess;
@@ -27,8 +28,6 @@ public:
     void registerMessageCallback(const MessageCbJSON_type& cb);
 
     bool HandleMessage(const NXE::JSONMessage& msg);
-
-    std::vector<double> renderMeasurements() const;
 
     void setWaylandSocketName(const std::string& socketName);
 

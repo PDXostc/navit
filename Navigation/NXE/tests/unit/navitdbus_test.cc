@@ -82,9 +82,22 @@ TEST_F(NavitDBusTest, setDestination)
     connection.setDestination(24.10,53.10,"dest1");
 }
 
-
 TEST_F(NavitDBusTest, clearDestination)
 {
     connection.clearDestination();
 }
 
+TEST_F(NavitDBusTest, setScheme)
+{
+    EXPECT_NO_THROW(
+    connection.setScheme("Car-JLR"));
+
+    EXPECT_NO_THROW(
+    connection.setScheme("Car-JLR-nopoi"));
+}
+
+TEST_F(NavitDBusTest, setScheme_failure)
+{
+    EXPECT_ANY_THROW(
+    connection.setScheme("Car-JLR-not-exists"));
+}

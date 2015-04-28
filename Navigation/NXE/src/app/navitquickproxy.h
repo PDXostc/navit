@@ -4,6 +4,8 @@
 #include <QtCore/QObject>
 #include <memory>
 
+#include "appsettings.h"
+
 namespace NXE {
 struct JSONMessage;
 class NXEInstance;
@@ -16,6 +18,7 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString position READ position NOTIFY positionChanged)
+    Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
 public:
     explicit NavitQuickProxy(const QString& socketName, QObject *parent = 0);
 
@@ -25,9 +28,13 @@ public:
     QString version() const;
     QString position() const;
 
+    bool enablePoi() const;
+    void setEnablePoi(bool enable);
+
 signals:
     void orientationChanged();
     void positionChanged();
+    void enablePoiChanged();
 
 public slots:
     void zoomIn();
@@ -38,8 +45,8 @@ public slots:
 private:
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
-    int m_orientation;
     QString m_position;
+    AppSettings m_settings;
 };
 
 #endif // NAVITQUICKPROXY_H

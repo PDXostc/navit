@@ -106,10 +106,6 @@ TEST_F(NXEInstanceTest, zoomInAndOut)
 TEST_F(NXEInstanceTest, renderMessage_correct)
 {
     instance.HandleMessage(TestUtils::renderMessage());
-    std::vector<double> mes = instance.renderMeasurements();
-    double mean = std::accumulate(mes.begin(), mes.end(), 0.0) / mes.size();
-    perfLog("render") << " mean = " << mean;
-    EXPECT_LT(mean, 400.0);
     // Message cannot be properly parsed!
     EXPECT_EQ(numberOfResponses, 1);
 }

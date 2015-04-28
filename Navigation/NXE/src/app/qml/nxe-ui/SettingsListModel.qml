@@ -6,12 +6,13 @@ ListModel {
     ListElement {
         itemText: "Point of Interest"
         type: "text"
+        settingsValue: "poi"
         options: [
             ListElement {
-                option: "off"
+                option: "on"
             },
             ListElement {
-                option: "on"
+                option: "off"
             }
         ]
     }

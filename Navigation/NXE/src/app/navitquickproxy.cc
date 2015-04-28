@@ -32,7 +32,6 @@ NavitQuickProxy::NavitQuickProxy(const QString &socketName, QObject* parent)
     : QObject(parent)
     , context(new Context)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
-    , m_orientation(0)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
     nxeInstance->Initialize();
@@ -41,25 +40,36 @@ NavitQuickProxy::NavitQuickProxy(const QString &socketName, QObject* parent)
         // navitCallback
         if (msg.call == "setOrientation") {
             if (msg.error.empty()) {
-                m_orientation = msg.data.get<int>("orientation");
-                aTrace() << "New orientation is " << m_orientation;
+                int orientation = msg.data.get<int>("orientation");
+                if (orientation == -1 ) {
+                    m_settings.set<Tags::Orientation>("Heads-up");
+                } else {
+                    m_settings.set<Tags::Orientation>("North-up");
+                }
+                aTrace() << "New orientation is " << m_settings.get<Tags::Orientation>();
                 emit orientationChanged();
             }
         } else if(msg.call== "position") {
-//            m_position = msg.data.get
             aDebug() << "Received position update";
             double lat = msg.data.get<double>("latitude");
             double lon = msg.data.get<double>("longitude");
             double alt = msg.data.get<double>("altitude");
             m_position = QString("%1 %2 %3").arg(lat).arg(lon).arg(alt);
             emit positionChanged();
+        } else if(msg.call == "setScheme") {
+            const std::string schemeName = msg.data.get<std::string>("scheme");
+            if (schemeName == "Car-JLR") {
+                m_settings.set<Tags::EnablePoi>(true);
+            } else {
+                m_settings.set<Tags::EnablePoi>(false);
+            }
         }
     });
 }
 
 int NavitQuickProxy::orientation()
 {
-    return m_orientation;
+    return m_settings.get<Tags::Orientation>() == "North-up"? 0 : -1;
 }
 
 void NavitQuickProxy::setOrientation(int orientation)
@@ -78,6 +88,18 @@ QString NavitQuickProxy::version() const
 QString NavitQuickProxy::position() const
 {
     return m_position;
+}
+
+bool NavitQuickProxy::enablePoi() const
+{
+    return m_settings.get<Tags::EnablePoi>();
+}
+
+void NavitQuickProxy::setEnablePoi(bool enable)
+{
+    boost::property_tree::ptree p;
+    p.put("scheme", enable ? "Car-JLR" : "Car-JLR-nopoi");
+    nxeInstance->HandleMessage(NXE::JSONMessage {1,"setScheme", "", p });
 }
 
 void NavitQuickProxy::zoomIn()

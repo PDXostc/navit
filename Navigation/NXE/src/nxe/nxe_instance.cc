@@ -42,8 +42,6 @@ struct NXEInstancePrivate {
     NavitController controller;
     Settings settings;
     std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
-    std::map<std::string, std::chrono::time_point<std::chrono::high_resolution_clock> > timers;
-    std::vector<double> perfMeasurement;
 
     // Which messages cause a screen redraw
     bool initialized{ false };
@@ -67,15 +65,6 @@ struct NXEInstancePrivate {
     void navitMsgCallback(const JSONMessage& response)
     {
         // At first try to calculate processign time
-        auto it = timers.find(response.call);
-        if (it != timers.end()) {
-            auto now = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> diff = now - timers[response.call];
-            double res = diff.count();
-            perfMeasurement.push_back(res);
-            perfLog(response.call) << " parsing took " << res << " ms";
-            timers.erase(it);
-        }
         postMessage(response);
         nTrace() << "Finished posting response";
     }
@@ -135,25 +124,15 @@ void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type 
 bool NXEInstance::HandleMessage(const JSONMessage &msg)
 {
     try {
-        d->timers[msg.call] = std::chrono::high_resolution_clock::now();
         d->controller.handleMessage(msg);
         return true;
     }
     catch (const std::exception& ex) {
         nFatal() << "Unable to handle message " << msg.call << ", error=" << ex.what();
         NXE::JSONMessage error{ msg.id, msg.call, ex.what() };
-        auto it = d->timers.find(msg.call);
-        if (it != d->timers.end()) {
-            d->timers.erase(it);
-        }
         d->postMessage(error);
     }
     return false;
-}
-
-std::vector<double> NXEInstance::renderMeasurements() const
-{
-    return d->perfMeasurement;
 }
 
 void NXEInstance::setWaylandSocketName(const std::string &socketName)

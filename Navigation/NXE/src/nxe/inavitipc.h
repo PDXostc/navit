@@ -29,6 +29,8 @@ public:
     virtual void setPosition(double longitude, double latitude) = 0;
     virtual void clearDestination() = 0;
 
+    virtual void setScheme(const std::string& scheme) = 0;
+
     // Signals from IPC
     virtual SpeechSignal& speechSignal() = 0;
     virtual InitializedSignal& initializedSignal() = 0;

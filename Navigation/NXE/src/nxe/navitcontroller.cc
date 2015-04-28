@@ -48,7 +48,8 @@ struct NavitControllerPrivate {
         boost::fusion::make_pair<AvailableMapsMessage>("availableMaps"),
         boost::fusion::make_pair<SetDestinationMessage>("setDestination"),
         boost::fusion::make_pair<ClearDestinationMessage>("clearDestination"),
-        boost::fusion::make_pair<SetPositionMessage>("setPosition")
+        boost::fusion::make_pair<SetPositionMessage>("setPosition"),
+        boost::fusion::make_pair<SetScheme>("setScheme")
     };
 
     map_cb_type cb{
@@ -192,6 +193,16 @@ struct NavitControllerPrivate {
             successSignal(response);
         }),
 
+        boost::fusion::make_pair<SetScheme>([this](const JSONMessage& message) {
+
+            const std::string scheme = message.data.get<std::string>("scheme");
+            nInfo() << "Changing scheme to " << scheme;
+
+            ipc->setScheme(scheme);
+
+            JSONMessage response {message.id, message.call, "", message.data};
+            successSignal(response);
+        }),
 
     };
 

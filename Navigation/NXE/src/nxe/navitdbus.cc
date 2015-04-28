@@ -153,13 +153,15 @@ void NavitDBus::setPosition(double longitude, double latitude)
     DBus::call("set_position", *(d->object.get()), message);
 }
 
-
-
 void NavitDBus::clearDestination()
 {
-	DBus::call("clear_destination", *(d->object.get()));
+    DBus::call("clear_destination", *(d->object.get()));
 }
 
+void NavitDBus::setScheme(const std::string &scheme)
+{
+    DBus::call("set_layout", *(d->object.get()), scheme);
+}
 
 INavitIPC::SpeechSignal& NavitDBus::speechSignal()
 {
