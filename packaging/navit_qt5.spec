@@ -85,7 +85,7 @@ install -m 644 %{navit_dir}/navit/xpm/*.png $RPM_BUILD_ROOT/%{_datadir}/navit/xp
 install -m 644 %{navit_dir}/../custom/img/*.png $RPM_BUILD_ROOT/%{_datadir}/navit/xpm/
 
 # install customized ui layout and settings
-install -m 644 %{navit_dir}/../custom/navit.xml $RPM_BUILD_ROOT/%{_datadir}/navit/
+install -m 644 %{navit_dir}/../custom/navit2.xml $RPM_BUILD_ROOT/%{_datadir}/navit/navit.xml
 
 #install example map
 mkdir $RPM_BUILD_ROOT/%{_datadir}/navit/maps

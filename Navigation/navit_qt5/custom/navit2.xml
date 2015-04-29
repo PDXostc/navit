@@ -16,7 +16,7 @@ SYSTEM "navit.dtd">
     <navit center="4531 N 12240 W" zoom="128" tracking="1" orientation="-1" recent_dest="10">
         <graphics type="qt_qpainter"/>
         <gui type="gtk" enabled="no" menubar="1" toolbar="1" statusbar="1"/>
-        <gui type="internal" font_size="450" enabled="yes" fullscreen="1" menu_on_map_click="1"><![CDATA[
+        <gui type="internal" font_size="450" enabled="yes" fullscreen="1" menu_on_map_click="0"><![CDATA[
             <html>
                 <a name='Main Menu'><text>Main menu</text>
                     <a href='#Actions'><img src='gui_actions'>Actions</img></a>
