@@ -96,7 +96,7 @@ TEST_F(NavitDBusTest, setScheme)
     connection.setScheme("Car-JLR-nopoi"));
 }
 
-TEST_F(NavitDBusTest, setScheme_failure)
+TEST_F(NavitDBusTest, DISABLED_setScheme_failure)
 {
     EXPECT_ANY_THROW(
     connection.setScheme("Car-JLR-not-exists"));

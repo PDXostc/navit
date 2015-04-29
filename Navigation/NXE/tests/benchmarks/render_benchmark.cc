@@ -3,7 +3,6 @@
 #include "nxe_instance.h"
 #include "context.h"
 #include "navitprocessimpl.h"
-#include "navitcontroller.h"
 #include "inavitipc.h"
 #include "navitdbus.h"
 #include "testutils.h"
@@ -40,13 +39,12 @@ struct RenderTest {
 void renderOneFrame(benchmark::State& state)
 {
     RenderTest t;
-    EXPECT_CALL(*(t.mock_mapd), setListener(::testing::_));
 
     t.instance.Initialize();
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     while (state.KeepRunning()) {
-        t.instance.HandleMessage(TestUtils::renderMessage());
+        t.instance.HandleMessage123<RenderMessageTag>();
     }
 }
 
@@ -59,14 +57,13 @@ void moveBackAndForth(benchmark::State& state)
     fwdTree.put("y", 900);
 
     RenderTest t;
-    EXPECT_CALL(*(t.mock_mapd), setListener(::testing::_));
     t.instance.Initialize();
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
 
     while (state.KeepRunning()) {
-        t.instance.HandleMessage(NXE::JSONMessage{ 3, "moveBy", "", backTree });
-        t.instance.HandleMessage(NXE::JSONMessage{ 3, "moveBy", "", fwdTree });
+        t.instance.HandleMessage123<MoveByMessageTag>(500,900);
+        t.instance.HandleMessage123<MoveByMessageTag>(500,900);
     }
 }
 

@@ -139,6 +139,7 @@ void NavitDBus::setCenter(double longitude, double latitude)
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
 {
+    nDebug() << "Setting destionation to. name= " << description;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "appsettings.h"
+#include "imapdownloader.h"
 
 namespace NXE {
 struct JSONMessage;
@@ -47,6 +48,7 @@ private:
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QString m_position;
     AppSettings m_settings;
+    NXE::MapDownloaderListener mapDownloaderListener;
 };
 
 #endif // NAVITQUICKPROXY_H

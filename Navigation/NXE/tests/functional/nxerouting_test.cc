@@ -1,6 +1,5 @@
 #include "nxe_instance.h"
 #include "navitprocessimpl.h"
-#include "navitcontroller.h"
 #include "navitdbus.h"
 #include "mapdownloaderdbus.h"
 #include "gpsdprovider.h"
@@ -32,7 +31,6 @@ struct NXEInstanceTest : public ::testing::Test {
                 .bind<ISpeech,SpeechMock>();
     }() };
     NXEInstance instance{ injector };
-    JSONMessage respMsg;
     bool receivedRender{ false };
     std::size_t numberOfResponses = 0;
 
@@ -41,77 +39,54 @@ struct NXEInstanceTest : public ::testing::Test {
         TestUtils::createNXEConfFile();
     }
 
-    void callback(const JSONMessage& resp)
-    {
-        respMsg = resp;
-        numberOfResponses++;
+    void SetUp() override {
+        instance.Initialize();
+        std::chrono::milliseconds dura(1000);
+        std::this_thread::sleep_for(dura);
     }
 
     void setDestination(double lon, double lat, const char* desc)
     {
-         instance.HandleMessage(TestUtils::setDestinationMessage(lon,lat,desc));
+         instance.HandleMessage123<SetDestinationMessageTag>(lon, lat, desc);
     }
 
     void setPosition(double lon, double lat)
     {
-         instance.HandleMessage(TestUtils::setPositionMessage(lon,lat));
+         instance.HandleMessage123<SetPositionMessageTag>(lon, lat);
     }
 
     void clearDestination()
     {
-        instance.HandleMessage(TestUtils::clearDestinationMessage());
+        instance.HandleMessage123<ClearDestinationMessageTag>();
     }
 };
 
-
 TEST_F(NXEInstanceTest, Routing)
 {
-    instance.registerMessageCallback(std::bind(&NXEInstanceTest::callback, this, std::placeholders::_1));
-    instance.Initialize();
 
     setPosition(11.5659, 48.1392);
-
-    ASSERT_EQ(respMsg.call, "setPosition");
-    EXPECT_TRUE(respMsg.data.empty());
 
     std::chrono::milliseconds dura_1s(1000);
     std::this_thread::sleep_for(dura_1s);
 
     setDestination(11.5775, 48.1427, "1");
 
-    ASSERT_EQ(respMsg.call, "setDestination");
-    EXPECT_TRUE(respMsg.data.empty());
-
     std::chrono::milliseconds dura_5s(5000);
     std::this_thread::sleep_for(dura_5s);
 
     clearDestination();
-    ASSERT_EQ(respMsg.call, "clearDestination");
-    EXPECT_TRUE(respMsg.data.empty());
-
     setDestination(11.5875, 48.1527, "2");
-
-    ASSERT_EQ(respMsg.call, "setDestination");
-    EXPECT_TRUE(respMsg.data.empty());
 
     std::this_thread::sleep_for(dura_5s);
 
     setPosition(11.5859, 48.1692);
 
-    ASSERT_EQ(respMsg.call, "setPosition");
-    EXPECT_TRUE(respMsg.data.empty());
-
     std::this_thread::sleep_for(dura_1s);
 
     setDestination(11.5975, 48.1727, "3");
 
-    ASSERT_EQ(respMsg.call, "setDestination");
-    EXPECT_TRUE(respMsg.data.empty());
-
     std::this_thread::sleep_for(dura_5s);
 
     clearDestination();
-    ASSERT_EQ(respMsg.call, "clearDestination");
-    EXPECT_TRUE(respMsg.data.empty());
 }
 

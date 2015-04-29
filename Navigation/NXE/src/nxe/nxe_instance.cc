@@ -1,21 +1,12 @@
 #include "nxe_instance.h"
 #include "inavitprocess.h"
-#include "navitcontroller.h"
-#include "jsonmessage.h"
 #include "settings.h"
 #include "settingtags.h"
 #include "log.h"
 #include "calls.h"
 #include "inavitipc.h"
-
-#include <boost/algorithm/string.hpp>
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
-
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/base64_from_binary.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
-#include <boost/algorithm/string.hpp>
+#include "igpsprovider.h"
+#include "imapdownloader.h"
 
 #include <sstream>
 #include <string>
@@ -23,7 +14,8 @@
 #include <iomanip>
 #include <fruit/injector.h>
 
-namespace bipc = boost::interprocess;
+using namespace std;
+using namespace boost::fusion;
 
 namespace NXE {
 
@@ -31,52 +23,76 @@ struct NXEInstancePrivate {
 
     NXEInstancePrivate(DI::Injector& ifaces, NXEInstance* qptr)
         : navitProcess(ifaces.get<std::shared_ptr<INavitProcess> >())
-        , q(qptr)
-        , controller(ifaces)
+        , ipc(ifaces.get<std::shared_ptr<INavitIPC> >())
+        , gps(ifaces.get<std::shared_ptr<IGPSProvider> >())
+        , mapDownloaderIPC(ifaces.get<std::shared_ptr<IMapDownloader> >())
     {
         nTrace() << "NXEInstancePrivate::NXEInstancePrivate()";
+//            nDebug() << "Position changed";
+//            bpt::ptree values;
+//            values.put("altitude", p.altitude);
+//            values.put("longitude", p.longitude);
+//            values.put("latitude", p.latitude);
+//            JSONMessage response {0, "position", "", values };
+//            d->successSignal(response);
     }
 
     std::shared_ptr<INavitProcess> navitProcess;
-    NXEInstance* q;
-    NavitController controller;
+    std::shared_ptr<INavitIPC> ipc;
+    std::shared_ptr<IGPSProvider> gps;
+    std::shared_ptr<IMapDownloader> mapDownloaderIPC;
     Settings settings;
     std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
 
     // Which messages cause a screen redraw
     bool initialized{ false };
 
-    // This is for all messages but 'render'
-    void postMessage(const JSONMessage& message)
+    void moveBy(int x, int y)
     {
-        nTrace() << "Posting response for " << message.call;
-
-        // This is our internal post message
-        try {
-            std::for_each(callbacksJSon.begin(), callbacksJSon.end(), [&message](const NXEInstance::MessageCbJSON_type& callback) {
-                callback(message);
-            });
-        }
-        catch (const std::exception& ex) {
-            nInfo() << "An exception happen when calling a callback of message. We really don't care about it";
-        }
+        ipc->moveBy(x, y);
     }
 
-    void navitMsgCallback(const JSONMessage& response)
+    void setOrientation(int newOrientation)
     {
-        // At first try to calculate processign time
-        postMessage(response);
-        nTrace() << "Finished posting response";
+        ipc->setOrientation(newOrientation);
+    }
+
+    void zoomBy(int factor)
+    {
+        ipc->zoomBy(factor);
+    }
+
+    int zoomMessage()
+    {
+        return ipc->zoom();
     }
 };
 
 NXEInstance::NXEInstance(DI::Injector& impls)
     : d(new NXEInstancePrivate{ impls, this })
+    , fusion_list(
+          make_pair<MoveByMessageTag>(bind(&NXEInstancePrivate::moveBy, d.get(), placeholders::_1, placeholders::_2)),
+          make_pair<ZoomByMessageTag>(bind(&NXEInstancePrivate::zoomBy, d.get(), placeholders::_1)),
+          make_pair<ZoomMessageTag>(bind(&NXEInstancePrivate::zoomMessage, d.get())),
+          make_pair<SetOrientationMessageTag>(bind(&NXEInstancePrivate::setOrientation, d.get(), placeholders::_1)),
+          make_pair<PositionMessageTag>(bind(&IGPSProvider::position, d->gps.get())),
+          make_pair<RenderMessageTag>(bind(&INavitIPC::render, d->ipc.get())),
+          make_pair<ExitMessageTag>(bind(&INavitIPC::quit, d->ipc.get())),
+          make_pair<OrientationMessageTag>(bind(&INavitIPC::orientation, d->ipc.get())),
+          make_pair<SetCenterMessageTag>(bind(&INavitIPC::setCenter, d->ipc.get(), placeholders::_1, placeholders::_2)),
+          make_pair<DownloadMessageTag>(bind(&IMapDownloader::download, d->mapDownloaderIPC.get(), placeholders::_1)),
+          make_pair<CancelDownloadMessageTag>(bind(&IMapDownloader::cancel, d->mapDownloaderIPC.get(), placeholders::_1)),
+          make_pair<AvailableMapsMessageTag>(bind(&IMapDownloader::availableMaps, d->mapDownloaderIPC.get())),
+          make_pair<SetDestinationMessageTag>( [this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
+          make_pair<ClearDestinationMessageTag>( bind(&INavitIPC::clearDestination, d->ipc.get())),
+          make_pair<SetPositionMessageTag>(bind(&INavitIPC::setPosition, d->ipc.get(), placeholders::_1, placeholders::_2)),
+          make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1))
+      )
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
-    auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
-    d->controller.addListener(bound);
+    //    auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
+    //    d->controller.addListener(bound);
 }
 
 NXEInstance::~NXEInstance()
@@ -111,33 +127,31 @@ void NXEInstance::Initialize()
         else {
             nInfo() << "Navit external is set, won't run";
         }
-        d->controller.tryStart();
+        nDebug() << "Trying to start IPC Navit controller";
+        //        d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
+        d->ipc->initializedSignal().connect([]() {});
     }
     d->initialized = true;
 }
 
-void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type &cb)
+void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type& cb)
 {
     d->callbacksJSon.push_back(cb);
 }
 
-bool NXEInstance::HandleMessage(const JSONMessage &msg)
-{
-    try {
-        d->controller.handleMessage(msg);
-        return true;
-    }
-    catch (const std::exception& ex) {
-        nFatal() << "Unable to handle message " << msg.call << ", error=" << ex.what();
-        NXE::JSONMessage error{ msg.id, msg.call, ex.what() };
-        d->postMessage(error);
-    }
-    return false;
-}
-
-void NXEInstance::setWaylandSocketName(const std::string &socketName)
+void NXEInstance::setWaylandSocketName(const std::string& socketName)
 {
     d->navitProcess->setSocketName(socketName);
+}
+
+void NXEInstance::setMapDownloaderListener(const MapDownloaderListener &listener)
+{
+    d->mapDownloaderIPC->setListener(listener);
+}
+
+void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb &listener)
+{
+    d->gps->addPostionUpdate(listener);
 }
 
 } // namespace NXE

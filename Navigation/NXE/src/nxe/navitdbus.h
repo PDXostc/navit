@@ -1,7 +1,6 @@
 #ifndef NXE_NAVITDBUS_H
 #define NXE_NAVITDBUS_H
 
-#include "navitcontroller.h"
 #include "inavitipc.h"
 
 #include <fruit/macro.h>

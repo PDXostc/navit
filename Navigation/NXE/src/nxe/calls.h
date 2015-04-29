@@ -1,11 +1,13 @@
 #ifndef CALLS_H
 #define CALLS_H
 
-#include "jsonmessage.h"
+#include "position.h"
 
 #include <string>
 #include <map>
+#include <vector>
 #include <functional>
+#include <type_traits>
 #include <boost/mpl/vector.hpp>
 #include <boost/mpl/transform.hpp>
 #include <boost/fusion/container.hpp>
@@ -17,48 +19,90 @@
 #include <boost/property_tree/ptree.hpp>
 
 // Messages handled by application
-// clang-format off
-struct MoveByMessage {};
-struct ZoomByMessage {};
-struct ZoomMessage {};
-struct PositionMessage {};
-struct RenderMessage {};
-struct ExitMessage {};
-struct SetOrientationMessage {};
-struct OrientationMessage {};
-struct SetCenterMessage {};
-struct DownloadMessage {};
-struct CancelDownloadMessage {};
-struct AvailableMapsMessage {};
-struct SetDestinationMessage {};
-struct ClearDestinationMessage {};
-struct SetPositionMessage {};
-struct SetScheme {};
-// clang-format on
 
-// Container of all registered messages
-typedef boost::mpl::vector<MoveByMessage, ZoomByMessage, ZoomMessage,
-    PositionMessage, RenderMessage, ExitMessage,
-    SetOrientationMessage, OrientationMessage,
-    SetCenterMessage, DownloadMessage, CancelDownloadMessage,
-    AvailableMapsMessage, SetDestinationMessage, ClearDestinationMessage,
-    SetPositionMessage, SetScheme
-    > Messages_type;
-
-typedef std::function<void(const NXE::JSONMessage& data)> JSONMessageParser_type;
-
-template <typename T>
-struct make_sig_pair {
-    typedef typename boost::fusion::result_of::make_pair<T, std::string>::type type;
+template<typename ReturnType, typename... Args>
+struct AMessage {
+    typedef ReturnType RType;
 };
 
-typedef typename boost::fusion::result_of::as_map<
-    typename boost::mpl::transform<Messages_type,
-        make_sig_pair<boost::mpl::_1> >::type>::type map_type;
+struct ZoomMessageTag {
+    typedef std::function<int ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
+struct MoveByMessageTag {
+    typedef std::function<void (int,int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
+struct SetOrientationMessageTag {
+    typedef std::function<void (int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct ZoomByMessageTag {
+    typedef std::function<void (int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct PositionMessageTag {
+    typedef std::function<NXE::Position ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct RenderMessageTag {
+    typedef std::function<void ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct ExitMessageTag {
+    typedef std::function<void ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct OrientationMessageTag {
+    typedef std::function<int ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SetCenterMessageTag {
+    typedef std::function<void (double, double)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct DownloadMessageTag {
+    typedef std::function<void (const std::string& )> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct CancelDownloadMessageTag {
+    typedef std::function<void (const std::string&)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct AvailableMapsMessageTag {
+    typedef std::function<std::vector<std::string> ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SetDestinationMessageTag {
+    typedef std::function<void (double, double, const char*)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct ClearDestinationMessageTag {
+    typedef std::function<void ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SetPositionMessageTag {
+    typedef std::function<void (double, double)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SetSchemeMessageTag {
+    typedef std::function<void (const std::string&)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
+// Containter
+typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
+      PositionMessageTag, RenderMessageTag, ExitMessageTag, OrientationMessageTag, SetCenterMessageTag,
+      DownloadMessageTag, CancelDownloadMessageTag, AvailableMapsMessageTag,SetDestinationMessageTag,
+      ClearDestinationMessageTag, SetPositionMessageTag,
+      SetSchemeMessageTag
+    > Messages_type;
 
 template <typename T>
 struct make_cb_pair {
-    typedef typename boost::fusion::result_of::make_pair<T, JSONMessageParser_type>::type type;
+    typedef typename boost::fusion::result_of::make_pair<T, typename T::Parser>::type type;
 };
 
 typedef typename boost::fusion::result_of::as_map<

@@ -30,11 +30,9 @@ set(NXE_SRCS
 
     nxe_extension.cc
     nxe_instance.cc
-    navitcontroller.cc
     calls.h
     log.h
     log.cc
-    jsonmessage.cc
     settings.cc
     settingtags.h
     position.h
