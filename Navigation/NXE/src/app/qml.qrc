@@ -9,10 +9,8 @@
         <file>qml/nxe-ui/CountryLanguage.qml</file>
         <file>qml/nxe-ui/download_hex_icon.png</file>
         <file>qml/nxe-ui/DownloadMaps.qml</file>
-        <file>qml/nxe-ui/DownloadMaps.qml.orig</file>
         <file>qml/nxe-ui/FTUMainPage.qml</file>
         <file>qml/nxe-ui/MainPage.qml</file>
-        <file>qml/nxe-ui/MainPage.qml.orig</file>
         <file>qml/nxe-ui/map.jpg</file>
         <file>qml/nxe-ui/map_icon_white.png</file>
         <file>qml/nxe-ui/MenuHeaderButton.qml</file>
