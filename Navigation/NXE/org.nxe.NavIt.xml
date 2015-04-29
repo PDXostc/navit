@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" package="org.nxe.NavIt" version="1.0.4" install-location="internal-only">
+	<label>NavIt</label>
+  	<description>NavIt Navigation</description>
+	<ui-application appid="org.nxe.NavIt" exec="/usr/bin/nxe-app" nodisplay="false" multiple="false" type="capp" taskmanage="true">
+		<icon>org.nxe.NavIt.png</icon>
+		<label>NavIt</label>
+		<label xml:lang="en-gb">NavIt</label>
+		<label xml:lang="en-us">NavIt</label>
+
+	</ui-application>
+</manifest>

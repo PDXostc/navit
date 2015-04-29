@@ -78,3 +78,9 @@ install (FILES nxe.conf
 install (FILES org.nxe.navit.desktop
          DESTINATION share/applications
  )
+install (FILES org.nxe.NavIt.xml
+         DESTINATION share/packages
+ )
+install (FILES org.nxe.NavIt.png
+    DESTINATION share/icons/default/small
+ )

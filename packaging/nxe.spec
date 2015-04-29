@@ -5,7 +5,7 @@ Version:        1.0
 Release:        4
 Summary:        Crosswalk extension to control Navit
 
-Group:          System/Libraries
+Group:          Applications/Navigation
 License:        GPL-3.0
 URL:            http://navit.sourceforge.net/
 Source0:        %{name}-%{version}.tar.gz
@@ -82,3 +82,5 @@ make install DESTDIR=%{buildroot}
 %{_prefix}/share/dbus-1/services/org.nxe.mapdownloader.service
 %{_prefix}/share/applications/org.nxe.navit.desktop
 %{_prefix}/bin/nxe-tizen-test
+%{_datadir}/packages/org.nxe.NavIt.xml
+%{_datadir}/icons/default/small/org.nxe.NavIt.png
