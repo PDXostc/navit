@@ -82,7 +82,7 @@ Page {
             id: headerText
             color: "white"
             text: "Downloading (" + (currentDownloadIndex + 1) +" of " + maps.length + ")"
-            font.pointSize: 18
+            font.pixelSize: 18
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
@@ -111,7 +111,7 @@ Page {
             height: 20
             Text {
                 text: currentDownloadMap
-                font.pointSize: 16
+                font.pixelSize: 16
                 color: "white"
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
@@ -123,6 +123,7 @@ Page {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 color: "white"
+                font.pixelSize: 16
             }
         }
 
@@ -131,7 +132,7 @@ Page {
             height: 20
             Text {
                 text: "Time remaining"
-                font.pointSize: 16
+                font.pixelSize: 16
                 color: "white"
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
@@ -142,6 +143,7 @@ Page {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 color: "white"
+                font.pixelSize: 16
             }
         }
     }
