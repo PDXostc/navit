@@ -24,4 +24,87 @@ ListModel {
         itemText: "26 kwietnia 19, Szczecin"
         favorite: false
     }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "26 kwietnia 19, Szczecin"
+        favorite: false
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
+    ListElement {
+        itemText: "Polo Market, Krosno Odrzańskie"
+        favorite: false
+        description: "yesterday"
+    }
 }

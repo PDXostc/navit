@@ -33,6 +33,7 @@ ListModel {
     ListElement {
         itemText: "2D/3D View"
         type: "text"
+        settingsValue: "perspective"
         options: [
             ListElement {
                 option: "2D"
@@ -45,6 +46,7 @@ ListModel {
     ListElement {
         itemText: "Theme"
         type: "text"
+        settingValue: "theme"
         options: [
             ListElement {
                 option: "basic"
@@ -54,6 +56,7 @@ ListModel {
     ListElement {
         itemText: "Fast/Short Routes"
         type: "text"
+        settingsValue: "routeType"
         options: [
             ListElement {
                 option: "basic"
@@ -63,6 +66,7 @@ ListModel {
     ListElement {
         itemText: "Voice Navigation"
         type: "text"
+        settingsValue: "voice"
         options: [
             ListElement {
                 option: "on"

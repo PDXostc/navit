@@ -127,8 +127,7 @@ Rectangle {
             id: stack
             initialItem: LocationsListView {
                 id: locationsListView
-                model: LocationsListModel {
-                }
+                model: LocationsListModel {}
                 width: parent.width
                 height: parent.height - 100
                 clip: true

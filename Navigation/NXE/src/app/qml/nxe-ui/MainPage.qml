@@ -15,13 +15,14 @@ Item {
                 console.debug("menu clicked");
                 rootStack.push(settingsView)
             } else if (item === "search") {
-                if (bottomLocationBarLoader.sourceComponent !== null) {
-                    topLocationBarLoader.sourceComponent = null
-                    bottomLocationBarLoader.sourceComponent = null
-                } else {
-                    topLocationBarLoader.sourceComponent = topLocationBar
-                    bottomLocationBarLoader.sourceComponent = bottomLocationBar
-                }
+//                if (bottomLocationBarLoader.sourceComponent !== null) {
+//                    topLocationBarLoader.sourceComponent = null
+//                    bottomLocationBarLoader.sourceComponent = null
+//                } else {
+//                    topLocationBarLoader.sourceComponent = topLocationBar
+//                    bottomLocationBarLoader.sourceComponent = bottomLocationBar
+//                }
+                rootStack.push(locationsView)
             } else if (item === "northOrientation") {
                 console.debug("North orientation activated")
             } else if (item === "headOrientation") {

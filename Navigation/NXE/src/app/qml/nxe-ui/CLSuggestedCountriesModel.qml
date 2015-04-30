@@ -24,11 +24,11 @@ ListModel {
         size: 2000
     }
     ListElement {
-        itemText: "All World"
+        itemText: "View All Maps"
         type: "sublist"
         options: [
             ListElement {
-                url: "AllMaps.qml"
+                url: "CLAllMaps.qml"
             }
         ]
     }

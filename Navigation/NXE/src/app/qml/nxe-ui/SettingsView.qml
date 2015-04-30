@@ -10,7 +10,6 @@ Rectangle {
     signal backToMapRequest
     property bool ftu: false
 
-
     Column {
         anchors.fill: parent
         anchors.leftMargin: 10
@@ -39,8 +38,8 @@ Rectangle {
                     iconHeight: 24
 
                     onClicked: {
-                        if (stack.depth !== 1) {
-                            stack.pop()
+                        if (settingsStackView.depth !== 1) {
+                            settingsStackView.pop()
                         } else {
                             backToMapRequest()
                         }
@@ -91,25 +90,32 @@ Rectangle {
         }
 
         StackView {
-            id: stack
+            id: settingsStackView
             Component.onCompleted: {
                 if (ftu) {
-                    stack.push(Qt.resolvedUrl("CountryLanguage.qml"));
-                    backButton.enabled = false;
-                    mapBackButton.enabled = false;
-                    header.opacity = 0.4;
+                    stack.push(Qt.resolvedUrl("CountryLanguage.qml"))
+                    backButton.enabled = false
+                    mapBackButton.enabled = false
+                    header.opacity = 0.4
                 } else {
                 }
             }
 
-            initialItem: SettingsListView {
-                id: settingsListView
-                model: SettingsListModel {}
+            initialItem: Item {
                 width: parent.width
                 height: parent.height - 100
-                clip: true
-
-                onSubMenuRequest: stack.push(Qt.resolvedUrl(url))
+                SettingsListView {
+                    id: settingsListView
+                    model: SettingsListModel {
+                    }
+                    anchors.fill: parent
+                    clip: true
+                    onSubMenuRequest: settingsStackView.push(
+                                          Qt.resolvedUrl(url))
+                }
+                ScrollBar {
+                    flk: settingsListView
+                }
             }
         }
     }

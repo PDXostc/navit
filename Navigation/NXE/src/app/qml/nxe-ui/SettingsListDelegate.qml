@@ -13,6 +13,11 @@ Item {
     signal clicked(string menuItem)
 
     Component.onCompleted: {
+
+        if (type !== 'text') {
+            return
+        }
+
         var settingValue = navitProxy.valueFor(settingsValue);
 
         for(var i=0;i < maxOptions; ++i) {
