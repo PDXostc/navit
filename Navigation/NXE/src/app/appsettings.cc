@@ -14,7 +14,7 @@ std::string getConfigPath()
         throw std::runtime_error("HOME does not exists");
     }
 
-    const bfs::path defPath = homePath / bfs::path{".nxe"};
+    const bfs::path defPath = homePath / bfs::path{".NavIt"};
     const bfs::path defFilePath = defPath / "user.conf";
 
     if (!bfs::exists(defPath)) {
