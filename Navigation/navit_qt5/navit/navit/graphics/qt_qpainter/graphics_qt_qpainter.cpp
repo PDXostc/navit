@@ -32,6 +32,7 @@
 
 #include <QElapsedTimer>
 
+static struct graphics_priv *event_gr = 0;
 //##############################################################################################################
 //# Description: RenderArea (QWidget) class for the main window (map, menu, ...) 
 //# Comment: 
@@ -149,6 +150,12 @@ struct graphics_image_priv {
 //##############################################################################################################
 static void graphics_destroy(struct graphics_priv *gr)
 {
+    if (gr == event_gr) {
+        event_gr = 0;
+    }
+    qDebug() << Q_FUNC_INFO << gr;
+    delete gr->widget;
+    gr->widget = 0;
 #ifdef QT_QPAINTER_USE_FREETYPE
 	gr->freetype_methods.destroy();
 #endif
@@ -748,7 +755,8 @@ static struct graphics_priv * overlay_new(struct graphics_priv *gr, struct graph
 	}
 #endif
 	ret->widget= new RenderArea(ret,gr->widget,w,h,1);
-	ret->wraparound=wraparound;
+    qDebug() << "New widget" << ret->widget;
+    ret->wraparound=wraparound;
 	ret->painter=new QPainter;
 	ret->p=*p;
 	ret->parent=gr;
@@ -763,16 +771,18 @@ static struct graphics_priv * overlay_new(struct graphics_priv *gr, struct graph
 #ifdef QT_QPAINTER_USE_EVENT_QT
 
 
-static struct graphics_priv *event_gr;
 
 static void
 event_qt_main_loop_run(void)
 {
-	event_gr->app->exec();
+    qDebug() << Q_FUNC_INFO;
+    event_gr->app->exec();
+    qDebug() << "Finished";
 }
 
 static void event_qt_main_loop_quit(void)
 {
+    qDebug() << Q_FUNC_INFO;
 	dbg(lvl_debug,"enter\n");
 	exit(0);
 }
@@ -803,6 +813,8 @@ static struct event_timeout *
 event_qt_add_timeout(int timeout, int multi, struct callback *cb)
 {
 	int id;
+    if (!event_gr)
+        return 0;
 	id=event_gr->widget->startTimer(timeout);
 	g_hash_table_insert(event_gr->widget->timer_callback, (void *)id, cb);
 	g_hash_table_insert(event_gr->widget->timer_type, (void *)id, (void *)!!multi);
@@ -927,6 +939,7 @@ static struct graphics_priv * graphics_qt_qpainter_new(struct navit *nav, struct
 	ret->painter = new QPainter;
 #ifdef QT_QPAINTER_USE_EVENT_QT
 	event_gr=ret;
+    qDebug() << "event_gr" << event_gr << "widget=" << ret->widget << event_gr->widget;
 #endif
     ret->w=800;
     ret->h=600;
