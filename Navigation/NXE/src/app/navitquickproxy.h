@@ -43,7 +43,13 @@ public slots:
     void moveTo(int x, int y);
     void render();
 
+    QString valueFor(const QString& optionName);
+    void changeValueFor(const QString& optionName, const QString& newVal);
+
 private:
+
+    void synchronizeNavit();
+
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QString m_position;

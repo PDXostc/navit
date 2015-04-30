@@ -6,7 +6,7 @@ ListModel {
     ListElement {
         itemText: "Point of Interest"
         type: "text"
-        settingsValue: "poi"
+        settingsValue: "enablePoi"
         options: [
             ListElement {
                 option: "on"
@@ -20,6 +20,7 @@ ListModel {
     ListElement {
         itemText: "Orientation"
         type: "text"
+        settingsValue: "orientation"
         options: [
             ListElement {
                 option: "north-up"

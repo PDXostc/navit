@@ -11,6 +11,7 @@
 #include "nxe_version.h"
 
 #include <functional>
+#include <boost/lexical_cast.hpp>
 
 struct Context {
     NXE::DBusController dbusController;
@@ -33,6 +34,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
+
+    nxeInstance->navitInitSignal().connect(std::bind(&NavitQuickProxy::synchronizeNavit, this));
+
     nxeInstance->Initialize();
 
     // mapDownloaderCallbacks!
@@ -52,6 +56,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
         double alt = position.altitude;
         m_position = QString("%1 %2 %3").arg(lat).arg(lon).arg(alt);
         emit positionChanged();
+
     });
 }
 
@@ -65,14 +70,16 @@ void NavitQuickProxy::setOrientation(int orientation)
     aDebug() << "Setting orientation to " << orientation;
     try {
         nxeInstance->HandleMessage<SetOrientationMessageTag>(orientation);
-        if (orientation == -1 ) {
+        if (orientation == -1) {
             m_settings.set<Tags::Orientation>("Heads-up");
-        } else {
+        }
+        else {
             m_settings.set<Tags::Orientation>("North-up");
         }
         aTrace() << "New orientation is " << m_settings.get<Tags::Orientation>();
         emit orientationChanged();
-    } catch (const std::exception& ex) {
+    }
+    catch (const std::exception& ex) {
         aError() << "An error happened during setting orientation. Ex= " << ex.what();
     }
 }
@@ -94,7 +101,8 @@ bool NavitQuickProxy::enablePoi() const
 
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
-    nxeInstance->HandleMessage<SetSchemeMessageTag>( enable ? "Car-JLR" : "Car-JLR-nopoi");
+    nxeInstance->HandleMessage<SetSchemeMessageTag>(enable ? "Car-JLR" : "Car-JLR-nopoi");
+    m_settings.set<Tags::EnablePoi>(enable);
 }
 
 void NavitQuickProxy::zoomIn()
@@ -109,10 +117,40 @@ void NavitQuickProxy::zoomOut()
 
 void NavitQuickProxy::moveTo(int x, int y)
 {
-    nxeInstance->HandleMessage<MoveByMessageTag>(x,y);
+    nxeInstance->HandleMessage<MoveByMessageTag>(x, y);
 }
 
 void NavitQuickProxy::render()
 {
     nxeInstance->HandleMessage<RenderMessageTag>();
+}
+
+QString NavitQuickProxy::valueFor(const QString& optionName)
+{
+    QString ret;
+    if (optionName == "enablePoi") {
+        bool bRet = m_settings.get<Tags::EnablePoi>();
+        aDebug() << "value for poi is " << bRet;
+        ret = QString("%1").arg(bRet ? "on" : "off");
+    }
+
+    return ret;
+}
+
+void NavitQuickProxy::changeValueFor(const QString& optionName, const QString& newVal)
+{
+    aInfo() << " Options name= " << optionName.toStdString() << " value = " << newVal.toStdString();
+
+    if (optionName == "enablePoi") {
+        setEnablePoi(newVal == "on");
+    }
+}
+
+void NavitQuickProxy::synchronizeNavit()
+{
+    aInfo() << "Synchronizing navit";
+    // TODO: Synchronize all NavIt settings
+
+    // set scheme
+    setEnablePoi(m_settings.get<Tags::EnablePoi>());
 }

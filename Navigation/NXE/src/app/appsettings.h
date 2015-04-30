@@ -13,6 +13,11 @@ namespace Tags {
         typedef std::string ValueType;
         constexpr static const char* path {"orientation"};
     };
+
+    struct Ftu {
+        typedef std::string ValueType;
+        constexpr static const char* path {"ftu"};
+    };
 }
 
 class AppSettings
@@ -32,6 +37,12 @@ public:
     typename T::ValueType get() const
     {
         return m_tree.get<typename T::ValueType>(T::path);
+    }
+
+    template<typename RetVal>
+    RetVal get(const std::string& key)
+    {
+        return m_tree.get<RetVal> ( key );
     }
 
     void save();

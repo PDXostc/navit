@@ -7,6 +7,7 @@
 #include "inavitipc.h"
 #include "igpsprovider.h"
 #include "imapdownloader.h"
+#include "ispeech.h"
 
 #include <sstream>
 #include <string>
@@ -26,6 +27,7 @@ struct NXEInstancePrivate {
         , ipc(ifaces.get<std::shared_ptr<INavitIPC> >())
         , gps(ifaces.get<std::shared_ptr<IGPSProvider> >())
         , mapDownloaderIPC(ifaces.get<std::shared_ptr<IMapDownloader> >())
+        , speech(ifaces.get<std::shared_ptr<ISpeech> >())
     {
     }
 
@@ -33,8 +35,8 @@ struct NXEInstancePrivate {
     std::shared_ptr<INavitIPC> ipc;
     std::shared_ptr<IGPSProvider> gps;
     std::shared_ptr<IMapDownloader> mapDownloaderIPC;
+    std::shared_ptr<ISpeech> speech;
     Settings settings;
-    std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
     bool initialized{ false };
 
     void moveBy(int x, int y)
@@ -116,15 +118,12 @@ void NXEInstance::Initialize()
             nInfo() << "Navit external is set, won't run";
         }
         nDebug() << "Trying to start IPC Navit controller";
-        //        d->ipc->speechSignal().connect(std::bind(&NavitControllerPrivate::speechCallback, d.get(), std::placeholders::_1));
-        d->ipc->initializedSignal().connect([]() {});
+        d->ipc->speechSignal().connect(std::bind(&ISpeech::say, d->speech.get(), std::placeholders::_1));
+        d->ipc->initializedSignal().connect([]() {
+            nInfo() << "Navit has started, we can work now!";
+        });
     }
     d->initialized = true;
-}
-
-void NXEInstance::registerMessageCallback(const NXEInstance::MessageCbJSON_type& cb)
-{
-    d->callbacksJSon.push_back(cb);
 }
 
 void NXEInstance::setWaylandSocketName(const std::string& socketName)
@@ -140,6 +139,11 @@ void NXEInstance::setMapDownloaderListener(const MapDownloaderListener &listener
 void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb &listener)
 {
     d->gps->addPostionUpdate(listener);
+}
+
+INavitIPC::InitializedSignal& NXEInstance::navitInitSignal()
+{
+    return d->ipc->initializedSignal();
 }
 
 } // namespace NXE

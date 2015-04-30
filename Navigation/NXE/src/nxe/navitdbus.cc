@@ -16,6 +16,21 @@ const std::string navitDBusPath = "/org/navit_project/navit/navit/0";
 const std::string navitDBusInterface = "org.navit_project.navit.navit";
 }
 
+struct DebugDBusCall {
+    DebugDBusCall(const std::string& msg):
+        _msg(msg)
+    {
+        nDebug() << "Starting call " << _msg;
+    }
+
+    ~DebugDBusCall()
+    {
+        nDebug() << " Call " << _msg << " took: ";
+    }
+
+    const std::string _msg;
+};
+
 namespace NXE {
 
 struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::ObjectProxy {
@@ -161,6 +176,8 @@ void NavitDBus::clearDestination()
 
 void NavitDBus::setScheme(const std::string &scheme)
 {
+    DebugDBusCall db{"set_layout"};
+    nDebug() << "Setting scheme to " << scheme;
     DBus::call("set_layout", *(d->object.get()), scheme);
 }
 

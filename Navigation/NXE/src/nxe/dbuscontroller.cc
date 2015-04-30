@@ -49,6 +49,7 @@ void DBusController::start()
         std::this_thread::sleep_for(dura);
     }
     d->conn.reset(new DBus::Connection {DBus::Connection::SessionBus()});
+    nTrace() << "EOF start";
 }
 
 DBusController::~DBusController()

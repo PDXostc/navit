@@ -5,6 +5,7 @@
 #include "calls.h"
 #include "imapdownloader.h"
 #include "igpsprovider.h"
+#include "inavitipc.h"
 
 #include <memory>
 #include <vector>
@@ -20,24 +21,19 @@ class INavitProcess;
 class INavitIPC;
 class NavitController;
 class IGPSProvider;
-struct JSONMessage;
 
 struct NXEInstancePrivate;
 class NXEInstance {
 public:
-    typedef std::function<void(const NXE::JSONMessage&)> MessageCbJSON_type;
-
     NXEInstance() = delete;
     NXEInstance(DI::Injector& impls);
     ~NXEInstance();
 
     virtual void Initialize();
 
-    void registerMessageCallback(const MessageCbJSON_type& cb);
-
     void setWaylandSocketName(const std::string& socketName);
 
-    template<typename T, typename...Args>
+    template <typename T, typename... Args>
     typename T::ReturnType HandleMessage(Args... args)
     {
         auto fn = boost::fusion::at_key<T>(fusion_list);
@@ -47,6 +43,8 @@ public:
 
     void setMapDownloaderListener(const MapDownloaderListener& listener);
     void setPositionUpdateListener(const NXE::IGPSProvider::PositionUpdateCb& listener);
+
+    INavitIPC::InitializedSignal& navitInitSignal();
 
 private:
     std::unique_ptr<NXEInstancePrivate> d;

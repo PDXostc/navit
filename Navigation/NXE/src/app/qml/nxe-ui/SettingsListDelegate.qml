@@ -6,21 +6,34 @@ Item {
     id: root
     width: settingsListView.width
     height: 50
+    property int currentOption: 0
+    property int maxOptions: options ? options.count : 0
 
     signal subMenuRequested(string url)
     signal clicked(string menuItem)
-    signal valueChanged(string label, string value)
+
+    Component.onCompleted: {
+        var settingValue = navitProxy.valueFor(settingsValue);
+
+        for(var i=0;i < maxOptions; ++i) {
+            if (options.get(i).option === settingValue) {
+                currentOption = i;
+                break;
+            }
+        }
+    }
 
     MouseArea {
         anchors.fill: parent
 
         onClicked: {
             if (type === 'text') {
-                if (option.currentOption === option.maxOptions - 1) {
-                    option.currentOption = 0
+                if (root.currentOption === root.maxOptions - 1) {
+                    root.currentOption = 0
                 } else {
-                    option.currentOption++
+                    root.currentOption++
                 }
+                navitProxy.changeValueFor(settingsValue, optionText.text);
             } else if (type === 'sublist') {
                 console.debug('sublist clicked ', options.get(0).url)
                 subMenuRequested(options.get(0).url);
@@ -47,10 +60,7 @@ Item {
             height: parent.height
 
             Text {
-                id: option
-                property int currentOption: 0
-                property int maxOptions: options ? options.count : 0
-
+                id: optionText
                 text: type === "text" ? options.get(currentOption).option : ""
                 visible: type === "text"
                 color: "white"
@@ -59,7 +69,6 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 16
-                onTextChanged: root.valueChanged(mainTextItem.text, option.text)
             }
 
             Item {
