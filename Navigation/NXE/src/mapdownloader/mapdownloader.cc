@@ -198,6 +198,10 @@ std::string MapDownloader::download(const std::string& name)
         return "";
     }
 
+    if (d->currentThread.joinable()) {
+        d->currentThread.join();
+    }
+
     auto thread = std::thread{ [req, name, this]() {
         d->downloading = true;
         const std::string mapFileName{ d->mapFilePath + std::string {"/"} + name + std::string{".bin"} };
