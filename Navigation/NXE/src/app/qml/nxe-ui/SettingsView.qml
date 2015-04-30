@@ -8,6 +8,8 @@ Rectangle {
     color: "black"
 
     signal backToMapRequest
+    property bool ftu: false
+
 
     Column {
         anchors.fill: parent
@@ -29,6 +31,7 @@ Rectangle {
                 spacing: 0
 
                 MenuHeaderButton {
+                    id: backButton
                     width: 30
                     height: parent.height
                     iconSource: "back_icon_white_lg.png"
@@ -66,6 +69,7 @@ Rectangle {
                     }
 
                     MenuHeaderButton {
+                        id: mapBackButton
                         width: 34
                         height: 33
                         iconWidth: 24
@@ -88,11 +92,19 @@ Rectangle {
 
         StackView {
             id: stack
+            Component.onCompleted: {
+                if (ftu) {
+                    stack.push(Qt.resolvedUrl("CountryLanguage.qml"));
+                    backButton.enabled = false;
+                    mapBackButton.enabled = false;
+                    header.opacity = 0.4;
+                } else {
+                }
+            }
 
             initialItem: SettingsListView {
                 id: settingsListView
-                model: SettingsListModel {
-                }
+                model: SettingsListModel {}
                 width: parent.width
                 height: parent.height - 100
                 clip: true

@@ -5,7 +5,6 @@ Item {
     width: 400
     height: 800
     id: mainPageView
-    signal pushToStack(var component)
 
     NMenu {
         anchors.left: parent.left
@@ -13,7 +12,8 @@ Item {
         anchors.topMargin: parent.width * 0.1
         onClicked: {
             if (item === "menu") {
-                pushToStack(settingsView)
+                console.debug("menu clicked");
+                rootStack.push(settingsView)
             } else if (item === "search") {
                 if (bottomLocationBarLoader.sourceComponent !== null) {
                     topLocationBarLoader.sourceComponent = null

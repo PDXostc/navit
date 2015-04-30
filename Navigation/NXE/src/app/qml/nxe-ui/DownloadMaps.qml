@@ -6,9 +6,47 @@ Page {
     id: page1
 
     property var maps
+    property string currentDownloadMap
+    property int currentDownloadIndex: 0
 
     Component.onCompleted: {
-        console.debug(maps)
+        currentDownloadMap = maps[currentDownloadIndex];
+        navitProxy.downloadMap(currentDownloadMap);
+    }
+
+    function downloadNextMap() {
+        currentDownloadIndex++;
+
+        if (currentDownloadIndex === maps.length) {
+            // push FTUMapDownloadCompleted.qml
+            navitProxy.ftu = false;
+            rootStack.clear();
+            rootStack.push({item: Qt.resolvedUrl("MainPage.qml")})
+        } else {
+            currentDownloadMap = maps[currentDownloadIndex];
+        }
+    }
+
+    Connections {
+        target: navitProxy
+        onMapDownloadError: {
+            console.error("An error during map download");
+        }
+
+        onMapDownloadProgress: {
+            var progress = now/total;
+            console.debug("Progress for " + map + " value=" + progress);
+            var nowInt = parseInt(now,10);
+            var totalInt = parseInt(total,10);
+            if (map === currentDownloadMap) {
+                progressBarItem.value = progress;
+                bytesTextItem.text = Math.floor(now/(1024*1024)) + "MB/" + Math.floor(total/(1024*1024)) + "MB";
+            }
+        }
+
+        onMapDownloadFinished: {
+            downloadNextMap();
+        }
     }
 
     Rectangle {
@@ -43,15 +81,16 @@ Page {
         Text {
             id: headerText
             color: "white"
-            text: "Downloading (1 of 3)"
+            text: "Downloading (" + (currentDownloadIndex + 1) +" of " + maps.length + ")"
             font.pointSize: 18
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         ProgressBar {
+            id: progressBarItem
             width: parent.width
             height: 15
-            value: 0.4
+            value: 0
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 2
@@ -71,7 +110,7 @@ Page {
             width: parent.width
             height: 20
             Text {
-                text: maps[0]
+                text: currentDownloadMap
                 font.pointSize: 16
                 color: "white"
                 anchors.left: parent.left
@@ -79,7 +118,8 @@ Page {
             }
 
             Text {
-                text: "10.9MB/75MB"
+                id: bytesTextItem
+                text: "N/A"
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 color: "white"
@@ -112,8 +152,5 @@ Page {
         height: 62
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: rect.bottom
-
-
-
     }
 }

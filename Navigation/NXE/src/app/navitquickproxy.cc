@@ -13,6 +13,8 @@
 #include <functional>
 #include <boost/lexical_cast.hpp>
 
+#include <QtCore/QVariant>
+
 struct Context {
     NXE::DBusController dbusController;
     NXE::INavitIPC* ipc{ new NXE::NavitDBus{ dbusController } };
@@ -40,11 +42,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
     nxeInstance->Initialize();
 
     // mapDownloaderCallbacks!
-    mapDownloaderListener.progressCb = [this](const std::string&, std::uint64_t, std::uint64_t) {
+    mapDownloaderListener.progressCb = [this](const std::string& mapName, std::uint64_t now, std::uint64_t total) {
+        emit mapDownloadProgress(now, total, QString::fromStdString(mapName));
     };
-    mapDownloaderListener.errorCb = [this](const std::string&, const std::string&) {
+    mapDownloaderListener.errorCb = [this](const std::string&, const std::string& strError) {
+        emit mapDownloadError(QString::fromStdString(strError));
     };
-    mapDownloaderListener.finishedCb = [this](const std::string&) {
+    mapDownloaderListener.finishedCb = [this](const std::string& map) {
+        emit mapDownloadFinished(QString::fromStdString(map));
     };
 
     nxeInstance->setMapDownloaderListener(mapDownloaderListener);
@@ -110,6 +115,11 @@ bool NavitQuickProxy::ftu() const
     return m_settings.get<Tags::Ftu>();
 }
 
+void NavitQuickProxy::setFtu(bool value)
+{
+    m_settings.set<Tags::Ftu>(value);
+}
+
 void NavitQuickProxy::zoomIn()
 {
     nxeInstance->HandleMessage<ZoomByMessageTag>(2);
@@ -150,12 +160,21 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
     return ret;
 }
 
-void NavitQuickProxy::changeValueFor(const QString& optionName, const QString& newVal)
+void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant &newVal)
 {
-    aInfo() << " Options name= " << optionName.toStdString() << " value = " << newVal.toStdString();
-
     if (optionName == "enablePoi") {
-        setEnablePoi(newVal == "on");
+        setEnablePoi(newVal.toString() == "on");
+    }
+}
+
+void NavitQuickProxy::downloadMap(const QString& map)
+{
+    try {
+        nxeInstance->HandleMessage<DownloadMessageTag>(map.toStdString());
+    }
+    catch (const std::exception& ex) {
+        // this may throw if MapDownloader is not available
+        emit mapDownloadError("MapDownloader DBus service is probably not running");
     }
 }
 

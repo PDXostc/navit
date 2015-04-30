@@ -20,7 +20,7 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString position READ position NOTIFY positionChanged)
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
-    Q_PROPERTY(bool ftu READ ftu CONSTANT)
+    Q_PROPERTY(bool ftu READ ftu WRITE setFtu)
 public:
     explicit NavitQuickProxy(const QString& socketName, QObject *parent = 0);
 
@@ -34,6 +34,7 @@ public:
     void setEnablePoi(bool enable);
 
     bool ftu() const;
+    void setFtu(bool value);
 
 signals:
     void orientationChanged();
@@ -41,6 +42,11 @@ signals:
     void enablePoiChanged();
 
     void quitSignal();
+
+    void mapDownloadError(const QString& error);
+
+    void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
+    void mapDownloadFinished(const QString& map);
 
 public slots:
     void zoomIn();
@@ -51,7 +57,9 @@ public slots:
     void quit();
 
     QString valueFor(const QString& optionName);
-    void changeValueFor(const QString& optionName, const QString& newVal);
+    void changeValueFor(const QString& optionName, const QVariant& newVal);
+
+    void downloadMap(const QString& map);
 
 private:
 
