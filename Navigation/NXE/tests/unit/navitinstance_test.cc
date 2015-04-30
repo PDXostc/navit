@@ -63,6 +63,6 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
 
     // Act
 //    EXPECT_NO_THROW(instance.HandleMessage(TestUtils::zoomMessage()));
-    int zoom = instance.HandleMessage123<ZoomMessageTag>();
+    int zoom = instance.HandleMessage<ZoomMessageTag>();
     EXPECT_EQ(zoom, 10);
 }

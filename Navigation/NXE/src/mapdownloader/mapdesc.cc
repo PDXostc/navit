@@ -29,15 +29,15 @@ void MapDesc::setDataFilePath(const string& datafile)
 
     BOOST_FOREACH (ptree::value_type const& v, tree.get_child("Mapset")) {
         if (v.first == "Mapdata") {
-            mapData.emplace_back(MapData {
-                                     v.second.get<std::string>("Name"),
-                                     v.second.get<std::string>("Lon1"),
-                                     v.second.get<std::string>("Lat1"),
-                                     v.second.get<std::string>("Lon2"),
-                                     v.second.get<std::string>("Lat2"),
-                                     v.second.get<std::uint64_t>("Size"),
-                                     v.second.get<std::uint8_t>("Level"),
-                                 });
+            mapData.emplace_back(MapData{
+                v.second.get<std::string>("Name"),
+                v.second.get<std::string>("Lon1"),
+                v.second.get<std::string>("Lat1"),
+                v.second.get<std::string>("Lon2"),
+                v.second.get<std::string>("Lat2"),
+                v.second.get<std::uint64_t>("Size"),
+                v.second.get<std::uint8_t>("Level"),
+            });
         }
     }
 }
@@ -47,7 +47,7 @@ boost::optional<MapData> MapDesc::getMapData(const std::string& name)
     using boost::property_tree::ptree;
     MapData m;
 
-    auto it = std::find_if(mapData.begin(), mapData.end(), [&name](const MapData &md) -> bool {
+    auto it = std::find_if(mapData.begin(), mapData.end(), [&name](const MapData& md) -> bool {
         return md.name == name;
     });
 
@@ -62,7 +62,7 @@ boost::optional<MapData> MapDesc::getMapData(const std::string& name)
 std::vector<std::string> MapDesc::availableMaps() const
 {
     std::vector<std::string> ret{};
-    std::for_each(mapData.begin(), mapData.end(), [&ret](const MapData &md) {
+    std::for_each(mapData.begin(), mapData.end(), [&ret](const MapData& md) {
         ret.push_back(md.name);
     });
     return ret;

@@ -38,7 +38,7 @@ public:
     void setWaylandSocketName(const std::string& socketName);
 
     template<typename T, typename...Args>
-    typename T::ReturnType HandleMessage123(Args... args)
+    typename T::ReturnType HandleMessage(Args... args)
     {
         auto fn = boost::fusion::at_key<T>(fusion_list);
         // fn function will throw on error

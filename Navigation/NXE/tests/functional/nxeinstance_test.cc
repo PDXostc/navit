@@ -48,7 +48,7 @@ struct NXEInstanceTest : public ::testing::Test {
 
     void zoom(int factor)
     {
-        instance.HandleMessage123<ZoomByMessageTag>(factor);
+        instance.HandleMessage<ZoomByMessageTag>(factor);
     }
 };
 
@@ -73,43 +73,43 @@ TEST_F(NXEInstanceTest, zoomByMessage_zoomOut_correct)
 
 TEST_F(NXEInstanceTest, zoomMessage_correct)
 {
-    instance.HandleMessage123<ZoomMessageTag>();
+    instance.HandleMessage<ZoomMessageTag>();
 }
 
 TEST_F(NXEInstanceTest, zoomInAndOut)
 {
-    instance.HandleMessage123<ZoomByMessageTag>(2);
-    instance.HandleMessage123<ZoomByMessageTag>(-2);
+    instance.HandleMessage<ZoomByMessageTag>(2);
+    instance.HandleMessage<ZoomByMessageTag>(-2);
 }
 
 TEST_F(NXEInstanceTest, renderMessage_correct)
 {
-    instance.HandleMessage123<RenderMessageTag>();
+    instance.HandleMessage<RenderMessageTag>();
 }
 
 TEST_F(NXEInstanceTest, moveByMessage_correct)
 {
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
-    instance.HandleMessage123<MoveByMessageTag>(10,10);
+    instance.HandleMessage<MoveByMessageTag>(10,10);
 }
 
 TEST_F(NXEInstanceTest, changeOrientation_correct)
 {
-    instance.HandleMessage123<SetOrientationMessageTag>(-1);
-    int orientation = instance.HandleMessage123<OrientationMessageTag>();
+    instance.HandleMessage<SetOrientationMessageTag>(-1);
+    int orientation = instance.HandleMessage<OrientationMessageTag>();
 
     EXPECT_EQ(orientation, -1);
 }
 
 TEST_F(NXEInstanceTest, positionMessage_correct)
 {
-    auto pos = instance.HandleMessage123<PositionMessageTag>();
+    auto pos = instance.HandleMessage<PositionMessageTag>();
 }
 
 TEST_F(NXEInstanceTest, changeOrientationMessage_incorrectValue)
 {
-    EXPECT_ANY_THROW(instance.HandleMessage123<SetOrientationMessageTag>(100));
+    EXPECT_ANY_THROW(instance.HandleMessage<SetOrientationMessageTag>(100));
 }
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
@@ -117,7 +117,7 @@ TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
-    auto maps = instance.HandleMessage123<AvailableMapsMessageTag>();
+    auto maps = instance.HandleMessage<AvailableMapsMessageTag>();
 }
 
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
@@ -128,7 +128,7 @@ TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
     std::this_thread::sleep_for(dura);
 
     // Act
-    instance.HandleMessage123<DownloadMessageTag>("this countr does not exists");
+    instance.HandleMessage<DownloadMessageTag>("this countr does not exists");
 
     // Assert
 }
@@ -141,12 +141,12 @@ TEST_F(NXEInstanceTest, DISABLED_downloadMessage_correct_country)
     std::this_thread::sleep_for(dura);
 
     // Act
-    instance.HandleMessage123<DownloadMessageTag>("Hawaii");
+    instance.HandleMessage<DownloadMessageTag>("Hawaii");
 
     while (true) {
         std::this_thread::sleep_for(dura);
     }
 
-    instance.HandleMessage123<CancelDownloadMessageTag>("Hawaii");
+    instance.HandleMessage<CancelDownloadMessageTag>("Hawaii");
 
 }

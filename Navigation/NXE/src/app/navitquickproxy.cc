@@ -34,22 +34,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
     nxeInstance->Initialize();
-//    nxeInstance->registerMessageCallback([this](const NXE::JSONMessage& msg) {
-//        aTrace() << "Callback in app";
-//        // navitCallback
-//        if (msg.call == "setOrientation") {
-//            if (msg.error.empty()) {
-//                int orientation = msg.data.get<int>("orientation");
-//            }
-//        } else if(msg.call == "setScheme") {
-//            const std::string schemeName = msg.data.get<std::string>("scheme");
-//            if (schemeName == "Car-JLR") {
-//                m_settings.set<Tags::EnablePoi>(true);
-//            } else {
-//                m_settings.set<Tags::EnablePoi>(false);
-//            }
-//        }
-//    });
 
     // mapDownloaderCallbacks!
     mapDownloaderListener.progressCb = [this](const std::string&, std::uint64_t, std::uint64_t) {
@@ -80,7 +64,7 @@ void NavitQuickProxy::setOrientation(int orientation)
 {
     aDebug() << "Setting orientation to " << orientation;
     try {
-        nxeInstance->HandleMessage123<SetOrientationMessageTag>(orientation);
+        nxeInstance->HandleMessage<SetOrientationMessageTag>(orientation);
         if (orientation == -1 ) {
             m_settings.set<Tags::Orientation>("Heads-up");
         } else {
@@ -110,26 +94,25 @@ bool NavitQuickProxy::enablePoi() const
 
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
-    nxeInstance->HandleMessage123<SetSchemeMessageTag>( enable ? "Car-JLR" : "Car-JLR-nopoi");
+    nxeInstance->HandleMessage<SetSchemeMessageTag>( enable ? "Car-JLR" : "Car-JLR-nopoi");
 }
 
 void NavitQuickProxy::zoomIn()
 {
-    nxeInstance->HandleMessage123<ZoomByMessageTag>(2);
+    nxeInstance->HandleMessage<ZoomByMessageTag>(2);
 }
 
 void NavitQuickProxy::zoomOut()
 {
-    nxeInstance->HandleMessage123<ZoomByMessageTag>(-2);
+    nxeInstance->HandleMessage<ZoomByMessageTag>(-2);
 }
 
 void NavitQuickProxy::moveTo(int x, int y)
 {
-    nxeInstance->HandleMessage123<MoveByMessageTag>(x,y);
+    nxeInstance->HandleMessage<MoveByMessageTag>(x,y);
 }
 
 void NavitQuickProxy::render()
 {
-    nxeInstance->HandleMessage123<RenderMessageTag>();
-    //    nxeInstance->HandleMessage(NXE::JSONMessage{0, "render"});
+    nxeInstance->HandleMessage<RenderMessageTag>();
 }

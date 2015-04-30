@@ -27,14 +27,6 @@ struct NXEInstancePrivate {
         , gps(ifaces.get<std::shared_ptr<IGPSProvider> >())
         , mapDownloaderIPC(ifaces.get<std::shared_ptr<IMapDownloader> >())
     {
-        nTrace() << "NXEInstancePrivate::NXEInstancePrivate()";
-//            nDebug() << "Position changed";
-//            bpt::ptree values;
-//            values.put("altitude", p.altitude);
-//            values.put("longitude", p.longitude);
-//            values.put("latitude", p.latitude);
-//            JSONMessage response {0, "position", "", values };
-//            d->successSignal(response);
     }
 
     std::shared_ptr<INavitProcess> navitProcess;
@@ -43,8 +35,6 @@ struct NXEInstancePrivate {
     std::shared_ptr<IMapDownloader> mapDownloaderIPC;
     Settings settings;
     std::vector<NXEInstance::MessageCbJSON_type> callbacksJSon;
-
-    // Which messages cause a screen redraw
     bool initialized{ false };
 
     void moveBy(int x, int y)
@@ -91,8 +81,6 @@ NXEInstance::NXEInstance(DI::Injector& impls)
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
-    //    auto bound = std::bind(&NXEInstancePrivate::navitMsgCallback, d.get(), std::placeholders::_1);
-    //    d->controller.addListener(bound);
 }
 
 NXEInstance::~NXEInstance()

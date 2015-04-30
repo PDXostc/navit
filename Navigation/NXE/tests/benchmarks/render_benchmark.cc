@@ -44,7 +44,7 @@ void renderOneFrame(benchmark::State& state)
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     while (state.KeepRunning()) {
-        t.instance.HandleMessage123<RenderMessageTag>();
+        t.instance.HandleMessage<RenderMessageTag>();
     }
 }
 
@@ -62,8 +62,8 @@ void moveBackAndForth(benchmark::State& state)
     std::this_thread::sleep_for(dura);
 
     while (state.KeepRunning()) {
-        t.instance.HandleMessage123<MoveByMessageTag>(500,900);
-        t.instance.HandleMessage123<MoveByMessageTag>(500,900);
+        t.instance.HandleMessage<MoveByMessageTag>(500,900);
+        t.instance.HandleMessage<MoveByMessageTag>(500,900);
     }
 }
 

@@ -47,17 +47,17 @@ struct NXEInstanceTest : public ::testing::Test {
 
     void setDestination(double lon, double lat, const char* desc)
     {
-         instance.HandleMessage123<SetDestinationMessageTag>(lon, lat, desc);
+         instance.HandleMessage<SetDestinationMessageTag>(lon, lat, desc);
     }
 
     void setPosition(double lon, double lat)
     {
-         instance.HandleMessage123<SetPositionMessageTag>(lon, lat);
+         instance.HandleMessage<SetPositionMessageTag>(lon, lat);
     }
 
     void clearDestination()
     {
-        instance.HandleMessage123<ClearDestinationMessageTag>();
+        instance.HandleMessage<ClearDestinationMessageTag>();
     }
 };
 
