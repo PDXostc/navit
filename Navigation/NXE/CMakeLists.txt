@@ -29,6 +29,12 @@ if (NOT NXE_TARGET_OS)
     set (NXE_TARGET_OS "Linux")
 endif()
 
+if("${NXE_TARGET_OS}" STREQUAL "Tizen")
+    add_definitions(-DNXE_OS_TIZEN)
+else ()
+    add_definitions(-DNXE_OS_LINUX)
+endif()
+
 # add __FILENAME__ macro definition
 # however this doesn't work for Ninja, so we need to
 # use GCC __BASE_FILE__ macro

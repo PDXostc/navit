@@ -105,8 +105,11 @@ int main(int argc, char *argv[])
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("compositor", &view);
         view.setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
+#if defined(NXE_OS_LINUX)
         view.showMaximized();
-
+#elif defined(NXE_OS_TIZEN)
+        view.showFullScreen();
+#endif
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));
         QObject::connect(&view, SIGNAL(windowResized(QVariant)), view.rootObject(), SLOT(windowResized(QVariant)));
