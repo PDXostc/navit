@@ -110,6 +110,8 @@ int main(int argc, char *argv[])
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));
         QObject::connect(&view, SIGNAL(windowResized(QVariant)), view.rootObject(), SLOT(windowResized(QVariant)));
+
+        QObject::connect(&proxy, &NavitQuickProxy::quitSignal, &app, &QGuiApplication::quit);
         ret = app.exec();
 
     } catch(const std::exception& ex) {

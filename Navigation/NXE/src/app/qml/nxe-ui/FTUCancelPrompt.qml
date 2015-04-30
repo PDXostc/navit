@@ -87,7 +87,7 @@ Rectangle {
                 id: cancelMouseArea
                 width: 112
                 height: 40
-                onClicked: {Qt.quit()}
+                onClicked: navitProxy.quit()
             }
         }
 

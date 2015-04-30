@@ -96,6 +96,7 @@ NavitDBus::~NavitDBus()
 
 void NavitDBus::quit()
 {
+    DebugDBusCall db {"quit"};
     DBus::call("quit", *(d->object.get()));
 }
 

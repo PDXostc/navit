@@ -6,7 +6,7 @@ Item {
     width: 400
     height: 800
 
-    property bool ftu: false
+    property bool ftu: navitProxy.ftu
 
     StackView {
         id: rootStack
@@ -24,7 +24,7 @@ Item {
             Connections {
                 target: ftu ? mainPageLoader.item : null
                 onDownloadMap: {
-                    rootStack.push(Qt.resolvedUrl("SettingsView.qml"))
+                    rootStack.push(Qt.resolvedUrl("DownloadMaps.qml"))
                 }
 
                 onCancelDownload: {

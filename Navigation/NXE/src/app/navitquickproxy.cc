@@ -105,6 +105,11 @@ void NavitQuickProxy::setEnablePoi(bool enable)
     m_settings.set<Tags::EnablePoi>(enable);
 }
 
+bool NavitQuickProxy::ftu() const
+{
+    return m_settings.get<Tags::Ftu>();
+}
+
 void NavitQuickProxy::zoomIn()
 {
     nxeInstance->HandleMessage<ZoomByMessageTag>(2);
@@ -123,6 +128,14 @@ void NavitQuickProxy::moveTo(int x, int y)
 void NavitQuickProxy::render()
 {
     nxeInstance->HandleMessage<RenderMessageTag>();
+}
+
+void NavitQuickProxy::quit()
+{
+    aInfo() << "Quiting application";
+    nxeInstance->HandleMessage<ExitMessageTag>();
+
+    emit quitSignal();
 }
 
 QString NavitQuickProxy::valueFor(const QString& optionName)

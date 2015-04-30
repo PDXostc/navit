@@ -51,7 +51,6 @@
         <file>qml/nxe-ui/LocationsView.qml</file>
         <file>qml/nxe-ui/MapLocationInfo.qml</file>
         <file>qml/nxe-ui/navigate_icon_white.png</file>
-        <file>qml/nxe-ui/nxe-ui.qml</file>
         <file>qml/nxe-ui/search_button_bg.png</file>
         <file>qml/nxe-ui/star_icon_solid_white.png</file>
         <file>qml/nxe-ui/location_marker_icon.png</file>

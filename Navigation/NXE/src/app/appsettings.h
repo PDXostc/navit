@@ -15,7 +15,7 @@ namespace Tags {
     };
 
     struct Ftu {
-        typedef std::string ValueType;
+        typedef bool ValueType;
         constexpr static const char* path {"ftu"};
     };
 }

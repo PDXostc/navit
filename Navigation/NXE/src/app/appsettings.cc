@@ -36,7 +36,7 @@ AppSettings::AppSettings()
         aDebug() << "Creating default app settings under= " << m_configPath;
         set<Tags::EnablePoi>(true);
         set<Tags::Orientation>("North-up");
-        set<Tags::Ftu>("true");
+        set<Tags::Ftu>(true);
 
         save();
     }
