@@ -19,11 +19,6 @@
 namespace bfs = boost::filesystem;
 
 namespace {
-const std::string writeErrorStr{ "Write error" };
-const std::string timeoutErrorStr{ "Timeout error" };
-const std::string connectionErrorStr{ "Connection error" };
-const std::string mapErrorStr{ "Map error" };
-const std::string unknownErrorStr{ "Unknown error" };
 const std::string mapDescFilename{ "osm_maps.xml" };
 const std::string partiallyDownloadedPrefix{ ".part" };
 const std::vector<std::string> mapDescriptionFilePaths{ "/usr/share/nxe/", "/home/jlr02/",
@@ -42,7 +37,9 @@ struct MapFile {
 
 struct MapDownloaderPrivate {
     //           url                       thread
-    std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
+//    std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
+    std::thread currentThread;
+    bool downloading {false};
 
     std::string mapFilePath;
     std::vector<std::string> cancelRequests;
@@ -92,8 +89,8 @@ MapDownloader::MapDownloader()
     d->mdesc.setDataFilePath(descFilePath);
 
     // try to create directory
-    // default map dir is $HOME/maps
-    setMapFileDir(std::string{ getenv("HOME") } + std::string{ "/" } + std::string{ "maps" });
+    // default map dir is $HOME/.NavIt/maps
+    setMapFileDir(std::string{ getenv("HOME") } + std::string{ "/.NavIt/" } + std::string{ "maps" });
 
     curl_global_init(CURL_GLOBAL_DEFAULT);
 }
@@ -102,6 +99,9 @@ MapDownloader::~MapDownloader()
 {
     curl_global_cleanup();
     mdDebug() << __PRETTY_FUNCTION__;
+    if (d->currentThread.joinable()) {
+        d->currentThread.join();
+    }
 }
 
 size_t MapDownloader::dataWrite(void* buffer, size_t size, size_t nmemb, void* stream)
@@ -118,33 +118,12 @@ size_t MapDownloader::dataWrite(void* buffer, size_t size, size_t nmemb, void* s
     return fwrite(buffer, size, nmemb, out->stream);
 }
 
-std::string MapDownloader::getDownloadErrorStr(CURLcode err)
-{
-    switch (err) {
-    case CURLE_WRITE_ERROR:
-        return writeErrorStr;
-
-    case CURLE_OPERATION_TIMEDOUT:
-        return timeoutErrorStr;
-
-    case CURLE_COULDNT_CONNECT:
-        return connectionErrorStr;
-
-    case CURLE_ABORTED_BY_CALLBACK:
-        return "Request cancelled";
-
-    default:
-        return unknownErrorStr;
-    }
-    return unknownErrorStr;
-}
-
 void MapDownloader::onDownloadError(const std::string& url, CURLcode err)
 {
     mdDebug() << "onDownloadError: Code = " << err << " , " << curl_easy_strerror(err);
 
     if (cbOnError) {
-        cbOnError(url, getDownloadErrorStr(err));
+        cbOnError(url, curl_easy_strerror(err));
     }
 }
 
@@ -189,7 +168,7 @@ long MapDownloader::getEstimatedSize(const std::string& name)
 
 std::string MapDownloader::createMapRequestString(const std::string& name)
 {
-    std::string res = "http://maps5.navit-project.org/api/map/?bbox=";
+    std::string res = "http://maps9.navit-project.org/api/map/?bbox=";
 
     boost::optional<MapData> m = d->mdesc.getMapData(name);
     if (m) {
@@ -210,16 +189,17 @@ std::string MapDownloader::download(const std::string& name)
     const std::string req{ createMapRequestString(name) };
 
     if (req.empty()) {
-        cbOnError(req, mapErrorStr);
+        cbOnError(req, "");
         return req;
     }
 
-    if (d->urlThreads.find(req) != d->urlThreads.end()) {
-        mdInfo() << "A url " << req << " is already being downloaded";
+    if (d->downloading) {
+        mdInfo() << "Some map is already downloading";
         return "";
     }
 
-    auto thread = std::unique_ptr<std::thread>{ new std::thread{ [req, name, this]() {
+    auto thread = std::thread{ [req, name, this]() {
+        d->downloading = true;
         const std::string mapFileName{ d->mapFilePath + std::string {"/"} + name + std::string{".bin"} };
         d->prepareFile(mapFileName);
         mdDebug() << "Download starting. Url= " << req << " result filename= " << mapFileName;
@@ -233,6 +213,7 @@ std::string MapDownloader::download(const std::string& name)
         };
 
         CURL* curl{ nullptr };
+        long respCode;
         CURLcode res;
         curl = curl_easy_init();
 
@@ -244,12 +225,16 @@ std::string MapDownloader::download(const std::string& name)
             curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, onDownloadProgress);
             curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &mapfile);
             curl_easy_setopt(curl, CURLOPT_NOPROGRESS, m_reportProgess ? 0 : 1);
+            curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
+            curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 15L);
 
             // This blocks
             res = curl_easy_perform(curl);
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
+            mdDebug() << "CURL res=" << respCode;
             curl_easy_cleanup(curl);
 
-            if (res != CURLE_OK ) {
+            if (res != CURLE_OK || respCode > 500) {
                 onDownloadError(req, res);
             } else {
                 const bfs::path newPath { mapFileName };
@@ -265,10 +250,12 @@ std::string MapDownloader::download(const std::string& name)
                     cbOnFinished(req);
                 }
             }
+            mdInfo() << "Downloading done for " << name;
+            d->downloading = false;
         }
-    } } };
+    }};
 
-    d->urlThreads[req] = std::move(thread);
+    d->currentThread = std::move(thread);
     return req;
 }
 
@@ -282,12 +269,12 @@ std::vector<std::string> MapDownloader::availableMaps() const
 void MapDownloader::cancel(const std::string& reqUrl)
 {
     mdInfo() << "Canceling download " << reqUrl;
-    auto it = d->urlThreads.find(reqUrl);
-    if (it != d->urlThreads.end()) {
-        mdTrace() << "Request canceling " << it->first;
+    if (d->downloading) {
+        mdTrace() << "Request canceling ";
         auto it2 = d->cancelRequests.insert(d->cancelRequests.end(), reqUrl);
-        (*it).second->join();
-        d->urlThreads.erase(it);
+        if (d->currentThread.joinable()) {
+            d->currentThread.join();
+        }
         d->cancelRequests.erase(it2);
     }
 }
@@ -302,7 +289,6 @@ bool MapDownloader::setMapFileDir(const std::string& dir)
     const bfs::path mapPath{ dir };
 
     try {
-
         if (!bfs::exists(mapPath)) {
             mdDebug() << "Path " << mapPath.string() << " doesn't exists yet, try to create it";
 

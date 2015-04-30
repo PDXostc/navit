@@ -17,6 +17,11 @@ MapDownloaderDBusServer::MapDownloaderDBusServer(DBus::Connection& connection)
     d->downloader.setCbError([this](const std::string& url, const std::string& errorStr) {
         mdError() << "Error " << errorStr << " while downloading " << url;
         error(d->requests[url], errorStr);
+        auto it = d->requests.find(url);
+        if (it != d->requests.end() ) {
+            mdInfo() << "Request " << it->second << " had error " << errorStr;
+            d->requests.erase(it);
+        }
     });
 
     d->downloader.setCbProgress([this](const std::string& url, long p, long t) {
@@ -26,6 +31,7 @@ MapDownloaderDBusServer::MapDownloaderDBusServer(DBus::Connection& connection)
 
     d->downloader.setCbOnFinished([this](const std::string& url) {
         auto it = d->requests.find(url);
+        finished(d->requests[url]);
         if (it != d->requests.end() ) {
             mdInfo() << "Request " << it->second << " finished";
             d->requests.erase(it);

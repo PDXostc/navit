@@ -61,6 +61,7 @@ private:
     static size_t dataWrite(void* buffer, size_t size, size_t nmemb, void* stream);
     void onDownloadError(const std::string& url, CURLcode err);
     static int onDownloadProgress(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
+    static int onHeaderCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
     static std::string getDownloadErrorStr(CURLcode err);
 
