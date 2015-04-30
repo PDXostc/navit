@@ -9,9 +9,16 @@ Item {
 
     signal checked()
 
+    signal subList(string url)
+
     SettingsListDelegate {
         width: parent.width
         height: parent.height
+
+        onSubMenuRequested: {
+            console.debug('Clicked' + url)
+            root.subList(url)
+        }
     }
 
     CheckBox {

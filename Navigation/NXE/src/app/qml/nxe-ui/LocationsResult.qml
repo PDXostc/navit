@@ -1,13 +1,12 @@
 import QtQuick 2.0
 
-
 Rectangle {
     width: 380
     height: 850
     color: "#000000"
 
     property string queryText
-    property bool queryBarEnabled : true
+    property bool queryBarEnabled: true
     Item {
         id: queryBar
         x: 96
@@ -46,7 +45,6 @@ Rectangle {
         }
     }
 
-
     ListView {
         id: locationResultListView
         height: 800
@@ -58,12 +56,16 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.topMargin: queryBarEnabled ? 7 : 0
         anchors.bottomMargin: 0
-        model: LocationsResultModel {}
+        model: LocationsResultModel {
+        }
         clip: true
         delegate: LocationsResultDelegate {
             width: parent.width
             height: 50
         }
+    }
+    ScrollBar {
+        flk: locationResultListView
     }
 
     Rectangle {
@@ -74,6 +76,4 @@ Rectangle {
         height: 53
         color: "#000000"
     }
-
 }
-

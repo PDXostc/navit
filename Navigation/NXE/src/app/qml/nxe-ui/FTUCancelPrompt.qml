@@ -39,7 +39,7 @@ Rectangle {
             anchors.bottomMargin: 10
             anchors.right: parent.right
             anchors.rightMargin: 48
-
+,
             Item {
                 width: 162
                 anchors.fill: parent
@@ -61,7 +61,9 @@ Rectangle {
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: {rootStack.push(Qt.resolvedUrl("CountryLanguage.qml"))}
+                    onClicked: {
+                        rootStack.push({item:Qt.resolvedUrl("SettingsView.qml"), properties: {ftu: true}})
+                    }
                 }
             }
         }

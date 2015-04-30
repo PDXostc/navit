@@ -13,21 +13,22 @@ Page {
     property real totalBytes: 0
 
     Component.onCompleted: {
-        currentDownloadMap = maps[currentDownloadIndex];
+        currentDownloadMap = maps[currentDownloadIndex]
         navitMapsProxy.downloadMap(currentDownloadMap);
         etaCalculationTimer.start();
     }
 
     function downloadNextMap() {
-        currentDownloadIndex++;
+        currentDownloadIndex++
 
         if (currentDownloadIndex === maps.length) {
             // push FTUMapDownloadCompleted.qml
-            navitProxy.ftu = false;
-            rootStack.clear();
-            rootStack.push({item: Qt.resolvedUrl("MainPage.qml")})
+            rootStack.push({
+                               item: Qt.resolvedUrl("DownloadCompleted.qml"),
+                               replace: true
+                           })
         } else {
-            currentDownloadMap = maps[currentDownloadIndex];
+            currentDownloadMap = maps[currentDownloadIndex]
             navitMapsProxy.downloadMap(currentDownloadMap);
             etaCalculationTimer.restart();
         }
@@ -63,17 +64,19 @@ Page {
     Connections {
         target: navitMapsProxy
         onMapDownloadError: {
-            console.error("An error during map download");
+            console.error("An error during map download")
         }
 
         onMapDownloadProgress: {
-            var progress = now/total;
-            console.debug("Progress for " + map + " value=" + progress);
-            var nowInt = parseInt(now,10);
-            var totalInt = parseInt(total,10);
+            var progress = now / total
+            console.debug("Progress for " + map + " value=" + progress)
+            var nowInt = parseInt(now, 10)
+            var totalInt = parseInt(total, 10)
             if (map === currentDownloadMap) {
-                progressBarItem.value = progress;
-                bytesTextItem.text = Math.floor(now/(1024*1024)) + "MB/" + Math.floor(total/(1024*1024)) + "MB";
+                progressBarItem.value = progress
+                bytesTextItem.text = Math.floor(
+                            now / (1024 * 1024)) + "MB/" + Math.floor(
+                            total / (1024 * 1024)) + "MB"
 
                 bytesDownloaded = now
                 totalBytes = total
@@ -81,7 +84,7 @@ Page {
         }
 
         onMapDownloadFinished: {
-            downloadNextMap();
+            downloadNextMap()
         }
     }
 
@@ -117,7 +120,7 @@ Page {
         Text {
             id: headerText
             color: "white"
-            text: "Downloading (" + (currentDownloadIndex + 1) +" of " + maps.length + ")"
+            text: "Downloading (" + (currentDownloadIndex + 1) + " of " + maps.length + ")"
             font.pixelSize: 18
             anchors.horizontalCenter: parent.horizontalCenter
         }

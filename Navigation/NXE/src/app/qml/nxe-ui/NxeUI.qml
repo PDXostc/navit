@@ -23,13 +23,6 @@ Item {
 
             Connections {
                 target: ftu ? mainPageLoader.item : null
-                onDownloadMap: {
-                    rootStack.push({item:Qt.resolvedUrl("SettingsView.qml"), properties: {ftu: true}})
-                }
-
-                onCancelDownload: {
-                    rootStack.push(Qt.resolvedUrl("FTUCancelPrompt.qml"))
-                }
             }
         }
     }

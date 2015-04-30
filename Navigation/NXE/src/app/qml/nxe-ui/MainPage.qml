@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.2
 
 Item {
     width: 400
@@ -12,16 +13,10 @@ Item {
         anchors.topMargin: parent.width * 0.1
         onClicked: {
             if (item === "menu") {
-                console.debug("menu clicked");
+                console.debug("menu clicked")
                 rootStack.push(settingsView)
             } else if (item === "search") {
-                if (bottomLocationBarLoader.sourceComponent !== null) {
-                    topLocationBarLoader.sourceComponent = null
-                    bottomLocationBarLoader.sourceComponent = null
-                } else {
-                    topLocationBarLoader.sourceComponent = topLocationBar
-                    bottomLocationBarLoader.sourceComponent = bottomLocationBar
-                }
+                rootStack.push(locationsView)
             } else if (item === "northOrientation") {
                 console.debug("North orientation activated")
             } else if (item === "headOrientation") {
@@ -37,17 +32,21 @@ Item {
             onBackToMapRequest: rootStack.pop()
         }
     }
-    Loader {
-        id: bottomLocationBarLoader
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 0
-    }
-    Component {
-        id: bottomLocationBar
-        MapLocationInfo {
-            width: mainPageView.width
+
+    MapLocationInfo {
+        visible: navitProxy.currentlySelectedItem !== null
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
         }
+
+        locationName: navitProxy.currentlySelectedItem !== null ?
+                          navitProxy.currentlySelectedItem.name : "";
+
+        height: 200
     }
+
     Loader {
         id: topLocationBarLoader
         anchors.top: parent.top

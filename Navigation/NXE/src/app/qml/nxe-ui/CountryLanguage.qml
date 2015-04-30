@@ -40,6 +40,10 @@ Rectangle {
             width: parent.width
             height: 50
 
+            onSubList: {
+                settingsStackView.push(Qt.resolvedUrl(url))
+            }
+
             onChecked: {
                 var _index = mapsToDownload.indexOf(itemText);
                 if (_index === -1) {
