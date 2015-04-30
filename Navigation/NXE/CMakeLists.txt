@@ -57,7 +57,7 @@ endif()
 set(boost_components system filesystem thread chrono iostreams timer)
 
 # find Boost
-find_package(Boost 1.57.0 EXACT REQUIRED COMPONENTS ${boost_components})
+find_package(Boost 1.57.0 REQUIRED COMPONENTS ${boost_components})
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 
 

@@ -14,6 +14,7 @@ Rectangle {
         anchors.centerIn: parent
 
         Item {
+            id: info
             width: 200
             height: 122
             anchors.centerIn: parent
@@ -46,7 +47,7 @@ Rectangle {
                 Text {
                     id: text
                     text: "Download a map"
-                    font.pointSize: 17
+                    font.pixelSize: 23
                     anchors.verticalCenter: parent.verticalCenter
                     color: "white"
                 }
@@ -77,9 +78,9 @@ Rectangle {
                 y: 3
                 color: "#ffffff"
                 text: qsTr("Quit")
+                font.pixelSize: 23
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                font.pointSize: 17
             }
 
             MouseArea {
@@ -89,25 +90,32 @@ Rectangle {
                 onClicked: {Qt.quit()}
             }
         }
-    }
 
-    Image {
-        id: logo
-        y: 216
-        width: 64
-        height: 64
-        anchors.horizontalCenter: parent.horizontalCenter
-        source: "alert_hex_icon.png"
-    }
-    Text {
-            anchors.top: logo.bottom
+        Image {
+            id: logo
+            x: 168
+            y: -34
+            width: 64
+            height: 64
+            anchors.horizontalCenterOffset: 0
+            anchors.top: parent.top
+            anchors.topMargin: -32
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "alert_hex_icon.png"
+        }
+
+        Text {
+            x: 100
             text: "Are you sure?"
-            font.bold: true
-            font.pointSize: 22
+            anchors.top: logo.bottom
             anchors.topMargin: 5
+            anchors.horizontalCenterOffset: 0
+            font.pixelSize: 29
+            font.bold: true
             anchors.horizontalCenter: parent.horizontalCenter
             color: "white"
      }
+    }
 
 }
 

@@ -51,7 +51,7 @@ Rectangle {
                 Text {
                     id: text
                     text: "Download a map"
-                    font.pointSize: 17
+                    font.pixelSize: 23
                     anchors.verticalCenter: parent.verticalCenter
                     color: "white"
                 }
@@ -82,9 +82,9 @@ Rectangle {
                 y: 3
                 color: "#ffffff"
                 text: qsTr("Cancel")
+                font.pixelSize: 23
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                font.pointSize: 17
             }
 
             MouseArea {
@@ -94,25 +94,30 @@ Rectangle {
                 onClicked: {cancelDownload()}
             }
         }
-    }
 
-    Image {
-        id: logo
-        y: 216
-        width: 64
-        height: 64
-        anchors.horizontalCenter: parent.horizontalCenter
-        source: "download_hex_icon.png"
-    }
-    Text {
+        Image {
+            id: logo
+            x: 168
+            width: 64
+            height: 64
+            anchors.top: parent.top
+            anchors.topMargin: -34
+            anchors.horizontalCenter: parent.horizontalCenter
+            source: "download_hex_icon.png"
+        }
+
+        Text {
+            x: 137
+            y: 35
             anchors.top: logo.bottom
             text: "Welcome"
+            font.pixelSize: 29
             font.bold: true
-            font.pointSize: 22
             anchors.topMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
             color: "white"
      }
+    }
 
 }
 

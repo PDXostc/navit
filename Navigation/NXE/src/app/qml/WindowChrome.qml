@@ -44,5 +44,4 @@ Item {
     id: chrome
     anchors.fill: parent
     property variant window: parent;
-    Component.onCompleted: window.takeFocus();
 }

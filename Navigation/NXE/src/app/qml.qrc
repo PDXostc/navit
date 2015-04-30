@@ -54,5 +54,9 @@
         <file>qml/nxe-ui/nxe-ui.qml</file>
         <file>qml/nxe-ui/search_button_bg.png</file>
         <file>qml/nxe-ui/star_icon_solid_white.png</file>
+        <file>qml/nxe-ui/location_marker_icon.png</file>
+        <file>qml/nxe-ui/blue_forward_button_long_bg.png</file>
+        <file>qml/nxe-ui/MapLocationInfoTop.qml</file>
+        <file>qml/nxe-ui/MapLocationToast.qml</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@ Rectangle {
             height: 132
             color: "#242424"
             text: qsTr("Search for location...")
+            anchors.horizontalCenter: parent.horizontalCenter
             anchors.left: parent.left
             anchors.leftMargin: 6
             anchors.top: parent.top
@@ -86,6 +87,7 @@ Rectangle {
             id: performSearch
             width: 142
             height: 42
+            anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 stack.push({item: Qt.resolvedUrl("LocationsResult.qml"), properties:{queryText: searchInput.text}})
             }
