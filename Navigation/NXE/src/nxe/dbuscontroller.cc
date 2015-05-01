@@ -43,7 +43,7 @@ void DBusController::start()
         nTrace() << "EOF dispatching";
     }));
 
-    std::chrono::milliseconds dura(50);
+    std::chrono::milliseconds dura(5);
     while (!d->threadRunning) {
         nTrace() << "Thread not running, waiting";
         std::this_thread::sleep_for(dura);

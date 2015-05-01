@@ -9,8 +9,8 @@
         <arg type="s" name="mapName" direction="in" />
         <arg type="b" name="success" direction="out" />
     </method>
-    <method name="availableMaps">
-        <arg type="as" name="maps" direction="out" />
+    <method name="maps">
+        <arg type="a(stb)" name="maps" direction="out" />
     </method>
     <method name="cancel">
         <arg type="s" name="mapName" direction="in"/>

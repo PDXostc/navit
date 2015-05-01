@@ -7,6 +7,12 @@
 
 namespace NXE {
 
+struct MapInfo {
+    const std::string name;
+    const std::uint64_t size;
+    const bool downloaded;
+};
+
 struct MapDownloaderListener {
     typedef std::function<void(const std::string&, std::uint64_t, std::uint64_t)> ProgressCallback;
     typedef std::function<void(const std::string&, const std::string&)> ErrorCallback;
@@ -21,7 +27,7 @@ class IMapDownloader {
 public:
     ~IMapDownloader() {}
 
-    virtual std::vector<std::string> availableMaps() = 0;
+    virtual std::vector<MapInfo> maps() = 0;
     virtual bool download(const std::string& region) = 0;
     virtual void setListener(const MapDownloaderListener& listener) = 0;
     virtual void cancel(const std::string& region) = 0;

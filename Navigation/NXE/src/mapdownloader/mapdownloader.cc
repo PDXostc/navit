@@ -15,6 +15,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace bfs = boost::filesystem;
 
@@ -36,8 +37,6 @@ struct MapFile {
 };
 
 struct MapDownloaderPrivate {
-    //           url                       thread
-//    std::map<std::string, std::unique_ptr<std::thread> > urlThreads;
     std::thread currentThread;
     bool downloading {false};
 
@@ -63,6 +62,14 @@ struct MapDownloaderPrivate {
     bool mapDirOk() const
     {
         return bfs::exists(mapFilePath) && bfs::is_directory(mapFilePath);
+    }
+
+    bool mapDownloaded(const std::string& map) const
+    {
+        const bfs::path dir { mapFilePath };
+        const std::string fileName = map + ".bin";
+        const bfs::path filePath { dir / fileName };
+        return bfs::exists(filePath);
     }
 };
 
@@ -263,11 +270,16 @@ std::string MapDownloader::download(const std::string& name)
     return req;
 }
 
-std::vector<std::string> MapDownloader::availableMaps() const
+std::vector<MapEntry> MapDownloader::maps() const
 {
     auto maps = d->mdesc.availableMaps();
+    std::vector<MapEntry> proper;
+    std::for_each(maps.begin(), maps.end(), [&proper, this](const MapInfo& mi) {
+        proper.emplace_back(MapEntry{mi.name, mi.size, d->mapDownloaded(mi.name)});
+    });
     mdDebug() << "Available maps size= " << maps.size();
-    return maps;
+    return proper;
+
 }
 
 void MapDownloader::cancel(const std::string& reqUrl)
@@ -313,5 +325,6 @@ bool MapDownloader::setMapFileDir(const std::string& dir)
     }
 
     d->mapFilePath = mapPath.string();
+    mdInfo() << "Setting maps dir to " << d->mapFilePath;
     return true;
 }

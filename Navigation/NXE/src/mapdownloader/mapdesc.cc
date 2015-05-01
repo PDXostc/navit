@@ -59,11 +59,11 @@ boost::optional<MapData> MapDesc::getMapData(const std::string& name)
     return md;
 }
 
-std::vector<std::string> MapDesc::availableMaps() const
+std::vector<MapInfo> MapDesc::availableMaps() const
 {
-    std::vector<std::string> ret{};
+    std::vector<MapInfo> ret{};
     std::for_each(mapData.begin(), mapData.end(), [&ret](const MapData& md) {
-        ret.push_back(md.name);
+        ret.emplace_back(MapInfo {md.name, md.size});
     });
     return ret;
 }

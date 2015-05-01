@@ -14,7 +14,7 @@ public:
     INJECT(MapDownloaderDBus(DBusController&));
     ~MapDownloaderDBus();
 
-    virtual std::vector<std::string> availableMaps() override;
+    virtual std::vector<MapInfo> maps() override;
     virtual bool download(const std::string &region) override;
     virtual void setListener(const MapDownloaderListener & listener) override;
     virtual void cancel(const std::string& region) override;

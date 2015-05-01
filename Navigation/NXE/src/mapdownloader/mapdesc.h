@@ -25,6 +25,11 @@ struct MapData {
     std::uint8_t level;
 };
 
+struct MapInfo {
+    const std::string name;
+    const std::uint64_t size;
+};
+
 class MapDesc {
 public:
 	MapDesc();
@@ -32,7 +37,7 @@ public:
 
     void setDataFilePath(const std::string &datafile);
     boost::optional<MapData> getMapData(const std::string& name);
-    std::vector<std::string> availableMaps() const;
+    std::vector<MapInfo> availableMaps() const;
 
 private:
     std::string m_datafile;

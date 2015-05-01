@@ -13,6 +13,13 @@
 #include <functional>
 #include <memory>
 #include <vector>
+#include "mapdesc.h"
+
+struct MapEntry {
+    const std::string name;
+    const std::uint64_t size;
+    const bool isDownloaded;
+};
 
 struct MapDownloaderPrivate;
 class MapDownloader {
@@ -29,7 +36,7 @@ public:
     virtual ~MapDownloader();
 
     std::string download(const std::string& name);
-    std::vector<std::string> availableMaps() const;
+    std::vector<MapEntry> maps() const;
 
     void cancel(const std::string &reqUrl);
 
@@ -66,7 +73,6 @@ private:
     static std::string getDownloadErrorStr(CURLcode err);
 
     std::string createMapRequestString(const std::string& name);
-
 
     std::unique_ptr<MapDownloaderPrivate> d;
 

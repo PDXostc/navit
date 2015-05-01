@@ -30,7 +30,9 @@ set(mapdownloader_src
     ${CMAKE_BINARY_DIR}/src/mapdownloader/mapdownloaderadaptor.h
 )
 
-add_executable(mapdownloader ${mapdownloader_src})
+file(GLOB service_file mapdownloader.service.xml)
+
+add_executable(mapdownloader ${mapdownloader_src} ${service_file})
 target_link_libraries(mapdownloader ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} ${CURL_LIBRARIES} ${Boost_LIBRARIES})
 
 file(COPY ${CMAKE_SOURCE_DIR}/osm_maps.xml DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -2,6 +2,7 @@
 #define CALLS_H
 
 #include "position.h"
+#include "imapdownloader.h"
 
 #include <string>
 #include <map>
@@ -71,8 +72,8 @@ struct CancelDownloadMessageTag {
     typedef std::function<void (const std::string&)> Parser;
     typedef typename Parser::result_type ReturnType;
 };
-struct AvailableMapsMessageTag {
-    typedef std::function<std::vector<std::string> ()> Parser;
+struct MapsMessageTag {
+    typedef std::function<std::vector<NXE::MapInfo> ()> Parser;
     typedef typename Parser::result_type ReturnType;
 };
 struct SetDestinationMessageTag {
@@ -95,7 +96,7 @@ struct SetSchemeMessageTag {
 // Containter
 typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
       PositionMessageTag, RenderMessageTag, ExitMessageTag, OrientationMessageTag, SetCenterMessageTag,
-      DownloadMessageTag, CancelDownloadMessageTag, AvailableMapsMessageTag,SetDestinationMessageTag,
+      DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,
       SetSchemeMessageTag
     > Messages_type;

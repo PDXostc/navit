@@ -11,7 +11,6 @@ struct MapDownloaderDBusTest : public ::testing::Test
     void SetUp()
     {
         dbus.setListener(listener);
-        ASSERT_NO_THROW(dbus.availableMaps());
     }
 
     NXE::DBusController controller;
@@ -38,7 +37,7 @@ struct MapDownloaderDBusTest : public ::testing::Test
 
 TEST_F(MapDownloaderDBusTest, availableMaps_correct)
 {
-    auto maps = dbus.availableMaps();
+    auto maps = dbus.maps();
     EXPECT_NE(maps.size(),0);
 }
 

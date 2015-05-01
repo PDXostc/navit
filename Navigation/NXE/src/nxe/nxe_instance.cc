@@ -74,7 +74,7 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<SetCenterMessageTag>(bind(&INavitIPC::setCenter, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<DownloadMessageTag>(bind(&IMapDownloader::download, d->mapDownloaderIPC.get(), placeholders::_1)),
           make_pair<CancelDownloadMessageTag>(bind(&IMapDownloader::cancel, d->mapDownloaderIPC.get(), placeholders::_1)),
-          make_pair<AvailableMapsMessageTag>(bind(&IMapDownloader::availableMaps, d->mapDownloaderIPC.get())),
+          make_pair<MapsMessageTag>(bind(&IMapDownloader::maps, d->mapDownloaderIPC.get())),
           make_pair<SetDestinationMessageTag>( [this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
           make_pair<ClearDestinationMessageTag>( bind(&INavitIPC::clearDestination, d->ipc.get())),
           make_pair<SetPositionMessageTag>(bind(&INavitIPC::setPosition, d->ipc.get(), placeholders::_1, placeholders::_2)),

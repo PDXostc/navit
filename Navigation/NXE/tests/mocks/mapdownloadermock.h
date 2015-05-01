@@ -5,7 +5,7 @@
 
 struct MapDownloaderMock : public NXE::IMapDownloader {
     using Inject = MapDownloaderMock ();
-    MOCK_METHOD0(availableMaps, std::vector<std::string>());
+    MOCK_METHOD0(maps, std::vector<NXE::MapInfo>());
     MOCK_METHOD1(download, bool(const std::string &));
     MOCK_METHOD1(setListener, void(const NXE::MapDownloaderListener& listener));
     MOCK_METHOD1(cancel, void(const std::string&));

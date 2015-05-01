@@ -117,7 +117,7 @@ TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
     EXPECT_NO_THROW(instance.Initialize());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
-    auto maps = instance.HandleMessage<AvailableMapsMessageTag>();
+    auto maps = instance.HandleMessage<MapsMessageTag>();
 }
 
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
