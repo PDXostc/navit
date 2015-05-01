@@ -11,7 +11,8 @@ Item {
         anchors.fill: parent
 
         onClicked: {
-            mainPageView.pushToStack(mapLocationInfoBar)
+            navitProxy.setLocationPopUp(itemText);
+            rootStack.pop();
         }
     }
     Row {

@@ -2,13 +2,11 @@ import QtQuick 2.0
 
 QtObject {
     id: navitProxy
+    // real (c++ wise) properties
     property bool ftu: false
+    property QtObject currentlySelectedItem: null
 
-    // Fake properties
-    property Timer fakeTimer: Timer {
-        interval: 1000
-        onTriggered: mapDownloadFinished('Oregon')
-    }
+    // Real functions
     function valueFor(settingName) {
         if (settingName === 'orientation') {
             return "North-up";
@@ -28,9 +26,22 @@ QtObject {
         Qt.quit();
     }
 
+    function setLocationPopUp(itemName) {
+        currentlySelectedItem = fakeLocationObject;
+    }
+
+    // real signals
     signal mapDownloadProgress(string map, int now, int total);
     signal mapDownloadError(string map, string error);
     signal mapDownloadFinished(string map);
 
+    // Fake properties
+    property Timer fakeTimer: Timer {
+        interval: 1000
+        onTriggered: mapDownloadFinished('Oregon')
+    }
+    property QtObject fakeLocationObject: QtObject {
+        property string name: "Plac Kościuszki"
+    }
 }
 
