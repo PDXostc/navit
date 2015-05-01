@@ -103,6 +103,7 @@ int main(int argc, char *argv[])
         aInfo() << "Starting nxe-app with wayland socket name= " << view.socketName();
         NavitQuickProxy proxy {view.socketName()};
         view.rootContext()->setContextProperty("navitProxy", &proxy);
+        view.rootContext()->setContextProperty("navitMapsProxy", proxy.navitMapsProxy());
         view.rootContext()->setContextProperty("compositor", &view);
         view.setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
 #if defined(NXE_OS_LINUX)

@@ -6,6 +6,7 @@
 
 #include "appsettings.h"
 #include "imapdownloader.h"
+#include "navitmapsproxy.h"
 
 namespace NXE {
 struct JSONMessage;
@@ -36,6 +37,8 @@ public:
     bool ftu() const;
     void setFtu(bool value);
 
+    QObject* navitMapsProxy() {return &mapsProxy;}
+
 signals:
     void orientationChanged();
     void positionChanged();
@@ -43,10 +46,6 @@ signals:
 
     void quitSignal();
 
-    void mapDownloadError(const QString& error);
-
-    void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
-    void mapDownloadFinished(const QString& map);
 
 public slots:
     void zoomIn();
@@ -59,7 +58,6 @@ public slots:
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);
 
-    void downloadMap(const QString& map);
 
 private:
 
@@ -69,7 +67,7 @@ private:
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QString m_position;
     AppSettings m_settings;
-    NXE::MapDownloaderListener mapDownloaderListener;
+    NavitMapsProxy mapsProxy;
 };
 
 #endif // NAVITQUICKPROXY_H

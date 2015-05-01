@@ -9,9 +9,13 @@ Page {
     property string currentDownloadMap
     property int currentDownloadIndex: 0
 
+    property real bytesDownloaded: 0
+    property real totalBytes: 0
+
     Component.onCompleted: {
         currentDownloadMap = maps[currentDownloadIndex];
-        navitProxy.downloadMap(currentDownloadMap);
+        navitMapsProxy.downloadMap(currentDownloadMap);
+        etaCalculationTimer.start();
     }
 
     function downloadNextMap() {
@@ -24,11 +28,40 @@ Page {
             rootStack.push({item: Qt.resolvedUrl("MainPage.qml")})
         } else {
             currentDownloadMap = maps[currentDownloadIndex];
+            navitMapsProxy.downloadMap(currentDownloadMap);
+            etaCalculationTimer.restart();
+        }
+    }
+
+    Timer {
+        id: etaCalculationTimer
+        running: false
+        interval: 1000
+        repeat: true
+        property real oldBytes: 0
+        property int numberOfSeconds: 0
+        onTriggered: {
+            console.debug('Triggered')
+            if (oldBytes === 0) {
+                oldBytes = bytesDownloaded;
+                // can't calculate yet
+                return;
+            }
+            numberOfSeconds++
+
+            var bytesPerSecond = bytesDownloaded - oldBytes;
+
+            var secondsLeft = Math.ceil(totalBytes/bytesPerSecond) - numberOfSeconds
+
+            console.debug('BPS = ', bytesPerSecond, ' left=', secondsLeft)
+            etaTextItem.text = secondsLeft + " sec"
+
+            oldBytes = bytesDownloaded;
         }
     }
 
     Connections {
-        target: navitProxy
+        target: navitMapsProxy
         onMapDownloadError: {
             console.error("An error during map download");
         }
@@ -41,6 +74,9 @@ Page {
             if (map === currentDownloadMap) {
                 progressBarItem.value = progress;
                 bytesTextItem.text = Math.floor(now/(1024*1024)) + "MB/" + Math.floor(total/(1024*1024)) + "MB";
+
+                bytesDownloaded = now
+                totalBytes = total
             }
         }
 
@@ -91,6 +127,7 @@ Page {
             width: parent.width
             height: 15
             value: 0
+            Behavior on value { NumberAnimation {} }
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 2
@@ -139,6 +176,7 @@ Page {
             }
 
             Text {
+                id: etaTextItem
                 text: "1.3 min"
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter

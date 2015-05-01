@@ -9,6 +9,7 @@
 #include "dbuscontroller.h"
 #include "speechimpldbus.h"
 #include "nxe_version.h"
+#include "mapinfoproxy.h"
 
 #include <functional>
 #include <boost/lexical_cast.hpp>
@@ -34,25 +35,13 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
     : QObject(parent)
     , context(new Context)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
+    , mapsProxy(nxeInstance)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
 
     nxeInstance->navitInitSignal().connect(std::bind(&NavitQuickProxy::synchronizeNavit, this));
 
     nxeInstance->Initialize();
-
-    // mapDownloaderCallbacks!
-    mapDownloaderListener.progressCb = [this](const std::string& mapName, std::uint64_t now, std::uint64_t total) {
-        emit mapDownloadProgress(now, total, QString::fromStdString(mapName));
-    };
-    mapDownloaderListener.errorCb = [this](const std::string&, const std::string& strError) {
-        emit mapDownloadError(QString::fromStdString(strError));
-    };
-    mapDownloaderListener.finishedCb = [this](const std::string& map) {
-        emit mapDownloadFinished(QString::fromStdString(map));
-    };
-
-    nxeInstance->setMapDownloaderListener(mapDownloaderListener);
 
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
         aDebug() << "Received position update";
@@ -63,6 +52,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
         emit positionChanged();
 
     });
+
 }
 
 int NavitQuickProxy::orientation()
@@ -164,17 +154,6 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant &
 {
     if (optionName == "enablePoi") {
         setEnablePoi(newVal.toString() == "on");
-    }
-}
-
-void NavitQuickProxy::downloadMap(const QString& map)
-{
-    try {
-        nxeInstance->HandleMessage<DownloadMessageTag>(map.toStdString());
-    }
-    catch (const std::exception& ex) {
-        // this may throw if MapDownloader is not available
-        emit mapDownloadError("MapDownloader DBus service is probably not running");
     }
 }
 

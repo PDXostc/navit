@@ -19,6 +19,8 @@ set( srcs
     navitsubcompositor.cc
     navitquickproxy.cc
     appsettings.cc
+    mapinfoproxy.cc
+    navitmapsproxy.cc
 )
 
 file(GLOB qml_files qml/*.qml qml/*.js qml/nxe-ui/*.qml)
