@@ -179,7 +179,7 @@ std::string MapDownloader::createMapRequestString(const std::string& name)
 
     boost::optional<MapData> m = d->mdesc.getMapData(name);
     if (m) {
-        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + "&timestamp=150320";
+        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + "&timestamp=150429";
         mdDebug() << "createMapRequestString : " << res;
         mdInfo() << "Size for map " << name << " is " << m->size/1024/1024 << " MB";
     }
