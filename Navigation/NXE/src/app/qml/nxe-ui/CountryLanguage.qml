@@ -40,6 +40,7 @@ Rectangle {
             width: parent.width
             height: 50
             downloaded: navitMapsProxy.isMapDownloaded(itemText);
+            property real _mapSize: navitMapsProxy.mapSize(itemText) / (1024*1024*1024);
 
             onSubList: {
                 settingsStackView.push(Qt.resolvedUrl(url))
@@ -48,11 +49,12 @@ Rectangle {
             onChecked: {
                 var _index = mapsToDownload.indexOf(itemText);
                 if (_index === -1) {
+                    console.debug('Map size', _mapSize/1024/1024/1024)
                     mapsToDownload.push(itemText)
-                    dialog.downloadSize += size
+                    dialog.downloadSize += _mapSize
                 } else {
                     mapsToDownload.splice(_index, 1)
-                    dialog.downloadSize -= size
+                    dialog.downloadSize -= _mapSize
                 }
 
                 updateState();
