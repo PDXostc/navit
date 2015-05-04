@@ -46,7 +46,6 @@
         <file>qml/nxe-ui/LocationsListView.qml</file>
         <file>qml/nxe-ui/LocationsResult.qml</file>
         <file>qml/nxe-ui/LocationsResultDelegate.qml</file>
-        <file>qml/nxe-ui/LocationsResultModel.qml</file>
         <file>qml/nxe-ui/LocationsSearch.qml</file>
         <file>qml/nxe-ui/LocationsView.qml</file>
         <file>qml/nxe-ui/MapLocationInfo.qml</file>
@@ -57,5 +56,8 @@
         <file>qml/nxe-ui/blue_forward_button_long_bg.png</file>
         <file>qml/nxe-ui/MapLocationInfoTop.qml</file>
         <file>qml/nxe-ui/MapLocationToast.qml</file>
+        <file>qml/nxe-ui/ScrollBar.qml</file>
+        <file>qml/nxe-ui/DownloadCompleted.qml</file>
+        <file>qml/nxe-ui/star_icon_empty_grey.png</file>
     </qresource>
 </RCC>

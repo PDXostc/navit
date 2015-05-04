@@ -19,7 +19,8 @@ NavitSubCompositor::NavitSubCompositor(const QString& socketName /*=""*/)
     connect(this, &NavitSubCompositor::afterRendering, this, &NavitSubCompositor::sendCallbacks);
     connect(engine(), &QQmlEngine::warnings, [](const QList<QQmlError>& warns) {
         std::for_each(warns.begin(), warns.end(), []( const QQmlError& err) {
-            aError() << err.toString().toLatin1().data();
+            qDebug() << err;
+//            aError() << err.toString().toLatin1().data();
         });
     });
 }

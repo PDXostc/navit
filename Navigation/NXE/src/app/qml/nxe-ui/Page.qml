@@ -22,8 +22,10 @@ Rectangle {
     Rectangle {
         id: busyRect
         anchors.fill: parent
-        radius: 40
-        color: "grey"
+        color: "black"
+        z: 100
+
+        Behavior on opacity { NumberAnimation {} }
 
         BusyIndicator {
             anchors.centerIn: parent
@@ -51,7 +53,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: busyRect
-                opacity: 1
+                opacity: 0.7
             }
         }
     ]

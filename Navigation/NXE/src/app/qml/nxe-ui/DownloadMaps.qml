@@ -10,6 +10,7 @@ Page {
     property int currentDownloadIndex: 0
 
     property real bytesDownloaded: 0
+    property real sumBytes: 0
     property real totalBytes: 0
 
     Component.onCompleted: {
@@ -39,25 +40,19 @@ Page {
         running: false
         interval: 1000
         repeat: true
-        property real oldBytes: 0
         property int numberOfSeconds: 0
         onTriggered: {
-            console.debug('Triggered')
-            if (oldBytes === 0) {
-                oldBytes = bytesDownloaded;
-                // can't calculate yet
+            sumBytes += bytesDownloaded;
+            if (sumBytes === 0)
                 return;
-            }
             numberOfSeconds++
 
-            var bytesPerSecond = bytesDownloaded - oldBytes;
+            var allSeconds = totalBytes * numberOfSeconds / bytesDownloaded;
+            console.debug('All sec = ', allSeconds);
+            console.debug('Left = ', allSeconds - numberOfSeconds);
 
-            var secondsLeft = Math.ceil(totalBytes/bytesPerSecond) - numberOfSeconds
-
-            console.debug('BPS = ', bytesPerSecond, ' left=', secondsLeft)
-            etaTextItem.text = secondsLeft + " sec"
-
-            oldBytes = bytesDownloaded;
+            var leftSeconds = allSeconds - numberOfSeconds;
+            etaTextItem.text = "" + Math.ceil(leftSeconds) + " sec";
         }
     }
 

@@ -2,11 +2,20 @@ import QtQuick 2.0
 
 Item {
     id: locationInfo
-    property bool isFavorite: false
     property bool canNavigate: false
-    property alias locationName: locationTitle.text
+    property string locationName: locationComponent ? locationComponent.itemText : ""
+    property string locationDescription: locationComponent ? locationComponent.description : ""
+    property bool isFavorite: locationComponent ? locationComponent.favorite : false
+    property var locationComponent: null
     width: 400
-    height: 205
+    height: 150
+
+    Connections {
+        target: locationComponent ? locationComponent : null
+        onFavoriteChanged: {
+            console.debug('fav changed ', locationComponent.favorite)
+        }
+    }
 
     Item {
         id: item3
@@ -31,8 +40,13 @@ Item {
                     y: 0
                     width: 60
                     height: 75
-                    // onClicked: isFavorite = isFavorite ? false : true
-                    onClicked: isFavorite = !isFavorite
+                    onClicked: {
+                        if(locationComponent) {
+                            console.debug(locationComponent.favorite)
+                            locationComponent.favorite = !locationComponent.favorite
+                        }
+                    }
+
                     Image {
                         id: image1
                         x: 12
@@ -53,6 +67,10 @@ Item {
                     y: 75
                     width: 60
                     height: 75
+
+                    onClicked: {
+                        startNavigationButton.opacity = 1
+                    }
 
                     Image {
                         id: image2
@@ -95,15 +113,16 @@ Item {
                     height: 36
                     anchors.top: locationDescription.bottom
                     anchors.topMargin: 10
+                    opacity: 0
+
+                    Behavior on opacity { NumberAnimation {} }
 
                     Image {
-                        id: blueBarImage
                         anchors.fill: parent
                         source: "blue_forward_button_long_bg.png"
                     }
 
                     Text {
-                        id: text1
                         x: 8
                         y: 8
                         color: "#ffffff"
@@ -114,7 +133,6 @@ Item {
                 }
 
                 Image {
-                    id: image3
                     x: 58
                     y: 21
                     width: 32
@@ -125,24 +143,22 @@ Item {
                 }
 
                 Text {
-                    id: locationTitle
+                    id: locationTitleTextItem
                     x: 43
                     y: 21
-                    text: qsTr("Location Name")
+                    text: locationName
                     font.pixelSize: 26
                 }
 
                 Text {
-                    id: locationDescription
                     x: 43
-                    text: qsTr("1234 N Main, Portland, OR 97208")
-                    anchors.top: locationTitle.bottom
+                    text: locationInfo.locationDescription
+                    anchors.top: locationTitleTextItem.bottom
                     anchors.topMargin: 5
                     font.pixelSize: 15
                 }
 
                 Text {
-                    id: locationTime
                     x: 302
                     y: 36
                     color: "#09bcdf"
@@ -154,7 +170,6 @@ Item {
                 }
 
                 Text {
-                    id: locationDistance
                     x: 284
                     y: 58
                     color: "#09bcdf"
@@ -166,14 +181,5 @@ Item {
                 }
             }
         }
-    }
-
-    MapLocationToast {
-        id: mapLocationToast1
-        x: 0
-        y: 0
-        width: parent.width
-        anchors.bottom: item3.top
-        anchors.bottomMargin: 5
     }
 }

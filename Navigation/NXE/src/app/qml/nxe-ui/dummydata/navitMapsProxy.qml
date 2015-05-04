@@ -15,7 +15,20 @@ QtObject {
     // Fake properties
     property Timer fakeTimer: Timer {
         interval: 1000
-        onTriggered: mapDownloadFinished('Oregon')
+        property real total: 150 * 1024 * 1024
+        property real delta: 1024 * 1024 * 7
+        property real downloaded: 0
+        repeat: true
+        onTriggered: {
+            downloaded += delta;
+            if (downloaded < total) {
+                console.debug('Downloaded=', downloaded, " out of ", total)
+                mapDownloadProgress('Oregon', downloaded, total)
+            } else {
+                mapDownloadFinished('Oregon')
+                fakeTimer.stop();
+            }
+        }
     }
 }
 

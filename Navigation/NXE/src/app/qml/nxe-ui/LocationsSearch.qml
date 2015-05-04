@@ -1,10 +1,8 @@
 import QtQuick 2.0
 
-Rectangle {
-    id: rectangle2
-    width: 380
-    height: 800
-    color: "#000000"
+Page {
+    id: root
+
     Rectangle {
         id: rectangle1
         x: 0
@@ -89,8 +87,17 @@ Rectangle {
             height: 42
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                stack.push({item: Qt.resolvedUrl("LocationsResult.qml"), properties:{queryText: searchInput.text}})
+                root.busy = true;
+                navitProxy.search(searchInput.text)
             }
+        }
+    }
+
+    Connections {
+        target: navitProxy
+        onSearchDone: {
+            root.busy = false;
+            stack.push({item: Qt.resolvedUrl("LocationsResult.qml"), properties:{queryText: searchInput.text}})
         }
     }
 }

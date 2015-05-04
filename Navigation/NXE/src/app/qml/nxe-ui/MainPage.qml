@@ -3,9 +3,24 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.2
 
 Item {
+    id: mainPageView
     width: 400
     height: 800
-    id: mainPageView
+
+    property var locationInfoComponent: null
+    property var locationInfoObject: null
+
+    function finishComponentCreation() {
+        if (locationInfoComponent.status === Component.Ready) {
+            locationInfoObject = locationInfoComponent.createObject(mainPageView);
+            console.debug(locationInfoComponent, locationInfoObject)
+            locationInfoObject.anchors.bottom = mainPageView.bottom
+            locationInfoObject.anchors.left = mainPageView.left
+            locationInfoObject.anchors.right = mainPageView.right
+
+            locationInfoObject.locationComponent = navitProxy.currentlySelectedItem;
+        }
+    }
 
     NMenu {
         anchors.left: parent.left
@@ -26,6 +41,20 @@ Item {
             }
         }
     }
+
+    Connections {
+        target: navitProxy
+        onCurrentlySelectedItemChanged:{
+            console.debug('currently selected changed')
+            locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
+            if (locationInfoComponent.status === Component.Ready) {
+                finishComponentCreation();
+            } else {
+                locationInfoComponent.statusChanged.connect(finishComponentCreation);
+            }
+        }
+    }
+
     Component {
         id: settingsView
         SettingsView {
@@ -33,30 +62,6 @@ Item {
         }
     }
 
-    MapLocationInfo {
-        visible: navitProxy.currentlySelectedItem !== null
-        anchors {
-            bottom: parent.bottom
-            left: parent.left
-            right: parent.right
-        }
-
-        locationName: navitProxy.currentlySelectedItem !== null ?
-                          navitProxy.currentlySelectedItem.name : "";
-
-        height: 200
-    }
-
-    Loader {
-        id: topLocationBarLoader
-        anchors.top: parent.top
-    }
-    Component {
-        id: topLocationBar
-        MapLocationInfoTop {
-            width: mainPageView.width
-        }
-    }
     Component {
         id: locationsView
         LocationsView {

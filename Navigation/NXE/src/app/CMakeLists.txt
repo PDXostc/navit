@@ -21,6 +21,7 @@ set( srcs
     appsettings.cc
     mapinfoproxy.cc
     navitmapsproxy.cc
+    locationproxy.cc
 )
 
 file(GLOB qml_files qml/*.qml qml/*.js qml/nxe-ui/*.qml)

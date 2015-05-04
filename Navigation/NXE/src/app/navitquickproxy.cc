@@ -10,11 +10,13 @@
 #include "speechimpldbus.h"
 #include "nxe_version.h"
 #include "mapinfoproxy.h"
+#include "locationproxy.h"
 
 #include <functional>
 #include <boost/lexical_cast.hpp>
 
 #include <QtCore/QVariant>
+#include <QtQml/QQmlContext>
 
 struct Context {
     NXE::DBusController dbusController;
@@ -31,10 +33,11 @@ struct Context {
     }() };
 };
 
-NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
+NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject* parent)
     : QObject(parent)
     , context(new Context)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
+    , m_rootContext(ctx)
     , mapsProxy(nxeInstance)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
@@ -53,6 +56,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QObject* parent)
 
     });
 
+    qRegisterMetaType<QObjectList>("QObjectList");
+    typedef QQmlListProperty<LocationProxy> LocationProxyList;
+    qRegisterMetaType<LocationProxyList> ("QQmlListProperty<LocationProxy>");
 }
 
 int NavitQuickProxy::orientation()
@@ -110,6 +116,11 @@ void NavitQuickProxy::setFtu(bool value)
     m_settings.set<Tags::Ftu>(value);
 }
 
+QObject *NavitQuickProxy::currentlySelectedItem() const
+{
+    return m_currentItem;
+}
+
 void NavitQuickProxy::zoomIn()
 {
     nxeInstance->HandleMessage<ZoomByMessageTag>(2);
@@ -154,6 +165,27 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant &
 {
     if (optionName == "enablePoi") {
         setEnablePoi(newVal.toString() == "on");
+    }
+}
+
+void NavitQuickProxy::search(const QString &name)
+{
+    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+
+    m_searchResults.append(new LocationProxy{"test1", false, "", true});
+
+    m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
+
+    emit searchDone();
+}
+
+void NavitQuickProxy::setLocationPopUp(const QString &name)
+{
+    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+    // TODO: This is a fake implementation for now
+    if (m_searchResults.size() != 0) {
+        m_currentItem = qobject_cast<LocationProxy*>(m_searchResults.at(0));
+        currentlySelectedItemChanged();
     }
 }
 

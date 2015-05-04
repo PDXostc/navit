@@ -39,7 +39,6 @@ Rectangle {
             anchors.bottomMargin: 10
             anchors.right: parent.right
             anchors.rightMargin: 48
-,
             Item {
                 width: 162
                 anchors.fill: parent

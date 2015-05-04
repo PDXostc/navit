@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
         const QString waylandSocketName = QByteArray{"navit-"} + QUuid::createUuid().toByteArray();
         NavitSubCompositor view {waylandSocketName};
         aInfo() << "Starting nxe-app with wayland socket name= " << view.socketName();
-        NavitQuickProxy proxy {view.socketName()};
+        NavitQuickProxy proxy {view.socketName(), view.rootContext()};
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("navitMapsProxy", proxy.navitMapsProxy());
         view.rootContext()->setContextProperty("compositor", &view);

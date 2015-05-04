@@ -53,6 +53,7 @@ Page {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: 10
             anchors.right: parent.right
+            anchors.rightMargin: 10
 
             Item {
                 width: 172
@@ -61,16 +62,18 @@ Page {
                 Text {
                     id: text
                     text: "Download a map"
-                    font.pixelSize: 23
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 24
                     anchors.verticalCenter: parent.verticalCenter
                     color: "white"
                 }
 
                 Image {
-                    anchors.verticalCenter: parent.verticalCenter
+                    height: 32
                     anchors.left: text.right
                     anchors.leftMargin: 5
                     source: "next_icon_white.png"
+                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 MouseArea {
@@ -94,7 +97,7 @@ Page {
                 y: 3
                 color: "#ffffff"
                 text: qsTr("Cancel")
-                font.pixelSize: 23
+                font.pixelSize: 24
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
             }
