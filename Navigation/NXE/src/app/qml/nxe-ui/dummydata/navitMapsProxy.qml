@@ -7,6 +7,10 @@ QtObject {
         fakeTimer.restart();
     }
 
+    function isMapDownloaded(mapName) {
+        return mapName === 'Oregon';
+    }
+
     // real signals
     signal mapDownloadProgress(string map, int now, int total);
     signal mapDownloadError(string map, string error);

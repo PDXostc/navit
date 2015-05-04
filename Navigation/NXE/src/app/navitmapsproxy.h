@@ -22,6 +22,8 @@ public:
     QObjectList maps() const { return m_maps;}
 public slots:
     void downloadMap(const QString& map);
+
+    bool isMapDownloaded(const QString& mapName);
 signals:
     void mapDownloadError(const QString& error);
     void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
@@ -30,6 +32,7 @@ private:
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QObjectList m_maps;
     NXE::MapDownloaderListener mapDownloaderListener;
+    std::vector<NXE::MapInfo> m_nxeMaps;
 };
 
 #endif // NAVITMAPSPROXY_H

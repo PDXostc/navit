@@ -52,7 +52,7 @@ QtObject {
         running: false
         interval: 3000
         onTriggered: {
-            searchDone()
+            searchDone();
         }
     }
 }

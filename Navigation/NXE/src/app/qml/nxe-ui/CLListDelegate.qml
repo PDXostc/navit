@@ -6,6 +6,7 @@ Item {
     id: root
     width: 400
     height: 50
+    property bool downloaded: false
 
     signal checked()
 
@@ -25,9 +26,12 @@ Item {
         visible: type === 'empty'
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
+        enabled: !downloaded
+
+        checked: downloaded
 
         onClicked: {
-            root.checked()
+            root.checked(checked)
         }
 
         style: CheckBoxStyle {

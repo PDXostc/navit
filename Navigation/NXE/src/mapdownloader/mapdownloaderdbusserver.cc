@@ -102,8 +102,13 @@ std::vector<::DBus::Struct<std::string, uint64_t, bool> > MapDownloaderDBusServe
     mdInfo() << "Requesting maps";
     auto maps = d->downloader.maps();
     mdInfo() << "maps size = " << maps.size();
+
+
+    mdInfo() << "Downloaded maps = ";
     std::vector<::DBus::Struct<std::string, std::uint64_t, bool>> ret;
     std::for_each(maps.begin(), maps.end(), [&ret](const MapEntry& me) {
+        if (me.isDownloaded)
+            mdInfo() << me.name;
         ::DBus::Struct<std::string, std::uint64_t, bool> oneVal;
         oneVal._1 = me.name;
         oneVal._2 = me.size;

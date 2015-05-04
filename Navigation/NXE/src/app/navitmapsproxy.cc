@@ -20,8 +20,8 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QOb
     nxeInstance->setMapDownloaderListener(mapDownloaderListener);
 
     // Request for available maps
-    auto maps = nxeInstance->HandleMessage<MapsMessageTag>();
-    std::for_each(maps.begin(), maps.end(), [this](const NXE::MapInfo& mi) {
+    m_nxeMaps = nxeInstance->HandleMessage<MapsMessageTag>();
+    std::for_each(m_nxeMaps.begin(), m_nxeMaps.end(), [this](const NXE::MapInfo& mi) {
         m_maps.append(new MapInfoProxy{mi});
     });
 }
@@ -41,4 +41,11 @@ void NavitMapsProxy::downloadMap(const QString& map)
         // this may throw if MapDownloader is not available
         emit mapDownloadError("MapDownloader DBus service is probably not running");
     }
+}
+
+bool NavitMapsProxy::isMapDownloaded(const QString &mapName)
+{
+    std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
+        return mi.name == mapName.toStdString() && mi.downloaded;
+    }) != m_nxeMaps.end();
 }

@@ -39,6 +39,7 @@ Rectangle {
         delegate: CLListDelegate {
             width: parent.width
             height: 50
+            downloaded: navitMapsProxy.isMapDownloaded(itemText);
 
             onSubList: {
                 settingsStackView.push(Qt.resolvedUrl(url))
@@ -54,7 +55,7 @@ Rectangle {
                     dialog.downloadSize -= size
                 }
 
-                updateState()
+                updateState();
             }
         }
     }
