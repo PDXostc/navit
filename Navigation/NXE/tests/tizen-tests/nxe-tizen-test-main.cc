@@ -36,7 +36,7 @@ TEST_F(NXETizenTest, checkIfMapDownloaderDBusServiceExists)
 {
     IMapDownloader* downloader = injector.get<IMapDownloader* >();
     try {
-        auto maps = downloader->availableMaps();
+        auto maps = downloader->maps();
         EXPECT_NE(maps.size(),0);
     }
     catch (const std::exception& ex) {
