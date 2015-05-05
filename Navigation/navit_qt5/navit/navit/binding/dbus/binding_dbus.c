@@ -1659,7 +1659,7 @@ set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore)
 	struct pcoord *dst;
 	char buffer[1024];
 	int i, dstcount_new;
-	sprintf(buffer, _("Waypoint %d"), visitbefore+1);
+    sprintf(buffer, "Waypoint %d", visitbefore+1);
 	dstcount_new=navit_get_destination_count(nav)+1;
 	dst=g_alloca(dstcount_new*sizeof(struct pcoord));
 	navit_get_destinations(nav,dst,dstcount_new);
