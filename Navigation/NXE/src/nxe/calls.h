@@ -3,6 +3,7 @@
 
 #include "position.h"
 #include "imapdownloader.h"
+#include "inavitipc.h"
 
 #include <string>
 #include <map>
@@ -92,13 +93,26 @@ struct SetSchemeMessageTag {
     typedef std::function<void (const std::string&)> Parser;
     typedef typename Parser::result_type ReturnType;
 };
+struct StartSearchTag {
+    typedef std::function<void ()> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SearchCountryLocationTag {
+    typedef std::function<std::vector<NXE::Country> (const std::string&)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+struct SearchCityLocationTag {
+    typedef std::function<std::vector<NXE::City> (const std::string&)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
 
 // Containter
 typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
       PositionMessageTag, RenderMessageTag, ExitMessageTag, OrientationMessageTag, SetCenterMessageTag,
       DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,
-      SetSchemeMessageTag
+      SetSchemeMessageTag,
+      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag
     > Messages_type;
 
 template <typename T>

@@ -175,16 +175,27 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant &
     }
 }
 
-void NavitQuickProxy::search(const QString &name)
+void NavitQuickProxy::startSearch()
 {
-    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+    nxeInstance->HandleMessage<StartSearchTag>();
+}
 
-    m_searchResults.append(new LocationProxy{"test1", false, "", true});
-
+void NavitQuickProxy::searchCountry(const QString &countryName)
+{
+    auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
+    for(NXE::Country country: countries) {
+        m_searchResults.append(new LocationProxy{QString::fromStdString(country.name),
+                               false,"", false});
+    }
     m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
 
     emit searchDone();
 }
+
+void NavitQuickProxy::searchCity(const QString &name)
+{
+}
+
 void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;

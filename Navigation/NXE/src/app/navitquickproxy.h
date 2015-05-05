@@ -71,7 +71,9 @@ public slots:
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);
 
-    void search(const QString& name);
+    void startSearch();
+    void searchCountry(const QString& name);
+    void searchCity(const QString& name);
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QString& name);

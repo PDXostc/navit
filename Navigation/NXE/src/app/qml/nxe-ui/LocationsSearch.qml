@@ -3,6 +3,10 @@ import QtQuick 2.0
 Page {
     id: root
 
+    Component.onCompleted: {
+        navitProxy.startSearch();
+    }
+
     Rectangle {
         id: rectangle1
         x: 0
@@ -18,7 +22,7 @@ Page {
             width: 354
             height: 132
             color: "#242424"
-            text: qsTr("Search for location...")
+            text: qsTr("Search for Country...")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.left: parent.left
             anchors.leftMargin: 6
@@ -89,7 +93,7 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 root.busy = true;
-                navitProxy.search(searchInput.text)
+                navitProxy.searchCountry(searchInput.text)
             }
         }
     }

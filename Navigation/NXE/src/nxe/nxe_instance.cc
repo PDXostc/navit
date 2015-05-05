@@ -78,7 +78,10 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<SetDestinationMessageTag>( [this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
           make_pair<ClearDestinationMessageTag>( bind(&INavitIPC::clearDestination, d->ipc.get())),
           make_pair<SetPositionMessageTag>(bind(&INavitIPC::setPosition, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1))
+          make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1)),
+          make_pair<StartSearchTag>(bind(&INavitIPC::startSearch, d->ipc.get())),
+          make_pair<SearchCountryLocationTag>(bind(&INavitIPC::searchCountry, d->ipc.get(), placeholders::_1)),
+          make_pair<SearchCityLocationTag>(bind(&INavitIPC::searchCity, d->ipc.get(), placeholders::_1))
       )
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
