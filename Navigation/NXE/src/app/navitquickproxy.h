@@ -26,6 +26,7 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
+    Q_PROPERTY(bool topBarLocationVisible READ topBarLocationVisible WRITE setTopBarLocationVisible)
 public:
     explicit NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
 
@@ -44,6 +45,9 @@ public:
     QObject* currentlySelectedItem() const;
     QObject* navitMapsProxy() {return &mapsProxy;}
 
+    bool topBarLocationVisible() const;
+    void setTopBarLocationVisible(bool value);
+
 signals:
     void orientationChanged();
     void positionChanged();
@@ -52,7 +56,8 @@ signals:
     void quitSignal();
 
     void searchDone();
-
+    void gettingFavoritesDone();
+    void gettingHistoryDone();
     void currentlySelectedItemChanged();
 
 public slots:
@@ -67,8 +72,10 @@ public slots:
     void changeValueFor(const QString& optionName, const QVariant& newVal);
 
     void search(const QString& name);
+    void getFavorites();
+    void getHistory();
     void setLocationPopUp(const QString& name);
-
+    void hideLocationBars();
 private:
 
     void synchronizeNavit();
@@ -80,6 +87,8 @@ private:
     AppSettings m_settings;
     NavitMapsProxy mapsProxy;
     QObjectList m_searchResults;
+    QObjectList m_favoritesResults;
+    QObjectList m_historyResults;
     LocationProxy* m_currentItem {nullptr};
 };
 

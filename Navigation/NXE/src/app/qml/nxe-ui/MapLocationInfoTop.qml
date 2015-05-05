@@ -1,7 +1,7 @@
 import QtQuick 2.0
 
 Item {
-    id: locationInfo
+    id: locationInfoTop
     x: 0
     y: 0
     width: 400
@@ -11,6 +11,9 @@ Item {
     signal backToMapRequest()
     property bool isFavorite : false
     property bool canNavigate : false
+    property string locationName: locationComponent ? locationComponent.itemText : ""
+    property string locationDescriptionString: locationComponent ? locationComponent.description : ""
+    property var locationComponent: null
     Item {
         id: item3
         anchors.fill: parent
@@ -19,13 +22,12 @@ Item {
             x: 0
             y: 0
             width: 60
-            height: parent.height
+            height: navitProxy.topBarLocationVisible ? parent.height : 60
 
             Rectangle {
                 id: rectangle2
                 color: "#242424"
                 anchors.fill: parent
-
 
                 Image {
                     id: image1
@@ -41,6 +43,7 @@ Item {
                 MouseArea {
                     id: topLocationBarBackButton
                     anchors.fill: parent
+                    onClicked: navitProxy.hideLocationBars()
                 }
             }
         }
@@ -54,14 +57,14 @@ Item {
             anchors.bottom: parent.bottom
             anchors.top: parent.top
             anchors.leftMargin: 0
-
+            visible: navitProxy.topBarLocationVisible
             Rectangle {
                 id: rectangle1
                 color: "#fbfbfb"
                 anchors.fill: parent
 
-Image {
-    id: image3
+                 Image {
+                    id: image3
                     x: 58
                     y: 21
                     width: 32
@@ -75,14 +78,14 @@ Image {
                     id: locationTitle
                     x: 43
                     y: 21
-                    text: qsTr("Location Name")
+                    text: locationName
                     font.pixelSize: 26
                 }
 
                 Text {
                     id: locationDescription
                     x: 43
-                    text: qsTr("1234 N Main, Portland, OR 97208")
+                    text: locationDescriptionString
                     anchors.top: locationTitle.bottom
                     anchors.topMargin: 5
                     font.pixelSize: 15

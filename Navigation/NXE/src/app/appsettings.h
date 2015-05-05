@@ -18,6 +18,10 @@ namespace Tags {
         typedef bool ValueType;
         constexpr static const char* path {"ftu"};
     };
+    struct TopBarLocationVisible {
+        typedef bool ValueType;
+        constexpr static const char* path {"topBarLocationVisible"};
+    };
 }
 
 class AppSettings

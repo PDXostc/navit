@@ -7,7 +7,7 @@ QtObject {
     property QtObject currentlySelectedItem: null
     property ListModel favourites: ListModel {}
     property ListModel destinations: ListModel {}
-
+    property bool topBarLocationVisible : false
     // Real functions
     function valueFor(settingName) {
         if (settingName === 'orientation') {
@@ -23,6 +23,12 @@ QtObject {
     function search(searchString) {
         fakeSearchTimer.start();
     }
+    function getHistory() {
+        fakeHistoryTimer.start();
+    }
+    function getFavorites() {
+        fakeFavoritesTimer.start();
+    }
 
     function quit() {
         Qt.quit();
@@ -30,6 +36,14 @@ QtObject {
 
     function setLocationPopUp(itemName) {
         currentlySelectedItem = fakeLocationObject;
+    }
+    function showTopBar() {
+
+        topBarLocationVisible = true;
+    }
+    function hideLocationBars() {
+        currentlySelectedItem = null
+        topBarLocationVisible = false;
     }
 
     function setFavorite(name, favorite) {
@@ -40,7 +54,8 @@ QtObject {
     // Real signals
 
     signal searchDone();
-
+    signal gettingFavoritesDone();
+    signal gettingHistoryDone();
     // fake properties
     property QtObject fakeLocationObject: QtObject {
         property string itemText: "Plac Kościuszki"
@@ -55,5 +70,20 @@ QtObject {
             searchDone();
         }
     }
+    property Timer fakeFavoritesTimer: Timer {
+        running: false
+        interval: 3000
+        onTriggered: {
+            gettingFavoritesDone()
+        }
+    }
+    property Timer fakeHistoryTimer: Timer {
+        running: false
+        interval: 3000
+        onTriggered: {
+            gettingHistoryDone()
+        }
+    }
+
 }
 

@@ -9,6 +9,7 @@ Page {
         width: 380
         height: 140
         color: "#ffffff"
+        anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: 10
 

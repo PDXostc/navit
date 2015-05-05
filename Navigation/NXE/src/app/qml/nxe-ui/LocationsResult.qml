@@ -1,6 +1,7 @@
 import QtQuick 2.0
 
 Rectangle {
+    id: rectangle2
     width: 380
     height: 850
     color: "#000000"
@@ -11,20 +12,22 @@ Rectangle {
         id: queryBar
         x: 96
         y: 8
-        width: 446
-        height: queryBarEnabled ? 42 : 0
-        visible: true
-        anchors.horizontalCenterOffset: 33
+        width: parent.width - 40
+        height: 42
+        anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
-        Image {
-            id: image1
-            y: 0
-            width: 422
-            height: parent.height
-            visible: true
-            anchors.left: parent.left
-            anchors.leftMargin: 0
-            source: "search_button_bg.png"
+        visible: true
+        Rectangle {
+            id: rectangle1
+            color: "#09bcdf"
+            anchors.fill: parent
+        }
+        Text {
+            x: 32
+            y: 13
+            color: "#ffffff"
+            text: queryBarEnabled ? queryText : ""
+            font.pointSize: 10
         }
         Image {
             id: image2
@@ -35,13 +38,6 @@ Rectangle {
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             source: "search_icon_white_sm.png"
-        }
-        Text {
-            x: 32
-            y: 13
-            color: "#ffffff"
-            text: queryBarEnabled ? queryText : ""
-            font.pointSize: 10
         }
     }
 
@@ -66,14 +62,5 @@ Rectangle {
     }
     ScrollBar {
         flk: locationResultListView
-    }
-
-    Rectangle {
-        id: rectangle1
-        x: 380
-        y: 0
-        width: 42
-        height: 53
-        color: "#000000"
     }
 }

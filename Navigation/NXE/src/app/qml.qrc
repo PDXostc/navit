@@ -59,5 +59,7 @@
         <file>qml/nxe-ui/ScrollBar.qml</file>
         <file>qml/nxe-ui/DownloadCompleted.qml</file>
         <file>qml/nxe-ui/star_icon_empty_grey.png</file>
+        <file>qml/nxe-ui/LocationsFavorites.qml</file>
+        <file>qml/nxe-ui/LocationsHistory.qml</file>
     </qresource>
 </RCC>

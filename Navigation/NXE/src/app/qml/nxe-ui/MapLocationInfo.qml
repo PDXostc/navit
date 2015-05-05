@@ -46,7 +46,6 @@ Item {
                             locationComponent.favorite = !locationComponent.favorite
                         }
                     }
-
                     Image {
                         id: image1
                         x: 12
@@ -113,10 +112,10 @@ Item {
                     height: 36
                     anchors.top: locationDescription.bottom
                     anchors.topMargin: 10
+
                     opacity: 0
-
                     Behavior on opacity { NumberAnimation {} }
-
+                    onClicked: {navitProxy.showTopBar()}
                     Image {
                         anchors.fill: parent
                         source: "blue_forward_button_long_bg.png"
@@ -151,6 +150,7 @@ Item {
                 }
 
                 Text {
+                    id: locationDescription
                     x: 43
                     text: locationInfo.locationDescription
                     anchors.top: locationTitleTextItem.bottom

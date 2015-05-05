@@ -37,7 +37,7 @@ AppSettings::AppSettings()
         set<Tags::EnablePoi>(true);
         set<Tags::Orientation>("North-up");
         set<Tags::Ftu>(true);
-
+        set<Tags::TopBarLocationVisible>(false);
         save();
     }
 }

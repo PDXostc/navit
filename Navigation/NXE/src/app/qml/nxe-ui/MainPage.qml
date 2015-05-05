@@ -8,8 +8,9 @@ Item {
     height: 800
 
     property var locationInfoComponent: null
+    property var locationInfoTopComponent: null
     property var locationInfoObject: null
-
+    property var locationInfoTopObject: null
     function finishComponentCreation() {
         if (locationInfoComponent.status === Component.Ready) {
             locationInfoObject = locationInfoComponent.createObject(mainPageView);
@@ -17,15 +18,24 @@ Item {
             locationInfoObject.anchors.bottom = mainPageView.bottom
             locationInfoObject.anchors.left = mainPageView.left
             locationInfoObject.anchors.right = mainPageView.right
-
             locationInfoObject.locationComponent = navitProxy.currentlySelectedItem;
+        }
+    }
+    function finishTopComponentCreation() {
+        if (locationInfoTopComponent.status === Component.Ready) {
+            locationInfoTopObject = locationInfoTopComponent.createObject(mainPageView);
+            console.debug(locationInfoTopComponent, locationInfoTopObject)
+            locationInfoTopObject.anchors.top = mainPageView.top
+            locationInfoTopObject.anchors.left = mainPageView.left
+            locationInfoTopObject.anchors.right = mainPageView.right
+            locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem;
         }
     }
 
     NMenu {
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.topMargin: parent.width * 0.1
+        anchors.topMargin: navitProxy.topBarLocationVisible ? 110 : 70 // parent.width * 0.2 : 70
         onClicked: {
             if (item === "menu") {
                 console.debug("menu clicked")
@@ -46,11 +56,25 @@ Item {
         target: navitProxy
         onCurrentlySelectedItemChanged:{
             console.debug('currently selected changed')
-            locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
-            if (locationInfoComponent.status === Component.Ready) {
-                finishComponentCreation();
-            } else {
-                locationInfoComponent.statusChanged.connect(finishComponentCreation);
+            if(navitProxy.currentlySelectedItem === null) {
+                locationInfoComponent.destroy();
+                locationInfoTopComponent.destroy();
+                locationInfoTopObject.destroy();
+                locationInfoObject.destroy();
+            }
+            else {
+                locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
+                locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml");
+                if (locationInfoComponent.status === Component.Ready) {
+                    finishComponentCreation();
+                } else {
+                    locationInfoComponent.statusChanged.connect(finishComponentCreation);
+                }
+                if (locationInfoTopComponent.status === Component.Ready) {
+                    finishTopComponentCreation();
+                } else {
+                    locationInfoTopComponent.statusChanged.connect(finishTopComponentCreation);
+                }
             }
         }
     }

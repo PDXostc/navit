@@ -1,138 +1,172 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
+    Rectangle {
+        id: locationsListRoot
+        width: 400
+        height: 800
+        color: "black"
 
-Rectangle {
-    id: locationsListRoot
-    width: 400
-    height: 800
-    color: "black"
+        signal backToMapRequest
+        signal showLocationRequest
+        property string headerSmallText
+        property var choosenLocation
 
-    signal backToMapRequest
-    signal showLocationRequest
-    property string headerSmallText
-    property var choosenLocation
-
-    onHeaderSmallTextChanged: {
-        if(headerSmallText !== "") {
-            slashSymbol.text = "/";
-            smallText.text = headerSmallText
+        onHeaderSmallTextChanged: {
+            if(headerSmallText !== "") {
+                slashSymbol.text = "/";
+                smallText.text = headerSmallText
+            }
+            else {
+                slashSymbol.text = "";
+                smallText.text = "";
+            }
         }
-        else {
-            slashSymbol.text = "";
-            smallText.text = "";
-        }
-    }
-    Column {
-        anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        anchors.topMargin: 10
-        anchors.bottomMargin: 10
+        Column {
+            anchors.fill: parent
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.topMargin: 10
+            anchors.bottomMargin: 10
 
-        spacing: 10
+            spacing: 10
 
-        Item {
-            id: header
-            width: locationsListRoot.width - 20
-            height: 47
+            Item {
+                id: header
+                width: locationsListRoot.width - 20
+                height: 47
 
-            Row {
-                anchors.fill: parent
-                anchors.bottomMargin: 10
-                spacing: 0
-
-                MenuHeaderButton {
-                    width: 30
+                Row {
+                    id: bigText
+                    width: parent.width
                     height: parent.height
-                    iconSource: "back_icon_white_lg.png"
-                    iconWidth: 24
-                    iconHeight: 24
+                    anchors.bottomMargin: 10
+                    spacing: 0
 
-                    onClicked: {
-                        if (stack.depth !== 1) {
-                            if(stack.depth === 2) {
-                                locationsListRoot.headerSmallText = ""
+                    MenuHeaderButton {
+                        id: headerBtn
+                        width: 30
+                        height: parent.height
+                        iconSource: "back_icon_white_lg.png"
+                        iconWidth: 24
+                        iconHeight: 24
+
+                        onClicked: {
+                            if (stack.depth !== 1) {
+                                if(stack.depth === 2) {
+                                    locationsListRoot.headerSmallText = ""
+                                }
+                                stack.pop()
+                            } else {
+                                backToMapRequest()
                             }
-                            stack.pop()
-                        } else {
-                            backToMapRequest()
+                        }
+                    }
+
+                    Text {
+                        width: 280
+                        height: parent.height
+                        text: "Locations"
+                        anchors.left: headerBtn.right
+                        anchors.leftMargin: 4
+                        color: "white"
+                        verticalAlignment: Text.AlignVCenter
+                        font.pixelSize: 24
+                    }
+
+                    Item {
+                        id: item1
+                        anchors.fill: parent
+                        height: parent.height
+
+                        MenuHeaderButton {
+                            id: bckB
+                            x: 1
+                            y: 0
+                            width: 16
+                            height: 35
+                            anchors.right: bckM.left
+                            anchors.rightMargin: 9
+                            iconSource: "back_icon_white_sm.png"
+                            onClicked: backToMapRequest()
+                        }
+
+                        MenuHeaderButton {
+                            id: bckM
+                            y: 0
+                            width: 34
+                            height: 33
+                            anchors.right: parent.right
+                            anchors.rightMargin: 7
+                            iconWidth: 24
+                            iconHeight: 24
+                            iconSource: "map_icon_white.png"
+                            onClicked: backToMapRequest()
                         }
                     }
                 }
 
+                Rectangle {
+                    width: parent.width
+                    height: 2
+
+                    anchors.bottom: parent.bottom
+                }
+
                 Text {
-                    width: parent.width - 40 - 60
-                    height: parent.height
-                    text: "Locations"
-                    color: "white"
-                    verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 24
+                    id: slashSymbol
+                    y: 2
+                    width: 11
+                    height: 29
+                    color: "#696969"
+                    anchors.left: parent.left
+                    anchors.leftMargin: 154
+
+                    font.pointSize: 19
                 }
 
-                Item {
-                    width: 70
-                    height: parent.height
-
-                    MenuHeaderButton {
-                        id: bckB
-                        width: 16
-                        height: 35
-                        iconSource: "back_icon_white_sm.png"
-                        onClicked: backToMapRequest()
-                    }
-
-                    MenuHeaderButton {
-                        width: 34
-                        height: 33
-                        iconWidth: 24
-                        iconHeight: 24
-                        iconSource: "map_icon_white.png"
-                        anchors.left: bckB.right
-                        anchors.leftMargin: 5
-                        onClicked: backToMapRequest()
-                    }
+                Text {
+                    id: smallText
+                    x: 169
+                    y: 11
+                    width: 64
+                    height: 20
+                    color: "#ffffff"
+                    font.pointSize: 13
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: 2
-
-                anchors.bottom: parent.bottom
+            StackView {
+                id: stack
+                initialItem: LocationsListView {
+                    id: locationsListView
+                    model: LocationsListModel {}
+                    width: parent.width
+                    height: parent.height - 100
+                    clip: true
+                    onSubMenuRequest:
+                    {
+                        switch(url) {
+                        case "LocationsHistory.qml":
+                            navitProxy.getHistory();
+                            break;
+                        case "LocationsFavorites.qml":
+                            navitProxy.getFavorites();
+                            break;
+                        default:
+                            stack.push(Qt.resolvedUrl(url))
+                        }
+                    }
+                }
             }
-
-            Text {
-                id: slashSymbol
-                x: 135
-                y: 2
-                width: 11
-                height: 29
-                color: "#696969"
-
-                font.pointSize: 19
-            }
-
-            Text {
-                id: smallText
-                x: 150
-                y: 11
-                width: 64
-                height: 20
-                color: "#ffffff"
-                font.pointSize: 13
-            }
-        }
-
-        StackView {
-            id: stack
-            initialItem: LocationsListView {
-                id: locationsListView
-                model: LocationsListModel {}
-                width: parent.width
-                height: parent.height - 100
-                clip: true
-                onSubMenuRequest: stack.push(Qt.resolvedUrl(url))
+            Connections {
+                target: navitProxy
+                onGettingHistoryDone: {
+                    stack.push({item: Qt.resolvedUrl("LocationsHistory.qml")});
+                }
+                onGettingFavoritesDone: {
+                    stack.push({item: Qt.resolvedUrl("LocationsFavorites.qml")});
+                }
             }
         }
     }
-}
+

@@ -99,7 +99,14 @@ bool NavitQuickProxy::enablePoi() const
 {
     return m_settings.get<Tags::EnablePoi>();
 }
-
+bool NavitQuickProxy::topBarLocationVisible() const
+{
+    return m_settings.get<Tags::TopBarLocationVisible>();
+}
+void NavitQuickProxy::setTopBarLocationVisible(bool value)
+{
+    m_settings.set<Tags::TopBarLocationVisible>(value);
+}
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
     nxeInstance->HandleMessage<SetSchemeMessageTag>(enable ? "Car-JLR" : "Car-JLR-nopoi");
@@ -178,6 +185,26 @@ void NavitQuickProxy::search(const QString &name)
 
     emit searchDone();
 }
+void NavitQuickProxy::getFavorites()
+{
+    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+
+    m_favoritesResults.append(new LocationProxy{"fav_test1", false, "", true});
+
+    m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
+
+    emit gettingFavoritesDone();
+}
+void NavitQuickProxy::getHistory()
+{
+    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+
+    m_historyResults.append(new LocationProxy{"hist_test1", false, "", true});
+
+    m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
+
+    emit gettingHistoryDone();
+}
 
 void NavitQuickProxy::setLocationPopUp(const QString &name)
 {
@@ -187,6 +214,20 @@ void NavitQuickProxy::setLocationPopUp(const QString &name)
         m_currentItem = qobject_cast<LocationProxy*>(m_searchResults.at(0));
         currentlySelectedItemChanged();
     }
+    else if (m_favoritesResults.size() != 0) {
+        m_currentItem = qobject_cast<LocationProxy*>(m_favoritesResults.at(0));
+        currentlySelectedItemChanged();
+    }
+    else if (m_historyResults.size() != 0) {
+        m_currentItem = qobject_cast<LocationProxy*>(m_historyResults.at(0));
+        currentlySelectedItemChanged();
+    }
+}
+void NavitQuickProxy::hideLocationBars()
+{
+    m_currentItem = nullptr;
+    setTopBarLocationVisible(false);
+    currentlySelectedItemChanged();
 }
 
 void NavitQuickProxy::synchronizeNavit()

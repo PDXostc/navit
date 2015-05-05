@@ -5,104 +5,84 @@ ListModel {
 
     ListElement {
         itemText: "Pl. Kościuszki, Szczecin"
-        favorite: false
+        favorite: true
         description: "0.1"
         bolded: true;
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "CH Galaxy, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
-    }
-    ListElement {
-        itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
-    }
-    ListElement {
-        itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
-    }
-    ListElement {
-        itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
-    }
-    ListElement {
-        itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
-    }
-    ListElement {
-        itemText: "26 kwietnia 19, Szczecin"
-        favorite: false
+        favorite: true
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
     ListElement {
         itemText: "Polo Market, Krosno Odrzańskie"
-        favorite: false
+        favorite: true
         description: "yesterday"
     }
 }
