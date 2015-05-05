@@ -28,6 +28,11 @@ public:
     virtual void clearDestination() override;
     virtual void setScheme(const std::string& scheme) override;
 
+    virtual void startSearch() override;
+    virtual std::vector<Country> searchCountry(const std::string& name) override;
+    virtual std::vector<City> searchCity(const std::string& cityName) override;
+    virtual void finishSearch() override;
+
     virtual SpeechSignal& speechSignal() override;
     virtual InitializedSignal& initializedSignal() override;
 

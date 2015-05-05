@@ -29,7 +29,7 @@ namespace __details {
         ::DBus::Message ret = proxy.invoke_method(call);
 
         if (ret.is_error()) {
-            throw std::runtime_error("Unable to call zoom");
+            throw std::runtime_error("Unable to get attr ");
         }
 
         std::string attr;
@@ -73,6 +73,14 @@ namespace __details {
         ::DBus::MessageIter ww = val.writer();
         ww << value;
         call("set_attr", proxy, attrName, val);
+    }
+
+    template<typename T>
+    T getFromIter(::DBus::MessageIter iter)
+    {
+        T t;
+        iter >> t;
+        return t;
     }
 
 } // DBus

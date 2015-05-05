@@ -101,3 +101,44 @@ TEST_F(NavitDBusTest, DISABLED_setScheme_failure)
     EXPECT_ANY_THROW(
     connection.setScheme("Car-JLR-not-exists"));
 }
+
+TEST_F(NavitDBusTest, search_country)
+{
+    connection.startSearch();
+    auto country = connection.searchCountry("Germany");
+    EXPECT_NE(country.size(), 0);
+    connection.finishSearch();
+}
+
+TEST_F(NavitDBusTest, search_multipleCountries)
+{
+    connection.startSearch();
+    auto country = connection.searchCountry("P");
+    EXPECT_NE(country.size(), 0);
+    connection.finishSearch();
+}
+
+TEST_F(NavitDBusTest, search_street_name_invalid)
+{
+    EXPECT_ANY_THROW(
+        connection.searchCountry("");
+    );
+}
+
+TEST_F(NavitDBusTest, search_city_valid)
+{
+    connection.startSearch();
+    auto country = connection.searchCountry("Germany");
+    auto city = connection.searchCity("Munchen");
+    ASSERT_NE(country.size(), 0);
+    EXPECT_EQ(country.at(0).name, "Germany");
+    ASSERT_NE(city.size(), 0);
+    EXPECT_TRUE(std::find_if(city.begin(), city.end(), [](const NXE::City& city) -> bool {
+        return city.name == "München";
+    }) != city.end());
+    connection.finishSearch();
+}
+
+TEST_F(NavitDBusTest, search_country_incomplete)
+{
+}

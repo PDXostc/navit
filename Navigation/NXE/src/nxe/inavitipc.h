@@ -3,8 +3,22 @@
 
 #include <functional>
 #include <boost/signals2/signal.hpp>
+#include "position.h"
 
 namespace NXE {
+
+struct Country {
+    const std::string name;
+    const std::string car;
+    const std::string iso2;
+    const std::string iso3;
+};
+
+struct City {
+    const std::string name;
+    const std::string postal;
+    const std::string postal_mask;
+};
 
 class INavitIPC {
 public:
@@ -30,6 +44,11 @@ public:
     virtual void clearDestination() = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
+
+    virtual void startSearch() = 0;
+    virtual std::vector<Country> searchCountry(const std::string& what) = 0;
+    virtual std::vector<City> searchCity(const std::string& what) = 0;
+    virtual void finishSearch() = 0;
 
     // Signals from IPC
     virtual SpeechSignal& speechSignal() = 0;
