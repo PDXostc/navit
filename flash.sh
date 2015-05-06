@@ -53,6 +53,13 @@ reset=`tput sgr0`
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit 111; }
 try() { "$@" || die "cannot $*"; }
+redirect() {
+    if [ "$VERBOSE" = true ]; then
+        "$@"
+    else
+        "$@" > /dev/null 2>&1
+    fi
+}
 
 unalias gbs > /dev/null 2>&1
 
@@ -61,42 +68,34 @@ echo "${red}Cleaning previous installation${reset}"
 
 if [ "$BUILD_NAVIT" = true ]; then
     # clean navi
-    ssh root@$TIZEN_IP zypper -n -q rm navit > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo > /dev/null 2>&1
-    ssh root@$TIZEN_IP rm /root/navit* -rf
+    redirect ssh root@$TIZEN_IP zypper -n -q rm navit 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo
+    redirect ssh root@$TIZEN_IP rm /root/navit* -rf
 
     # build navit
 
     echo "${red}Building navit${reset}"
-    if [ "$VERBOSE" = true ]; then
-        try gbs build -A i586 --spec navit_qt5.spec --include-all --keep-packs
-    else
-        try gbs build -A i586 --spec navit_qt5.spec --include-all --keep-packs > /dev/null 2>&1
-    fi
+    redirect try gbs build -A i586 --spec navit_qt5.spec --include-all --keep-packs
 
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
-    try ssh root@$TIZEN_IP rpm -ivh /root/navit*
+    redirect try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    redirect try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debuginfo-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    redirect scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/navit-debugsource-0.5.0.6011svn-1.i686.rpm root@$TIZEN_IP:/root
+    redirect try ssh root@$TIZEN_IP rpm -ivh /root/navit*
 fi
 
 if [ "$BUILD_NXE" = true ]; then
 
     # clean
-    try ssh root@$TIZEN_IP rm /root/nxe* -rf
-    ssh root@$TIZEN_IP zypper -n -q rm nxe > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource > /dev/null 2>&1
-    ssh root@$TIZEN_IP zypper -n -q rm nxe-debuginfo > /dev/null 2>&1
+    redirect try ssh root@$TIZEN_IP rm /root/nxe* -rf
+    redirect ssh root@$TIZEN_IP zypper -n -q rm nxe 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm nxe-debugsource 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm nxe-debuginfo 
 
     # build nxe
     echo "${red}Building nxe${reset}"
-    if [ "$VERBOSE" = true ]; then
-        try gbs build -A i586 --spec nxe.spec --include-all --keep-packs
-    else
-        try gbs build -A i586 --spec nxe.spec --include-all --keep-packs > /dev/null 2>&1
-    fi
+    redirect try gbs build -A i586 --spec nxe.spec --include-all --keep-packs
 
-    try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-*.rpm root@$TIZEN_IP:/root
-    try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
+    redirect try scp $GBS_ROOT/local/BUILD-ROOTS/scratch.i586.0/home/abuild/rpmbuild/RPMS/i686/nxe-*.rpm root@$TIZEN_IP:/root
+    redirect try ssh root@$TIZEN_IP rpm -ivh /root/nxe*
 fi
