@@ -133,7 +133,20 @@ bool RenderArea::event(QEvent *event)
                     QTimer::singleShot(500,this, SLOT(mouseTimer()));
                 }
             }
+        } else if (QGesture* tapAndHold = gest->gesture(Qt::TapAndHoldGesture) ) {
+            if (tapAndHold->state() == Qt::GestureFinished) {
+                qDebug() << "Touch and hold";
+                QTapAndHoldGesture* gest = static_cast<QTapAndHoldGesture*>(tapAndHold);
+                if (gest) {
+                    QPoint pressPoint = gest->position().toPoint();
+                    point p;
+                    p.x=pressPoint.x();
+                    p.y=pressPoint.y();
+                    callback_list_call_attr_1(this->cbl, attr_signal_on_map_click,  GINT_TO_POINTER(&p));
+                }
+            }
         }
+
         return true;
         event->accept();
     } else if(event->type() == QEvent::TouchBegin) {
@@ -234,10 +247,6 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
     qDebug() << Q_FUNC_INFO;
     mouseEvent(1, event->pos());
 
-    p.x=event->x();
-    p.y=event->y();
-
-    callback_list_call_attr_1(this->cbl, attr_signal_on_map_click,  GINT_TO_POINTER(&p));
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event)
