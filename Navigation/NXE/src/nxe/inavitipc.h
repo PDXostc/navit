@@ -50,6 +50,7 @@ public:
     virtual void setDestination(double longitude, double latitude, const std::string& description) = 0;
     virtual void setPosition(double longitude, double latitude) = 0;
     virtual void clearDestination() = 0;
+    virtual void addWaypoint(double longitude, double latitude) = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
 

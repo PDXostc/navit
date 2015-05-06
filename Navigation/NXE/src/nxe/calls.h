@@ -106,13 +106,19 @@ struct SearchCityLocationTag {
     typedef typename Parser::result_type ReturnType;
 };
 
+struct AddWaypointMessageTag {
+    typedef std::function<void (double, double)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
+
 // Containter
 typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
       PositionMessageTag, RenderMessageTag, ExitMessageTag, OrientationMessageTag, SetCenterMessageTag,
       DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,
       SetSchemeMessageTag,
-      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag
+      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag, AddWaypointMessageTag
     > Messages_type;
 
 template <typename T>

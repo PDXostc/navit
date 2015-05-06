@@ -20,6 +20,7 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD3(setDestination, void(double,double,const std::string&));
     MOCK_METHOD0(clearDestination, void());
     MOCK_METHOD2(setPosition, void(double,double));
+    MOCK_METHOD2(addWaypoint, void(double,double));
     MOCK_METHOD1(setScheme, void(const std::string&));
     MOCK_METHOD0(startSearch, void());
     MOCK_METHOD0(finishSearch, void());

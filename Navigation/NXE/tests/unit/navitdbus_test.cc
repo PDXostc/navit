@@ -87,6 +87,12 @@ TEST_F(NavitDBusTest, clearDestination)
     connection.clearDestination();
 }
 
+TEST_F(NavitDBusTest, addWaypoint)
+{
+    connection.addWaypoint(11.586, 48.149);
+}
+
+
 TEST_F(NavitDBusTest, setScheme)
 {
     EXPECT_NO_THROW(

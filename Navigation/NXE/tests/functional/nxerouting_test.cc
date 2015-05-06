@@ -59,6 +59,11 @@ struct NXEInstanceTest : public ::testing::Test {
     {
         instance.HandleMessage<ClearDestinationMessageTag>();
     }
+
+    void addWaypoint(double lon, double lat)
+    {
+        instance.HandleMessage<AddWaypointMessageTag>(lon, lat);
+    }
 };
 
 TEST_F(NXEInstanceTest, Routing)
@@ -84,6 +89,37 @@ TEST_F(NXEInstanceTest, Routing)
     std::this_thread::sleep_for(dura_1s);
 
     setDestination(11.5975, 48.1727, "3");
+
+    std::this_thread::sleep_for(dura_5s);
+
+    clearDestination();
+
+    setPosition(11.5659, 48.1392);
+
+    setDestination(11.5775, 48.1427, "1");
+
+    std::this_thread::sleep_for(dura_1s);
+
+    addWaypoint(11.586, 48.149);
+
+    std::this_thread::sleep_for(dura_5s);
+
+    clearDestination();
+}
+
+TEST_F(NXEInstanceTest, Waypoints)
+{
+    std::chrono::milliseconds dura_5s(5000);
+
+    clearDestination();
+
+    setPosition(11.5659, 48.1392);
+
+    setDestination(11.5775, 48.1427, "1");
+
+    std::this_thread::sleep_for(dura_5s);
+
+    addWaypoint(11.586, 48.149);
 
     std::this_thread::sleep_for(dura_5s);
 
