@@ -5,6 +5,7 @@
 
 #include <fruit/macro.h>
 
+
 namespace NXE {
 class DBusController;
 

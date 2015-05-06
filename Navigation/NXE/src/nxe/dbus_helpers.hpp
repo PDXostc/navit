@@ -5,7 +5,7 @@
 #include <dbus-c++/message.h>
 
 namespace NXE {
-namespace DBus {
+namespace DBusHelpers {
 
 namespace __details {
     template <typename T>
@@ -22,7 +22,7 @@ namespace __details {
     template <typename R>
     R getAttr(const std::string& attrName, ::DBus::InterfaceProxy& proxy)
     {
-        ::DBus::CallMessage call;
+        DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member("get_attr");
         it << attrName;
@@ -54,7 +54,7 @@ namespace __details {
     ::DBus::Message call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
         using namespace __details;
-        ::DBus::CallMessage call;
+        DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member(methodName.c_str());
         unpack(it, attr...);
@@ -83,7 +83,7 @@ namespace __details {
         return t;
     }
 
-} // DBus
+} // DBusHelpers
 } // NXE
 
 #endif // DBUS_HELPERS_HPP

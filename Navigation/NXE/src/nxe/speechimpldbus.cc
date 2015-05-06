@@ -36,7 +36,7 @@ SpeechImplDBus::~SpeechImplDBus()
 
 void SpeechImplDBus::say(const std::string& command)
 {
-    DBus::call("synthesize", d->object, command, std::string{"english"});
+    DBusHelpers::call("synthesize", d->object, command, std::string{"english"});
 }
 
 } // namespace NXE

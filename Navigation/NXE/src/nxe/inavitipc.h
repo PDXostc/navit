@@ -22,7 +22,7 @@ struct City {
 };
 
 struct PointClicked {
-    typedef std::map<std::string, std::string> ItemArrayType;
+    typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
     const Position position;
     const ItemArrayType items;
 };

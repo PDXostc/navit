@@ -14,6 +14,7 @@
 
 #include <functional>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 #include <QtCore/QVariant>
 #include <QtQml/QQmlContext>
@@ -44,17 +45,50 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
     nxeInstance->navitInitSignal().connect(std::bind(&NavitQuickProxy::synchronizeNavit, this));
 
-    nxeInstance->pointClickedSignal().connect( [this] (const NXE::PointClicked& pc) {
+    nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
         QString name, description;
 
+        // We may have more than one entry on click (town, street and some poi)
+        // The order of checking is (the least important is checked sooner)
+        // 1.) street
+        // 2.) poi
+        // 3.) town
+
         // is this a street ?
-        auto streetIter = pc.items.find("street_1_city");
+        auto streetIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>& p) -> bool {
+            return boost::algorithm::starts_with(p.first, "street_");
+        });
         if (streetIter != pc.items.end()) {
             name = QString::fromStdString(streetIter->second);
         }
+
+
+        // is this a poi
+        auto poiIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
+            return boost::algorithm::starts_with(p.first, "poi_");
+        });
+        if(poiIter != pc.items.end()) {
+            aDebug() << "we found a POI " << poiIter->second;
+            name = QString::fromStdString(poiIter->second);
+        }
+
+        // is this a town
+        auto townIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
+            return boost::algorithm::starts_with(p.first, "town_label_");
+        });
+        if(townIter != pc.items.end()) {
+            aDebug() << "we found a town " << townIter->second;
+            name = QString::fromStdString(townIter->second);
+        }
+
+        // if name is still empty and we have only one entry
+        if (name.isEmpty() && pc.items.size() == 1) {
+            name = QString::fromStdString(pc.items.front().second);
+        }
+
         aDebug() << "Name = " << name.toStdString();
-        auto loc = new LocationProxy {name, false, description, false};
+        auto loc = new LocationProxy {name, false, "1234 N Main, Portland, OR 97208", false};
         // move to parent thread
         loc->moveToThread(this->thread());
         emit pointClicked(loc);
@@ -73,7 +107,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
     qRegisterMetaType<QObjectList>("QObjectList");
     typedef QQmlListProperty<LocationProxy> LocationProxyList;
-    qRegisterMetaType<LocationProxyList> ("QQmlListProperty<LocationProxy>");
+    qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
 }
 
 int NavitQuickProxy::orientation()
@@ -138,7 +172,7 @@ void NavitQuickProxy::setFtu(bool value)
     m_settings.set<Tags::Ftu>(value);
 }
 
-QObject *NavitQuickProxy::currentlySelectedItem() const
+QObject* NavitQuickProxy::currentlySelectedItem() const
 {
     return m_currentItem;
 }
@@ -183,7 +217,7 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
     return ret;
 }
 
-void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant &newVal)
+void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& newVal)
 {
     if (optionName == "enablePoi") {
         setEnablePoi(newVal.toString() == "on");
@@ -195,19 +229,19 @@ void NavitQuickProxy::startSearch()
     nxeInstance->HandleMessage<StartSearchTag>();
 }
 
-void NavitQuickProxy::searchCountry(const QString &countryName)
+void NavitQuickProxy::searchCountry(const QString& countryName)
 {
     auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
-    for(NXE::Country country: countries) {
-        m_searchResults.append(new LocationProxy{QString::fromStdString(country.name),
-                               false,"", false});
+    for (NXE::Country country : countries) {
+        m_searchResults.append(new LocationProxy{ QString::fromStdString(country.name),
+            false, "", false });
     }
     m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
 
     emit searchDone();
 }
 
-void NavitQuickProxy::searchCity(const QString &name)
+void NavitQuickProxy::searchCity(const QString& name)
 {
 }
 
@@ -215,7 +249,7 @@ void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_favoritesResults.append(new LocationProxy{"fav_test1", false, "", true});
+    m_favoritesResults.append(new LocationProxy{ "fav_test1", false, "", true });
 
     m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
 
@@ -225,14 +259,14 @@ void NavitQuickProxy::getHistory()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_historyResults.append(new LocationProxy{"hist_test1", false, "", true});
+    m_historyResults.append(new LocationProxy{ "hist_test1", false, "", true });
 
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
 
     emit gettingHistoryDone();
 }
 
-void NavitQuickProxy::setLocationPopUp(const QString &name)
+void NavitQuickProxy::setLocationPopUp(const QString& name)
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
     // TODO: This is a fake implementation for now

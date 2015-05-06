@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <chrono>
+#include <map>
 #include <dbus-c++/dbus.h>
 #include "dbus_helpers.hpp"
 
@@ -16,6 +17,28 @@ const std::string navitDBusPath = "/org/navit_project/navit/navit/0";
 const std::string navitDBusInterface = "org.navit_project.navit.navit";
 const std::string rootNavitDBusInterface = "org.navit_project.navit";
 const std::string searchNavitDBusInterface = "org.navit_project.navit.search_list";
+}
+
+inline DBus::MessageIter& operator>>(::DBus::MessageIter& iter, std::vector<std::pair<std::string, DBus::Variant>>&vec)
+{
+    if (!iter.is_dict())
+        throw DBus::ErrorInvalidArgs("dictionary value expected");
+    DBus::MessageIter mit = iter.recurse();
+
+    while (!mit.at_end()) {
+        std::string key;
+        DBus::Variant value;
+
+        DBus::MessageIter eit = mit.recurse();
+
+        eit >> key >> value;
+
+        vec.push_back(std::make_pair(key, value));
+
+        ++mit;
+    }
+
+    return ++iter;
 }
 
 struct DebugDBusCall {
@@ -49,12 +72,12 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         inProgress = true;
         ::DBus::MessageIter it = sig.reader();
-        std::map<std::string, ::DBus::Variant> res;
+        std::vector<std::pair<std::string, DBus::Variant>> res;
         it >> res;
 
-        bool isSpeechSignal = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+        bool isSpeechSignal = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, DBus::Variant>& val) -> bool {
             if (val.first == "type") {
-                const std::string strVal = DBus::getFromIter<std::string>(val.second.reader());
+                const std::string strVal = DBusHelpers::getFromIter<std::string>(val.second.reader());
                 return strVal == "speech";
             }
             return false;
@@ -67,8 +90,8 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
         if (isSpeechSignal) {
             nDebug() << "Speech callback";
-            std::string data = res["data"];
-            speechSignal(data);
+//            std::string data = res.find("data")->second;
+//            speechSignal(data);
         }
         else if (isPointClicked) {
             nDebug() << "Point callback";
@@ -87,29 +110,33 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         inProgress = false;
     }
 
-    PointClicked unpackPointClicked(const std::map<std::string, ::DBus::Variant>& dictionary)
+    PointClicked unpackPointClicked(const std::vector<std::pair<std::string, ::DBus::Variant>>& dictionary)
     {
         nDebug() << "Unpacking point";
         double longitude, latitude;
         std::pair<std::string, std::string> oneEntry;
         PointClicked::ItemArrayType items;
         std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
+            nDebug() << "Entry= " << p.first;
             if (p.first == "click_coord_geo") {
-                std::vector<double> coords = DBus::getFromIter<std::vector<double>>(p.second.reader());
+                std::vector<double> coords = DBusHelpers::getFromIter<std::vector<double>>(p.second.reader());
                 longitude = coords.at(0);
                 latitude = coords.at(1);
             } else if(p.first == "item_type") {
-                oneEntry.first = DBus::getFromIter<std::string>(p.second.reader());
+                oneEntry.first = DBusHelpers::getFromIter<std::string>(p.second.reader());
             } else if(p.first == "label") {
-                oneEntry.second = DBus::getFromIter<std::string>(p.second.reader());
+                oneEntry.second = DBusHelpers::getFromIter<std::string>(p.second.reader());
             }
 
             if (oneEntry.first != "" && oneEntry.second != "") {
-                items[oneEntry.first] = oneEntry.second;
+                nDebug() << "Adding " << oneEntry.first << " " << oneEntry.second;
+                items.push_back(oneEntry);
+                oneEntry.first = "";
+                oneEntry.second = "";
             }
         });
 
-        PointClicked point{Position{latitude, longitude},items};
+        PointClicked point{ Position{ latitude, longitude }, items };
 
         nTrace() << "Clicked item " << point;
 
@@ -140,7 +167,7 @@ struct NavitDBusPrivate {
     {
         // create a new search
         ::DBus::Path path{ "/org/navit_project/navit/default_navit/default_mapset" };
-        ::DBus::Message retValue = DBus::call("search_list_new", *(rootObject.get()), path);
+        ::DBus::Message retValue = DBusHelpers::call("search_list_new", *(rootObject.get()), path);
         ::DBus::MessageIter iter = retValue.reader();
 
         ::DBus::Path searchListPath;
@@ -173,42 +200,42 @@ NavitDBus::~NavitDBus()
 void NavitDBus::quit()
 {
     DebugDBusCall db{ "quit" };
-    DBus::call("quit", *(d->object.get()));
+    DBusHelpers::call("quit", *(d->object.get()));
 }
 
 void NavitDBus::moveBy(int x, int y)
 {
-    ::DBus::CallMessage call;
-    ::DBus::MessageIter it = call.writer();
+    DBus::CallMessage call;
+    DBus::MessageIter it = call.writer();
     call.member("set_center_screen");
-    ::DBus::Struct<int, int> val;
+    DBus::Struct<int, int> val;
     val._1 = x;
     val._2 = y;
-    DBus::call("set_center_screen", *(d->object.get()), val);
+    DBusHelpers::call("set_center_screen", *(d->object.get()), val);
 }
 
 void NavitDBus::zoomBy(int y)
 {
     nDebug() << "Zooming by " << y;
-    DBus::call("zoom", *(d->object.get()), y);
+    DBusHelpers::call("zoom", *(d->object.get()), y);
 }
 
 int NavitDBus::zoom()
 {
     nDebug() << "Getting zoom";
-    return NXE::DBus::getAttr<int>("zoom", *(d->object.get()));
+    return DBusHelpers::getAttr<int>("zoom", *(d->object.get()));
 }
 
 void NavitDBus::render()
 {
     nDebug() << "Rendering";
-    DBus::call("draw", *(d->object.get()));
+    DBusHelpers::call("draw", *(d->object.get()));
     nDebug() << "Rendering finished";
 }
 
 int NavitDBus::orientation()
 {
-    return DBus::getAttr<int>("orientation", *(d->object.get()));
+    return DBusHelpers::getAttr<int>("orientation", *(d->object.get()));
 }
 
 void NavitDBus::setOrientation(int newOrientation)
@@ -218,7 +245,7 @@ void NavitDBus::setOrientation(int newOrientation)
         nError() << "Unable to change orientation to " << newOrientation;
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
     }
-    DBus::setAttr("orientation", *(d->object.get()), newOrientation);
+    DBusHelpers::setAttr("orientation", *(d->object.get()), newOrientation);
 }
 
 void NavitDBus::setCenter(double longitude, double latitude)
@@ -226,7 +253,7 @@ void NavitDBus::setCenter(double longitude, double latitude)
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBus::call("set_center_by_string", *(d->object.get()), message);
+    DBusHelpers::call("set_center_by_string", *(d->object.get()), message);
 }
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
@@ -235,7 +262,7 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBus::call("set_destination", *(d->object.get()), message, description);
+    DBusHelpers::call("set_destination", *(d->object.get()), message, description);
 }
 
 void NavitDBus::setPosition(double longitude, double latitude)
@@ -243,7 +270,7 @@ void NavitDBus::setPosition(double longitude, double latitude)
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBus::call("set_position", *(d->object.get()), message);
+    DBusHelpers::call("set_position", *(d->object.get()), message);
 }
 
 void NavitDBus::addWaypoint(double longitude, double latitude)
@@ -258,14 +285,14 @@ void NavitDBus::addWaypoint(double longitude, double latitude)
 
 void NavitDBus::clearDestination()
 {
-    DBus::call("clear_destination", *(d->object.get()));
+    DBusHelpers::call("clear_destination", *(d->object.get()));
 }
 
 void NavitDBus::setScheme(const std::string& scheme)
 {
     DebugDBusCall db{ "set_layout" };
     nDebug() << "Setting scheme to " << scheme;
-    DBus::call("set_layout", *(d->object.get()), scheme);
+    DBusHelpers::call("set_layout", *(d->object.get()), scheme);
 }
 
 void NavitDBus::startSearch()
@@ -282,12 +309,12 @@ std::vector<Country> NavitDBus::searchCountry(const std::string& countryName)
     ::DBus::MessageIter variantIter = var.writer();
     variantIter << countryName;
 
-    DBus::call("search", *(d->searchObject.get()), std::string{ "country_name" }, var, static_cast<int>(1));
+    DBusHelpers::call("search", *(d->searchObject.get()), std::string{ "country_name" }, var, static_cast<int>(1));
     std::vector<Country> ret;
 
     while (true) {
         try {
-            ::DBus::Message results = DBus::call("get_result", *(d->searchObject.get()));
+            ::DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
             ::DBus::MessageIter resultsIter{ results.reader() };
 
             std::int32_t resultId;
@@ -304,10 +331,10 @@ std::vector<Country> NavitDBus::searchCountry(const std::string& countryName)
                      << position._1 << " " << position._2 << " " << position._3;
 
             ret.emplace_back(Country{
-                DBus::getFromIter<std::string>(at.at("country").at("name").reader()),
-                DBus::getFromIter<std::string>(at.at("country").at("car").reader()),
-                DBus::getFromIter<std::string>(at.at("country").at("iso2").reader()),
-                DBus::getFromIter<std::string>(at.at("country").at("iso3").reader()) });
+                DBusHelpers::getFromIter<std::string>(at.at("country").at("name").reader()),
+                DBusHelpers::getFromIter<std::string>(at.at("country").at("car").reader()),
+                DBusHelpers::getFromIter<std::string>(at.at("country").at("iso2").reader()),
+                DBusHelpers::getFromIter<std::string>(at.at("country").at("iso3").reader()) });
         }
         catch (const std::exception& ex) {
             break;
@@ -326,11 +353,11 @@ std::vector<City> NavitDBus::searchCity(const std::string& cityName)
     ::DBus::MessageIter variantIter = var.writer();
     variantIter << cityName;
 
-    DBus::call("search", *(d->searchObject.get()), std::string{ "town_name" }, var, static_cast<int>(1));
+    DBusHelpers::call("search", *(d->searchObject.get()), std::string{ "town_name" }, var, static_cast<int>(1));
     std::vector<City> cities;
     while (true) {
         try {
-            ::DBus::Message results = DBus::call("get_result", *(d->searchObject.get()));
+            ::DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
             ::DBus::MessageIter resultsIter{ results.reader() };
 
             std::int32_t resultId;
@@ -347,9 +374,9 @@ std::vector<City> NavitDBus::searchCity(const std::string& cityName)
                      << position._1 << " " << position._2 << " " << position._3;
 
             cities.emplace_back(City{
-                DBus::getFromIter<std::string>(at.at("town").at("name").reader()),
-                DBus::getFromIter<std::string>(at.at("town").at("postal").reader()),
-                DBus::getFromIter<std::string>(at.at("town").at("postal_mask").reader()) });
+                DBusHelpers::getFromIter<std::string>(at.at("town").at("name").reader()),
+                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal").reader()),
+                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal_mask").reader()) });
             nDebug() << "[Name] = " << cities.back().name << " [postal] = " << cities.back().postal;
         }
         catch (const std::exception& ex) {
@@ -362,7 +389,7 @@ std::vector<City> NavitDBus::searchCity(const std::string& cityName)
 void NavitDBus::finishSearch()
 {
     nInfo() << "Destroying search list";
-    DBus::call("destroy", *(d->searchObject.get()));
+    DBusHelpers::call("destroy", *(d->searchObject.get()));
 }
 
 INavitIPC::SpeechSignalType& NavitDBus::speechSignal()
