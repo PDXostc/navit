@@ -122,7 +122,12 @@ void NXEInstance::Initialize()
             nInfo() << "Navit external is set, won't run";
         }
         nDebug() << "Trying to start IPC Navit controller";
-        d->ipc->speechSignal().connect(std::bind(&ISpeech::say, d->speech.get(), std::placeholders::_1));
+        d->ipc->speechSignal().connect([this] (const std::string& string) {
+            nDebug() << "Saying " << string << " speech pointer = " << static_cast<void*>(d->speech.get());
+            if (d->speech) {
+                d->speech->say(string);
+            }
+        });
     }
     d->initialized = true;
 }

@@ -23,7 +23,11 @@ struct Context {
     NXE::DBusController dbusController;
     NXE::INavitIPC* ipc{ new NXE::NavitDBus{ dbusController } };
     NXE::IMapDownloader* md{ new NXE::MapDownloaderDBus{ dbusController } };
+#if defined(NXE_OS_LINUX)
+    NXE::ISpeech* speech{ nullptr};
+#elif defined(NXE_OS_TIZEN)
     NXE::ISpeech* speech{ new NXE::SpeechImplDBus{ dbusController } };
+#endif
     NXE::DI::Injector injector{ [this]() -> NXE::DI::Components {
         return fruit::createComponent()
                 .bindInstance(*ipc)

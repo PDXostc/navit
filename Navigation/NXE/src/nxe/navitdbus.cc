@@ -90,8 +90,15 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
         if (isSpeechSignal) {
             nDebug() << "Speech callback";
-            std::string data = res.find("data")->second;
-            speechSignal(data);
+            auto dataIter = std::find_if(res.begin(), res.end(), [] (const std::pair<std::string, ::DBus::Variant>& val) ->bool {
+                return val.first == "data";
+            });
+
+            if (dataIter != res.end()) {
+                std::string data = DBusHelpers::getFromIter<std::string>(dataIter->second.reader());
+                nDebug() << " I have to say " << data;
+                speechSignal(data);
+            }
         }
         else if (isPointClicked) {
             nDebug() << "Point callback";
@@ -276,7 +283,7 @@ void NavitDBus::addWaypoint(double longitude, double latitude)
 	auto format = boost::format("geo: %1% %2%") % longitude % latitude;
 	const std::string message = format.str();
 
-	DBus::call("add_waypoint", *(d->object.get()), message);
+    DBusHelpers::call("add_waypoint", *(d->object.get()), message);
 }
 
 
