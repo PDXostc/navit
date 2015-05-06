@@ -48,7 +48,6 @@ endif()
 
 add_definitions(-std=c++11)
 add_definitions(-DBOOST_SPIRIT_THREADSAFE)
-enable_testing()
 
 if(NOT DISABLE_TESTS)
     if(NOT NAVIT_PATH)
@@ -57,7 +56,9 @@ if(NOT DISABLE_TESTS)
         message(STATUS "Navit path set to" ${NAVIT_PATH})
     endif()
     set (BENCHMARK_ENABLE_TESTING OFF)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
     add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/benchmark)
+    enable_testing()
 endif()
 
 set(boost_components system filesystem thread chrono iostreams timer)
@@ -67,7 +68,6 @@ find_package(Boost 1.57.0 REQUIRED COMPONENTS ${boost_components})
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/gmock)
 add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/fruit)
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
