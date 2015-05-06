@@ -31,8 +31,8 @@ struct NavitInstanceTest : public ::testing::Test {
     NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::INavitIPC*>())) };
     MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
 
-    NXE::INavitIPC::SpeechSignal speechS;
-    NXE::INavitIPC::InitializedSignal initS;
+    NXE::INavitIPC::SpeechSignalType speechS;
+    NXE::INavitIPC::InitializedSignalType initS;
 
     static void SetUpTestCase()
     {
@@ -62,7 +62,6 @@ TEST_F(NavitInstanceTest, zoomBy_proper)
     instance.Initialize();
 
     // Act
-//    EXPECT_NO_THROW(instance.HandleMessage(TestUtils::zoomMessage()));
     int zoom = instance.HandleMessage<ZoomMessageTag>();
     EXPECT_EQ(zoom, 10);
 }

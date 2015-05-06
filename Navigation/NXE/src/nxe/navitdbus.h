@@ -33,8 +33,9 @@ public:
     virtual std::vector<City> searchCity(const std::string& cityName) override;
     virtual void finishSearch() override;
 
-    virtual SpeechSignal& speechSignal() override;
-    virtual InitializedSignal& initializedSignal() override;
+    virtual SpeechSignalType& speechSignal() override;
+    virtual InitializedSignalType& initializedSignal() override;
+    virtual PointClickedSignalType& pointClickedSignal() override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;

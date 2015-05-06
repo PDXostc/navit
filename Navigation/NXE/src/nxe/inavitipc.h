@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <boost/signals2/signal.hpp>
+#include <map>
 #include "position.h"
 
 namespace NXE {
@@ -20,10 +21,17 @@ struct City {
     const std::string postal_mask;
 };
 
+struct PointClicked {
+    typedef std::map<std::string, std::string> ItemArrayType;
+    const Position position;
+    const ItemArrayType items;
+};
+
 class INavitIPC {
 public:
-    typedef boost::signals2::signal<void(std::string)> SpeechSignal;
-    typedef boost::signals2::signal<void()> InitializedSignal;
+    typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
+    typedef boost::signals2::signal<void()> InitializedSignalType;
+    typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
 
     virtual ~INavitIPC() {}
 
@@ -51,8 +59,9 @@ public:
     virtual void finishSearch() = 0;
 
     // Signals from IPC
-    virtual SpeechSignal& speechSignal() = 0;
-    virtual InitializedSignal& initializedSignal() = 0;
+    virtual SpeechSignalType& speechSignal() = 0;
+    virtual InitializedSignalType& initializedSignal() = 0;
+    virtual PointClickedSignalType& pointClickedSignal() = 0;
 };
 
 } // NXE

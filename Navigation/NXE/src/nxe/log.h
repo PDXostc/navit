@@ -13,4 +13,12 @@
 #define nError() spdlog::get("nxe")->error() << __FILENAME__ << "@" << __LINE__ << " "
 #define nFatal() spdlog::get("nxe")->critical()
 
+namespace NXE {
+struct PointClicked;
+struct Position;
+}
+
+std::ostream& operator<<(std::ostream& os, const NXE::Position&);
+std::ostream& operator<<(std::ostream& os, const NXE::PointClicked&);
+
 #endif // LOG_H

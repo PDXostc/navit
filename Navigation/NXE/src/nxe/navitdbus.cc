@@ -41,29 +41,41 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         , ::DBus::ObjectProxy(con, navitDBusPath, navitDBusDestination.c_str())
     {
         nDebug() << "Connect to signal";
-        connect_signal(NavitDBusObjectProxy, signal, speechCallback);
+        connect_signal(NavitDBusObjectProxy, signal, signalCallback);
         connect_signal(NavitDBusObjectProxy, startup, startupCallback);
     }
 
-    void speechCallback(const ::DBus::SignalMessage& sig)
+    void signalCallback(const ::DBus::SignalMessage& sig)
     {
-        nDebug() << "Speech callback";
         inProgress = true;
         ::DBus::MessageIter it = sig.reader();
         std::map<std::string, ::DBus::Variant> res;
         it >> res;
 
-        auto val = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
-            const std::string strVal = val.second;
-            return val.first == "type" && strVal == "speech";
-        });
+        bool isSpeechSignal = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+            if (val.first == "type") {
+                const std::string strVal = DBus::getFromIter<std::string>(val.second.reader());
+                return strVal == "speech";
+            }
+            return false;
 
-        if (val != res.end()) {
+        }) != res.end();
+
+        bool isPointClicked = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+            return val.first == "click_coord_geo";
+        }) != res.end();
+
+        if (isSpeechSignal) {
+            nDebug() << "Speech callback";
             std::string data = res["data"];
             speechSignal(data);
         }
+        else if (isPointClicked) {
+            nDebug() << "Point callback";
+            auto point = unpackPointClicked(res);
+            pointClickedSignal(point);
+        }
 
-        nTrace() << "Speech callback ended";
         inProgress = false;
     }
 
@@ -75,8 +87,38 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         inProgress = false;
     }
 
-    boost::signals2::signal<void(std::string)> speechSignal;
-    boost::signals2::signal<void()> initializedSignal;
+    PointClicked unpackPointClicked(const std::map<std::string, ::DBus::Variant>& dictionary)
+    {
+        nDebug() << "Unpacking point";
+        double longitude, latitude;
+        std::pair<std::string, std::string> oneEntry;
+        PointClicked::ItemArrayType items;
+        std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
+            if (p.first == "click_coord_geo") {
+                std::vector<double> coords = DBus::getFromIter<std::vector<double>>(p.second.reader());
+                longitude = coords.at(0);
+                latitude = coords.at(1);
+            } else if(p.first == "item_type") {
+                oneEntry.first = DBus::getFromIter<std::string>(p.second.reader());
+            } else if(p.first == "label") {
+                oneEntry.second = DBus::getFromIter<std::string>(p.second.reader());
+            }
+
+            if (oneEntry.first != "" && oneEntry.second != "") {
+                items[oneEntry.first] = oneEntry.second;
+            }
+        });
+
+        PointClicked point{Position{latitude, longitude},items};
+
+        nTrace() << "Clicked item " << point;
+
+        return point;
+    }
+
+    INavitIPC::SpeechSignalType speechSignal;
+    INavitIPC::InitializedSignalType initializedSignal;
+    INavitIPC::PointClickedSignalType pointClickedSignal;
     bool inProgress = false;
 };
 
@@ -313,16 +355,22 @@ void NavitDBus::finishSearch()
     DBus::call("destroy", *(d->searchObject.get()));
 }
 
-INavitIPC::SpeechSignal& NavitDBus::speechSignal()
+INavitIPC::SpeechSignalType& NavitDBus::speechSignal()
 {
     assert(d && d->object);
     return d->object->speechSignal;
 }
 
-INavitIPC::InitializedSignal& NavitDBus::initializedSignal()
+INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()
 {
     assert(d && d->object);
     return d->object->initializedSignal;
+}
+
+INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()
+{
+    assert(d && d->object);
+    return d->object->pointClickedSignal;
 }
 
 } // namespace NXE

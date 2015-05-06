@@ -23,9 +23,11 @@ QtObject {
     function search(searchString) {
         fakeSearchTimer.start();
     }
+
     function getHistory() {
         fakeHistoryTimer.start();
     }
+
     function getFavorites() {
         fakeFavoritesTimer.start();
     }
@@ -37,10 +39,12 @@ QtObject {
     function setLocationPopUp(itemName) {
         currentlySelectedItem = fakeLocationObject;
     }
+
     function showTopBar() {
 
         topBarLocationVisible = true;
     }
+
     function hideLocationBars() {
         currentlySelectedItem = null
         topBarLocationVisible = false;
@@ -56,6 +60,7 @@ QtObject {
     signal searchDone();
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
+
     // fake properties
     property QtObject fakeLocationObject: QtObject {
         property string itemText: "Plac Kościuszki"
@@ -70,6 +75,7 @@ QtObject {
             searchDone();
         }
     }
+
     property Timer fakeFavoritesTimer: Timer {
         running: false
         interval: 3000
@@ -77,6 +83,7 @@ QtObject {
             gettingFavoritesDone()
         }
     }
+
     property Timer fakeHistoryTimer: Timer {
         running: false
         interval: 3000
@@ -85,5 +92,13 @@ QtObject {
         }
     }
 
+    property Timer fakePositionClickedTimer: Timer {
+        running: true
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            console.debug('Point clicked')
+            currentlySelectedItem = fakeLocationObject;
+        }
+    }
 }
-

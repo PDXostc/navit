@@ -44,6 +44,22 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
     nxeInstance->navitInitSignal().connect(std::bind(&NavitQuickProxy::synchronizeNavit, this));
 
+    nxeInstance->pointClickedSignal().connect( [this] (const NXE::PointClicked& pc) {
+
+        QString name, description;
+
+        // is this a street ?
+        auto streetIter = pc.items.find("street_1_city");
+        if (streetIter != pc.items.end()) {
+            name = QString::fromStdString(streetIter->second);
+        }
+        aDebug() << "Name = " << name.toStdString();
+        auto loc = new LocationProxy {name, false, description, false};
+        // move to parent thread
+        loc->moveToThread(this->thread());
+        emit pointClicked(loc);
+    });
+
     nxeInstance->Initialize();
 
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
@@ -53,7 +69,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         double alt = position.altitude;
         m_position = QString("%1 %2 %3").arg(lat).arg(lon).arg(alt);
         emit positionChanged();
-
     });
 
     qRegisterMetaType<QObjectList>("QObjectList");

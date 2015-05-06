@@ -60,6 +60,8 @@ signals:
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
 
+    void pointClicked(LocationProxy* location);
+
 public slots:
     void zoomIn();
     void zoomOut();

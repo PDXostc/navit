@@ -144,9 +144,14 @@ void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb
     d->gps->addPostionUpdate(listener);
 }
 
-INavitIPC::InitializedSignal& NXEInstance::navitInitSignal()
+INavitIPC::InitializedSignalType &NXEInstance::navitInitSignal()
 {
     return d->ipc->initializedSignal();
+}
+
+INavitIPC::PointClickedSignalType &NXEInstance::pointClickedSignal()
+{
+    return d->ipc->pointClickedSignal();
 }
 
 } // namespace NXE

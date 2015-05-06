@@ -11,14 +11,15 @@ Item {
     property var locationInfoTopComponent: null
     property var locationInfoObject: null
     property var locationInfoTopObject: null
-    function finishComponentCreation() {
+
+    function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
             locationInfoObject = locationInfoComponent.createObject(mainPageView);
             console.debug(locationInfoComponent, locationInfoObject)
             locationInfoObject.anchors.bottom = mainPageView.bottom
             locationInfoObject.anchors.left = mainPageView.left
             locationInfoObject.anchors.right = mainPageView.right
-            locationInfoObject.locationComponent = navitProxy.currentlySelectedItem;
+            locationInfoObject.locationComponent = location
         }
     }
     function finishTopComponentCreation() {
@@ -29,6 +30,21 @@ Item {
             locationInfoTopObject.anchors.left = mainPageView.left
             locationInfoTopObject.anchors.right = mainPageView.right
             locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem;
+        }
+    }
+
+    function createLocationComponent(location) {
+        locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
+        locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml");
+        if (locationInfoComponent.status === Component.Ready) {
+            finishComponentCreation(location);
+        } else {
+            locationInfoComponent.statusChanged.connect(finishComponentCreation(location));
+        }
+        if (locationInfoTopComponent.status === Component.Ready) {
+            finishTopComponentCreation(location);
+        } else {
+            locationInfoTopComponent.statusChanged.connect(finishTopComponentCreation(location));
         }
     }
 
@@ -55,26 +71,21 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged:{
-            console.debug('currently selected changed')
-            if(navitProxy.currentlySelectedItem === null) {
-                locationInfoComponent.destroy();
-                locationInfoTopComponent.destroy();
-                locationInfoTopObject.destroy();
-                locationInfoObject.destroy();
-            }
-            else {
-                locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
-                locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml");
-                if (locationInfoComponent.status === Component.Ready) {
-                    finishComponentCreation();
-                } else {
-                    locationInfoComponent.statusChanged.connect(finishComponentCreation);
-                }
-                if (locationInfoTopComponent.status === Component.Ready) {
-                    finishTopComponentCreation();
-                } else {
-                    locationInfoTopComponent.statusChanged.connect(finishTopComponentCreation);
-                }
+        if(navitProxy.currentlySelectedItem === null) {
+            locationInfoComponent.destroy();
+            locationInfoTopComponent.destroy();
+            locationInfoTopObject.destroy();
+            locationInfoObject.destroy();
+        } else
+            createLocationComponent(navitProxy.currentlySelectedItem);
+        }
+
+        onPointClicked: {
+            if (locationInfoComponent && locationInfoObject) {
+                locationInfoObject.locationComponent = location;
+            } else {
+                console.debug(location.itemText)
+                createLocationComponent(location)
             }
         }
     }
