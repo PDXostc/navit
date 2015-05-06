@@ -68,9 +68,9 @@ echo "${red}Cleaning previous installation${reset}"
 
 if [ "$BUILD_NAVIT" = true ]; then
     # clean navi
-    redirect ssh root@$TIZEN_IP zypper -n -q rm navit 
-    redirect ssh root@$TIZEN_IP zypper -n -q rm navit-debugsource 
-    redirect ssh root@$TIZEN_IP zypper -n -q rm navit-debuginfo
+    redirect ssh root@$TIZEN_IP zypper -n -q rm -U navit 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm -U navit-debugsource 
+    redirect ssh root@$TIZEN_IP zypper -n -q rm -U navit-debuginfo
     redirect ssh root@$TIZEN_IP rm /root/navit* -rf
 
     # build navit
