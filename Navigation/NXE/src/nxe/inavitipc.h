@@ -30,7 +30,6 @@ struct PointClicked {
 class INavitIPC {
 public:
     typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
-    typedef boost::signals2::signal<void()> InitializedSignalType;
     typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
 
     virtual ~INavitIPC() {}
@@ -61,7 +60,6 @@ public:
 
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;
-    virtual InitializedSignalType& initializedSignal() = 0;
     virtual PointClickedSignalType& pointClickedSignal() = 0;
 };
 

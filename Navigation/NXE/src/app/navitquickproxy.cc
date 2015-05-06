@@ -41,9 +41,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , m_rootContext(ctx)
     , mapsProxy(nxeInstance)
 {
+    context->dbusController.start();
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
-
-    nxeInstance->navitInitSignal().connect(std::bind(&NavitQuickProxy::synchronizeNavit, this));
 
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
@@ -108,6 +107,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     qRegisterMetaType<QObjectList>("QObjectList");
     typedef QQmlListProperty<LocationProxy> LocationProxyList;
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
+
+    synchronizeNavit();
 }
 
 int NavitQuickProxy::orientation()

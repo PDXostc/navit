@@ -36,7 +36,6 @@ public:
     virtual void finishSearch() override;
 
     virtual SpeechSignalType& speechSignal() override;
-    virtual InitializedSignalType& initializedSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;
 
 private:

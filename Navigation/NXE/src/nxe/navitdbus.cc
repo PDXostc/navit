@@ -90,8 +90,8 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
         if (isSpeechSignal) {
             nDebug() << "Speech callback";
-//            std::string data = res.find("data")->second;
-//            speechSignal(data);
+            std::string data = res.find("data")->second;
+            speechSignal(data);
         }
         else if (isPointClicked) {
             nDebug() << "Point callback";
@@ -106,7 +106,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         inProgress = true;
         nTrace() << "Navit has started";
-        initializedSignal();
         inProgress = false;
     }
 
@@ -144,7 +143,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     }
 
     INavitIPC::SpeechSignalType speechSignal;
-    INavitIPC::InitializedSignalType initializedSignal;
     INavitIPC::PointClickedSignalType pointClickedSignal;
     bool inProgress = false;
 };
@@ -396,12 +394,6 @@ INavitIPC::SpeechSignalType& NavitDBus::speechSignal()
 {
     assert(d && d->object);
     return d->object->speechSignal;
-}
-
-INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()
-{
-    assert(d && d->object);
-    return d->object->initializedSignal;
 }
 
 INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()

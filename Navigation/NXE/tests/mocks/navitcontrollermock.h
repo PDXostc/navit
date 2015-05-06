@@ -12,7 +12,6 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD1(zoomBy, void(int));
     MOCK_METHOD0(zoom, int(void));
     MOCK_METHOD0(speechSignal, SpeechSignalType&());
-    MOCK_METHOD0(initializedSignal, InitializedSignalType&());
     MOCK_METHOD0(pointClickedSignal, PointClickedSignalType&());
     MOCK_METHOD1(setOrientation, void(int));
     MOCK_METHOD0(orientation, int());

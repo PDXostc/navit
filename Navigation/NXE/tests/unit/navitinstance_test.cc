@@ -32,7 +32,6 @@ struct NavitInstanceTest : public ::testing::Test {
     MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
 
     NXE::INavitIPC::SpeechSignalType speechS;
-    NXE::INavitIPC::InitializedSignalType initS;
 
     static void SetUpTestCase()
     {
@@ -46,7 +45,6 @@ struct NavitInstanceTest : public ::testing::Test {
         EXPECT_CALL(*mock_process, start()).WillRepeatedly(Return(true));
         EXPECT_CALL(*mock_process, stop());
         EXPECT_CALL(*mock_ipc, speechSignal()).WillRepeatedly(ReturnRef(speechS));
-        EXPECT_CALL(*mock_ipc, initializedSignal()).WillRepeatedly(ReturnRef(initS));
     }
 };
 

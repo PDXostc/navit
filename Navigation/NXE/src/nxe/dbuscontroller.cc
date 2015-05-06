@@ -18,7 +18,8 @@ DBusController::DBusController()
     : d(new DBusControllerPrivate)
 {
     nTrace() << __PRETTY_FUNCTION__;
-    start();
+    DBus::default_dispatcher = &d->dispatcher;
+    d->conn.reset(new DBus::Connection {DBus::Connection::SessionBus()});
 }
 
 DBus::Connection &DBusController::connection() const noexcept
@@ -35,11 +36,10 @@ void DBusController::start()
     }
 
     nInfo() << "Starting DBus dispatching";
-    ::DBus::default_dispatcher = &d->dispatcher;
     d->dispatchingThread = std::move(std::thread([this]() {
         nTrace() << "Dispatching";
         d->threadRunning = true;
-        ::DBus::default_dispatcher->enter();
+        d->dispatcher.enter();
         nTrace() << "EOF dispatching";
     }));
 
@@ -48,7 +48,6 @@ void DBusController::start()
         nTrace() << "Thread not running, waiting";
         std::this_thread::sleep_for(dura);
     }
-    d->conn.reset(new DBus::Connection {DBus::Connection::SessionBus()});
     nTrace() << "EOF start";
 }
 

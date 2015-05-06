@@ -123,9 +123,6 @@ void NXEInstance::Initialize()
         }
         nDebug() << "Trying to start IPC Navit controller";
         d->ipc->speechSignal().connect(std::bind(&ISpeech::say, d->speech.get(), std::placeholders::_1));
-        d->ipc->initializedSignal().connect([]() {
-            nInfo() << "Navit has started, we can work now!";
-        });
     }
     d->initialized = true;
 }
@@ -143,11 +140,6 @@ void NXEInstance::setMapDownloaderListener(const MapDownloaderListener &listener
 void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb &listener)
 {
     d->gps->addPostionUpdate(listener);
-}
-
-INavitIPC::InitializedSignalType &NXEInstance::navitInitSignal()
-{
-    return d->ipc->initializedSignal();
 }
 
 INavitIPC::PointClickedSignalType &NXEInstance::pointClickedSignal()

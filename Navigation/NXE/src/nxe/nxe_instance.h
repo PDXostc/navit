@@ -44,7 +44,6 @@ public:
     void setMapDownloaderListener(const MapDownloaderListener& listener);
     void setPositionUpdateListener(const NXE::IGPSProvider::PositionUpdateCb& listener);
 
-    INavitIPC::InitializedSignalType& navitInitSignal();
     INavitIPC::PointClickedSignalType& pointClickedSignal();
 
 private:
