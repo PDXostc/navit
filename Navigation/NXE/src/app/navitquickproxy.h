@@ -2,8 +2,14 @@
 #define NAVITQUICKPROXY_H
 
 #include <QtCore/QObject>
+#include <QtCore/QRect>
 #include <QtQml/QQmlListProperty>
 #include <memory>
+
+// This include has to be here
+// in order for boost mpl to correctly mark
+// boost::mpl::vector size
+#include "calls.h"
 
 #include "appsettings.h"
 #include "imapdownloader.h"
@@ -47,6 +53,8 @@ public:
 
     bool topBarLocationVisible() const;
     void setTopBarLocationVisible(bool value);
+
+    void resize(const QRect& rect);
 
 signals:
     void orientationChanged();

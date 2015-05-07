@@ -33,6 +33,8 @@ signals:
 
     void fullscreenSurfaceChanged();
 
+    void resized(const QRect& geo);
+
 protected:
     virtual void resizeEvent(QResizeEvent* event) override;
     virtual void surfaceCreated(QWaylandSurface* surface) override;

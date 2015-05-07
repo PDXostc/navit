@@ -31,6 +31,7 @@ class INavitIPC {
 public:
     typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
     typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
+    typedef boost::signals2::signal<void()> InitializedSignalType;
 
     virtual ~INavitIPC() {}
 
@@ -41,6 +42,7 @@ public:
     virtual int zoom() = 0;
     virtual void zoomBy(int factor) = 0;
     virtual void render() = 0;
+    virtual void resize(int x, int y) = 0;
 
     virtual int orientation() = 0;
     virtual void setOrientation(int newOrientation) = 0;
@@ -61,6 +63,7 @@ public:
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;
     virtual PointClickedSignalType& pointClickedSignal() = 0;
+    virtual InitializedSignalType& initializedSignal() = 0;
 };
 
 } // NXE

@@ -1,7 +1,10 @@
 import QtQuick 2.0
+import QtQml 2.2
 
 Page {
     id: root
+
+    property string searchForWhat: "country"
 
     Component.onCompleted: {
         navitProxy.startSearch();
@@ -22,14 +25,12 @@ Page {
             width: 354
             height: 132
             color: "#242424"
-            text: qsTr("Search for Country...")
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.left: parent.left
             anchors.leftMargin: 6
             anchors.top: parent.top
             anchors.topMargin: 6
-            font.pointSize: 11
-            onFocusChanged: { text = ""}
+            font.pixelSize: 11
         }
 
         Text {
@@ -39,7 +40,7 @@ Page {
             width: 8
             height: 18
             text: qsTr("x")
-            font.pointSize: 10
+            font.pixelSize: 10
 
             MouseArea {
                 id: clearInput
@@ -49,7 +50,7 @@ Page {
                 height: 22
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
-                onClicked: textEdit.text = ""
+                onClicked: searchInput.text = ""
             }
         }
     }
@@ -62,12 +63,14 @@ Page {
         height: 42
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
+
         Image {
             id: image1
             width: 150
             height: 42
             source: "search_button_bg.png"
         }
+
         Image {
             id: image2
             width: 16
@@ -78,13 +81,14 @@ Page {
             anchors.verticalCenter: parent.verticalCenter
             source: "search_icon_white_sm.png"
         }
+
         Text {
             id: text2
             x: 32
             y: 13
             color: "#ffffff"
             text: qsTr("Search")
-            font.pointSize: 10
+            font.pixelSize: 10
         }
         MouseArea {
             id: performSearch
@@ -92,6 +96,9 @@ Page {
             height: 42
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
+                // for some reasons weekeyboard needs to be manually hidden
+                Qt.inputMethod.hide();
+                searchInput.focus = false;
                 root.busy = true;
                 navitProxy.searchCountry(searchInput.text)
             }

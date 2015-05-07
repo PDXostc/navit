@@ -28,7 +28,14 @@ struct NXEInstancePrivate {
         , gps(ifaces.get<std::shared_ptr<IGPSProvider> >())
         , mapDownloaderIPC(ifaces.get<std::shared_ptr<IMapDownloader> >())
         , speech(ifaces.get<std::shared_ptr<ISpeech> >())
+        , geometry(std::make_pair(0,0))
     {
+        ipc->initializedSignal().connect( [this]() {
+            nDebug() << "Navit has initialized";
+            if (geometry != std::make_pair(0,0)) {
+                ipc->resize(geometry.first, geometry.second);
+            }
+        });
     }
 
     std::shared_ptr<INavitProcess> navitProcess;
@@ -36,6 +43,7 @@ struct NXEInstancePrivate {
     std::shared_ptr<IGPSProvider> gps;
     std::shared_ptr<IMapDownloader> mapDownloaderIPC;
     std::shared_ptr<ISpeech> speech;
+    std::pair<int, int> geometry;
     Settings settings;
     bool initialized{ false };
 
@@ -57,6 +65,17 @@ struct NXEInstancePrivate {
     int zoomMessage()
     {
         return ipc->zoom();
+    }
+
+    void resize(int w, int h)
+    {
+        if (!initialized) {
+            geometry = std::make_pair(w,h);
+        } else {
+            // TODO: This does not yet send an message since this would
+            // block current thread.
+            // ipc->resize(w,h);
+        }
     }
 };
 
@@ -82,7 +101,8 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<StartSearchTag>(bind(&INavitIPC::startSearch, d->ipc.get())),
           make_pair<SearchCountryLocationTag>(bind(&INavitIPC::searchCountry, d->ipc.get(), placeholders::_1)),
           make_pair<SearchCityLocationTag>(bind(&INavitIPC::searchCity, d->ipc.get(), placeholders::_1)),
-          make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2))
+          make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
+          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2))
       )
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
@@ -130,6 +150,7 @@ void NXEInstance::Initialize()
         });
     }
     d->initialized = true;
+
 }
 
 void NXEInstance::setWaylandSocketName(const std::string& socketName)

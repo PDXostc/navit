@@ -23,6 +23,13 @@ NavitSubCompositor::NavitSubCompositor(const QString& socketName /*=""*/)
 //            aError() << err.toString().toLatin1().data();
         });
     });
+
+    connect(this, &NavitSubCompositor::widthChanged, [](int width) {
+        qDebug() << "Width changed = " << width;
+    });
+    connect(this, &NavitSubCompositor::heightChanged, [](int height) {
+        qDebug() << "Height changed = " << height;
+    });
 }
 
 QWaylandSurfaceItem *NavitSubCompositor::item(QWaylandSurface *surf)
@@ -78,6 +85,8 @@ void NavitSubCompositor::surfaceDestroyed()
 
 void NavitSubCompositor::resizeEvent(QResizeEvent *event)
 {
+    qDebug() << Q_FUNC_INFO;
     QQuickView::resizeEvent(event);
     QWaylandCompositor::setOutputGeometry(QRect(0,0,width(), height()));
+    emit resized(QRect(0,0,width(), height()));
 }

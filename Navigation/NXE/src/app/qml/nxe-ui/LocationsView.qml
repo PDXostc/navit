@@ -121,7 +121,7 @@ import QtQuick.Controls 1.2
                     anchors.left: parent.left
                     anchors.leftMargin: 154
 
-                    font.pointSize: 19
+                    font.pixelSize: 19
                 }
 
                 Text {
@@ -131,7 +131,7 @@ import QtQuick.Controls 1.2
                     width: 64
                     height: 20
                     color: "#ffffff"
-                    font.pointSize: 13
+                    font.pixelSize: 13
                 }
             }
 

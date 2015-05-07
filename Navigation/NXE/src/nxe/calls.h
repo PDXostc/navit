@@ -1,6 +1,9 @@
 #ifndef CALLS_H
 #define CALLS_H
 
+#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+#define BOOST_MPL_LIMIT_VECTOR_SIZE 30
+
 #include "position.h"
 #include "imapdownloader.h"
 #include "inavitipc.h"
@@ -111,6 +114,11 @@ struct AddWaypointMessageTag {
     typedef typename Parser::result_type ReturnType;
 };
 
+struct ResizeMessageTag {
+    typedef std::function<void (int, int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
 
 // Containter
 typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
@@ -118,7 +126,8 @@ typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, S
       DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,
       SetSchemeMessageTag,
-      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag, AddWaypointMessageTag
+      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag,
+      AddWaypointMessageTag, ResizeMessageTag
     > Messages_type;
 
 template <typename T>

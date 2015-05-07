@@ -113,6 +113,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         inProgress = true;
         nTrace() << "Navit has started";
+        initializedSignal();
         inProgress = false;
     }
 
@@ -151,6 +152,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     INavitIPC::SpeechSignalType speechSignal;
     INavitIPC::PointClickedSignalType pointClickedSignal;
+    INavitIPC::InitializedSignalType initializedSignal;
     bool inProgress = false;
 };
 
@@ -236,6 +238,12 @@ void NavitDBus::render()
     nDebug() << "Rendering";
     DBusHelpers::call("draw", *(d->object.get()));
     nDebug() << "Rendering finished";
+}
+
+void NavitDBus::resize(int x, int y)
+{
+    nDebug() << "Resizing [" << x << "x" << y << "]";
+    DBusHelpers::call("resize", *(d->object.get()), x, y);
 }
 
 int NavitDBus::orientation()
@@ -407,6 +415,11 @@ INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()
 {
     assert(d && d->object);
     return d->object->pointClickedSignal;
+}
+
+INavitIPC::InitializedSignalType &NavitDBus::initializedSignal()
+{
+    return d->object->initializedSignal;
 }
 
 } // namespace NXE

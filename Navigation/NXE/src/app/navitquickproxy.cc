@@ -19,6 +19,7 @@
 #include <QtCore/QVariant>
 #include <QtQml/QQmlContext>
 #include <QtCore/QTimer>
+#include <QtCore/QRect>
 
 struct Context {
     NXE::DBusController dbusController;
@@ -161,6 +162,11 @@ void NavitQuickProxy::setTopBarLocationVisible(bool value)
 {
     m_settings.set<Tags::TopBarLocationVisible>(value);
 }
+
+void NavitQuickProxy::resize(const QRect &rect)
+{
+    nxeInstance->HandleMessage<ResizeMessageTag>(rect.width(), rect.height());
+}
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
     nxeInstance->HandleMessage<SetSchemeMessageTag>(enable ? "Car-JLR" : "Car-JLR-nopoi");
@@ -236,6 +242,7 @@ void NavitQuickProxy::startSearch()
 
 void NavitQuickProxy::searchCountry(const QString& countryName)
 {
+    aDebug() << "Search for country = " << countryName.toStdString();
     auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
     for (NXE::Country country : countries) {
         m_searchResults.append(new LocationProxy{ QString::fromStdString(country.name),

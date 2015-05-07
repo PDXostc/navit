@@ -21,6 +21,7 @@ public:
     virtual void zoomBy(int y) override;
     virtual int zoom() override;
     virtual void render() override;
+    virtual void resize(int x, int y) override;
     virtual int orientation() override;
     virtual void setOrientation(int newOrientation) override;
     virtual void setCenter(double longitude, double latitude) override;
@@ -37,6 +38,7 @@ public:
 
     virtual SpeechSignalType& speechSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;
+    virtual InitializedSignalType& initializedSignal() override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;

@@ -27,7 +27,7 @@ Rectangle {
             y: 13
             color: "#ffffff"
             text: queryBarEnabled ? queryText : ""
-            font.pointSize: 10
+            font.pixelSize: 16
         }
         Image {
             id: image2

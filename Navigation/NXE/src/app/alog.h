@@ -13,5 +13,6 @@
 #define aError() spdlog::get("app")->error() << __FILENAME__ << "@" << __LINE__ << " "
 #define aFatal() spdlog::get("app")->critical()
 
+
 #endif // ALOG_H
 
