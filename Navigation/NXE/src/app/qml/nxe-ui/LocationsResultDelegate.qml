@@ -7,12 +7,13 @@ Item {
     width: LocationResultListView.width
     height: 50
 
+    signal locationClicked(string name)
+
     MouseArea {
         anchors.fill: parent
 
         onClicked: {
-            navitProxy.setLocationPopUp(itemText);
-            rootStack.pop();
+            locationClicked(itemText);
         }
     }
     Row {

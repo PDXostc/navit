@@ -255,6 +255,20 @@ void NavitQuickProxy::searchCountry(const QString& countryName)
 
 void NavitQuickProxy::searchCity(const QString& name)
 {
+    aDebug() << "Search for city = " << name.toStdString();
+    auto cities = nxeInstance->HandleMessage<SearchCityLocationTag>(name.toStdString());
+    aDebug() << cities.size();
+    qDeleteAll(m_searchResults);
+    m_searchResults.clear();
+
+    for(NXE::City city: cities) {
+        m_searchResults.append(new LocationProxy{QString::fromStdString(city.name),
+                                                 false, "", false});
+    }
+    aDebug() << "Model size = " << m_searchResults.size();
+    m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
+
+    emit searchDone();
 }
 
 void NavitQuickProxy::getFavorites()
@@ -280,19 +294,19 @@ void NavitQuickProxy::getHistory()
 
 void NavitQuickProxy::setLocationPopUp(const QString& name)
 {
-    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
-    // TODO: This is a fake implementation for now
-    if (m_searchResults.size() != 0) {
-        m_currentItem = qobject_cast<LocationProxy*>(m_searchResults.at(0));
-        currentlySelectedItemChanged();
-    }
-    else if (m_favoritesResults.size() != 0) {
-        m_currentItem = qobject_cast<LocationProxy*>(m_favoritesResults.at(0));
-        currentlySelectedItemChanged();
-    }
-    else if (m_historyResults.size() != 0) {
-        m_currentItem = qobject_cast<LocationProxy*>(m_historyResults.at(0));
-        currentlySelectedItemChanged();
+    m_currentItem = 0;
+    std::for_each(m_searchResults.begin(), m_searchResults.end(), [this,&name](QObject *o) {
+        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
+
+        if (proxy->itemText() == name ) {
+            m_currentItem = proxy;
+        }
+    });
+
+    if (!m_currentItem) {
+        aFatal() << "Unable to find item= " << name.toStdString();
+    } else {
+        emit currentlySelectedItemChanged();
     }
 }
 void NavitQuickProxy::hideLocationBars()
@@ -313,8 +327,10 @@ void NavitQuickProxy::initNavit()
 
 void NavitQuickProxy::synchronizeNavit()
 {
-    aInfo() << "Synchronizing navit";
     // TODO: Synchronize all NavIt settings
+    aInfo() << "Synchronizing navit";
+    // special case
+    nxeInstance->HandleMessage<ResizeMessageTag>(0,0);
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());

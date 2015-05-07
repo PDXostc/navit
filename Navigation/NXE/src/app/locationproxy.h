@@ -2,6 +2,7 @@
 #define LOCATIONPROXY_H
 
 #include <QObject>
+#include "position.h"
 
 class LocationProxy : public QObject
 {

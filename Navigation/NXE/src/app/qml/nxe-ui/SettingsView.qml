@@ -104,10 +104,10 @@ Rectangle {
             initialItem: Item {
                 width: parent.width
                 height: parent.height - 100
+
                 SettingsListView {
                     id: settingsListView
-                    model: SettingsListModel {
-                    }
+                    model: SettingsListModel {}
                     anchors.fill: parent
                     clip: true
                     onSubMenuRequest: settingsStackView.push(

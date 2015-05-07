@@ -6,6 +6,7 @@ Item {
     id: delroot
     width: locationsListView.width
     height: 50
+    opacity: enabled ? 1: 0.4
 
     signal subMenuRequested(string url)
     signal clicked(string menuItem)
@@ -14,9 +15,11 @@ Item {
         anchors.fill: parent
 
         onClicked: {
+            if (enabled) {
                 console.debug('sublist clicked ', options.get(0).url)
                 locationsListRoot.headerSmallText = options.get(0).text;
                 subMenuRequested(options.get(0).url);
+            }
         }
     }
     Row {

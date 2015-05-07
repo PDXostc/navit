@@ -51,11 +51,11 @@ import QtQuick.Controls 1.2
                         iconHeight: 24
 
                         onClicked: {
-                            if (stack.depth !== 1) {
-                                if(stack.depth === 2) {
+                            if (searchStackView.depth !== 1) {
+                                if(searchStackView.depth === 2) {
                                     locationsListRoot.headerSmallText = ""
                                 }
-                                stack.pop()
+                                searchStackView.pop()
                             } else {
                                 backToMapRequest()
                             }
@@ -136,15 +136,14 @@ import QtQuick.Controls 1.2
             }
 
             StackView {
-                id: stack
+                id: searchStackView
                 initialItem: LocationsListView {
                     id: locationsListView
                     model: LocationsListModel {}
                     width: parent.width
                     height: parent.height - 100
                     clip: true
-                    onSubMenuRequest:
-                    {
+                    onSubMenuRequest: {
                         switch(url) {
                         case "LocationsHistory.qml":
                             navitProxy.getHistory();
@@ -153,7 +152,7 @@ import QtQuick.Controls 1.2
                             navitProxy.getFavorites();
                             break;
                         default:
-                            stack.push(Qt.resolvedUrl(url))
+                            searchStackView.push(Qt.resolvedUrl(url))
                         }
                     }
                 }
@@ -161,10 +160,10 @@ import QtQuick.Controls 1.2
             Connections {
                 target: navitProxy
                 onGettingHistoryDone: {
-                    stack.push({item: Qt.resolvedUrl("LocationsHistory.qml")});
+                    searchStackView.push({item: Qt.resolvedUrl("LocationsHistory.qml")});
                 }
                 onGettingFavoritesDone: {
-                    stack.push({item: Qt.resolvedUrl("LocationsFavorites.qml")});
+                    searchStackView.push({item: Qt.resolvedUrl("LocationsFavorites.qml")});
                 }
             }
         }

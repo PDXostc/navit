@@ -20,7 +20,10 @@ QtObject {
     function changeValueFor(settingsName, settigsValue) {
     }
 
-    function search(searchString) {
+    function startSearch() {
+    }
+
+    function searchCountry(searchString) {
         fakeSearchTimer.start();
     }
 
@@ -71,7 +74,7 @@ QtObject {
 
     property Timer fakeSearchTimer: Timer {
         running: false
-        interval: 3000
+        interval: 1000
         onTriggered: {
             searchDone();
         }

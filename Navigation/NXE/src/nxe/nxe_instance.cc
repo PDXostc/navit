@@ -47,11 +47,6 @@ struct NXEInstancePrivate {
     Settings settings;
     bool initialized{ false };
 
-    void moveBy(int x, int y)
-    {
-        ipc->moveBy(x, y);
-    }
-
     void setOrientation(int newOrientation)
     {
         ipc->setOrientation(newOrientation);
@@ -76,13 +71,18 @@ struct NXEInstancePrivate {
             // block current thread.
             // ipc->resize(w,h);
         }
+
+        if (w == 0 && h == 0) {
+            nInfo() << "Force resize";
+            ipc->resize(geometry.first, geometry.second);
+        }
     }
 };
 
 NXEInstance::NXEInstance(DI::Injector& impls)
     : d(new NXEInstancePrivate{ impls, this })
     , fusion_list(
-          make_pair<MoveByMessageTag>(bind(&NXEInstancePrivate::moveBy, d.get(), placeholders::_1, placeholders::_2)),
+          make_pair<MoveByMessageTag>(bind(&INavitIPC::moveBy, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<ZoomByMessageTag>(bind(&NXEInstancePrivate::zoomBy, d.get(), placeholders::_1)),
           make_pair<ZoomMessageTag>(bind(&NXEInstancePrivate::zoomMessage, d.get())),
           make_pair<SetOrientationMessageTag>(bind(&NXEInstancePrivate::setOrientation, d.get(), placeholders::_1)),

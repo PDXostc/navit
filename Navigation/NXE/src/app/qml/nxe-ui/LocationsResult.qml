@@ -7,6 +7,7 @@ Rectangle {
     color: "#000000"
 
     property string queryText
+    property string whatIsSearched
     property bool queryBarEnabled: true
     Item {
         id: queryBar
@@ -17,11 +18,13 @@ Rectangle {
         anchors.horizontalCenterOffset: 0
         anchors.horizontalCenter: parent.horizontalCenter
         visible: true
+
         Rectangle {
             id: rectangle1
             color: "#09bcdf"
             anchors.fill: parent
         }
+
         Text {
             x: 32
             y: 13
@@ -41,6 +44,9 @@ Rectangle {
         }
     }
 
+    Component.onCompleted: {
+        console.debug('model size=', locationSearchResult.length)
+    }
 
     ListView {
         id: locationResultListView
@@ -58,6 +64,26 @@ Rectangle {
         delegate: LocationsResultDelegate {
             width: parent.width
             height: 50
+
+            onLocationClicked: {
+                if (whatIsSearched==='city') {
+                    navitProxy.setLocationPopUp(itemText);
+                    rootStack.pop();
+                } else {
+                    var whatToSearchNext;
+                    if ( whatIsSearched === 'country') {
+                        whatToSearchNext = 'city';
+                    } else if(whatIsSearched === 'city') {
+                        whatToSearchNext = 'street';
+                    }
+
+                    console.debug(whatToSearchNext)
+                    searchStackView.push({
+                                               item: Qt.resolvedUrl("LocationsSearch.qml"),
+                                               properties: {searchForWhat: whatToSearchNext}
+                                           });
+                }
+            }
         }
     }
     ScrollBar {

@@ -68,7 +68,6 @@ Rectangle {
                                         itemText) / (1024 * 1024 * 1024)
 
             onSubList: {
-                //                settingsStackView.push(Qt.resolvedUrl(url))
                 // all maps list requested
                 settingsStackView.push({
                                            item: Qt.resolvedUrl(

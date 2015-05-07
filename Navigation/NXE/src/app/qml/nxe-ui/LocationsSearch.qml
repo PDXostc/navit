@@ -4,10 +4,13 @@ import QtQml 2.2
 Page {
     id: root
 
-    property string searchForWhat: "country"
+    property string searchForWhat: 'country'
 
     Component.onCompleted: {
-        navitProxy.startSearch();
+        if (searchForWhat === 'country') {
+            navitProxy.startSearch();
+        }
+        console.debug('Searching for', searchForWhat);
     }
 
     Rectangle {
@@ -100,7 +103,11 @@ Page {
                 Qt.inputMethod.hide();
                 searchInput.focus = false;
                 root.busy = true;
-                navitProxy.searchCountry(searchInput.text)
+                if (searchForWhat === 'country') {
+                    navitProxy.searchCountry(searchInput.text)
+                } else if(searchForWhat === 'city') {
+                    navitProxy.searchCity(searchInput.text)
+                }
             }
         }
     }
@@ -109,7 +116,13 @@ Page {
         target: navitProxy
         onSearchDone: {
             root.busy = false;
-            stack.push({item: Qt.resolvedUrl("LocationsResult.qml"), properties:{queryText: searchInput.text}})
+            searchStackView.push({
+                           item: Qt.resolvedUrl("LocationsResult.qml"),
+                           properties:{
+                               queryText: searchInput.text,
+                               whatIsSearched: searchForWhat
+                           }
+                       })
         }
     }
 }

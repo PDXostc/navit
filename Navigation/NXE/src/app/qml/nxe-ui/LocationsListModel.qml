@@ -6,6 +6,7 @@ ListModel {
     ListElement {
         itemText: "Search"
         type: "sublist"
+        enabled: true
         options: [
             ListElement {
                 text: "Search"
@@ -16,6 +17,7 @@ ListModel {
     ListElement {
         itemText: "Favorites"
         type: "sublist"
+        enabled: false
         options: [
             ListElement {
                 text: "Favorites"
@@ -26,6 +28,7 @@ ListModel {
     ListElement {
         itemText: "Destination history"
         type: "sublist"
+        enabled: false
         options: [
             ListElement {
                 text: "Destination history"
