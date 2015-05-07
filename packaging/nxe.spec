@@ -2,7 +2,7 @@
 
 Name:           nxe
 Version:        1.0
-Release:        5
+Release:        6
 Summary:        Crosswalk extension to control Navit
 
 Group:          Applications/Navigation
