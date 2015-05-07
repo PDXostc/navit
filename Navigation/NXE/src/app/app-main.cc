@@ -68,6 +68,9 @@ int main(int argc, char *argv[])
 
     int ret {0};
 
+    // remove all navit instances
+    system("killall navit");
+
     // Parse app settings
     QCommandLineParser parser;
     parser.addOptions({

@@ -80,9 +80,11 @@ public slots:
     void getHistory();
     void setLocationPopUp(const QString& name);
     void hideLocationBars();
+private slots:
+    void initNavit();
+    void synchronizeNavit();
 private:
 
-    void synchronizeNavit();
 
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;

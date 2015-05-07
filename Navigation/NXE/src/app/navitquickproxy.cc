@@ -18,6 +18,7 @@
 
 #include <QtCore/QVariant>
 #include <QtQml/QQmlContext>
+#include <QtCore/QTimer>
 
 struct Context {
     NXE::DBusController dbusController;
@@ -45,7 +46,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , m_rootContext(ctx)
     , mapsProxy(nxeInstance, ctx)
 {
-    context->dbusController.start();
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
 
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
@@ -97,7 +97,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit pointClicked(loc);
     });
 
-    nxeInstance->Initialize();
 
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
         aDebug() << "Received position update";
@@ -112,7 +111,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     typedef QQmlListProperty<LocationProxy> LocationProxyList;
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
 
-    synchronizeNavit();
+    QTimer::singleShot(500, this, SLOT(initNavit()));
+
 }
 
 int NavitQuickProxy::orientation()
@@ -293,6 +293,15 @@ void NavitQuickProxy::hideLocationBars()
     m_currentItem = nullptr;
     setTopBarLocationVisible(false);
     currentlySelectedItemChanged();
+}
+
+void NavitQuickProxy::initNavit()
+{
+    aInfo() << "Launching navit";
+    context->dbusController.start();
+
+    nxeInstance->Initialize();
+    QTimer::singleShot(500,this, SLOT(synchronizeNavit()));
 }
 
 void NavitQuickProxy::synchronizeNavit()

@@ -14,6 +14,7 @@ Rectangle {
 
     // by default we're using suggested country model
     property var listModel: CLSuggestedCountriesModel {}
+
     property string mapsType: "suggested"
 
     function updateState() {
@@ -26,10 +27,10 @@ Rectangle {
     }
 
     function mapEntryClicked(itemText, mapSize) {
-        var properMapSize = Math.ceil(mapSize/(1024 * 1024));
+        var properMapSize = Math.ceil(mapSize / (1024 * 1024))
         var _index = mapsToDownload.indexOf(itemText)
         if (_index === -1) {
-            console.debug('Map size', properMapSize);
+            console.debug('Map size', properMapSize)
             mapsToDownload.push(itemText)
             dialog.downloadSize += properMapSize
         } else {
@@ -54,8 +55,7 @@ Rectangle {
         anchors.fill: parent
         model: root.listModel
         clip: true
-        delegate: mapsType === "all" ? allCountriesListDelegate:
-                                              suggestedCountriesListDelegate;
+        delegate: mapsType === "all" ? allCountriesListDelegate : suggestedCountriesListDelegate
     }
 
     Component {
@@ -81,7 +81,7 @@ Rectangle {
             }
 
             onChecked: {
-                mapEntryClicked(itemText, _mapSize);
+                mapEntryClicked(itemText, _mapSize)
             }
         }
     }
@@ -97,7 +97,7 @@ Rectangle {
 
             isDownloaded: downloaded
             onChecked: {
-                mapEntryClicked(mapName, mapSize);
+                mapEntryClicked(mapName, mapSize)
             }
         }
     }
