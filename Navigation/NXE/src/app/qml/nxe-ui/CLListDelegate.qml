@@ -6,7 +6,7 @@ Item {
     id: root
     width: 400
     height: 50
-    property bool downloaded: false
+    property bool isDownloaded: false
 
     signal checked()
 
@@ -17,18 +17,19 @@ Item {
         height: parent.height
 
         onSubMenuRequested: {
-            console.debug('Clicked' + url)
-            root.subList(url)
+            if (type === 'sublist') {
+                root.subList(url)
+            }
         }
     }
 
     CheckBox {
-        visible: type === 'empty'
+        visible: type === 'checkbox'
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        enabled: !downloaded
+        enabled: !isDownloaded
 
-        checked: downloaded
+        checked: isDownloaded
 
         onClicked: {
             root.checked(checked)
@@ -49,7 +50,7 @@ Item {
                     anchors.margins: 1
                     anchors.fill: parent
                     Image {
-                        source: "search_icon_white_sm.png"
+                        source: "white_tick.png"
                         visible: control.checked
                         sourceSize.width: 16
                         sourceSize.height: 16

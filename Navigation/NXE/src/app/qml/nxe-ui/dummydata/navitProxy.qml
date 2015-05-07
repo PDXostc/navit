@@ -60,6 +60,7 @@ QtObject {
     signal searchDone();
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
+    signal pointClicked(var location)
 
     // fake properties
     property QtObject fakeLocationObject: QtObject {
@@ -93,12 +94,11 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: true
-        interval: 5000
+        running: false
+        interval: 1000
         repeat: false
         onTriggered: {
-            console.debug('Point clicked')
-            currentlySelectedItem = fakeLocationObject;
+            pointClicked(fakeLocationObject)
         }
     }
 }

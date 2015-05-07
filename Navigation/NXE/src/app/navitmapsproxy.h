@@ -11,15 +11,15 @@ struct JSONMessage;
 class NXEInstance;
 }
 
+class QQmlContext;
+
 class NavitMapsProxy : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QObjectList maps READ maps)
 public:
-    explicit NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QObject *parent = 0);
+    explicit NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQmlContext* ctx, QObject *parent = 0);
     ~NavitMapsProxy();
 
-    QObjectList maps() const { return m_maps;}
 public slots:
     void downloadMap(const QString& map);
     bool isMapDownloaded(const QString& mapName);
@@ -36,6 +36,7 @@ private:
     QObjectList m_maps;
     NXE::MapDownloaderListener mapDownloaderListener;
     std::vector<NXE::MapInfo> m_nxeMaps;
+    QQmlContext* m_ctx;
 };
 
 #endif // NAVITMAPSPROXY_H

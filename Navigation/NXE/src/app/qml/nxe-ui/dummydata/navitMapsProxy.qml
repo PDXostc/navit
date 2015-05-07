@@ -4,11 +4,18 @@ QtObject {
     id: navitMapsProxy
 
     function downloadMap(mapName) {
+        console.debug("Downloading map " , mapName)
+        fakeCurrMapDownload = mapName
+        fakeTimer.downloaded = 0;
         fakeTimer.restart();
     }
 
     function isMapDownloaded(mapName) {
-        return mapName === 'Oregon';
+        return mapName === 'Oregon' || mapName === 'Poland';
+    }
+
+    function mapSize(name) {
+        return 9 * 1024 * 1024 * 1024;
     }
 
     // real signals
@@ -24,15 +31,19 @@ QtObject {
         property real downloaded: 0
         repeat: true
         onTriggered: {
+            console.debug('asd')
             downloaded += delta;
             if (downloaded < total) {
                 console.debug('Downloaded=', downloaded, " out of ", total)
-                mapDownloadProgress('Oregon', downloaded, total)
+                mapDownloadProgress(fakeCurrMapDownload, downloaded, total)
             } else {
-                mapDownloadFinished('Oregon')
+                console.debug('map downloaded', fakeCurrMapDownload);
+                mapDownloadFinished(fakeCurrMapDownload)
                 fakeTimer.stop();
             }
         }
     }
+
+    property string fakeCurrMapDownload
 }
 

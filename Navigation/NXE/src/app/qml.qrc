@@ -61,5 +61,7 @@
         <file>qml/nxe-ui/star_icon_empty_grey.png</file>
         <file>qml/nxe-ui/LocationsFavorites.qml</file>
         <file>qml/nxe-ui/LocationsHistory.qml</file>
+        <file>qml/nxe-ui/white_tick.png</file>
+        <file>qml/nxe-ui/CLAllMaps.qml</file>
     </qresource>
 </RCC>

@@ -3,9 +3,12 @@
 #include "mapinfoproxy.h"
 #include "alog.h"
 
-NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QObject *parent)
+#include <QtQml/QQmlContext>
+
+NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QQmlContext *ctx, QObject *parent)
     : QObject(parent)
     , nxeInstance(nxe)
+    , m_ctx(ctx)
 {
     // mapDownloaderCallbacks!
     mapDownloaderListener.progressCb = [this](const std::string& mapName, std::uint64_t now, std::uint64_t total) {
@@ -72,8 +75,12 @@ void NavitMapsProxy::reloadMaps()
 
     // Request for available maps
     m_nxeMaps = nxeInstance->HandleMessage<MapsMessageTag>();
+    std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [] (const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) ->bool {
+        return lhs.name < rhs.name;
+    });
     std::for_each(m_nxeMaps.begin(), m_nxeMaps.end(), [this](const NXE::MapInfo& mi) {
         m_maps.append(new MapInfoProxy{mi});
     });
 
+    m_ctx->setContextProperty("allMapsModel", QVariant::fromValue(m_maps));
 }

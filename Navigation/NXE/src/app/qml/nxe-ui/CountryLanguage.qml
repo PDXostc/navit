@@ -12,6 +12,10 @@ Rectangle {
     property variant mapsToDownload: []
     property int count: 0
 
+    // by default we're using suggested country model
+    property var listModel: CLSuggestedCountriesModel {}
+    property string mapsType: "suggested"
+
     function updateState() {
         if (mapsToDownload.length !== 0) {
             root.state = 'dialog'
@@ -19,6 +23,20 @@ Rectangle {
             root.state = 'noDialog'
         }
         count = mapsToDownload.length
+    }
+
+    function mapEntryClicked(itemText, mapSize) {
+        var properMapSize = Math.ceil(mapSize/(1024 * 1024));
+        var _index = mapsToDownload.indexOf(itemText)
+        if (_index === -1) {
+            console.debug('Map size', properMapSize);
+            mapsToDownload.push(itemText)
+            dialog.downloadSize += properMapSize
+        } else {
+            mapsToDownload.splice(_index, 1)
+            dialog.downloadSize -= properMapSize
+        }
+        updateState()
     }
 
     function downloadMaps() {
@@ -34,30 +52,52 @@ Rectangle {
     ListView {
         id: list
         anchors.fill: parent
-        model: CLSuggestedCountriesModel {}
+        model: root.listModel
         clip: true
-        delegate: CLListDelegate {
+        delegate: mapsType === "all" ? allCountriesListDelegate:
+                                              suggestedCountriesListDelegate;
+    }
+
+    Component {
+        id: suggestedCountriesListDelegate
+        CLListDelegate {
             width: parent.width
             height: 50
-            downloaded: navitMapsProxy.isMapDownloaded(itemText);
-            property real _mapSize: navitMapsProxy.mapSize(itemText) / (1024*1024*1024);
+            isDownloaded: navitMapsProxy.isMapDownloaded(itemText)
+            property real _mapSize: navitMapsProxy.mapSize(
+                                        itemText) / (1024 * 1024 * 1024)
 
             onSubList: {
-                settingsStackView.push(Qt.resolvedUrl(url))
+                //                settingsStackView.push(Qt.resolvedUrl(url))
+                // all maps list requested
+                settingsStackView.push({
+                                           item: Qt.resolvedUrl(
+                                                     "CountryLanguage.qml"),
+                                           properties: {
+                                               listModel: allMapsModel,
+                                               mapsType: "all"
+                                           }
+                                       })
             }
 
             onChecked: {
-                var _index = mapsToDownload.indexOf(itemText);
-                if (_index === -1) {
-                    console.debug('Map size', _mapSize/1024/1024/1024)
-                    mapsToDownload.push(itemText)
-                    dialog.downloadSize += _mapSize
-                } else {
-                    mapsToDownload.splice(_index, 1)
-                    dialog.downloadSize -= _mapSize
-                }
+                mapEntryClicked(itemText, _mapSize);
+            }
+        }
+    }
 
-                updateState();
+    Component {
+        id: allCountriesListDelegate
+        CLListDelegate {
+            property string type: 'checkbox'
+            property string itemText: mapName
+            property ListModel options: ListModel {}
+            width: list.width
+            height: 50
+
+            isDownloaded: downloaded
+            onChecked: {
+                mapEntryClicked(mapName, mapSize);
             }
         }
     }

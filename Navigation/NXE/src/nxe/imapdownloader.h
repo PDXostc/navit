@@ -8,9 +8,9 @@
 namespace NXE {
 
 struct MapInfo {
-    const std::string name;
-    const std::uint64_t size;
-    const bool downloaded;
+    std::string name;
+    std::uint64_t size;
+    bool downloaded;
 };
 
 struct MapDownloaderListener {

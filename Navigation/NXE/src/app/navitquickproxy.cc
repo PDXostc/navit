@@ -43,7 +43,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , context(new Context)
     , nxeInstance(new NXE::NXEInstance{ context->injector })
     , m_rootContext(ctx)
-    , mapsProxy(nxeInstance)
+    , mapsProxy(nxeInstance, ctx)
 {
     context->dbusController.start();
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());

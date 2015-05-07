@@ -7,17 +7,17 @@ ListModel {
 
     ListElement {
         itemText: "Oregon"
-        type: "empty"
+        type: "checkbox"
         options: []
     }
     ListElement {
         itemText: "North America"
-        type: "empty"
+        type: "checkbox"
         options: []
     }
     ListElement {
         itemText: "Earth"
-        type: "empty"
+        type: "checkbox"
         options: []
     }
     ListElement {

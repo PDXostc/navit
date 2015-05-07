@@ -21,6 +21,7 @@ Page {
 
     function downloadNextMap() {
         currentDownloadIndex++
+        progressBarItem.value = 0;
 
         if (currentDownloadIndex === maps.length) {
             // push FTUMapDownloadCompleted.qml
@@ -79,7 +80,8 @@ Page {
         }
 
         onMapDownloadFinished: {
-            downloadNextMap()
+            etaCalculationTimer.stop();
+            downloadNextMap();
         }
     }
 

@@ -8,8 +8,8 @@ class MapInfoProxy : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString mapName READ mapName CONSTANT)
-    Q_PROPERTY(bool downloaded READ downloaded)
-    Q_PROPERTY(quint64 mapSize READ mapSize)
+    Q_PROPERTY(bool downloaded READ downloaded NOTIFY downloadedChanged)
+    Q_PROPERTY(quint64 mapSize READ mapSize CONSTANT)
 public:
     explicit MapInfoProxy(const NXE::MapInfo& mi, QObject *parent = 0);
     ~MapInfoProxy();
@@ -17,6 +17,9 @@ public:
     QString mapName() const;
     bool downloaded() { return info.downloaded;}
     quint64 mapSize() {return info.size;}
+
+signals:
+    void downloadedChanged();
 
 private:
     const NXE::MapInfo info;

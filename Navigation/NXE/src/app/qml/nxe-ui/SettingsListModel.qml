@@ -91,7 +91,7 @@ ListModel {
         type: "sublist"
         options: [
             ListElement {
-                url: "CountryLanguage.qml"
+                url: ""
             }
         ]
     }
