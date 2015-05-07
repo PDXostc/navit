@@ -6,6 +6,7 @@ ListView {
     signal subMenuRequest(string url)
 
     delegate: LocationsListDelegate {
-        onSubMenuRequested: subMenuRequest(url)
+        // TODO: Not ready yet
+//        onSubMenuRequested: subMenuRequest(url)
     }
 }
