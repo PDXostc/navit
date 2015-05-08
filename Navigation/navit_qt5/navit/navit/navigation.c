@@ -1694,6 +1694,24 @@ navigation_item_destination(struct navigation *nav, struct navigation_itm *itm, 
 	return ret;
 }
 
+
+static int
+navigation_dbus_routing_signal(struct navigation *this, const char *text)
+{
+	struct attr attr1,attr2,cb,*attr_list[3];
+	int valid=0;
+	attr1.type=attr_type;
+	attr1.u.str="routing";
+	attr2.type=attr_data;
+	attr2.u.str=(char *)text;
+	attr_list[0]=&attr1;
+	attr_list[1]=&attr2;
+	attr_list[2]=NULL;
+	if (navit_get_attr(this->navit, attr_callback_list, &cb, NULL))
+		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+	return 0;
+}
+
 static char *
 show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigation_command *cmd, enum attr_type type, int connect)
 {
@@ -1764,7 +1782,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 	if (type == attr_navigation_speech) {
 		if (nav->turn_around && nav->turn_around == nav->turn_around_limit) {
 			navigation_set_turnaround(nav, nav->turn_around_count+1);
-			return g_strdup(_("When possible, please turn around"));
+			ret = g_strdup(_("When possible, please turn around"));
+			navigation_dbus_routing_signal(nav, ret);
+			return ret;
 		}
 		navigation_set_turnaround(nav, 0);
 		if (!connect) {
@@ -1784,17 +1804,24 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 		}
 		switch (level) {
 		case 2:
-			return g_strdup(_("Enter the roundabout soon"));
+			ret = g_strdup(_("Enter the roundabout soon"));
+			navigation_dbus_routing_signal(nav, ret);
+			return ret;
 		case 1:
 			d = get_distance(nav, distance, type, 0);
 			/* TRANSLATORS: %s is the distance to the roundabout */
 			ret = g_strdup_printf(_("Enter the roundabout %s"), d);
 			g_free(d);
+			navigation_dbus_routing_signal(nav, ret);
 			return ret;
 		case -2:
-			return g_strdup_printf(_("then leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			ret = g_strdup_printf(_("then leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			navigation_dbus_routing_signal(nav, ret);
+			return ret;
 		case 0:
-			return g_strdup_printf(_("Leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			ret = g_strdup_printf(_("Leave the roundabout at the %s"), get_exit_count_str(count_roundabout));
+			navigation_dbus_routing_signal(nav, ret);
+			return ret;
 		}
 	}
 
@@ -1803,6 +1830,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 		d=get_distance(nav, distance, type, 1);
 		ret=g_strdup_printf(_("Follow the road for the next %s"), d);
 		g_free(d);
+		navigation_dbus_routing_signal(nav, ret);
 		return ret;
 	case 2:
 		d=g_strdup(_("soon"));
@@ -1816,6 +1844,7 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 			if (get_count_str(skip_roads+1)) {
 				/* TRANSLATORS: First argument is the how manieth street to take, second the direction */ 
 				ret = g_strdup_printf(_("Take the %1$s road to the %2$s"), get_count_str(skip_roads+1), dir);
+				navigation_dbus_routing_signal(nav, ret);
 				return ret;
 			} else {
 				d = g_strdup_printf(_("after %i roads"), skip_roads);
@@ -1888,6 +1917,9 @@ show_maneuver(struct navigation *nav, struct navigation_itm *itm, struct navigat
 			
 	}
 	g_free(d);
+
+	navigation_dbus_routing_signal(nav, ret);
+
 	return ret;
 }
 
