@@ -15,7 +15,6 @@ Item {
     function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
             locationInfoObject = locationInfoComponent.createObject(mainPageView);
-            console.debug(locationInfoComponent, locationInfoObject)
             locationInfoObject.anchors.bottom = mainPageView.bottom
             locationInfoObject.anchors.left = mainPageView.left
             locationInfoObject.anchors.right = mainPageView.right
@@ -25,7 +24,6 @@ Item {
     function finishTopComponentCreation() {
         if (locationInfoTopComponent.status === Component.Ready) {
             locationInfoTopObject = locationInfoTopComponent.createObject(mainPageView);
-            console.debug(locationInfoTopComponent, locationInfoTopObject)
             locationInfoTopObject.anchors.top = mainPageView.top
             locationInfoTopObject.anchors.left = mainPageView.left
             locationInfoTopObject.anchors.right = mainPageView.right
@@ -54,7 +52,6 @@ Item {
         anchors.topMargin: navitProxy.topBarLocationVisible ? 110 : 70 // parent.width * 0.2 : 70
         onClicked: {
             if (item === "menu") {
-                console.debug("menu clicked")
                 rootStack.push(settingsView)
             } else if (item === "search") {
                 rootStack.push(locationsView)

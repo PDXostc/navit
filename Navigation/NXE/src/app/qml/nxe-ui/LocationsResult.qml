@@ -44,10 +44,6 @@ Rectangle {
         }
     }
 
-    Component.onCompleted: {
-        console.debug('model size=', locationSearchResult.length)
-    }
-
     ListView {
         id: locationResultListView
         height: 800
@@ -59,7 +55,13 @@ Rectangle {
         anchors.leftMargin: 0
         anchors.topMargin: queryBarEnabled ? 7 : 0
         anchors.bottomMargin: 0
-        model: locationSearchResult
+        model: {
+            if (whatIsSearched === 'country') {
+                return countrySearchResult
+            } else if (whatIsSearched === 'city') {
+                return citySearchResult;
+            }
+        }
         clip: true
         delegate: LocationsResultDelegate {
             width: parent.width

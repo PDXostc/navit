@@ -26,7 +26,7 @@ struct Context {
     NXE::INavitIPC* ipc{ new NXE::NavitDBus{ dbusController } };
     NXE::IMapDownloader* md{ new NXE::MapDownloaderDBus{ dbusController } };
 #if defined(NXE_OS_LINUX)
-    NXE::ISpeech* speech{ nullptr};
+    NXE::ISpeech* speech{ nullptr };
 #elif defined(NXE_OS_TIZEN)
     NXE::ISpeech* speech{ new NXE::SpeechImplDBus{ dbusController } };
 #endif
@@ -98,7 +98,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit pointClicked(loc);
     });
 
-
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
         aDebug() << "Received position update";
         double lat = position.latitude;
@@ -113,7 +112,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
 
     QTimer::singleShot(500, this, SLOT(initNavit()));
-
 }
 
 int NavitQuickProxy::orientation()
@@ -163,7 +161,7 @@ void NavitQuickProxy::setTopBarLocationVisible(bool value)
     m_settings.set<Tags::TopBarLocationVisible>(value);
 }
 
-void NavitQuickProxy::resize(const QRect &rect)
+void NavitQuickProxy::resize(const QRect& rect)
 {
     nxeInstance->HandleMessage<ResizeMessageTag>(rect.width(), rect.height());
 }
@@ -185,7 +183,7 @@ void NavitQuickProxy::setFtu(bool value)
 
 QObject* NavitQuickProxy::currentlySelectedItem() const
 {
-    return m_currentItem;
+    return m_currentItem.data();
 }
 
 void NavitQuickProxy::zoomIn()
@@ -237,18 +235,36 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
 
 void NavitQuickProxy::startSearch()
 {
+    qDeleteAll(m_countriesSearchResults);
+    m_countriesSearchResults.clear();
+
+    qDeleteAll(m_citiesSearchResults);
+    m_citiesSearchResults.clear();
+
     nxeInstance->HandleMessage<StartSearchTag>();
+}
+
+void NavitQuickProxy::finishSearch()
+{
+    qDeleteAll(m_countriesSearchResults);
+    m_countriesSearchResults.clear();
+
+    qDeleteAll(m_citiesSearchResults);
+    m_citiesSearchResults.clear();
+    nxeInstance->HandleMessage<FinishSearchTag>();
 }
 
 void NavitQuickProxy::searchCountry(const QString& countryName)
 {
+    qDeleteAll(m_countriesSearchResults);
+    m_countriesSearchResults.clear();
     aDebug() << "Search for country = " << countryName.toStdString();
     auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
     for (NXE::Country country : countries) {
-        m_searchResults.append(new LocationProxy{ QString::fromStdString(country.name),
+        m_countriesSearchResults.append(new LocationProxy{ QString::fromStdString(country.name),
             false, "", false });
     }
-    m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
+    m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
 
     emit searchDone();
 }
@@ -258,16 +274,15 @@ void NavitQuickProxy::searchCity(const QString& name)
     aDebug() << "Search for city = " << name.toStdString();
     auto cities = nxeInstance->HandleMessage<SearchCityLocationTag>(name.toStdString());
     aDebug() << cities.size();
-    qDeleteAll(m_searchResults);
-    m_searchResults.clear();
 
-    for(NXE::City city: cities) {
-        m_searchResults.append(new LocationProxy{QString::fromStdString(city.name),
-                                                 false, "", false});
+    for (NXE::City city : cities) {
+        auto loc = new LocationProxy{ QString::fromStdString(city.name),
+            false, "", false };
+        loc->setPosition(city.position);
+        m_citiesSearchResults.append(loc);
     }
-    aDebug() << "Model size = " << m_searchResults.size();
-    m_rootContext->setContextProperty("locationSearchResult", QVariant::fromValue(m_searchResults));
-
+    aDebug() << "Model size = " << m_citiesSearchResults.size();
+    m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     emit searchDone();
 }
 
@@ -294,24 +309,33 @@ void NavitQuickProxy::getHistory()
 
 void NavitQuickProxy::setLocationPopUp(const QString& name)
 {
-    m_currentItem = 0;
-    std::for_each(m_searchResults.begin(), m_searchResults.end(), [this,&name](QObject *o) {
+    aDebug() << Q_FUNC_INFO;
+    std::pair<int,int> pos;
+    std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &name, &pos](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
         if (proxy->itemText() == name ) {
-            m_currentItem = proxy;
+            // we have to copy this, since in a second the model will be deleted
+            // and this will points to an deleted object
+            m_currentItem.reset(new LocationProxy{proxy->itemText(),
+                                                  proxy->favorite(),
+                                                  proxy->description(),
+                                                  proxy->bolded()});
+            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
         }
     });
 
     if (!m_currentItem) {
         aFatal() << "Unable to find item= " << name.toStdString();
-    } else {
+    }
+    else {
+        nxeInstance->HandleMessage<SetPositionByIntMessageTag>(pos.first, pos.second);
         emit currentlySelectedItemChanged();
     }
 }
 void NavitQuickProxy::hideLocationBars()
 {
-    m_currentItem = nullptr;
+    m_currentItem.reset(nullptr);
     setTopBarLocationVisible(false);
     currentlySelectedItemChanged();
 }
@@ -322,7 +346,7 @@ void NavitQuickProxy::initNavit()
     context->dbusController.start();
 
     nxeInstance->Initialize();
-    QTimer::singleShot(500,this, SLOT(synchronizeNavit()));
+    QTimer::singleShot(500, this, SLOT(synchronizeNavit()));
 }
 
 void NavitQuickProxy::synchronizeNavit()
@@ -330,7 +354,7 @@ void NavitQuickProxy::synchronizeNavit()
     // TODO: Synchronize all NavIt settings
     aInfo() << "Synchronizing navit";
     // special case
-    nxeInstance->HandleMessage<ResizeMessageTag>(0,0);
+    nxeInstance->HandleMessage<ResizeMessageTag>(0, 0);
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());

@@ -11,6 +11,8 @@ class LocationProxy : public QObject
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
     Q_PROPERTY(bool bolded READ bolded WRITE setBolded NOTIFY boldedChanged)
+    Q_PROPERTY(int xPosition READ xPosition CONSTANT)
+    Q_PROPERTY(int yPosition READ yPosition CONSTANT)
 public:
     explicit LocationProxy(QString itemText, bool fav, QString desc, bool bolded, QObject *parent = 0);
 
@@ -25,6 +27,10 @@ public:
     bool bolded() const {return _bolded;}
     void setBolded(bool b);
 
+    int xPosition() const;
+    int yPosition() const;
+    void setPosition(const std::pair<int,int>& p) { _position = p;}
+
 signals:
 
     void favoriteChanged();
@@ -37,6 +43,7 @@ private:
     bool _favorite;
     QString _description;
     bool _bolded;
+    std::pair<int,int> _position;
 };
 
 #endif // LOCATIONPROXY_H

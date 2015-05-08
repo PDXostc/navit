@@ -19,7 +19,7 @@ const std::string rootNavitDBusInterface = "org.navit_project.navit";
 const std::string searchNavitDBusInterface = "org.navit_project.navit.search_list";
 }
 
-inline DBus::MessageIter& operator>>(::DBus::MessageIter& iter, std::vector<std::pair<std::string, DBus::Variant>>&vec)
+inline DBus::MessageIter& operator>>(::DBus::MessageIter& iter, std::vector<std::pair<std::string, DBus::Variant> >& vec)
 {
     if (!iter.is_dict())
         throw DBus::ErrorInvalidArgs("dictionary value expected");
@@ -72,7 +72,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         inProgress = true;
         ::DBus::MessageIter it = sig.reader();
-        std::vector<std::pair<std::string, DBus::Variant>> res;
+        std::vector<std::pair<std::string, DBus::Variant> > res;
         it >> res;
 
         bool isSpeechSignal = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, DBus::Variant>& val) -> bool {
@@ -90,7 +90,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
         if (isSpeechSignal) {
             nDebug() << "Speech callback";
-            auto dataIter = std::find_if(res.begin(), res.end(), [] (const std::pair<std::string, ::DBus::Variant>& val) ->bool {
+            auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
                 return val.first == "data";
             });
 
@@ -117,7 +117,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         inProgress = false;
     }
 
-    PointClicked unpackPointClicked(const std::vector<std::pair<std::string, ::DBus::Variant>>& dictionary)
+    PointClicked unpackPointClicked(const std::vector<std::pair<std::string, ::DBus::Variant> >& dictionary)
     {
         nDebug() << "Unpacking point";
         double longitude, latitude;
@@ -286,15 +286,22 @@ void NavitDBus::setPosition(double longitude, double latitude)
     DBusHelpers::call("set_position", *(d->object.get()), message);
 }
 
+void NavitDBus::setPositionByInt(int x, int y)
+{
+    DBus::Struct<int, int, int> s;
+    s._1 = 1;
+    s._2 = x;
+    s._3 = y;
+    DBusHelpers::call("set_center", *(d->object.get()), s);
+}
+
 void NavitDBus::addWaypoint(double longitude, double latitude)
 {
-	auto format = boost::format("geo: %1% %2%") % longitude % latitude;
-	const std::string message = format.str();
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
 
     DBusHelpers::call("add_waypoint", *(d->object.get()), message);
 }
-
-
 
 void NavitDBus::clearDestination()
 {
@@ -377,11 +384,13 @@ std::vector<City> NavitDBus::searchCity(const std::string& cityName)
             ::DBus::Struct<int, int, int> position;
             typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
             LocationDBusType at;
-            Position ctryPos;
-            ctryPos.latitude = position._1;
+            int o, x, y;
 
             resultsIter >> resultId >> position;
             resultsIter >> at;
+            o = position._1;
+            x = position._2;
+            y = position._3;
 
             nDebug() << "Search results: " << resultId << " Pos = "
                      << position._1 << " " << position._2 << " " << position._3;
@@ -389,7 +398,9 @@ std::vector<City> NavitDBus::searchCity(const std::string& cityName)
             cities.emplace_back(City{
                 DBusHelpers::getFromIter<std::string>(at.at("town").at("name").reader()),
                 DBusHelpers::getFromIter<std::string>(at.at("town").at("postal").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal_mask").reader()) });
+                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal_mask").reader()),
+                std::make_pair(x, y)
+            });
             nDebug() << "[Name] = " << cities.back().name << " [postal] = " << cities.back().postal;
         }
         catch (const std::exception& ex) {
@@ -417,7 +428,7 @@ INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()
     return d->object->pointClickedSignal;
 }
 
-INavitIPC::InitializedSignalType &NavitDBus::initializedSignal()
+INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()
 {
     return d->object->initializedSignal;
 }

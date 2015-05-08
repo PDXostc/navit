@@ -82,6 +82,7 @@ public slots:
     void changeValueFor(const QString& optionName, const QVariant& newVal);
 
     void startSearch();
+    void finishSearch();
     void searchCountry(const QString& name);
     void searchCity(const QString& name);
     void getFavorites();
@@ -93,17 +94,17 @@ private slots:
     void synchronizeNavit();
 private:
 
-
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QQmlContext* m_rootContext;
     QString m_position;
     AppSettings m_settings;
     NavitMapsProxy mapsProxy;
-    QObjectList m_searchResults;
+    QObjectList m_countriesSearchResults;
+    QObjectList m_citiesSearchResults;
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
-    LocationProxy* m_currentItem {nullptr};
+    QScopedPointer<LocationProxy> m_currentItem;
 };
 
 #endif // NAVITQUICKPROXY_H

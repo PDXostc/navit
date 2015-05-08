@@ -7,6 +7,6 @@ ListView {
 
     delegate: LocationsListDelegate {
         // TODO: Not ready yet
-//        onSubMenuRequested: subMenuRequest(url)
+        onSubMenuRequested: subMenuRequest(url)
     }
 }

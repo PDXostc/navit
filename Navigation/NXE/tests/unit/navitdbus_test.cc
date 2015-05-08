@@ -29,6 +29,8 @@ struct NavitDBusTest : public ::testing::Test {
         }
         nTrace() << "Controller start";
         controller.start();
+        std::chrono::milliseconds dura(1000);
+        std::this_thread::sleep_for(dura);
     }
 
     void TearDown()
@@ -75,6 +77,11 @@ TEST_F(NavitDBusTest, setCenter)
 TEST_F(NavitDBusTest, setPosition)
 {
     connection.setPosition(24.0,53.0);
+}
+
+TEST_F(NavitDBusTest, setPositionByInt)
+{
+    connection.setPositionByInt(0x138a4a, 0x5d773f);
 }
 
 TEST_F(NavitDBusTest, setDestination)

@@ -27,6 +27,7 @@ public:
     virtual void setCenter(double longitude, double latitude) override;
     virtual void setDestination(double longitude, double latitude, const std::string& description) override;
     virtual void setPosition(double longitude, double latitude) override;
+    virtual void setPositionByInt(int x, int y) override;
     virtual void clearDestination() override;
     virtual void addWaypoint(double longitude, double latitude) override;
     virtual void setScheme(const std::string& scheme) override;

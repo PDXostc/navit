@@ -27,6 +27,10 @@ QtObject {
         fakeSearchTimer.start();
     }
 
+    function searchCity(searchString) {
+        fakeSearchTimer.start();
+    }
+
     function getHistory() {
         fakeHistoryTimer.start();
     }

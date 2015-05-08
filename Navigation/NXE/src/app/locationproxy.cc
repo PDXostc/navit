@@ -25,3 +25,13 @@ void LocationProxy::setBolded(bool b)
 {
 }
 
+int LocationProxy::xPosition() const
+{
+    return _position.first;
+}
+
+int LocationProxy::yPosition() const
+{
+    return _position.second;
+}
+
