@@ -32,7 +32,8 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
-    Q_PROPERTY(bool topBarLocationVisible READ topBarLocationVisible WRITE setTopBarLocationVisible)
+    Q_PROPERTY(bool topBarLocationVisible READ topBarLocationVisible WRITE setTopBarLocationVisible NOTIFY topBarLocationVisibleChanged)
+
 public:
     explicit NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
 
@@ -67,6 +68,7 @@ signals:
     void gettingFavoritesDone();
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
+    void topBarLocationVisibleChanged();
 
     void pointClicked(LocationProxy* location);
 
@@ -89,6 +91,8 @@ public slots:
     void getHistory();
     void setLocationPopUp(const QString& name);
     void hideLocationBars();
+    void setTopBarVisibility(const bool value);
+
 private slots:
     void initNavit();
     void synchronizeNavit();

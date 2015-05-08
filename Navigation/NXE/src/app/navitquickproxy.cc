@@ -159,6 +159,8 @@ bool NavitQuickProxy::topBarLocationVisible() const
 void NavitQuickProxy::setTopBarLocationVisible(bool value)
 {
     m_settings.set<Tags::TopBarLocationVisible>(value);
+    topBarLocationVisibleChanged();
+
 }
 
 void NavitQuickProxy::resize(const QRect& rect)
@@ -306,6 +308,12 @@ void NavitQuickProxy::getHistory()
 
     emit gettingHistoryDone();
 }
+
+void NavitQuickProxy::setTopBarVisibility(bool value)
+{
+   setTopBarLocationVisible(value);
+}
+
 
 void NavitQuickProxy::setLocationPopUp(const QString& name)
 {

@@ -22,7 +22,7 @@ Item {
             x: 0
             y: 0
             width: 60
-            height: navitProxy.topBarLocationVisible ? parent.height : 60
+            height: mainPageView.topBarExpanded ? parent.height : 60
 
             Rectangle {
                 id: rectangle2
@@ -57,7 +57,7 @@ Item {
             anchors.bottom: parent.bottom
             anchors.top: parent.top
             anchors.leftMargin: 0
-            visible: navitProxy.topBarLocationVisible
+            visible: mainPageView.topBarExpanded
             Rectangle {
                 id: rectangle1
                 color: "#fbfbfb"

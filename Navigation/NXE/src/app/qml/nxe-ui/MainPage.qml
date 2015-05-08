@@ -11,6 +11,7 @@ Item {
     property var locationInfoTopComponent: null
     property var locationInfoObject: null
     property var locationInfoTopObject: null
+    property bool topBarExpanded : false
 
     function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
@@ -49,7 +50,8 @@ Item {
     NMenu {
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.topMargin: navitProxy.topBarLocationVisible ? 110 : 70 // parent.width * 0.2 : 70
+        anchors.topMargin: topBarExpanded ? 110 : 70 // parent.width * 0.2 : 70
+
         onClicked: {
             if (item === "menu") {
                 rootStack.push(settingsView)
@@ -85,6 +87,10 @@ Item {
                 createLocationComponent(location)
             }
         }
+        onTopBarLocationVisibleChanged: {
+                   mainPageView.topBarExpanded = navitProxy.topBarLocationVisible;
+        }
+
     }
 
     Component {

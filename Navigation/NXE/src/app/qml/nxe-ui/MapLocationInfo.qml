@@ -115,7 +115,7 @@ Item {
 
                     opacity: 0
                     Behavior on opacity { NumberAnimation {} }
-                    onClicked: {navitProxy.showTopBar()}
+                     onClicked: {navitProxy.setTopBarVisibility(true)}
                     Image {
                         anchors.fill: parent
                         source: "blue_forward_button_long_bg.png"

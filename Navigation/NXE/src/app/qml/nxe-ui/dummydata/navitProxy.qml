@@ -47,9 +47,8 @@ QtObject {
         currentlySelectedItem = fakeLocationObject;
     }
 
-    function showTopBar() {
-
-        topBarLocationVisible = true;
+    function setTopBarVisibility(value) {
+            topBarLocationVisible = value;
     }
 
     function hideLocationBars() {
