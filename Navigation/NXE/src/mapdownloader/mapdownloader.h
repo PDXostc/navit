@@ -19,6 +19,7 @@ struct MapEntry {
     const std::string name;
     const std::uint64_t size;
     const bool isDownloaded;
+    const std::string continent;
 };
 
 struct MapDownloaderPrivate;

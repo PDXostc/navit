@@ -97,7 +97,7 @@ void MapDownloaderDBusServer::cancel(const std::string &mapName)
     }
 }
 
-std::vector<::DBus::Struct<std::string, uint64_t, bool> > MapDownloaderDBusServer::maps()
+std::vector<DBus::Struct<std::string, uint64_t, bool, std::string> > MapDownloaderDBusServer::maps()
 {
     mdInfo() << "Requesting maps";
     auto maps = d->downloader.maps();
@@ -105,14 +105,15 @@ std::vector<::DBus::Struct<std::string, uint64_t, bool> > MapDownloaderDBusServe
 
 
     mdInfo() << "Downloaded maps = ";
-    std::vector<::DBus::Struct<std::string, std::uint64_t, bool>> ret;
+    std::vector<DBus::Struct<std::string, std::uint64_t, bool, std::string>> ret;
     std::for_each(maps.begin(), maps.end(), [&ret](const MapEntry& me) {
         if (me.isDownloaded)
-            mdInfo() << me.name;
-        ::DBus::Struct<std::string, std::uint64_t, bool> oneVal;
+            mdInfo() << "Name = " << me.name << " continent= " << me.continent;
+        DBus::Struct<std::string, std::uint64_t, bool, std::string> oneVal;
         oneVal._1 = me.name;
         oneVal._2 = me.size;
         oneVal._3 = me.isDownloaded;
+        oneVal._4 = me.continent;
         ret.emplace_back(oneVal);
     });
 

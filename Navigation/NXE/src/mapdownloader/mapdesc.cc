@@ -27,8 +27,13 @@ void MapDesc::setDataFilePath(const string& datafile)
     m_datafile = datafile;
     boost::property_tree::read_xml(datafile, tree);
 
+    std::string currentContinent;
     BOOST_FOREACH (ptree::value_type const& v, tree.get_child("Mapset")) {
         if (v.first == "Mapdata") {
+            const int level = v.second.get<std::uint8_t>("Level");
+            if (level == 0) {
+                currentContinent = v.second.get<std::string>("Name");
+            }
             mapData.emplace_back(MapData{
                 v.second.get<std::string>("Name"),
                 v.second.get<std::string>("Lon1"),
@@ -37,7 +42,7 @@ void MapDesc::setDataFilePath(const string& datafile)
                 v.second.get<std::string>("Lat2"),
                 v.second.get<std::uint64_t>("Size"),
                 v.second.get<std::uint8_t>("Level"),
-            });
+                currentContinent });
         }
     }
 }
@@ -63,7 +68,7 @@ std::vector<MapInfo> MapDesc::availableMaps() const
 {
     std::vector<MapInfo> ret{};
     std::for_each(mapData.begin(), mapData.end(), [&ret](const MapData& md) {
-        ret.emplace_back(MapInfo {md.name, md.size});
+        ret.emplace_back(MapInfo {md.name, md.size, md.continent});
     });
     return ret;
 }

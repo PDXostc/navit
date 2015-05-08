@@ -10,7 +10,7 @@
         <arg type="b" name="success" direction="out" />
     </method>
     <method name="maps">
-        <arg type="a(stb)" name="maps" direction="out" />
+        <arg type="a(stbs)" name="maps" direction="out" />
     </method>
     <method name="cancel">
         <arg type="s" name="mapName" direction="in"/>

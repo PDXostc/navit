@@ -23,11 +23,13 @@ struct MapData {
     // It has to be fixed size
     std::uint64_t size;
     std::uint8_t level;
+    std::string continent;
 };
 
 struct MapInfo {
     const std::string name;
     const std::uint64_t size;
+    const std::string continent;
 };
 
 class MapDesc {

@@ -275,7 +275,7 @@ std::vector<MapEntry> MapDownloader::maps() const
     auto maps = d->mdesc.availableMaps();
     std::vector<MapEntry> proper;
     std::for_each(maps.begin(), maps.end(), [&proper, this](const MapInfo& mi) {
-        proper.emplace_back(MapEntry{mi.name, mi.size, d->mapDownloaded(mi.name)});
+        proper.emplace_back(MapEntry{mi.name, mi.size, d->mapDownloaded(mi.name), mi.continent});
     });
     mdDebug() << "Available maps size= " << maps.size();
     return proper;
