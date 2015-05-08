@@ -42,7 +42,12 @@ Item {
             } else if (type === 'sublist') {
                 console.debug('sublist clicked ', options.get(0).url)
                 subMenuRequested(options.get(0).url);
-            } else {
+            }
+            else if (type === 'popup') {
+                rootStack.push({item: Qt.resolvedUrl('FactoryResetDialog.qml'), immediate: true});
+            }
+
+            else {
                 root.clicked(mainTextItem)
             }
         }

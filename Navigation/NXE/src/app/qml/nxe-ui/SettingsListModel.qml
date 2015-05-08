@@ -102,7 +102,11 @@ ListModel {
     }
     ListElement {
         itemText: "Factory Reset"
-        type: "empy"
-        options: []
+        type: "popup"
+        options: [
+            ListElement {
+                url: "FactoryResetDialog.qml"
+            }
+        ]
     }
 }
