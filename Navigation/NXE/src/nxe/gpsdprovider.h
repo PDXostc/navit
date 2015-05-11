@@ -4,14 +4,12 @@
 #include "igpsprovider.h"
 #include <memory>
 
-#include <fruit/macro.h>
-
 namespace NXE {
 
 struct GPSDProviderPrivate;
 class GPSDProvider : public IGPSProvider {
 public:
-    INJECT(GPSDProvider());
+    GPSDProvider();
     ~GPSDProvider();
 
     virtual Position position() const override;

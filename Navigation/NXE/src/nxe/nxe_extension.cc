@@ -4,7 +4,6 @@
 #include "settings.h"
 #include "settingtags.h"
 
-#include <fruit/fruit.h>
 
 using namespace NXE;
 

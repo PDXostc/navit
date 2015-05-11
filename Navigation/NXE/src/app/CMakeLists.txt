@@ -29,7 +29,7 @@ file(GLOB qml_files qml/*.qml qml/*.js qml/nxe-ui/*.qml)
 qt5_add_resources(qrcs qml.qrc)
 
 add_executable(nxe-app ${srcs} ${qrcs} ${qml_files})
-target_link_libraries(nxe-app Qt5::Core Qt5::Qml Qt5::Quick Qt5::Gui Qt5::Compositor nxe)
+target_link_libraries(nxe-app Qt5::Core Qt5::Qml Qt5::Quick Qt5::Gui Qt5::Compositor nxe pthread)
 
 file(COPY ${CMAKE_SOURCE_DIR}/nxe.conf DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 

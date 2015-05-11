@@ -11,25 +11,22 @@
 #include "../testutils.h"
 #include "log.h"
 
-#include <fruit/injector.h>
-
 using ::testing::StrictMock;
 const std::string navitPath{ NAVIT_PATH };
 
 struct NavitInstanceTest : public ::testing::Test {
 
-    NXE::DI::Injector injector{ []() -> NXE::DI::Components {
-        return fruit::createComponent()
-                .bind<NXE::INavitIPC, NavitIPCMock>()
-                .bind<NXE::INavitProcess, NavitProcessMock>()
-                .bind<NXE::IGPSProvider, GPSMock>()
-                .bind<NXE::IMapDownloader, MapDownloaderMock>()
-                .bind<NXE::ISpeech, SpeechMock>();
-    }() };
+    NXE::DI::Injector injector{ std::make_tuple(
+                    std::shared_ptr<NXE::INavitIPC>(new NavitIPCMock),
+                    std::shared_ptr<NXE::INavitProcess>(new NavitProcessMock),
+                    std::shared_ptr<NXE::IGPSProvider>(new GPSMock),
+                    std::shared_ptr<NXE::IMapDownloader>(new MapDownloaderMock),
+                    std::shared_ptr<NXE::ISpeech>(new SpeechMock)
+                    )};
 
-    NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(injector.get<NXE::INavitProcess*>())) };
-    NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(injector.get<NXE::INavitIPC*>())) };
-    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
+    NavitProcessMock* mock_process{ (dynamic_cast<NavitProcessMock*>(NXE::get<std::shared_ptr<NXE::INavitProcess>>(injector).get())) };
+    NavitIPCMock* mock_ipc{ (dynamic_cast<NavitIPCMock*>(NXE::get<std::shared_ptr<NXE::INavitIPC>>(injector).get())) };
+    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(NXE::get<std::shared_ptr<NXE::IMapDownloader>>(injector).get())) };
 
     NXE::INavitIPC::SpeechSignalType speechS;
 

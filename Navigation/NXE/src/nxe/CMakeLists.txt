@@ -51,7 +51,7 @@ set(NXE_SRCS
     ${CMAKE_CURRENT_BINARY_DIR}/nxe_version.cc
 )
 
-set(libraries ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt fruit ${GPS_LIBRARY})
+set(libraries ${Boost_LIBRARIES} ${DBUS_LIBRARIES} ${DBUSCPP_LIBRARIES} -lrt ${GPS_LIBRARY})
 
 add_library(nxe SHARED ${NXE_SRCS})
 if ("${NXE_SPEECH_IMPL}" STREQUAL "tizen")
@@ -60,7 +60,5 @@ endif()
 
 target_link_libraries(nxe ${libraries})
 
-#install(TARGETS nxe
-#        DESTINATION lib/tizen-extensions-crosswalk)
 install(TARGETS nxe
         DESTINATION lib)

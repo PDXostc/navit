@@ -2,7 +2,6 @@
 #define NXE_SPEECHIMPLDBUS_H
 
 #include "ispeech.h"
-#include <fruit/macro.h>
 #include <memory>
 
 namespace NXE {
@@ -12,7 +11,7 @@ struct SpeechImplDBusPrivate;
 class SpeechImplDBus : public NXE::ISpeech
 {
 public:
-    INJECT(SpeechImplDBus(DBusController& ctrl));
+    SpeechImplDBus(DBusController& ctrl);
     ~SpeechImplDBus();
 
     void say(const std::string& command) override;
