@@ -2,7 +2,6 @@
 #define MAPDOWNLOADERDBUS_H
 
 #include "imapdownloader.h"
-#include <fruit/macro.h>
 #include <memory>
 
 namespace NXE {
@@ -11,7 +10,7 @@ struct MapDownloaderDBusPrivate;
 class MapDownloaderDBus : public IMapDownloader
 {
 public:
-    INJECT(MapDownloaderDBus(DBusController&));
+    MapDownloaderDBus(DBusController&);
     ~MapDownloaderDBus();
 
     virtual std::vector<MapInfo> maps() override;

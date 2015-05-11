@@ -15,8 +15,6 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <chrono>
 #include <thread>
-#include <fruit/component.h>
-#include <fruit/injector.h>
 #include <gmock/gmock.h>
 
 namespace bpt = boost::property_tree;
@@ -24,16 +22,15 @@ namespace bpt = boost::property_tree;
 struct RenderTest {
     NXE::DBusController dbusController;
     NXE::INavitIPC * ipc { new NXE::NavitDBus{dbusController}};
-    NXE::DI::Injector injector{ [this]() -> NXE::DI::Components {
-        return fruit::createComponent()
-                .bindInstance(*ipc)
-                .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
-                .bind<NXE::IGPSProvider, GPSMock>()
-                .bind<NXE::IMapDownloader, MapDownloaderMock>()
-                .bind<NXE::ISpeech,SpeechMock>();
-    }() };
+    NXE::DI::Injector injector{ std::make_tuple(
+                    std::shared_ptr<NXE::INavitIPC>(ipc),
+                    std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
+                    std::shared_ptr<NXE::IGPSProvider>(new GPSMock),
+                    std::shared_ptr<NXE::IMapDownloader>(new MapDownloaderMock),
+                    std::shared_ptr<NXE::ISpeech>(new SpeechMock)
+                    )};
     NXE::NXEInstance instance{ injector };
-    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(injector.get<NXE::IMapDownloader*>())) };
+    MapDownloaderMock* mock_mapd{ (dynamic_cast<MapDownloaderMock*>(NXE::get<std::shared_ptr<NXE::IMapDownloader>>(injector).get())) };
 };
 
 void renderOneFrame(benchmark::State& state)

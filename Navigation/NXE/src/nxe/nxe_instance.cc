@@ -13,7 +13,6 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
-#include <fruit/injector.h>
 
 using namespace std;
 using namespace boost::fusion;
@@ -23,11 +22,11 @@ namespace NXE {
 struct NXEInstancePrivate {
 
     NXEInstancePrivate(DI::Injector& ifaces, NXEInstance* qptr)
-        : navitProcess(ifaces.get<std::shared_ptr<INavitProcess> >())
-        , ipc(ifaces.get<std::shared_ptr<INavitIPC> >())
-        , gps(ifaces.get<std::shared_ptr<IGPSProvider> >())
-        , mapDownloaderIPC(ifaces.get<std::shared_ptr<IMapDownloader> >())
-        , speech(ifaces.get<std::shared_ptr<ISpeech> >())
+        : navitProcess(NXE::get<std::shared_ptr<INavitProcess> >(ifaces))
+        , ipc(NXE::get<std::shared_ptr<INavitIPC> >(ifaces))
+        , gps(NXE::get<std::shared_ptr<IGPSProvider> >(ifaces))
+        , mapDownloaderIPC(NXE::get<std::shared_ptr<IMapDownloader> >(ifaces))
+        , speech(NXE::get<std::shared_ptr<ISpeech> >(ifaces))
         , geometry(std::make_pair(0,0))
     {
         ipc->initializedSignal().connect( [this]() {

@@ -1,7 +1,6 @@
 #include "navitquickproxy.h"
 #include "nxe_instance.h"
 #include "alog.h"
-#include "fruit/fruit.h"
 #include "navitdbus.h"
 #include "navitprocessimpl.h"
 #include "gpsdprovider.h"
@@ -30,14 +29,13 @@ struct Context {
 #elif defined(NXE_OS_TIZEN)
     NXE::ISpeech* speech{ new NXE::SpeechImplDBus{ dbusController } };
 #endif
-    NXE::DI::Injector injector{ [this]() -> NXE::DI::Components {
-        return fruit::createComponent()
-                .bindInstance(*ipc)
-                .bind<NXE::INavitProcess, NXE::NavitProcessImpl>()
-                .bind<NXE::IGPSProvider, NXE::GPSDProvider>()
-                .bindInstance(*md)
-                .bindInstance(*speech);
-    }() };
+    NXE::DI::Injector injector{ std::make_tuple(
+                    std::shared_ptr<NXE::INavitIPC>(ipc),
+                    std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
+                    std::shared_ptr<NXE::IGPSProvider>(new NXE::GPSDProvider),
+                    std::shared_ptr<NXE::IMapDownloader>(md),
+                    std::shared_ptr<NXE::ISpeech>(speech)
+                    )};
 };
 
 NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject* parent)

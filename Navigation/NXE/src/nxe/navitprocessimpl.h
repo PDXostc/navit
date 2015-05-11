@@ -3,14 +3,13 @@
 
 #include "inavitprocess.h"
 #include <memory>
-#include <fruit/macro.h>
 
 namespace NXE {
 
 struct NavitProcessImplPrivate;
 class NavitProcessImpl : public INavitProcess {
 public:
-    INJECT(NavitProcessImpl());
+    NavitProcessImpl();
     ~NavitProcessImpl();
 
     virtual bool start() override final;

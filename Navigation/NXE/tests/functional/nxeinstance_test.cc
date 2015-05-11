@@ -11,7 +11,6 @@
 #include <memory>
 #include <chrono>
 #include <thread>
-#include <fruit/fruit.h>
 
 using namespace NXE;
 extern bool runNavit;
@@ -21,16 +20,7 @@ struct NXEInstanceTest : public ::testing::Test {
     DBusController dbusController;
     INavitIPC * ipc { new NavitDBus{dbusController}};
     IMapDownloader * md { new MapDownloaderDBus{dbusController}};
-    DI::Injector injector{ [this]() -> DI::Components {
-        return fruit::createComponent()
-                .bindInstance(*ipc)
-                .bindInstance(*md)
-                .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>()
-                // We have to use speech mock here, as there's no
-                // SRS service on Linux
-                .bind<ISpeech,SpeechMock>();
-    }() };
+    DI::Injector injector{ };
     NXEInstance instance{ injector };
     bool receivedRender{ false };
     std::size_t numberOfResponses = 0;

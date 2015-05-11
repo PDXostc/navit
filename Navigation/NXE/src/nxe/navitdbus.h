@@ -3,8 +3,6 @@
 
 #include "inavitipc.h"
 
-#include <fruit/macro.h>
-
 
 namespace NXE {
 class DBusController;
@@ -12,7 +10,7 @@ class DBusController;
 class NavitDBusPrivate;
 class NavitDBus : public INavitIPC {
 public:
-    INJECT(NavitDBus(DBusController& ctrl));
+    NavitDBus(DBusController& ctrl);
     ~NavitDBus();
 
     //! This will block until startup signal is received

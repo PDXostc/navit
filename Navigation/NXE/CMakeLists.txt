@@ -68,7 +68,7 @@ find_package(Boost 1.57.0 REQUIRED COMPONENTS ${boost_components})
 include_directories(${Boost_INCLUDE_DIRS} ${DBUS_INCLUDE_DIRS})
 
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/fruit)
+#add_subdirectory(${CMAKE_SOURCE_DIR}/3rdParty/fruit)
 add_subdirectory(src)
 if(NOT DISABLE_TESTS)
     add_subdirectory(tests)
