@@ -15,20 +15,22 @@ Item {
 
     function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
-            locationInfoObject = locationInfoComponent.createObject(mainPageView);
+            locationInfoObject = locationInfoComponent.createObject(mainPageView, {opacity: 0});
             locationInfoObject.anchors.bottom = mainPageView.bottom
             locationInfoObject.anchors.left = mainPageView.left
             locationInfoObject.anchors.right = mainPageView.right
             locationInfoObject.locationComponent = location
+            locationInfoObject.opacity = 1
         }
     }
     function finishTopComponentCreation() {
         if (locationInfoTopComponent.status === Component.Ready) {
-            locationInfoTopObject = locationInfoTopComponent.createObject(mainPageView);
+            locationInfoTopObject = locationInfoTopComponent.createObject(mainPageView, {opacity:0});
             locationInfoTopObject.anchors.top = mainPageView.top
             locationInfoTopObject.anchors.left = mainPageView.left
             locationInfoTopObject.anchors.right = mainPageView.right
             locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem;
+            locationInfoTopObject.opacity = 1
         }
     }
 

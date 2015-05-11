@@ -6,6 +6,8 @@ ListView {
     signal subMenuRequest(string url)
 
     delegate: SettingsListDelegate {
+        width: settingsListView.width
+        height: 50
         onSubMenuRequested: subMenuRequest(url)
     }
 }

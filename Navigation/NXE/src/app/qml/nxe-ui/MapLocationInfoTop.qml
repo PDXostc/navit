@@ -14,6 +14,9 @@ Item {
     property string locationName: locationComponent ? locationComponent.itemText : ""
     property string locationDescriptionString: locationComponent ? locationComponent.description : ""
     property var locationComponent: null
+
+    Behavior on opacity {NumberAnimation {}}
+
     Item {
         id: item3
         anchors.fill: parent

@@ -21,61 +21,61 @@ Item {
 
         Item {
             width: parent.width
-            height: width
+            height: root.height/4
 
-            NButton {
-                anchors.horizontalCenter: parent.horizontalCenter
+            Image {
+                anchors.centerIn: parent
+                source: "menu_icon_white.png"
+                sourceSize.width: 24
+                sourceSize.height: 24
+            }
+            MouseArea {
                 anchors.fill: parent
-                iconSource: "menu_icon_white.png"
-                onClicked: root.clicked("menu")
+                onClicked: root.clicked('menu')
             }
         }
 
         Item {
             width: parent.width
-            height: width
-
-            NButton {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.fill: parent
-                iconSource: "search_icon_white_sm.png"
-                onClicked: root.clicked("search")
+            height: root.height/4
+            Image {
+                anchors.centerIn: parent
+                source: "search_icon_white_sm.png"
+                sourceSize.width: 24
+                sourceSize.height: 24
             }
-        }
-        Item {
-            width: 60
-            height: width
-
-            NButton {
-                x: 0
-                anchors.rightMargin: 5
-                anchors.leftMargin: 5
-                anchors.bottomMargin: 5
-                anchors.topMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
+            MouseArea {
                 anchors.fill: parent
-                iconSource: "northup_icon_white.png"
-                onClicked: {
-                    if(isActive == false) {
-                        isActive = true
-                        iconSource = "headup_icon_white.png"
-                        root.clicked("headOrientation")
-                    } else {
-                        isActive = false
-                        iconSource = "northup_icon_white.png"
-                        root.clicked("northOrientation")
-                    }
-                }
+                onClicked: root.clicked('search')
             }
         }
         Item {
             width: parent.width
-            height: width
+            height: root.height/4
+            Image {
+                anchors.centerIn: parent
+                source: navitProxy.orientation === -1 ? "northup_icon_white.png":"headup_icon_white.png"
 
-            NButton {
-                anchors.horizontalCenter: parent.horizontalCenter
+                sourceSize.width: 24
+                sourceSize.height: 24
+            }
+            MouseArea {
                 anchors.fill: parent
-                iconSource: "car_icon_white.png"
+                onClicked: root.clicked("headOrientation")
+            }
+
+        }
+        Item {
+            width: parent.width
+            height: root.height/4
+            Image {
+                anchors.centerIn: parent
+                source: "car_icon_white.png"
+                sourceSize.width: 24
+                sourceSize.height: 24
+            }
+            MouseArea {
+                anchors.fill: parent
                 onClicked: root.clicked("currentLocation")
             }
         }

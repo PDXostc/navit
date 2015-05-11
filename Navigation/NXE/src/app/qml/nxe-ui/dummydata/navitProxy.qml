@@ -100,7 +100,7 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: false
+        running: true
         interval: 1000
         repeat: false
         onTriggered: {

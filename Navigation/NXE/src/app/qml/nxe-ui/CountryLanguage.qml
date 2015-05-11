@@ -11,6 +11,7 @@ Rectangle {
 
     property variant mapsToDownload: []
     property int count: 0
+    property string customHeader: mapsType === 'suggested' ? "Recommended" : "Earth"
 
     // by default we're using suggested country model
     property var listModel: CLSuggestedCountriesModel {}
@@ -114,7 +115,7 @@ Rectangle {
             name: "noDialog"
             AnchorChanges {
                 target: dialog
-                anchors.top: root.bottom
+                anchors.top: list.bottom
                 anchors.bottom: undefined
             }
         },
@@ -122,7 +123,7 @@ Rectangle {
             name: "dialog"
             AnchorChanges {
                 target: dialog
-                anchors.bottom: root.bottom
+                anchors.bottom: list.bottom
                 anchors.top: undefined
             }
         }

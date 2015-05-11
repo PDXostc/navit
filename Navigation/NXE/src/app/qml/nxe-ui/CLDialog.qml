@@ -1,18 +1,18 @@
 import QtQuick 2.0
 
-
 // Blueish dialog
 Item {
     id: dialog
     property int numberOfDowloads: 0
     property real downloadSize: 0
+    width: 400
+    height: 200
 
     signal startDownloadClicked()
 
     Rectangle {
-        id: rectangle1
         width: parent.width
-        height: 167
+        height: parent.height - 32
         color: "#09bcdf"
         anchors.bottom: parent.bottom
 
@@ -21,9 +21,8 @@ Item {
             text: "(" + count + ") Downloads (" + downloadSize + "MB)"
             anchors.left: parent.left
             anchors.leftMargin: 10
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 60
             font.pixelSize: 16
+            anchors.verticalCenter: parent.verticalCenter
         }
 
         MouseArea {
@@ -31,15 +30,15 @@ Item {
             height: 50
             anchors.right: parent.right
             anchors.rightMargin: 25
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: 48
+            anchors.verticalCenter: parent.verticalCenter
 
             onClicked: startDownloadClicked()
 
             Row {
-                id: row1
-                width: 83
+                width: 93
                 anchors.fill: parent
+                spacing: 5
+
                 Text {
                     width: 75
                     color: "white"
@@ -49,6 +48,7 @@ Item {
                 }
 
                 Image {
+                    width: 13
                     anchors.verticalCenter: parent.verticalCenter
                     sourceSize.height: 20
                     sourceSize.width: 20

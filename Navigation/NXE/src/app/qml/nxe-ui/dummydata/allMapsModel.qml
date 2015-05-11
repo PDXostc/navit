@@ -4,38 +4,18 @@ ListModel {
     id: allMapsModel
 
     ListElement {
-        mapName: "Poland"
-        downloaded: true
+        mapName: "All Earth"
+        downloaded: false
         mapSize: 1024
     }
 
     ListElement {
-        mapName: "Germany"
+        mapName: "Africa"
         downloaded: false
         mapSize: 1024
     }
     ListElement {
-        mapName: "Switzerland"
-        downloaded: false
-        mapSize: 1024
-    }
-    ListElement {
-        mapName: "France"
-        downloaded: false
-        mapSize: 1024
-    }
-    ListElement {
-        mapName: "Greece"
-        downloaded: false
-        mapSize: 1024
-    }
-    ListElement {
-        mapName: "Finland"
-        downloaded: false
-        mapSize: 1024
-    }
-    ListElement {
-        mapName: "Rivendell"
+        mapName: "Asia"
         downloaded: false
         mapSize: 1024
     }

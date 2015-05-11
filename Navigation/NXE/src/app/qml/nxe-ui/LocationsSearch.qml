@@ -34,6 +34,8 @@ Page {
             anchors.top: parent.top
             anchors.topMargin: 6
             font.pixelSize: 11
+            text: "Search for " + searchForWhat
+            onFocusChanged: {text = ""}
         }
 
         Text {
@@ -114,6 +116,7 @@ Page {
 
     Connections {
         target: navitProxy
+        // @disable-check M16
         onSearchDone: {
             root.busy = false;
             searchStackView.push({

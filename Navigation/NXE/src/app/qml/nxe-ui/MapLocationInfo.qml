@@ -17,6 +17,8 @@ Item {
         }
     }
 
+    Behavior on opacity {NumberAnimation {}}
+
     Item {
         id: item3
         width: parent.width

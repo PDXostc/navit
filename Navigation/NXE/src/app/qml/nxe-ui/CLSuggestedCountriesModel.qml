@@ -25,7 +25,6 @@ ListModel {
         type: "sublist"
         options: [
             ListElement {
-                url: "CLAllMaps.qml"
             }
         ]
     }

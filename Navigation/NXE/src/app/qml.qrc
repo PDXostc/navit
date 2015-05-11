@@ -41,7 +41,6 @@
         <file>qml/nxe-ui/alert_hex_icon.png</file>
         <file>qml/nxe-ui/FTUCancelPrompt.qml</file>
         <file>qml/nxe-ui/headup_icon_white.png</file>
-        <file>qml/nxe-ui/LocationsListDelegate.qml</file>
         <file>qml/nxe-ui/LocationsListModel.qml</file>
         <file>qml/nxe-ui/LocationsListView.qml</file>
         <file>qml/nxe-ui/LocationsResult.qml</file>
@@ -62,6 +61,6 @@
         <file>qml/nxe-ui/LocationsFavorites.qml</file>
         <file>qml/nxe-ui/LocationsHistory.qml</file>
         <file>qml/nxe-ui/white_tick.png</file>
-        <file>qml/nxe-ui/CLAllMaps.qml</file>
+        <file>qml/nxe-ui/SettingsViewHeader.qml</file>
     </qresource>
 </RCC>

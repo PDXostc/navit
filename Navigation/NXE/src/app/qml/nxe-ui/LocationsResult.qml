@@ -57,11 +57,12 @@ Rectangle {
         anchors.bottomMargin: 0
         model: {
             if (whatIsSearched === 'country') {
-                return countrySearchResult
-            } else if (whatIsSearched === 'city') {
-                return citySearchResult;
+                return countrySearchModel;
+            } else if(whatIsSearched === 'city') {
+                return citySearchModel;
             }
         }
+
         clip: true
         delegate: LocationsResultDelegate {
             width: parent.width
