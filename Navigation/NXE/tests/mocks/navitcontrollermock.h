@@ -26,9 +26,7 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD1(setScheme, void(const std::string&));
     MOCK_METHOD0(startSearch, void());
     MOCK_METHOD0(finishSearch, void());
-    MOCK_METHOD1(searchCity, std::vector<NXE::City>(const std::string&));
-    MOCK_METHOD1(searchCountry, std::vector<NXE::Country>(const std::string&));
-    MOCK_METHOD1(searchStreet, std::vector<NXE::Street>(const std::string&));
+    MOCK_METHOD2(search, NXE::SearchResults(NXE::INavitIPC::SearchType, const std::string&));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

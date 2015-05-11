@@ -15,6 +15,7 @@ Page {
     NDialog {
         id: dialogItem
         iconSource: "download_hex_icon.png"
+        width: parent.width
         bottomBarComponent: Row {
             width: dialogItem.width
             height: 60

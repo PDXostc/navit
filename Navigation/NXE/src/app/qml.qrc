@@ -63,5 +63,7 @@
         <file>qml/nxe-ui/white_tick.png</file>
         <file>qml/nxe-ui/SettingsViewHeader.qml</file>
         <file>qml/nxe-ui/LocationsStructuredSearch.qml</file>
+        <file>qml/nxe-ui/FTUDialogPage.qml</file>
+        <file>qml/nxe-ui/NDialog.qml</file>
     </qresource>
 </RCC>

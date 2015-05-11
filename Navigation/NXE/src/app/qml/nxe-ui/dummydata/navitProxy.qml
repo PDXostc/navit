@@ -31,6 +31,10 @@ QtObject {
         fakeSearchTimer.start();
     }
 
+    function searchStreet(searchString) {
+        fakeSearchTimer.start();
+    }
+
     function getHistory() {
         fakeHistoryTimer.start();
     }
@@ -44,6 +48,7 @@ QtObject {
     }
 
     function setLocationPopUp(itemName) {
+        console.debug('set popup=', itemName)
         currentlySelectedItem = fakeLocationObject;
     }
 

@@ -118,7 +118,7 @@ TEST_F(NavitDBusTest, DISABLED_setScheme_failure)
 TEST_F(NavitDBusTest, search_country)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("Germany");
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
     EXPECT_NE(country.size(), 0);
     connection.finishSearch();
 }
@@ -126,7 +126,7 @@ TEST_F(NavitDBusTest, search_country)
 TEST_F(NavitDBusTest, search_multipleCountries)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("P");
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "P");
     EXPECT_NE(country.size(), 0);
     connection.finishSearch();
 }
@@ -134,33 +134,33 @@ TEST_F(NavitDBusTest, search_multipleCountries)
 TEST_F(NavitDBusTest, search_street_name_invalid)
 {
     EXPECT_ANY_THROW(
-        connection.searchCountry("");
+        connection.search(NXE::INavitIPC::SearchType::Country, "");
     );
 }
 
 TEST_F(NavitDBusTest, search_city_valid)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("Germany");
-    auto city = connection.searchCity("Munchen");
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Mun");
     ASSERT_NE(country.size(), 0);
     EXPECT_EQ(country.at(0).name, "Germany");
-    ASSERT_NE(city.size(), 0);
-    EXPECT_TRUE(std::find_if(city.begin(), city.end(), [](const NXE::City& city) -> bool {
+    ASSERT_NE(cities.size(), 0);
+    EXPECT_TRUE(std::find_if(cities.begin(), cities.end(), [](const NXE::SearchResult& city) -> bool {
         return city.name == "München";
-    }) != city.end());
+    }) != cities.end());
     connection.finishSearch();
 }
 
 TEST_F(NavitDBusTest, search_street_valid)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("Germany");
-    auto city = connection.searchCity("Munchen");
-    auto streets = connection.searchStreet("Arc");
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Mun");
+    auto streets = connection.search(NXE::INavitIPC::SearchType::Street, "Arc");
     ASSERT_NE(country.size(), 0);
-    ASSERT_NE(city.size(), 0);
-    EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::Street& street) -> bool {
+    ASSERT_NE(cities.size(), 0);
+    EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
         return street.name == "Arcisstraße";
     }) != streets.end());
 

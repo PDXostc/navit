@@ -8,24 +8,12 @@
 
 namespace NXE {
 
-struct Country {
-    const std::string name;
-    const std::string car;
-    const std::string iso2;
-    const std::string iso3;
-};
-
-struct City {
-    const std::string name;
-    const std::string postal;
-    const std::string postal_mask;
-    const std::pair<int,int> position;
-};
-
-struct Street {
+struct SearchResult {
     const std::string name;
     const std::pair<int,int> position;
 };
+
+typedef std::vector<SearchResult> SearchResults;
 
 struct PointClicked {
     typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
@@ -35,6 +23,12 @@ struct PointClicked {
 
 class INavitIPC {
 public:
+
+    enum class SearchType {
+        Country = 0,
+        City,
+        Street
+    };
 
     typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
     typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
@@ -64,9 +58,7 @@ public:
     virtual void setScheme(const std::string& scheme) = 0;
 
     virtual void startSearch() = 0;
-    virtual std::vector<Country> searchCountry(const std::string& what) = 0;
-    virtual std::vector<City> searchCity(const std::string& what) = 0;
-    virtual std::vector<Street> searchStreet(const std::string& street) = 0;
+    virtual SearchResults search(SearchType type, const std::string& searchString) = 0;
     virtual void finishSearch() = 0;
 
     // Signals from IPC

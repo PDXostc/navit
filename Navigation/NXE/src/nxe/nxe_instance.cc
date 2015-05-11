@@ -99,8 +99,7 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<SetPositionByIntMessageTag>(bind(&INavitIPC::setPositionByInt, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1)),
           make_pair<StartSearchTag>(bind(&INavitIPC::startSearch, d->ipc.get())),
-          make_pair<SearchCountryLocationTag>(bind(&INavitIPC::searchCountry, d->ipc.get(), placeholders::_1)),
-          make_pair<SearchCityLocationTag>(bind(&INavitIPC::searchCity, d->ipc.get(), placeholders::_1)),
+          make_pair<SearchMessageTag>(bind(&INavitIPC::search, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<FinishSearchTag>(bind(&INavitIPC::finishSearch, d->ipc.get())),
           make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2))

@@ -87,6 +87,7 @@ public slots:
     void finishSearch();
     void searchCountry(const QString& name);
     void searchCity(const QString& name);
+    void searchStreet(const QString& street);
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QString& name);
@@ -106,6 +107,7 @@ private:
     NavitMapsProxy mapsProxy;
     QObjectList m_countriesSearchResults;
     QObjectList m_citiesSearchResults;
+    QObjectList m_streetsSearchResults;
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;

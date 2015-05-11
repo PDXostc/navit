@@ -1,12 +1,14 @@
 import QtQuick 2.0
 import QtQml 2.2
 import QtQuick.Layouts 1.1
+import QtQuick.Controls 1.2
 
 Page {
     id: root
 
     property string searchForWhat: 'country'
     property string selected
+    property string currentLocation
     property int numberOfCharsToStartSearch: 2
 
     function startPredictiveSearch(string) {
@@ -16,6 +18,8 @@ Page {
             navitProxy.searchCountry(string)
         } else if (searchForWhat === 'city') {
             navitProxy.searchCity(string)
+        } else if(searchForWhat === 'street') {
+            navitProxy.searchStreet(string)
         }
     }
 
@@ -75,11 +79,12 @@ Page {
             Item {
                 id: resultListViewItem
                 width: searchInput.width
-                height: 200
+                height: 0
                 anchors.top: rowLayout.bottom
                 anchors.topMargin: 5
                 anchors.right: rowLayout.right
-                opacity: 0
+
+                Behavior on height{ NumberAnimation{}}
 
                 ListView {
                     anchors.fill: parent
@@ -88,6 +93,8 @@ Page {
                             return countrySearchResult
                         } else if (searchForWhat === 'city') {
                             return citySearchResult
+                        } else if (searchForWhat === 'street') {
+                            return streetSearchResult;
                         }
                     }
                     clip: true
@@ -101,6 +108,8 @@ Page {
                                 nextSearch = 'city'
                             } else if (searchForWhat === 'city') {
                                 nextSearch = 'street'
+                            } else if(searchForWhat === 'street') {
+                                nextSearch = 'address';
                             }
 
                             var headerText
@@ -115,7 +124,8 @@ Page {
                                                                "LocationsStructuredSearch.qml"),
                                                      properties: {
                                                          searchForWhat: nextSearch,
-                                                         selected: headerText
+                                                         selected: headerText,
+                                                         currentLocation: itemText
                                                      }
                                                  })
                         }
@@ -135,7 +145,17 @@ Page {
                 }
             }
         }
+    }
 
+    NButton {
+        text: "Show on the map"
+        visible: searchForWhat !== 'country' && searchForWhat !=='city'
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        onClicked: {
+            navitProxy.setLocationPopUp(currentLocation);
+            rootStack.pop();
+        }
     }
 
     Connections {
@@ -143,7 +163,7 @@ Page {
         // @disable-check M16
         onSearchDone: {
             root.busy = false
-            resultListViewItem.opacity = 1
+            resultListViewItem.height = 200
             Qt.inputMethod.hide();
         }
     }

@@ -104,14 +104,11 @@ struct StartSearchTag {
     typedef std::function<void ()> Parser;
     typedef typename Parser::result_type ReturnType;
 };
-struct SearchCountryLocationTag {
-    typedef std::function<std::vector<NXE::Country> (const std::string&)> Parser;
+struct SearchMessageTag {
+    typedef std::function<NXE::SearchResults (NXE::INavitIPC::SearchType, const std::string& )> Parser;
     typedef typename Parser::result_type ReturnType;
 };
-struct SearchCityLocationTag {
-    typedef std::function<std::vector<NXE::City> (const std::string&)> Parser;
-    typedef typename Parser::result_type ReturnType;
-};
+
 struct FinishSearchTag {
     typedef std::function<void ()> Parser;
     typedef typename Parser::result_type ReturnType;
@@ -134,7 +131,7 @@ typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, S
       DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,SetPositionByIntMessageTag,
       SetSchemeMessageTag,
-      StartSearchTag, SearchCountryLocationTag, SearchCityLocationTag,FinishSearchTag,
+      StartSearchTag, SearchMessageTag,FinishSearchTag,
       AddWaypointMessageTag, ResizeMessageTag
     > Messages_type;
 

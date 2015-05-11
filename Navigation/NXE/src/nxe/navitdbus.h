@@ -31,9 +31,7 @@ public:
     virtual void setScheme(const std::string& scheme) override;
 
     virtual void startSearch() override;
-    virtual std::vector<Country> searchCountry(const std::string& name) override;
-    virtual std::vector<City> searchCity(const std::string& cityName) override;
-    virtual std::vector<Street> searchStreet(const std::string& street) override;
+    virtual SearchResults search(SearchType type, const std::string& searchString) override;
     virtual void finishSearch() override;
 
     virtual SpeechSignalType& speechSignal() override;

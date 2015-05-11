@@ -317,114 +317,40 @@ void NavitDBus::setScheme(const std::string& scheme)
 
 void NavitDBus::startSearch()
 {
+    nInfo() << "Creating new search";
     d->createSearchList();
 }
 
-std::vector<Country> NavitDBus::searchCountry(const std::string& countryName)
+SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string &searchString)
 {
     if (!d->searchObject)
         throw std::runtime_error("startSearch not called");
-    nTrace() << "Searching for " << countryName;
-    ::DBus::Variant var;
-    ::DBus::MessageIter variantIter = var.writer();
-    variantIter << countryName;
 
-    DBusHelpers::call("search", *(d->searchObject.get()), std::string{ "country_name" }, var, static_cast<int>(1));
-    std::vector<Country> ret;
-
-    while (true) {
-        try {
-            ::DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
-            ::DBus::MessageIter resultsIter{ results.reader() };
-
-            std::int32_t resultId;
-            ::DBus::Struct<int, int, int> position;
-            typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
-            LocationDBusType at;
-            Position ctryPos;
-            ctryPos.latitude = position._1;
-
-            resultsIter >> resultId >> position;
-            resultsIter >> at;
-
-            nDebug() << "Search results: " << resultId << " Pos = "
-                     << position._1 << " " << position._2 << " " << position._3;
-
-            ret.emplace_back(Country{
-                DBusHelpers::getFromIter<std::string>(at.at("country").at("name").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("country").at("car").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("country").at("iso2").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("country").at("iso3").reader()) });
-        }
-        catch (const std::exception& ex) {
-            break;
-        }
+    nTrace() << "Searching for " << searchString;
+    std::string tag, nameSearchTag;
+    if (type == INavitIPC::SearchType::Country) {
+        tag = "country_name";
+        nameSearchTag = "country";
+    } else if(type == INavitIPC::SearchType::City) {
+        tag = "town_name";
+        nameSearchTag = "town";
+    } else if (type == INavitIPC::SearchType::Street) {
+        tag = "street_name";
+        nameSearchTag = "street";
     }
 
-    return ret;
-}
+    nTrace() << "Tag =" << tag;
+    SearchResults ret;
 
-std::vector<City> NavitDBus::searchCity(const std::string& cityName)
-{
-    if (!d->searchObject)
-        throw std::runtime_error("startSearch not called");
-    nTrace() << "Searching for " << cityName;
-    ::DBus::Variant var;
-    ::DBus::MessageIter variantIter = var.writer();
-    variantIter << cityName;
-
-    DBusHelpers::call("search", *(d->searchObject.get()), std::string{ "town_name" }, var, static_cast<int>(1));
-    std::vector<City> cities;
-    while (true) {
-        try {
-            ::DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
-            ::DBus::MessageIter resultsIter{ results.reader() };
-
-            std::int32_t resultId;
-            ::DBus::Struct<int, int, int> position;
-            typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
-            LocationDBusType at;
-            int o, x, y;
-
-            resultsIter >> resultId >> position;
-            resultsIter >> at;
-            o = position._1;
-            x = position._2;
-            y = position._3;
-
-            nDebug() << "Search results: " << resultId << " Pos = "
-                     << position._1 << " " << position._2 << " " << position._3;
-
-            cities.emplace_back(City{
-                DBusHelpers::getFromIter<std::string>(at.at("town").at("name").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal").reader()),
-                DBusHelpers::getFromIter<std::string>(at.at("town").at("postal_mask").reader()),
-                std::make_pair(x, y)
-            });
-            nDebug() << "[Name] = " << cities.back().name << " [postal] = " << cities.back().postal;
-        }
-        catch (const std::exception& ex) {
-            break;
-        }
-    }
-    return cities;
-}
-
-std::vector<Street> NavitDBus::searchStreet(const std::string &street)
-{
-    if (!d->searchObject)
-        throw std::runtime_error("startSearch not called");
-
-    nInfo() << "Searching for street " << street;
     DBus::Variant var;
     DBus::MessageIter variantIter = var.writer();
-    variantIter << street;
-    DBusHelpers::call("search", *(d->searchObject.get()), std::string{"street_name"}, var, static_cast<int>(1));
+    variantIter << searchString;
 
-    std::vector<Street> streets;
-    while(true) {
+    DBusHelpers::call("search", *(d->searchObject.get()), tag, var, static_cast<int>(1));
+    while (true) {
         try {
             DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
+            nTrace() << "Received result";
             DBus::MessageIter resultsIter{ results.reader() };
 
             std::int32_t resultId;
@@ -442,21 +368,24 @@ std::vector<Street> NavitDBus::searchStreet(const std::string &street)
             nDebug() << "Search results: " << resultId << " Pos = "
                      << position._1 << " " << position._2 << " " << position._3;
 
-            streets.emplace_back(Street{
-                DBusHelpers::getFromIter<std::string>(at.at("street").at("name").reader()),
-                std::make_pair(x, y)
-            });
-            nDebug() << "[Name] = " << streets.back().name;
-        } catch (const std::exception& ex) {
+            ret.emplace_back(SearchResult{
+                DBusHelpers::getFromIter<std::string>(at.at(nameSearchTag).at("name").reader()),
+                std::make_pair(x,y)});
+        }
+        catch (const std::exception& ex) {
+            nInfo() << "Finished reading results" << ex.what();
             break;
         }
     }
-    return streets;
+    return ret;
 }
 
 void NavitDBus::finishSearch()
 {
     nInfo() << "Destroying search list";
+    if (!d->searchObject) {
+        nWarning() << "";
+    }
     DBusHelpers::call("destroy", *(d->searchObject.get()));
 }
 
