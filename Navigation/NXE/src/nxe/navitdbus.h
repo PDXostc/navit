@@ -35,6 +35,7 @@ public:
     virtual void startSearch() override;
     virtual std::vector<Country> searchCountry(const std::string& name) override;
     virtual std::vector<City> searchCity(const std::string& cityName) override;
+    virtual std::vector<Street> searchStreet(const std::string& street) override;
     virtual void finishSearch() override;
 
     virtual SpeechSignalType& speechSignal() override;

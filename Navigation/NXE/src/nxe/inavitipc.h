@@ -22,6 +22,11 @@ struct City {
     const std::pair<int,int> position;
 };
 
+struct Street {
+    const std::string name;
+    const std::pair<int,int> position;
+};
+
 struct PointClicked {
     typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
     const Position position;
@@ -61,6 +66,7 @@ public:
     virtual void startSearch() = 0;
     virtual std::vector<Country> searchCountry(const std::string& what) = 0;
     virtual std::vector<City> searchCity(const std::string& what) = 0;
+    virtual std::vector<Street> searchStreet(const std::string& street) = 0;
     virtual void finishSearch() = 0;
 
     // Signals from IPC

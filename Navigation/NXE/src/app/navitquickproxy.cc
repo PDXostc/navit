@@ -258,21 +258,26 @@ void NavitQuickProxy::finishSearch()
 
 void NavitQuickProxy::searchCountry(const QString& countryName)
 {
-    qDeleteAll(m_countriesSearchResults);
+    QObjectList tmp = m_countriesSearchResults;
     m_countriesSearchResults.clear();
     aDebug() << "Search for country = " << countryName.toStdString();
     auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
     for (NXE::Country country : countries) {
+        aTrace() << "result " << country.name;
         m_countriesSearchResults.append(new LocationProxy{ QString::fromStdString(country.name),
             false, "", false });
     }
+    aDebug() << "Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
     m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
 
     emit searchDone();
+    qDeleteAll(tmp);
 }
 
 void NavitQuickProxy::searchCity(const QString& name)
 {
+    QObjectList tmp = m_citiesSearchResults;
+    m_citiesSearchResults.clear();
     aDebug() << "Search for city = " << name.toStdString();
     auto cities = nxeInstance->HandleMessage<SearchCityLocationTag>(name.toStdString());
     aDebug() << cities.size();
@@ -286,6 +291,8 @@ void NavitQuickProxy::searchCity(const QString& name)
     aDebug() << "Model size = " << m_citiesSearchResults.size();
     m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     emit searchDone();
+
+    qDeleteAll(tmp);
 }
 
 void NavitQuickProxy::getFavorites()
@@ -350,6 +357,8 @@ void NavitQuickProxy::hideLocationBars()
 
 void NavitQuickProxy::initNavit()
 {
+    m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
+    m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     aInfo() << "Launching navit";
     context->dbusController.start();
 

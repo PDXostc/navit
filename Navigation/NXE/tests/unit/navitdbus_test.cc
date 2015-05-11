@@ -152,6 +152,17 @@ TEST_F(NavitDBusTest, search_city_valid)
     connection.finishSearch();
 }
 
-TEST_F(NavitDBusTest, search_country_incomplete)
+TEST_F(NavitDBusTest, search_street_valid)
 {
+    connection.startSearch();
+    auto country = connection.searchCountry("Germany");
+    auto city = connection.searchCity("Munchen");
+    auto streets = connection.searchStreet("Arc");
+    ASSERT_NE(country.size(), 0);
+    ASSERT_NE(city.size(), 0);
+    EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::Street& street) -> bool {
+        return street.name == "Arcisstraße";
+    }) != streets.end());
+
+    connection.finishSearch();
 }

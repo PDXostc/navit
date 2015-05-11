@@ -32,12 +32,10 @@ Item {
             height: parent.height
 
             Rectangle {
-                id: rectangle2
                 anchors.fill: parent
                 color: "#242424"
 
                 MouseArea {
-                    id: mouseArea1
                     x: 0
                     y: 0
                     width: 60
