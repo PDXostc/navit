@@ -166,3 +166,20 @@ TEST_F(NavitDBusTest, search_street_valid)
 
     connection.finishSearch();
 }
+
+TEST_F(NavitDBusTest, search_address_valid)
+{
+    connection.startSearch();
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Mun");
+    auto streets = connection.search(NXE::INavitIPC::SearchType::Street, "Arc");
+    auto addresses = connection.search(NXE::INavitIPC::SearchType::Address, "1");
+
+    ASSERT_NE(country.size(), 0);
+    ASSERT_NE(cities.size(), 0);
+    EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
+        return street.name == "Arcisstraße";
+    }) != streets.end());
+
+    connection.finishSearch();
+}

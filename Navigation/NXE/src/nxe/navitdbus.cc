@@ -337,6 +337,9 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string &s
     } else if (type == INavitIPC::SearchType::Street) {
         tag = "street_name";
         nameSearchTag = "street";
+    } else if (type == INavitIPC::SearchType::Address) {
+        tag = "house_number";
+        nameSearchTag = "house";
     }
 
     nTrace() << "Tag =" << tag;
@@ -384,8 +387,10 @@ void NavitDBus::finishSearch()
 {
     nInfo() << "Destroying search list";
     if (!d->searchObject) {
-        nWarning() << "";
+        nError() << "Search wasn't startd";
+        return;
     }
+
     DBusHelpers::call("destroy", *(d->searchObject.get()));
 }
 

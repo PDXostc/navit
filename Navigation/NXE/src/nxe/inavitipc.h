@@ -27,7 +27,8 @@ public:
     enum class SearchType {
         Country = 0,
         City,
-        Street
+        Street,
+        Address
     };
 
     typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
