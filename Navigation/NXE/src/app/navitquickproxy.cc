@@ -312,6 +312,11 @@ void NavitQuickProxy::searchStreet(const QString &street)
     qDeleteAll(tmp);
 }
 
+void NavitQuickProxy::searchNear(const QString &str)
+{
+    // TODO: Implement me
+}
+
 void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
