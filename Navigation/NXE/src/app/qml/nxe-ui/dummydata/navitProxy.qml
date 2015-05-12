@@ -31,6 +31,9 @@ QtObject {
         fakeSearchTimer.start();
     }
 
+    function searchNear(string) {
+    }
+
     function getHistory() {
         fakeHistoryTimer.start();
     }

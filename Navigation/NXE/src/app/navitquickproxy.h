@@ -87,6 +87,7 @@ public slots:
     void finishSearch();
     void searchCountry(const QString& name);
     void searchCity(const QString& name);
+    void searchNear(const QString& str);
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QString& name);

@@ -286,6 +286,11 @@ void NavitQuickProxy::searchCity(const QString& name)
     emit searchDone();
 }
 
+void NavitQuickProxy::searchNear(const QString &str)
+{
+    // TODO: Implement me
+}
+
 void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;

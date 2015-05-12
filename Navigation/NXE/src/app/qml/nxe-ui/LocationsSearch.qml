@@ -4,18 +4,7 @@ import QtQml 2.2
 Page {
     id: root
 
-    property string searchForWhat: 'country'
-
-    Component.onCompleted: {
-        if (searchForWhat === 'country') {
-            navitProxy.startSearch();
-        }
-        console.debug('Searching for', searchForWhat);
-    }
-
     Rectangle {
-        id: rectangle1
-        x: 0
         width: 380
         height: 140
         color: "#ffffff"
@@ -25,37 +14,35 @@ Page {
 
         TextEdit {
             id: searchInput
-            width: 354
-            height: 132
             color: "#242424"
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 6
-            anchors.top: parent.top
-            anchors.topMargin: 6
+            anchors {
+                fill: parent
+                horizontalCenter: parent.horizontalCenter
+                left: parent.left
+                leftMargin: 6
+                top: parent.top
+                topMargin: 6
+            }
             font.pixelSize: 11
-            text: "Search for " + searchForWhat
-            onFocusChanged: {text = ""}
-        }
-
-        Text {
-            id: text1
-            x: 364
-            y: 117
-            width: 8
-            height: 18
-            text: qsTr("x")
-            font.pixelSize: 10
+            text: "Start searching..."
+            onFocusChanged: text = ""
 
             MouseArea {
                 id: clearInput
-                x: -4
-                y: -2
-                width: 17
-                height: 22
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: searchInput.text = ""
+                width: 30
+                height: 30
+                anchors {
+                    bottom: parent.bottom
+                    bottomMargin: 5
+                    right: parent.right
+                    rightMargin: 5
+                }
+                Text {
+                    text: qsTr("x")
+                    font.pixelSize: 16
+                    anchors.centerIn: parent
+                }
             }
         }
     }
@@ -102,14 +89,10 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
                 // for some reasons weekeyboard needs to be manually hidden
-                Qt.inputMethod.hide();
-                searchInput.focus = false;
-                root.busy = true;
-                if (searchForWhat === 'country') {
-                    navitProxy.searchCountry(searchInput.text)
-                } else if(searchForWhat === 'city') {
-                    navitProxy.searchCity(searchInput.text)
-                }
+                Qt.inputMethod.hide()
+                searchInput.focus = false
+                root.busy = true
+                navitProxy.searchNear(searchInput.text)
             }
         }
     }
@@ -118,15 +101,7 @@ Page {
         target: navitProxy
         // @disable-check M16
         onSearchDone: {
-            root.busy = false;
-            searchStackView.push({
-                           item: Qt.resolvedUrl("LocationsResult.qml"),
-                           properties:{
-                               queryText: searchInput.text,
-                               whatIsSearched: searchForWhat
-                           }
-                       })
+            root.busy = false
         }
     }
 }
-
