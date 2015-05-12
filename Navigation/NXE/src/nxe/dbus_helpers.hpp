@@ -83,7 +83,7 @@ namespace __details {
         ::DBus::Variant val;
         ::DBus::MessageIter ww = val.writer();
         ww << value;
-        call("set_attr", proxy, attrName, val);
+        callNoReply("set_attr", proxy, attrName, val);
     }
 
     template<typename T>

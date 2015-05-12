@@ -379,7 +379,7 @@ void NavitQuickProxy::setLocationPopUp(const QString& name)
     std::for_each(m_streetsSearchResults.begin(), m_streetsSearchResults.end(), [this, &name, &pos, &newZoomLevel](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
-        if (proxy->itemText() == name ) {
+        if (proxy->itemText() == name) {
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));

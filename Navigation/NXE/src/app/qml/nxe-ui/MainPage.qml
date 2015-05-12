@@ -89,8 +89,8 @@ Item {
                 createLocationComponent(navitProxy.currentlySelectedItem)
 
                 if (navitProxy.currentlySelectedItem.isStreet()) {
-                    console.debug('Item is street, change zoom level');
-                    navitProxy.setZoom(16);
+//                    console.debug('Item is street, change zoom level');
+//                    navitProxy.setZoom(16);
                 }
             }
 

@@ -257,13 +257,14 @@ int NavitDBus::zoom()
 
 void NavitDBus::render()
 {
-    nDebug() << "Rendering";
+    DebugDBusCall dbg {"draw"};
     DBusHelpers::callNoReply("draw", *(d->object.get()));
     nDebug() << "Rendering finished";
 }
 
 void NavitDBus::resize(int x, int y)
 {
+    DebugDBusCall dbg {"resize"};
     nDebug() << "Resizing [" << x << "x" << y << "]";
     DBusHelpers::callNoReply("resize", *(d->object.get()), x, y);
 }
@@ -275,6 +276,7 @@ int NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
+    DebugDBusCall dbg {"set_attr_orientation"};
     nDebug() << "Changing orientation to " << newOrientation;
     if (newOrientation != 0 && newOrientation != -1) {
         nError() << "Unable to change orientation to " << newOrientation;
@@ -285,6 +287,7 @@ void NavitDBus::setOrientation(int newOrientation)
 
 void NavitDBus::setCenter(double longitude, double latitude)
 {
+    DebugDBusCall dbg {"set_center_by_string"};
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
@@ -293,6 +296,7 @@ void NavitDBus::setCenter(double longitude, double latitude)
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
 {
+    DebugDBusCall dbg {"setDestination"};
     nDebug() << "Setting destionation to. name= " << description;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
@@ -302,6 +306,7 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
 
 void NavitDBus::setPosition(double longitude, double latitude)
 {
+    DebugDBusCall dbg {"setPosition"};
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
@@ -315,11 +320,12 @@ void NavitDBus::setPositionByInt(int x, int y)
     s._1 = 1;
     s._2 = x;
     s._3 = y;
-    DBusHelpers::call("set_center", *(d->object.get()), s);
+    DBusHelpers::callNoReply("set_center", *(d->object.get()), s);
 }
 
 void NavitDBus::addWaypoint(double longitude, double latitude)
 {
+    DebugDBusCall db{ "add_waypoint" };
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
@@ -328,6 +334,7 @@ void NavitDBus::addWaypoint(double longitude, double latitude)
 
 void NavitDBus::clearDestination()
 {
+    DebugDBusCall db{ "clear_destination" };
     DBusHelpers::call("clear_destination", *(d->object.get()));
 }
 
@@ -341,6 +348,7 @@ void NavitDBus::setScheme(const std::string& scheme)
 void NavitDBus::startSearch()
 {
     nInfo() << "Creating new search";
+    DebugDBusCall db{ "create_search" };
     d->createSearchList();
 }
 
@@ -349,6 +357,7 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string &s
     if (!d->searchObject)
         throw std::runtime_error("startSearch not called");
 
+    DebugDBusCall db{ "search" };
     nTrace() << "Searching for " << searchString;
     std::string tag, nameSearchTag;
     if (type == INavitIPC::SearchType::Country) {
@@ -408,6 +417,7 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string &s
 
 void NavitDBus::finishSearch()
 {
+    DebugDBusCall db{ "finish_search" };
     nInfo() << "Destroying search list";
     if (!d->searchObject) {
         nError() << "Search wasn't startd";

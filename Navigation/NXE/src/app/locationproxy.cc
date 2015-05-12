@@ -44,4 +44,5 @@ LocationProxy* LocationProxy::clone(LocationProxy* rhs)
         rhs->bolded() };
 
     p->_locType = rhs->_locType;
+    return p;
 }
