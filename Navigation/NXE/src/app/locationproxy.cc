@@ -1,8 +1,9 @@
 #include "locationproxy.h"
 #include "alog.h"
 
-LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bolded, QObject *parent)
+LocationProxy::LocationProxy(LocationType locType, QString itemText, bool fav, QString desc, bool bolded, QObject* parent)
     : QObject(parent)
+    , _locType(locType)
     , _itemText(itemText)
     , _favorite(fav)
     , _description(desc)
@@ -17,7 +18,7 @@ void LocationProxy::setFavorite(bool bFav)
     emit favoriteChanged();
 }
 
-void LocationProxy::setDescription(const QString &desc)
+void LocationProxy::setDescription(const QString& desc)
 {
 }
 
@@ -35,3 +36,12 @@ int LocationProxy::yPosition() const
     return _position.second;
 }
 
+LocationProxy* LocationProxy::clone(LocationProxy* rhs)
+{
+    auto p = new LocationProxy{ rhs->_locType,rhs->itemText(),
+        rhs->favorite(),
+        rhs->description(),
+        rhs->bolded() };
+
+    p->_locType = rhs->_locType;
+}

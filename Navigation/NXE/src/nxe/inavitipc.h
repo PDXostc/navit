@@ -43,6 +43,7 @@ public:
     virtual void moveBy(int x, int y) = 0;
     virtual int zoom() = 0;
     virtual void zoomBy(int factor) = 0;
+    virtual void setZoom(int newZoom) = 0;
     virtual void render() = 0;
     virtual void resize(int x, int y) = 0;
 

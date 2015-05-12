@@ -23,6 +23,9 @@ QtObject {
     function startSearch() {
     }
 
+    function finishSearch() {
+    }
+
     function searchCountry(searchString) {
         fakeSearchTimer.start();
     }

@@ -53,6 +53,14 @@ TEST_F(NavitDBusTest, zoom)
         EXPECT_EQ(defZoom / zoomBy, connection.zoom()););
 }
 
+TEST_F(NavitDBusTest, setZoom)
+{
+    EXPECT_NO_THROW(
+        connection.setZoom(16);
+        EXPECT_EQ(16, connection.zoom());
+    );
+}
+
 TEST_F(NavitDBusTest, setOrientation)
 {
     int orientation = connection.orientation();

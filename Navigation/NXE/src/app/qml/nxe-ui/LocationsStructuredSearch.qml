@@ -10,10 +10,17 @@ Page {
     property string selected
     property string currentLocation
     property int numberOfCharsToStartSearch: 2
+    property bool searchInProgress: false
+
+    // Hack for weekeyboard
+    property string currentSearchString
 
     function startPredictiveSearch(string) {
-        console.debug('start searching')
-        root.busy = true
+        if (root.busy)
+            return;
+        root.busy = true;
+        currentSearchString = string
+        console.debug('start searching for ', currentSearchString)
         if (searchForWhat === 'country') {
             navitProxy.searchCountry(string)
         } else if (searchForWhat === 'city') {
@@ -68,7 +75,8 @@ Page {
                         font.pixelSize: 17
                         anchors.fill: parent
                         onTextChanged: {
-                            if (text.length >= numberOfCharsToStartSearch) {
+                            console.debug('text has changed')
+                            if (text.length >= numberOfCharsToStartSearch && currentSearchString != text) {
                                 startPredictiveSearch(text)
                             }
                         }
@@ -84,9 +92,16 @@ Page {
                 anchors.topMargin: 5
                 anchors.right: rowLayout.right
 
+                Rectangle {
+                    anchors.fill: parent
+                    color: "transparent"
+                    border.color: "white"
+                }
+
                 Behavior on height{ NumberAnimation{}}
 
                 ListView {
+                    id: listViewItem
                     anchors.fill: parent
                     model: {
                         if (searchForWhat === 'country') {
@@ -103,6 +118,7 @@ Page {
                         height: 40
 
                         onClicked: {
+                            Qt.inputMethod.hide();
                             var nextSearch
                             if (searchForWhat === 'country') {
                                 nextSearch = 'city'
@@ -134,6 +150,23 @@ Page {
                             text: itemText
                             color: "white"
                             font.pixelSize: 16
+                            anchors.verticalCenter: parent.verticalCenter
+                        }
+
+                        NButton {
+                            visible: searchForWhat !== 'country'
+                            width: 40
+                            height: 40
+                            anchors.right: parent.right
+                            anchors.rightMargin: 5
+                            iconSource: "map_icon_white.png"
+                            onClicked: {
+                                Qt.inputMethod.hide();
+                                console.debug('clicked', itemText);
+                                rootStack.pop();
+                                navitProxy.setLocationPopUp(itemText);
+                                navitProxy.finishSearch();
+                            }
                         }
 
                         Rectangle {
@@ -143,18 +176,11 @@ Page {
                         }
                     }
                 }
-            }
-        }
-    }
 
-    NButton {
-        text: "Show on the map"
-        visible: searchForWhat !== 'country' && searchForWhat !=='city'
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        onClicked: {
-            navitProxy.setLocationPopUp(currentLocation);
-            rootStack.pop();
+                ScrollBar {
+                    flk: listViewItem
+                }
+            }
         }
     }
 
@@ -162,9 +188,9 @@ Page {
         target: navitProxy
         // @disable-check M16
         onSearchDone: {
+            console.debug('search done');
             root.busy = false
             resultListViewItem.height = 200
-            Qt.inputMethod.hide();
         }
     }
 }

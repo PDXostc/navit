@@ -11,8 +11,6 @@
 #include "gpsdprovider.h"
 #include "speechimpldbus.h"
 
-#include <fruit/fruit.h>
-
 using namespace NXE;
 
 struct NXETizenTest {
@@ -20,14 +18,13 @@ struct NXETizenTest {
     INavitIPC * ipc { new NavitDBus{dbusController}};
     IMapDownloader * md { new MapDownloaderDBus{dbusController}};
     NXE::ISpeech* speech { new NXE::SpeechImplDBus{dbusController}};
-    DI::Injector injector{ [this]() -> DI::Components {
-        return fruit::createComponent()
-                .bindInstance(*ipc)
-                .bindInstance(*md)
-                .bindInstance(*speech)
-                .bind<INavitProcess, NavitProcessImpl>()
-                .bind<IGPSProvider, GPSDProvider>();
-    }() };
+    NXE::DI::Injector injector{ std::make_tuple(
+                    std::shared_ptr<NXE::INavitIPC>(ipc),
+                    std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
+                    std::shared_ptr<NXE::IGPSProvider>(new GPSDProvider),
+                    std::shared_ptr<NXE::IMapDownloader>(new MapDownloaderDBus{dbusController}),
+                    std::shared_ptr<NXE::ISpeech>(new SpeechImplDBus{dbusController})
+                    )};
     NXEInstance instance{ injector };
 };
 

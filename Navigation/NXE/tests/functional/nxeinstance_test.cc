@@ -20,7 +20,13 @@ struct NXEInstanceTest : public ::testing::Test {
     DBusController dbusController;
     INavitIPC * ipc { new NavitDBus{dbusController}};
     IMapDownloader * md { new MapDownloaderDBus{dbusController}};
-    DI::Injector injector{ };
+    NXE::DI::Injector injector{ std::make_tuple(
+                    std::shared_ptr<NXE::INavitIPC>(ipc),
+                    std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
+                    std::shared_ptr<NXE::IGPSProvider>(new GPSDProvider),
+                    std::shared_ptr<NXE::IMapDownloader>(new MapDownloaderDBus{dbusController}),
+                    std::shared_ptr<NXE::ISpeech>(new SpeechMock)
+                    )};
     NXEInstance instance{ injector };
     bool receivedRender{ false };
     std::size_t numberOfResponses = 0;
@@ -100,6 +106,12 @@ TEST_F(NXEInstanceTest, positionMessage_correct)
 TEST_F(NXEInstanceTest, changeOrientationMessage_incorrectValue)
 {
     EXPECT_ANY_THROW(instance.HandleMessage<SetOrientationMessageTag>(100));
+}
+
+TEST_F(NXEInstanceTest, set_position_and_set_zoom)
+{
+    instance.HandleMessage<SetPositionByIntMessageTag>(0,0);
+    instance.HandleMessage<SetZoomMessageTag>(16);
 }
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)

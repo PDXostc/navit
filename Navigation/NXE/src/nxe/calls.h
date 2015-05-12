@@ -48,6 +48,12 @@ struct ZoomByMessageTag {
     typedef std::function<void (int)> Parser;
     typedef typename Parser::result_type ReturnType;
 };
+
+struct SetZoomMessageTag {
+    typedef std::function<void (int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
 struct PositionMessageTag {
     typedef std::function<NXE::Position ()> Parser;
     typedef typename Parser::result_type ReturnType;
@@ -126,7 +132,7 @@ struct ResizeMessageTag {
 
 
 // Containter
-typedef boost::mpl::vector<MoveByMessageTag, ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
+typedef boost::mpl::vector<MoveByMessageTag, SetZoomMessageTag,ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
       PositionMessageTag, RenderMessageTag, ExitMessageTag, OrientationMessageTag, SetCenterMessageTag,
       DownloadMessageTag, CancelDownloadMessageTag, MapsMessageTag,SetDestinationMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,SetPositionByIntMessageTag,

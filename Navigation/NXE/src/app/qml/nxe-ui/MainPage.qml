@@ -11,11 +11,14 @@ Item {
     property var locationInfoTopComponent: null
     property var locationInfoObject: null
     property var locationInfoTopObject: null
-    property bool topBarExpanded : false
+    property bool topBarExpanded: false
 
     function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
-            locationInfoObject = locationInfoComponent.createObject(mainPageView, {opacity: 0});
+            locationInfoObject = locationInfoComponent.createObject(
+                        mainPageView, {
+                            opacity: 0
+                        })
             locationInfoObject.anchors.bottom = mainPageView.bottom
             locationInfoObject.anchors.left = mainPageView.left
             locationInfoObject.anchors.right = mainPageView.right
@@ -25,27 +28,32 @@ Item {
     }
     function finishTopComponentCreation() {
         if (locationInfoTopComponent.status === Component.Ready) {
-            locationInfoTopObject = locationInfoTopComponent.createObject(mainPageView, {opacity:0});
+            locationInfoTopObject = locationInfoTopComponent.createObject(
+                        mainPageView, {
+                            opacity: 0
+                        })
             locationInfoTopObject.anchors.top = mainPageView.top
             locationInfoTopObject.anchors.left = mainPageView.left
             locationInfoTopObject.anchors.right = mainPageView.right
-            locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem;
+            locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem
             locationInfoTopObject.opacity = 1
         }
     }
 
     function createLocationComponent(location) {
-        locationInfoComponent = Qt.createComponent("MapLocationInfo.qml");
-        locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml");
+        locationInfoComponent = Qt.createComponent("MapLocationInfo.qml")
+        locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml")
         if (locationInfoComponent.status === Component.Ready) {
-            finishComponentCreation(location);
+            finishComponentCreation(location)
         } else {
-            locationInfoComponent.statusChanged.connect(finishComponentCreation(location));
+            locationInfoComponent.statusChanged.connect(finishComponentCreation(
+                                                            location))
         }
         if (locationInfoTopComponent.status === Component.Ready) {
-            finishTopComponentCreation(location);
+            finishTopComponentCreation(location)
         } else {
-            locationInfoTopComponent.statusChanged.connect(finishTopComponentCreation(location));
+            locationInfoTopComponent.statusChanged.connect(
+                        finishTopComponentCreation(location))
         }
     }
 
@@ -71,28 +79,34 @@ Item {
 
     Connections {
         target: navitProxy
-        onCurrentlySelectedItemChanged:{
-        if(navitProxy.currentlySelectedItem === null) {
-            locationInfoComponent.destroy();
-            locationInfoTopComponent.destroy();
-            locationInfoTopObject.destroy();
-            locationInfoObject.destroy();
-        } else
-            createLocationComponent(navitProxy.currentlySelectedItem);
+        onCurrentlySelectedItemChanged: {
+            if (navitProxy.currentlySelectedItem === null) {
+                locationInfoComponent.destroy()
+                locationInfoTopComponent.destroy()
+                locationInfoTopObject.destroy()
+                locationInfoObject.destroy()
+            } else {
+                createLocationComponent(navitProxy.currentlySelectedItem)
+
+                if (navitProxy.currentlySelectedItem.isStreet()) {
+                    console.debug('Item is street, change zoom level');
+                    navitProxy.setZoom(16);
+                }
+            }
+
         }
 
         onPointClicked: {
             if (locationInfoComponent && locationInfoObject) {
-                locationInfoObject.locationComponent = location;
+                locationInfoObject.locationComponent = location
             } else {
                 console.debug(location.itemText)
                 createLocationComponent(location)
             }
         }
         onTopBarLocationVisibleChanged: {
-                   mainPageView.topBarExpanded = navitProxy.topBarLocationVisible;
+            mainPageView.topBarExpanded = navitProxy.topBarLocationVisible
         }
-
     }
 
     Component {

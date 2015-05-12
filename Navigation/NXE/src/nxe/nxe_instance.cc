@@ -27,9 +27,9 @@ struct NXEInstancePrivate {
         , gps(NXE::get<std::shared_ptr<IGPSProvider> >(ifaces))
         , mapDownloaderIPC(NXE::get<std::shared_ptr<IMapDownloader> >(ifaces))
         , speech(NXE::get<std::shared_ptr<ISpeech> >(ifaces))
-        , geometry(std::make_pair(0,0))
+        , geometry(std::make_pair(0, 0))
     {
-        ipc->initializedSignal().connect( [this]() {
+        ipc->initializedSignal().connect([this]() {
             nDebug() << "Navit has initialized";
             if (geometry != std::make_pair(0,0)) {
                 ipc->resize(geometry.first, geometry.second);
@@ -63,9 +63,14 @@ struct NXEInstancePrivate {
 
     void resize(int w, int h)
     {
+        using SettingsTags::Navit::ExternalNavit;
+        const bool external = settings.get<ExternalNavit>();
+        if (external)
+            return;
         if (!initialized) {
-            geometry = std::make_pair(w,h);
-        } else {
+            geometry = std::make_pair(w, h);
+        }
+        else {
             // TODO: This does not yet send an message since this would
             // block current thread.
             // ipc->resize(w,h);
@@ -82,6 +87,7 @@ NXEInstance::NXEInstance(DI::Injector& impls)
     : d(new NXEInstancePrivate{ impls, this })
     , fusion_list(
           make_pair<MoveByMessageTag>(bind(&INavitIPC::moveBy, d->ipc.get(), placeholders::_1, placeholders::_2)),
+          make_pair<SetZoomMessageTag>(bind(&INavitIPC::setZoom, d->ipc.get(), placeholders::_1)),
           make_pair<ZoomByMessageTag>(bind(&NXEInstancePrivate::zoomBy, d.get(), placeholders::_1)),
           make_pair<ZoomMessageTag>(bind(&NXEInstancePrivate::zoomMessage, d.get())),
           make_pair<SetOrientationMessageTag>(bind(&NXEInstancePrivate::setOrientation, d.get(), placeholders::_1)),
@@ -93,8 +99,8 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<DownloadMessageTag>(bind(&IMapDownloader::download, d->mapDownloaderIPC.get(), placeholders::_1)),
           make_pair<CancelDownloadMessageTag>(bind(&IMapDownloader::cancel, d->mapDownloaderIPC.get(), placeholders::_1)),
           make_pair<MapsMessageTag>(bind(&IMapDownloader::maps, d->mapDownloaderIPC.get())),
-          make_pair<SetDestinationMessageTag>( [this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
-          make_pair<ClearDestinationMessageTag>( bind(&INavitIPC::clearDestination, d->ipc.get())),
+          make_pair<SetDestinationMessageTag>([this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
+          make_pair<ClearDestinationMessageTag>(bind(&INavitIPC::clearDestination, d->ipc.get())),
           make_pair<SetPositionMessageTag>(bind(&INavitIPC::setPosition, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<SetPositionByIntMessageTag>(bind(&INavitIPC::setPositionByInt, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1)),
@@ -102,8 +108,7 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<SearchMessageTag>(bind(&INavitIPC::search, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<FinishSearchTag>(bind(&INavitIPC::finishSearch, d->ipc.get())),
           make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2))
-      )
+          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2)))
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
@@ -142,7 +147,7 @@ void NXEInstance::Initialize()
             nInfo() << "Navit external is set, won't run";
         }
         nDebug() << "Trying to start IPC Navit controller";
-        d->ipc->speechSignal().connect([this] (const std::string& string) {
+        d->ipc->speechSignal().connect([this](const std::string& string) {
             nDebug() << "Saying " << string << " speech pointer = " << static_cast<void*>(d->speech.get());
             if (d->speech) {
                 d->speech->say(string);
@@ -150,7 +155,6 @@ void NXEInstance::Initialize()
         });
     }
     d->initialized = true;
-
 }
 
 void NXEInstance::setWaylandSocketName(const std::string& socketName)
@@ -158,17 +162,17 @@ void NXEInstance::setWaylandSocketName(const std::string& socketName)
     d->navitProcess->setSocketName(socketName);
 }
 
-void NXEInstance::setMapDownloaderListener(const MapDownloaderListener &listener)
+void NXEInstance::setMapDownloaderListener(const MapDownloaderListener& listener)
 {
     d->mapDownloaderIPC->setListener(listener);
 }
 
-void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb &listener)
+void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb& listener)
 {
     d->gps->addPostionUpdate(listener);
 }
 
-INavitIPC::PointClickedSignalType &NXEInstance::pointClickedSignal()
+INavitIPC::PointClickedSignalType& NXEInstance::pointClickedSignal()
 {
     return d->ipc->pointClickedSignal();
 }

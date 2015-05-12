@@ -41,18 +41,36 @@ inline DBus::MessageIter& operator>>(::DBus::MessageIter& iter, std::vector<std:
     return ++iter;
 }
 
+template<typename TimeT = std::chrono::milliseconds>
+struct measure
+{
+    template<typename F, typename ...Args>
+    static typename TimeT::rep execution(F func, Args&&... args)
+    {
+        auto start = std::chrono::system_clock::now();
+        func(std::forward<Args>(args)...);
+        auto duration = std::chrono::duration_cast< TimeT>
+                            (std::chrono::system_clock::now() - start);
+        return duration.count();
+    }
+};
+
 struct DebugDBusCall {
+    typedef std::chrono::high_resolution_clock ClockType;
     DebugDBusCall(const std::string& msg)
         : _msg(msg)
     {
         nDebug() << "Starting call " << _msg;
+        _start = ClockType::now();
     }
 
     ~DebugDBusCall()
     {
-        nDebug() << " Call " << _msg << " took: ";
+        auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(ClockType::now() - _start);
+        nDebug() << " Call " << _msg << " took: " <<  milliseconds.count();
     }
 
+    ClockType::time_point _start;
     const std::string _msg;
 };
 
@@ -213,8 +231,6 @@ void NavitDBus::quit()
 void NavitDBus::moveBy(int x, int y)
 {
     DBus::CallMessage call;
-    DBus::MessageIter it = call.writer();
-    call.member("set_center_screen");
     DBus::Struct<int, int> val;
     val._1 = x;
     val._2 = y;
@@ -224,7 +240,13 @@ void NavitDBus::moveBy(int x, int y)
 void NavitDBus::zoomBy(int y)
 {
     nDebug() << "Zooming by " << y;
-    DBusHelpers::call("zoom", *(d->object.get()), y);
+    DBusHelpers::callNoReply("zoom", *(d->object.get()), y);
+}
+
+void NavitDBus::setZoom(int newZoom)
+{
+    nDebug() << "Setting zoom = " << newZoom;
+    DBusHelpers::setAttr("zoom", *(d->object.get()), newZoom);
 }
 
 int NavitDBus::zoom()
@@ -236,14 +258,14 @@ int NavitDBus::zoom()
 void NavitDBus::render()
 {
     nDebug() << "Rendering";
-    DBusHelpers::call("draw", *(d->object.get()));
+    DBusHelpers::callNoReply("draw", *(d->object.get()));
     nDebug() << "Rendering finished";
 }
 
 void NavitDBus::resize(int x, int y)
 {
     nDebug() << "Resizing [" << x << "x" << y << "]";
-    DBusHelpers::call("resize", *(d->object.get()), x, y);
+    DBusHelpers::callNoReply("resize", *(d->object.get()), x, y);
 }
 
 int NavitDBus::orientation()
@@ -266,7 +288,7 @@ void NavitDBus::setCenter(double longitude, double latitude)
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBusHelpers::call("set_center_by_string", *(d->object.get()), message);
+    DBusHelpers::callNoReply("set_center_by_string", *(d->object.get()), message);
 }
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
@@ -283,11 +305,12 @@ void NavitDBus::setPosition(double longitude, double latitude)
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBusHelpers::call("set_position", *(d->object.get()), message);
+    DBusHelpers::callNoReply("set_position", *(d->object.get()), message);
 }
 
 void NavitDBus::setPositionByInt(int x, int y)
 {
+    DebugDBusCall dbg {"setPositionByInt"};
     DBus::Struct<int, int, int> s;
     s._1 = 1;
     s._2 = x;
@@ -312,7 +335,7 @@ void NavitDBus::setScheme(const std::string& scheme)
 {
     DebugDBusCall db{ "set_layout" };
     nDebug() << "Setting scheme to " << scheme;
-    DBusHelpers::call("set_layout", *(d->object.get()), scheme);
+    DBusHelpers::callNoReply("set_layout", *(d->object.get()), scheme);
 }
 
 void NavitDBus::startSearch()
@@ -329,7 +352,7 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string &s
     nTrace() << "Searching for " << searchString;
     std::string tag, nameSearchTag;
     if (type == INavitIPC::SearchType::Country) {
-        tag = "country_name";
+        tag = "country_all";
         nameSearchTag = "country";
     } else if(type == INavitIPC::SearchType::City) {
         tag = "town_name";
@@ -392,6 +415,8 @@ void NavitDBus::finishSearch()
     }
 
     DBusHelpers::call("destroy", *(d->searchObject.get()));
+    nInfo() << "Search list destroyed";
+    d->searchObject.reset();
 }
 
 INavitIPC::SpeechSignalType& NavitDBus::speechSignal()

@@ -17,6 +17,7 @@ public:
     virtual void quit() override;
     virtual void moveBy(int x, int y) override;
     virtual void zoomBy(int y) override;
+    virtual void setZoom(int newZoom) override;
     virtual int zoom() override;
     virtual void render() override;
     virtual void resize(int x, int y) override;
