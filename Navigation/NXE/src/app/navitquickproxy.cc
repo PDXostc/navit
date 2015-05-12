@@ -424,5 +424,5 @@ void NavitQuickProxy::synchronizeNavit()
     nxeInstance->HandleMessage<ResizeMessageTag>(0, 0);
 
     // set scheme
-//    setEnablePoi(m_settings.get<Tags::EnablePoi>());
+    setEnablePoi(m_settings.get<Tags::EnablePoi>());
 }
