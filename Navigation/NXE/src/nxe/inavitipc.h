@@ -83,6 +83,7 @@ public:
     virtual void addWaypoint(double longitude, double latitude) = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
+    virtual NXE::Position currentCenter() = 0;
 
     virtual void startSearch() = 0;
     virtual SearchResults search(SearchType type, const std::string& searchString) = 0;

@@ -364,6 +364,15 @@ void NavitDBus::setScheme(const std::string& scheme)
     DBusHelpers::callNoReply("set_layout", *(d->object.get()), scheme);
 }
 
+Position NavitDBus::currentCenter()
+{
+    nInfo() << "Current center";
+    auto ret = DBusHelpers::getAttr<DBus::Struct<double,double>>("center", *(d->object.get()));
+    nInfo() << "Current center " << ret._1 << ret._2;
+
+    return NXE::Position{ret._1, ret._2};
+}
+
 void NavitDBus::startSearch()
 {
     nInfo() << "Creating new search";
@@ -403,8 +412,8 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& s
             resultsIter >> resultId >> position;
             nTrace() << "Read pos";
             resultsIter >> at;
-            lat = position._1;
-            lon = position._2;
+            lat = position._2;
+            lon = position._1;
 
             nDebug() << "Search results: " << resultId << " Pos = "
                      << position._1 << " " << position._2;
@@ -459,17 +468,17 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& s
 
             if (type == INavitIPC::SearchType::Country) {
                 // decode country
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(lat,lon), decodeCountry(at) });
+                ret.emplace_back(SearchResult{ resultId, std::make_pair(lon,lat), decodeCountry(at) });
                 nDebug() << "Country = " << ret.back().country.name;
             }
             else if (type == INavitIPC::SearchType::City) {
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(lat,lon), decodeCountry(at), decodeCity(at) });
+                ret.emplace_back(SearchResult{ resultId, std::make_pair(lon,lat), decodeCountry(at), decodeCity(at) });
                 nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
             }
             else if (type == INavitIPC::SearchType::Street) {
                 ret.emplace_back(SearchResult{
                     resultId,
-                    std::make_pair(lat, lon),
+                    std::make_pair(lon,lat),
                     decodeCountry(at),
                     decodeCity(at),
                     decodeStreet(at) });
@@ -479,7 +488,7 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& s
             else if (type == INavitIPC::SearchType::Address) {
                 ret.emplace_back(SearchResult{
                     resultId,
-                    std::make_pair(lat, lon),
+                    std::make_pair(lon,lat),
                     decodeCountry(at),
                     decodeCity(at),
                     decodeStreet(at),

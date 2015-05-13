@@ -30,6 +30,7 @@ public:
     virtual void clearDestination() override;
     virtual void addWaypoint(double longitude, double latitude) override;
     virtual void setScheme(const std::string& scheme) override;
+    virtual NXE::Position currentCenter() override;
 
     virtual void startSearch() override;
     virtual SearchResults search(SearchType type, const std::string& searchString) override;

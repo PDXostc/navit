@@ -538,8 +538,8 @@ coord_geo_encode(DBusMessageIter *iter, struct coord_geo *pc)
     DBusMessageIter iter2;
     dbus_message_iter_open_container(iter,DBUS_TYPE_STRUCT,NULL,&iter2);
     if (pc) {
-        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lat);
         dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lng);
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lat);
     } else {
         int n=0;
         dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &n);
@@ -1812,7 +1812,6 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
 	reply = dbus_message_new_method_return(message);
 	dbus_message_iter_init_append(reply, &iter);
 	dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &result->id);
-//    pcoord_encode(&iter, result->c);
     struct coord c;
     struct coord_geo g;
     g.lat = 0;

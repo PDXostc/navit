@@ -241,3 +241,8 @@ TEST_F(NavitDBusTest, search_incomplete_address_valid)
 
     connection.finishSearch();
 }
+
+TEST_F(NavitDBusTest, currentCenter)
+{
+    connection.currentCenter();
+}
