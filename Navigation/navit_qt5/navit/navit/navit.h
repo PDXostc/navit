@@ -128,6 +128,8 @@ struct navit * navit_ref(struct navit *this_);
 void navit_unref(struct navit *this_);
 void navit_set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore);
 struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p);
+struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int distance);
+void navit_dbus_send_selected_pois(void* data, struct pcoord *pc, int distance);
 /* end of prototypes */
 #ifdef __cplusplus
 }

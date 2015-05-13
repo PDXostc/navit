@@ -1692,7 +1692,6 @@ request_navit_add_waypoint(DBusConnection *connection, DBusMessage *message)
 	return empty_reply(connection, message);
 }
 
-
 static DBusHandlerResult
 request_navit_set_destination(DBusConnection *connection, DBusMessage *message)
 {
@@ -1716,6 +1715,35 @@ request_navit_set_destination(DBusConnection *connection, DBusMessage *message)
 	navit_set_destination(navit, &pc, description, 1);
 	return empty_reply(connection, message);
 }
+
+static DBusHandlerResult
+request_navit_search_pois(DBusConnection *connection, DBusMessage *message)
+{
+	struct pcoord pc;
+	struct navit *navit;
+	DBusMessageIter iter;
+	char *distance=NULL;
+	int dist=0;
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	dbus_message_iter_init(message, &iter);
+	if (!pcoord_get_from_message(message, &iter, &pc))
+    		return dbus_error_invalid_parameter(connection, message);
+
+	dbus_message_iter_next(&iter);
+	dbus_message_iter_get_basic(&iter, &distance);
+	dbg(lvl_debug, " destination -> %s\n", distance);
+
+	if ((dist = strtol (distance,NULL,10)) > 0) {
+		navit_dbus_send_selected_pois(navit, &pc, dist);
+	}
+
+	return DBUS_HANDLER_RESULT_HANDLED;
+}
+
 
 static DBusHandlerResult
 request_navit_clear_destination(DBusConnection *connection, DBusMessage *message)
@@ -2030,6 +2058,7 @@ struct dbus_method {
 	{".navit",  "set_destination",     "(iii)s",  "(projection,longitude,latitude)comment",  "",   "",      request_navit_set_destination},
 	{".navit",  "clear_destination",   "",        "",                                        "",   "",      request_navit_clear_destination},
 	{".navit",  "add_waypoint",        "s",       "(coordinates)",                           "",   "",      request_navit_add_waypoint},
+	{".navit",  "search_pois",         "ss",      "coordinates,distance",                    "",   "",      request_navit_search_pois},
 	{".navit",  "evaluate", 	   "s",	      "command",				 "s",  "",      request_navit_evaluate},
 	{".layout", "get_attr",		   "s",	      "attribute",                               "sv",  "attrname,value", request_layout_get_attr},
 	{".map",    "get_attr",            "s",       "attribute",                               "sv",  "attrname,value", request_map_get_attr},

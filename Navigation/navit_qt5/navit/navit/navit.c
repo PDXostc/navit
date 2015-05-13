@@ -268,6 +268,105 @@ void navit_dbus_send_point_info(void* data, struct point *p)
 	attr_list_free(attr_list);
 }
 
+/**
+ * @brief This function returns atribute list with pois found around given center point.
+ *
+ * @param cn center point
+ * @param dist distance from center point in meters
+ * @return Pointer to the updated attribute list
+ */
+struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int dist)
+{
+	struct attr **attr_list=NULL;
+	struct attr attr;
+	struct item* item;
+	struct mapset_handle *h;
+	struct map_selection *sel,*selm;
+	struct map_rect *mr;
+	struct map *m;
+	int idist;
+	struct coord center;
+	struct coord_geo g;
+	struct transformation *trans;
+
+    sel=map_selection_rect_new(&cn,dist*transform_scale(abs(cn.y)+dist*1.5),18);
+
+	center.x=cn.x;
+	center.y=cn.y;
+	h=mapset_open(navit_get_mapset(this_));
+
+	while ((m=mapset_next(h, 1))) {
+		selm=map_selection_dup_pro(sel, cn.pro, map_projection(m));
+	    mr=map_rect_new(m, selm);
+
+	    if (mr) {
+	    	while ((item=map_rect_get_item(mr))) {
+	    		struct coord c;
+	            if (item_coord_get_pro(item, &c, 1, cn.pro) &&
+	            	coord_rect_contains(&sel->u.c_rect, &c) &&
+	                (idist=transform_distance(cn.pro, &center, &c)) < dist &&
+	                item->type<type_line) {
+
+	        	    // item type
+	                attr.type = attr_item_type;
+	                attr.u.item_type = item->type;
+	                attr_list=attr_generic_add_attr(attr_list, &attr);
+
+	                // transform  to geo coordinates
+	                trans=navit_get_trans(this_);
+                	transform_to_geo(transform_get_projection(trans), &c, &g);
+
+                	// poi position
+                	attr.u.coord_geo=&g;
+                	attr.type=attr_position_coord_geo;
+
+                    attr_list=attr_generic_add_attr(attr_list, &attr);
+
+                    // poi distance from center point in meters
+                    attr.u.num = idist;
+                    attr.type=attr_static_distance;
+
+                    attr_list=attr_generic_add_attr(attr_list, &attr);
+
+                    // poi label
+                    if (!item_attr_get(item, attr_label, &attr)) {
+                    	attr.type = attr_label;
+                    	attr.u.str = "";
+                    }
+
+                    attr_list=attr_generic_add_attr(attr_list, &attr);
+	            }
+	    	}
+	    }
+
+	    map_selection_destroy(selm);
+	}
+
+	map_selection_destroy(sel);
+	mapset_close(h);
+
+	return attr_list;
+}
+
+/**
+ * @brief This function sends over dbus atribute list with pois found around given center point
+ *
+ * @param center center point
+ * @param dist distance from center point in meters
+ */
+void navit_dbus_send_selected_pois(void* data, struct pcoord *pc, int distance)
+{
+	struct navit *this=data;
+	struct attr cb, **attr_list=NULL;
+	int valid=0;
+
+	attr_list = navit_get_selected_pois(this, *pc, distance);
+
+	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
+		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+
+	attr_list_free(attr_list);
+}
 
 void
 navit_set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore)
