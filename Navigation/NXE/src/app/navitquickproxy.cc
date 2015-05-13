@@ -442,6 +442,18 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             newZoomLevel = 8;
         }
     });
+    // search in favs
+    std::for_each(m_favoritesResults.begin(), m_favoritesResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
+        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
+
+        if (proxy->id() == id) {
+            // we have to copy this, since in a second the model will be deleted
+            // and this will points to an deleted object
+            m_currentItem.reset(LocationProxy::clone(proxy));
+            pos.latitude = proxy->latitude();
+            pos.longitude = proxy->longitude();
+        }
+    });
 
     if (!m_currentItem) {
         aFatal() << "Unable to find item= " << id.toByteArray().data();

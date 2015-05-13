@@ -62,10 +62,6 @@ void LocationProxy::setFavorite(bool bFav)
     emit favoriteChanged();
 }
 
-void LocationProxy::setDescription(const QString& desc)
-{
-}
-
 void LocationProxy::setBolded(bool b)
 {
 }

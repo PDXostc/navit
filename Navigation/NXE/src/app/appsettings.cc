@@ -99,11 +99,14 @@ QList<LocationProxy*> AppSettings::favorites()
         aInfo() << "Reading " << entry;
         read_json(entry.path().string(), entryTree);
 
-        favs.append(new LocationProxy{
+        auto loc = new LocationProxy{
             QString::fromStdString(entryTree.get<std::string>("itemText")),
             true,
             QString::fromStdString(entryTree.get<std::string>("description")),
-            false });
+            false
+        };
+        loc->setPosition(NXE::Position{entryTree.get<double>("longitude"), entryTree.get<double>("latitude")});
+        favs.append(loc);
     }
 
     return favs;
