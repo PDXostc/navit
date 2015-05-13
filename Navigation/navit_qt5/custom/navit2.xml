@@ -582,8 +582,11 @@ SYSTEM "navit.dtd">
 
         <speech type="dbus"/>
         <!-- Mapset template for openstreetmaps -->
-        <mapset enabled="yes">
+        <mapset enabled="no">
             <maps type="binfile" data="$NAVIT_SHAREDIR/maps/*.bin"/>
+        </mapset>
+        <mapset enabled="yes">
+            <maps type="binfile" data="$HOME/.NavIt/maps/*.bin"/>
         </mapset>
 
         <layer name="Found items" order="0-">
