@@ -76,7 +76,6 @@ make install DESTDIR=%{buildroot}
 %{_prefix}/lib/libnxe.so
 %{_prefix}/share/nxe/nxe.conf
 %{_prefix}/share/nxe/osm_maps.xml
-%{_prefix}/lib/libfruit.so
 %{_prefix}/bin/mapdownloader
 %{_prefix}/bin/nxe-app
 %{_prefix}/share/dbus-1/services/org.nxe.mapdownloader.service
