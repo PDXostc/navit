@@ -11,6 +11,7 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD2(resize, void(int,int));
     MOCK_METHOD2(moveBy, void(int,int));
     MOCK_METHOD1(zoomBy, void(int));
+    MOCK_METHOD1(setZoom, void(int));
     MOCK_METHOD0(zoom, int(void));
     MOCK_METHOD0(speechSignal, SpeechSignalType&());
     MOCK_METHOD0(pointClickedSignal, PointClickedSignalType&());
@@ -26,8 +27,8 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD1(setScheme, void(const std::string&));
     MOCK_METHOD0(startSearch, void());
     MOCK_METHOD0(finishSearch, void());
-    MOCK_METHOD1(searchCity, std::vector<NXE::City>(const std::string&));
-    MOCK_METHOD1(searchCountry, std::vector<NXE::Country>(const std::string&));
+    MOCK_METHOD2(search, NXE::SearchResults(NXE::INavitIPC::SearchType, const std::string&));
+    MOCK_METHOD2(selectSearchResult, void(NXE::INavitIPC::SearchType, std::int32_t));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

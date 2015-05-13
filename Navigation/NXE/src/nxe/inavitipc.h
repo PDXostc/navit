@@ -8,19 +8,37 @@
 
 namespace NXE {
 
-struct Country {
-    const std::string name;
-    const std::string car;
-    const std::string iso2;
-    const std::string iso3;
+struct SearchResult {
+    const int32_t searchId;
+    const std::pair<int,int> position;
+    // Country
+    struct Country {
+        const std::string name;
+        const std::string car;
+        const std::string iso2;
+        const std::string iso3;
+    };
+    struct City {
+        const std::string name;
+        const std::string postal;
+        const std::string postal_mask;
+    };
+    struct Street {
+        const std::string name;
+    };
+    struct HouseNumber {
+        const std::string name;
+        const std::string postal;
+        const std::string postal_mask;
+    };
+
+    const Country country;
+    const City city;
+    const Street street;
+    const HouseNumber house;
 };
 
-struct City {
-    const std::string name;
-    const std::string postal;
-    const std::string postal_mask;
-    const std::pair<int,int> position;
-};
+typedef std::vector<SearchResult> SearchResults;
 
 struct PointClicked {
     typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
@@ -30,6 +48,13 @@ struct PointClicked {
 
 class INavitIPC {
 public:
+
+    enum class SearchType {
+        Country = 0,
+        City,
+        Street,
+        Address
+    };
 
     typedef boost::signals2::signal<void(std::string)> SpeechSignalType;
     typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
@@ -43,6 +68,7 @@ public:
     virtual void moveBy(int x, int y) = 0;
     virtual int zoom() = 0;
     virtual void zoomBy(int factor) = 0;
+    virtual void setZoom(int newZoom) = 0;
     virtual void render() = 0;
     virtual void resize(int x, int y) = 0;
 
@@ -59,8 +85,8 @@ public:
     virtual void setScheme(const std::string& scheme) = 0;
 
     virtual void startSearch() = 0;
-    virtual std::vector<Country> searchCountry(const std::string& what) = 0;
-    virtual std::vector<City> searchCity(const std::string& what) = 0;
+    virtual SearchResults search(SearchType type, const std::string& searchString) = 0;
+    virtual void selectSearchResult(SearchType type, std::int32_t id)  = 0;
     virtual void finishSearch() = 0;
 
     // Signals from IPC

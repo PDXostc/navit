@@ -30,13 +30,20 @@ struct Context {
     NXE::ISpeech* speech{ new NXE::SpeechImplDBus{ dbusController } };
 #endif
     NXE::DI::Injector injector{ std::make_tuple(
-                    std::shared_ptr<NXE::INavitIPC>(ipc),
-                    std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
-                    std::shared_ptr<NXE::IGPSProvider>(new NXE::GPSDProvider),
-                    std::shared_ptr<NXE::IMapDownloader>(md),
-                    std::shared_ptr<NXE::ISpeech>(speech)
-                    )};
+        std::shared_ptr<NXE::INavitIPC>(ipc),
+        std::shared_ptr<NXE::INavitProcess>(new NXE::NavitProcessImpl),
+        std::shared_ptr<NXE::IGPSProvider>(new NXE::GPSDProvider),
+        std::shared_ptr<NXE::IMapDownloader>(md),
+        std::shared_ptr<NXE::ISpeech>(speech)) };
 };
+
+void clearList(QObjectList& l, const QString& modelName, QQmlContext* c)
+{
+    QObjectList tmp = l;
+    l.clear();
+    c->setContextProperty(modelName, QVariant::fromValue(l));
+    qDeleteAll(tmp);
+}
 
 NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject* parent)
     : QObject(parent)
@@ -90,7 +97,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         }
 
         aDebug() << "Name = " << name.toStdString();
-        auto loc = new LocationProxy {name, false, "1234 N Main, Portland, OR 97208", false};
+        auto loc = new LocationProxy {LocationType::Street, name, false, "1234 N Main, Portland, OR 97208", false};
         // move to parent thread
         loc->moveToThread(this->thread());
         emit pointClicked(loc);
@@ -150,21 +157,23 @@ bool NavitQuickProxy::enablePoi() const
 {
     return m_settings.get<Tags::EnablePoi>();
 }
+
 bool NavitQuickProxy::topBarLocationVisible() const
 {
     return m_settings.get<Tags::TopBarLocationVisible>();
 }
+
 void NavitQuickProxy::setTopBarLocationVisible(bool value)
 {
     m_settings.set<Tags::TopBarLocationVisible>(value);
     topBarLocationVisibleChanged();
-
 }
 
 void NavitQuickProxy::resize(const QRect& rect)
 {
     nxeInstance->HandleMessage<ResizeMessageTag>(rect.width(), rect.height());
 }
+
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
     nxeInstance->HandleMessage<SetSchemeMessageTag>(enable ? "Car-JLR" : "Car-JLR-nopoi");
@@ -235,35 +244,25 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
 
 void NavitQuickProxy::startSearch()
 {
-    qDeleteAll(m_countriesSearchResults);
-    m_countriesSearchResults.clear();
-
-    qDeleteAll(m_citiesSearchResults);
-    m_citiesSearchResults.clear();
-
+    finishSearch();
     nxeInstance->HandleMessage<StartSearchTag>();
 }
 
 void NavitQuickProxy::finishSearch()
 {
-    qDeleteAll(m_countriesSearchResults);
-    m_countriesSearchResults.clear();
-
-    qDeleteAll(m_citiesSearchResults);
-    m_citiesSearchResults.clear();
     nxeInstance->HandleMessage<FinishSearchTag>();
 }
 
 void NavitQuickProxy::searchCountry(const QString& countryName)
 {
-    qDeleteAll(m_countriesSearchResults);
-    m_countriesSearchResults.clear();
+    clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
     aDebug() << "Search for country = " << countryName.toStdString();
-    auto countries = nxeInstance->HandleMessage<SearchCountryLocationTag>(countryName.toStdString());
-    for (NXE::Country country : countries) {
-        m_countriesSearchResults.append(new LocationProxy{ QString::fromStdString(country.name),
-            false, "", false });
+    auto countries = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Country, countryName.toStdString());
+    for (NXE::SearchResult result : countries) {
+        aTrace() << "result " << result.country.name;
+        m_countriesSearchResults.append(new LocationProxy{ result });
     }
+    aDebug() << "Country Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
     m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
 
     emit searchDone();
@@ -271,22 +270,74 @@ void NavitQuickProxy::searchCountry(const QString& countryName)
 
 void NavitQuickProxy::searchCity(const QString& name)
 {
+    clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
     aDebug() << "Search for city = " << name.toStdString();
-    auto cities = nxeInstance->HandleMessage<SearchCityLocationTag>(name.toStdString());
+    auto cities = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::City, name.toStdString());
     aDebug() << cities.size();
 
-    for (NXE::City city : cities) {
-        auto loc = new LocationProxy{ QString::fromStdString(city.name),
-            false, "", false };
-        loc->setPosition(city.position);
-        m_citiesSearchResults.append(loc);
+    for (NXE::SearchResult city : cities) {
+        m_citiesSearchResults.append(new LocationProxy{ city });
     }
-    aDebug() << "Model size = " << m_citiesSearchResults.size();
+    aDebug() << "City Model size = " << m_citiesSearchResults.size();
     m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     emit searchDone();
 }
 
-void NavitQuickProxy::searchNear(const QString &str)
+void NavitQuickProxy::searchStreet(const QString& street)
+{
+    clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
+
+    aDebug() << "Search for street = " << street.toStdString();
+    auto streets = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Street, street.toStdString());
+    aDebug() << streets.size();
+
+    for (NXE::SearchResult street : streets) {
+        m_streetsSearchResults.append(new LocationProxy{ street });
+    }
+    aDebug() << "Street Model size = " << m_streetsSearchResults.size();
+    m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
+    emit searchDone();
+}
+
+void NavitQuickProxy::searchAddress(const QString &street)
+{
+    clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
+
+    aDebug() << "Search for address = " << street.toStdString();
+    auto results = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Address, street.toStdString());
+
+    for (NXE::SearchResult result : results) {
+        m_addressSearchResults.append(new LocationProxy{ result });
+    }
+    aDebug() << "Address Model size = " << m_addressSearchResults.size();
+    m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
+    emit searchDone();
+}
+
+void NavitQuickProxy::searchSelect(const QString &what, int id)
+{
+    if (id == -1) {
+        aInfo() << "Id is -1, so no select";
+        return;
+    }
+
+    aInfo() << "Selecting id= " << id;
+    NXE::INavitIPC::SearchType type;
+    if (what == "country") {
+        type = NXE::INavitIPC::SearchType::Country;
+    } else if(what == "city") {
+        type = NXE::INavitIPC::SearchType::City;
+    } else if(what == "street") {
+        type = NXE::INavitIPC::SearchType::Street;
+    } else if(what == "address") {
+        type = NXE::INavitIPC::SearchType::Address;
+    } else {
+        throw std::runtime_error("Shouldn't happen");
+    }
+    nxeInstance->HandleMessage<SearchSelectMessageTag>(type, id);
+}
+
+void NavitQuickProxy::searchNear(const QString& str)
 {
     // TODO: Implement me
 }
@@ -295,7 +346,7 @@ void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_favoritesResults.append(new LocationProxy{ "fav_test1", false, "", true });
+    m_favoritesResults.append(new LocationProxy{ LocationType::City, "fav_test1", false, "", true });
 
     m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
 
@@ -305,7 +356,7 @@ void NavitQuickProxy::getHistory()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_historyResults.append(new LocationProxy{ "hist_test1", false, "", true });
+    m_historyResults.append(new LocationProxy{ LocationType::City, "hist_test1", false, "", true });
 
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
 
@@ -314,34 +365,68 @@ void NavitQuickProxy::getHistory()
 
 void NavitQuickProxy::setTopBarVisibility(bool value)
 {
-   setTopBarLocationVisible(value);
+    setTopBarLocationVisible(value);
 }
 
+void NavitQuickProxy::setZoom(int newZoom)
+{
+    nxeInstance->HandleMessage<SetZoomMessageTag>(newZoom);
+}
 
-void NavitQuickProxy::setLocationPopUp(const QString& name)
+void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 {
     aDebug() << Q_FUNC_INFO;
-    std::pair<int,int> pos;
-    std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &name, &pos](QObject* o) {
+    std::pair<int, int> pos;
+    int newZoomLevel = -1;
+    std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &id, &pos](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
-        if (proxy->itemText() == name ) {
+        if (proxy->id() == id) {
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
-            m_currentItem.reset(new LocationProxy{proxy->itemText(),
-                                                  proxy->favorite(),
-                                                  proxy->description(),
-                                                  proxy->bolded()});
+            m_currentItem.reset(LocationProxy::clone(proxy));
             pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
         }
     });
 
+    // search in streets
+    std::for_each(m_streetsSearchResults.begin(), m_streetsSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
+        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
+
+        if (proxy->id() == id) {
+            // we have to copy this, since in a second the model will be deleted
+            // and this will points to an deleted object
+            m_currentItem.reset(LocationProxy::clone(proxy));
+            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
+            newZoomLevel = 16;
+        }
+    });
+    // search in addresses
+    std::for_each(m_addressSearchResults.begin(), m_addressSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
+        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
+
+        if (proxy->id() == id) {
+            // we have to copy this, since in a second the model will be deleted
+            // and this will points to an deleted object
+            m_currentItem.reset(LocationProxy::clone(proxy));
+            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
+            newZoomLevel = 8;
+        }
+    });
+
     if (!m_currentItem) {
-        aFatal() << "Unable to find item= " << name.toStdString();
+        aFatal() << "Unable to find item= " << id.toByteArray().data();
     }
     else {
-        nxeInstance->HandleMessage<SetPositionByIntMessageTag>(pos.first, pos.second);
         emit currentlySelectedItemChanged();
+        aInfo() << "Setting location to " << pos.first << " " << pos.second;
+        nxeInstance->HandleMessage<SetPositionByIntMessageTag>(pos.first, pos.second);
+
+        // HACK: For some reasons setting zoom directly after
+        // sending position message causes a deadlock
+        QTimer::singleShot(100, [this, newZoomLevel]() {
+            nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
+        });
     }
 }
 void NavitQuickProxy::hideLocationBars()
@@ -353,6 +438,10 @@ void NavitQuickProxy::hideLocationBars()
 
 void NavitQuickProxy::initNavit()
 {
+    m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
+    m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
+    m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
+    m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
     aInfo() << "Launching navit";
     context->dbusController.start();
 

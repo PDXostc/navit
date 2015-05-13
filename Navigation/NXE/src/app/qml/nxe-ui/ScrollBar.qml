@@ -4,7 +4,7 @@ Item {
    id: scrollbar
 
     property Flickable flk : undefined
-    property int basicWidth: 10
+    property int basicWidth: 5
     property int expandedWidth: 20
     property alias color : scrl.color
     property alias radius : scrl.radius
@@ -31,14 +31,11 @@ Item {
         clip: true
         anchors.left: parent.left
         anchors.right: parent.right
-//        height: flk.visibleArea.heightRatio * flk.height
-        height: 100
-        visible: true
-//        visible: flk.visibleArea.heightRatio < 1.0
-        radius: 10
-        color: "gray"
+        height: flk.visibleArea.heightRatio * flk.height
+        visible: flk.visibleArea.heightRatio < 1.0
+        color: "white"
 
-        opacity: ma.pressed ? 1 : ma.containsMouse ? 0.65 : 0.4
+        opacity: 1
         Behavior on opacity {NumberAnimation{duration: 150}}
 
         Binding {

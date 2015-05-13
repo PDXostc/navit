@@ -17,6 +17,7 @@ public:
     virtual void quit() override;
     virtual void moveBy(int x, int y) override;
     virtual void zoomBy(int y) override;
+    virtual void setZoom(int newZoom) override;
     virtual int zoom() override;
     virtual void render() override;
     virtual void resize(int x, int y) override;
@@ -31,8 +32,8 @@ public:
     virtual void setScheme(const std::string& scheme) override;
 
     virtual void startSearch() override;
-    virtual std::vector<Country> searchCountry(const std::string& name) override;
-    virtual std::vector<City> searchCity(const std::string& cityName) override;
+    virtual SearchResults search(SearchType type, const std::string& searchString) override;
+    virtual void selectSearchResult(SearchType type, std::int32_t id) override;
     virtual void finishSearch() override;
 
     virtual SpeechSignalType& speechSignal() override;

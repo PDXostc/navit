@@ -53,6 +53,14 @@ TEST_F(NavitDBusTest, zoom)
         EXPECT_EQ(defZoom / zoomBy, connection.zoom()););
 }
 
+TEST_F(NavitDBusTest, setZoom)
+{
+    EXPECT_NO_THROW(
+        connection.setZoom(16);
+        EXPECT_EQ(16, connection.zoom());
+    );
+}
+
 TEST_F(NavitDBusTest, setOrientation)
 {
     int orientation = connection.orientation();
@@ -99,12 +107,10 @@ TEST_F(NavitDBusTest, addWaypoint)
     connection.addWaypoint(11.586, 48.149);
 }
 
-
 TEST_F(NavitDBusTest, setScheme)
 {
     EXPECT_NO_THROW(
     connection.setScheme("Car-JLR"));
-
     EXPECT_NO_THROW(
     connection.setScheme("Car-JLR-nopoi"));
 }
@@ -118,15 +124,20 @@ TEST_F(NavitDBusTest, DISABLED_setScheme_failure)
 TEST_F(NavitDBusTest, search_country)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("Germany");
-    EXPECT_NE(country.size(), 0);
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    ASSERT_NE(country.size(), 0);
+    EXPECT_EQ(country.at(0).country.name, "Germany");
+    EXPECT_EQ(country.at(0).country.car, "D");
+    EXPECT_EQ(country.at(0).country.iso2, "DE");
+    EXPECT_EQ(country.at(0).country.iso3, "DEU");
+
     connection.finishSearch();
 }
 
 TEST_F(NavitDBusTest, search_multipleCountries)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("P");
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "P");
     EXPECT_NE(country.size(), 0);
     connection.finishSearch();
 }
@@ -134,24 +145,99 @@ TEST_F(NavitDBusTest, search_multipleCountries)
 TEST_F(NavitDBusTest, search_street_name_invalid)
 {
     EXPECT_ANY_THROW(
-        connection.searchCountry("");
+        connection.search(NXE::INavitIPC::SearchType::Country, "");
     );
 }
 
 TEST_F(NavitDBusTest, search_city_valid)
 {
     connection.startSearch();
-    auto country = connection.searchCountry("Germany");
-    auto city = connection.searchCity("Munchen");
-    ASSERT_NE(country.size(), 0);
-    EXPECT_EQ(country.at(0).name, "Germany");
-    ASSERT_NE(city.size(), 0);
-    EXPECT_TRUE(std::find_if(city.begin(), city.end(), [](const NXE::City& city) -> bool {
-        return city.name == "München";
-    }) != city.end());
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Berlin");
+    ASSERT_NE(cities.size(), 0);
+    //Country checks
+    EXPECT_EQ(cities.at(0).country.name, "Germany");
+    EXPECT_EQ(cities.at(0).country.car, "D");
+    EXPECT_EQ(cities.at(0).country.iso2, "DE");
+    EXPECT_EQ(cities.at(0).country.iso3, "DEU");
+    EXPECT_EQ(cities.at(0).country.name, "Germany");
+    auto it = std::find_if(cities.begin(), cities.end(), [](const NXE::SearchResult& city) -> bool {
+        return city.city.name == "Berlin";
+    });
+    ASSERT_NE(it, cities.end());
+
+    EXPECT_EQ(it->city.name, "Berlin");
+    EXPECT_EQ(it->country.name, "Germany");
     connection.finishSearch();
 }
 
-TEST_F(NavitDBusTest, search_country_incomplete)
+TEST_F(NavitDBusTest, search_street_valid)
 {
+    connection.startSearch();
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Berlin");
+    auto streets = connection.search(NXE::INavitIPC::SearchType::Street, "Benfeyweg");
+    ASSERT_NE(country.size(), 0);
+    ASSERT_NE(cities.size(), 0);
+    EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
+        return street.street.name == "Benfeyweg";
+    }) != streets.end());
+
+    connection.finishSearch();
+}
+
+TEST_F(NavitDBusTest, search_address_valid)
+{
+    connection.startSearch();
+
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    ASSERT_GT(country.size(), 0);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::Country, country.at(0).searchId);
+
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Berlin");
+    ASSERT_GT(cities.size(), 2);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::City, cities.at(1).searchId);
+
+    auto streets = connection.search(NXE::INavitIPC::SearchType::Street, "Benfeyweg");
+    ASSERT_EQ(streets.size(),1);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::Street, streets.at(0).searchId);
+
+    auto addresses = connection.search(NXE::INavitIPC::SearchType::Address, "4");
+    ASSERT_NE(country.size(), 0);
+    ASSERT_NE(cities.size(), 0);
+    ASSERT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
+        return street.street.name == "Benfeyweg";
+    }) != streets.end());
+
+    EXPECT_NE(addresses.size(), 0);
+
+    connection.finishSearch();
+}
+
+TEST_F(NavitDBusTest, search_incomplete_address_valid)
+{
+    connection.startSearch();
+
+    auto country = connection.search(NXE::INavitIPC::SearchType::Country, "Germany");
+    ASSERT_GT(country.size(), 0);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::Country, country.at(0).searchId);
+
+    auto cities = connection.search(NXE::INavitIPC::SearchType::City, "Berlin");
+    ASSERT_GT(cities.size(), 2);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::City, cities.at(1).searchId);
+
+    auto streets = connection.search(NXE::INavitIPC::SearchType::Street, "Benf");
+    ASSERT_EQ(streets.size(),2);
+    connection.selectSearchResult(NXE::INavitIPC::SearchType::Street, streets.at(1).searchId);
+
+    auto addresses = connection.search(NXE::INavitIPC::SearchType::Address, "");
+    ASSERT_NE(country.size(), 0);
+    ASSERT_NE(cities.size(), 0);
+    ASSERT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
+        return street.street.name == "Benfeyweg";
+    }) != streets.end());
+
+    EXPECT_NE(addresses.size(), 0);
+
+    connection.finishSearch();
 }

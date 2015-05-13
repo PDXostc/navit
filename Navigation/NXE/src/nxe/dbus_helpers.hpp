@@ -51,6 +51,17 @@ namespace __details {
     }
 
     template <typename... Args>
+    bool callNoReply(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
+    {
+        using namespace __details;
+        DBus::CallMessage call;
+        ::DBus::MessageIter it = call.writer();
+        call.member(methodName.c_str());
+        unpack(it, attr...);
+        return proxy.invoke_method_noreply(call);
+    }
+
+    template <typename... Args>
     ::DBus::Message call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
         using namespace __details;
@@ -72,7 +83,7 @@ namespace __details {
         ::DBus::Variant val;
         ::DBus::MessageIter ww = val.writer();
         ww << value;
-        call("set_attr", proxy, attrName, val);
+        callNoReply("set_attr", proxy, attrName, val);
     }
 
     template<typename T>

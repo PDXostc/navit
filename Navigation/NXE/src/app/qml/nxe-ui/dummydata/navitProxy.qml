@@ -23,11 +23,18 @@ QtObject {
     function startSearch() {
     }
 
+    function finishSearch() {
+    }
+
     function searchCountry(searchString) {
         fakeSearchTimer.start();
     }
 
     function searchCity(searchString) {
+        fakeSearchTimer.start();
+    }
+
+    function searchStreet(searchString) {
         fakeSearchTimer.start();
     }
 
@@ -47,6 +54,7 @@ QtObject {
     }
 
     function setLocationPopUp(itemName) {
+        console.debug('set popup=', itemName)
         currentlySelectedItem = fakeLocationObject;
     }
 

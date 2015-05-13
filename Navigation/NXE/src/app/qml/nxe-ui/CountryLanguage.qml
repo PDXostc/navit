@@ -59,6 +59,10 @@ Rectangle {
         delegate: mapsType === "all" ? allCountriesListDelegate : suggestedCountriesListDelegate
     }
 
+    ScrollBar {
+        flk: list
+    }
+
     Component {
         id: suggestedCountriesListDelegate
         CLListDelegate {

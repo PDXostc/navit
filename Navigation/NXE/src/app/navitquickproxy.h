@@ -87,12 +87,17 @@ public slots:
     void finishSearch();
     void searchCountry(const QString& name);
     void searchCity(const QString& name);
+    void searchStreet(const QString& street);
+    void searchAddress(const QString& street);
+    void searchSelect(const QString& what, int id);
     void searchNear(const QString& str);
     void getFavorites();
     void getHistory();
-    void setLocationPopUp(const QString& name);
+    void setLocationPopUp(const QUuid& id);
     void hideLocationBars();
     void setTopBarVisibility(const bool value);
+
+    void setZoom(int newZoom);
 
 private slots:
     void initNavit();
@@ -107,6 +112,8 @@ private:
     NavitMapsProxy mapsProxy;
     QObjectList m_countriesSearchResults;
     QObjectList m_citiesSearchResults;
+    QObjectList m_streetsSearchResults;
+    QObjectList m_addressSearchResults;
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;

@@ -15,6 +15,17 @@ ListModel {
         ]
     }
     ListElement {
+        itemText: "Structured Search"
+        type: "sublist"
+        enabled: true
+        options: [
+            ListElement {
+                text: "StructureSearch"
+                url: "LocationsStructuredSearch.qml"
+            }
+        ]
+    }
+    ListElement {
         itemText: "Favorites"
         type: "sublist"
         enabled: false
