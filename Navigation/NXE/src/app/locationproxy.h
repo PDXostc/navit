@@ -24,7 +24,7 @@ class LocationProxy : public QObject {
     Q_PROPERTY(int searchId READ searchId CONSTANT)
     Q_PROPERTY(QUuid id READ id CONSTANT)
 public:
-    LocationProxy(LocationType locType,
+    LocationProxy(
         QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, QObject* parent = 0);
 
     LocationProxy(const NXE::SearchResult& searchResult);
@@ -55,9 +55,6 @@ signals:
     void favoriteChanged();
     void descriptionChanged();
     void boldedChanged();
-
-public slots:
-    bool isStreet() const { return _locType == LocationType::Street; }
 
 private:
     LocationType _locType;
