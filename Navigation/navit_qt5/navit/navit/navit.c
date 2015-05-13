@@ -216,10 +216,12 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
     // transform pixel coordinates to geo coordinates
     trans=navit_get_trans(this_);
     transform_reverse(trans, p, &c);
-	transform_to_geo(transform_get_projection(trans), &c, &g);
+    dbg(lvl_error, "%d %d", p->x, p->y);
+    dbg(lvl_error, "%d %d", c.x, c.y);
+    transform_to_geo(transform_get_projection(trans), &c, &g);
 
 	attr.u.coord_geo=&g;
-	attr.type=attr_click_coord_geo;
+    attr.type=attr_click_coord_geo;
 
     // add clicked point geo coordinates to atrributes list:
     attr_list=attr_generic_add_attr(attr_list, &attr);

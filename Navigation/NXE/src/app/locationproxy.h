@@ -19,9 +19,11 @@ class LocationProxy : public QObject {
     Q_PROPERTY(bool favorite READ favorite WRITE setFavorite NOTIFY favoriteChanged)
     Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
     Q_PROPERTY(bool bolded READ bolded WRITE setBolded NOTIFY boldedChanged)
-    Q_PROPERTY(int xPosition READ xPosition CONSTANT)
-    Q_PROPERTY(int yPosition READ yPosition CONSTANT)
+//    Q_PROPERTY(int xPosition READ xPosition CONSTANT)
+//    Q_PROPERTY(int yPosition READ yPosition CONSTANT)
     Q_PROPERTY(int searchId READ searchId CONSTANT)
+    Q_PROPERTY(double longitude READ longitude CONSTANT)
+    Q_PROPERTY(double latitude READ latitude CONSTANT)
     Q_PROPERTY(QUuid id READ id CONSTANT)
 public:
     LocationProxy(
@@ -40,15 +42,16 @@ public:
     bool bolded() const { return _bolded; }
     void setBolded(bool b);
 
-    int xPosition() const;
-    int yPosition() const;
-    void setPosition(const std::pair<int, int>& p) { _position = p; }
-
     int searchId() const { return _searchId; }
 
     static LocationProxy* clone(LocationProxy* rhs);
 
     QUuid id() const {return _id;}
+
+    double longitude() {return _coords.longitude;}
+    double latitude() {return _coords.latitude;}
+
+    void setPosition(const NXE::Position& p) {_coords = p;}
 
 signals:
 
@@ -62,7 +65,8 @@ private:
     bool _favorite;
     QString _description;
     bool _bolded;
-    std::pair<int, int> _position;
+    //		 Latitude, Lo
+    NXE::Position _coords;
     int _searchId;
     QUuid _id;
 };

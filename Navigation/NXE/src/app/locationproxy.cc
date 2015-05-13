@@ -20,7 +20,7 @@ LocationProxy::LocationProxy(const NXE::SearchResult& searchResult)
     , _favorite(false)
     , _description()
     , _bolded(false)
-    , _position(searchResult.position)
+    , _coords(NXE::Position{searchResult.position.first, searchResult.position.second})
     , _searchId(searchResult.searchId)
     , _id(QUuid::createUuid())
 {
@@ -49,7 +49,6 @@ LocationProxy::LocationProxy(const NXE::SearchResult& searchResult)
     else {
         throw std::runtime_error("What is this?");
     }
-    _position = searchResult.position;
 }
 
 void LocationProxy::setFavorite(bool bFav)
@@ -71,16 +70,6 @@ void LocationProxy::setBolded(bool b)
 {
 }
 
-int LocationProxy::xPosition() const
-{
-    return _position.first;
-}
-
-int LocationProxy::yPosition() const
-{
-    return _position.second;
-}
-
 LocationProxy* LocationProxy::clone(LocationProxy* rhs)
 {
     auto p = new LocationProxy{ rhs->itemText(),
@@ -90,5 +79,6 @@ LocationProxy* LocationProxy::clone(LocationProxy* rhs)
 
     p->_searchId = rhs->_searchId;
     p->_id = rhs->_id;
+    p->_coords = rhs->_coords;
     return p;
 }

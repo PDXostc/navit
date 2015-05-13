@@ -76,8 +76,8 @@ void AppSettings::addToFavorites(LocationProxy* proxy)
     favTree.add("id", proxy->id().toByteArray().data());
     favTree.add("itemText", proxy->itemText().toStdString());
     favTree.add("description", proxy->description().toStdString());
-    favTree.add("posX", proxy->xPosition());
-    favTree.add("posY", proxy->yPosition());
+    favTree.add("longitude", proxy->longitude());
+    favTree.add("latitude", proxy->latitude());
     write_json(favPath.string(), favTree);
 }
 

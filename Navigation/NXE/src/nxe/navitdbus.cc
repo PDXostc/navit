@@ -35,7 +35,6 @@ std::string convert(NXE::INavitIPC::SearchType type)
     }
     return tag;
 }
-
 }
 
 inline DBus::MessageIter& operator>>(::DBus::MessageIter& iter, std::vector<std::pair<std::string, DBus::Variant> >& vec)
@@ -324,10 +323,13 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
 void NavitDBus::setPosition(double longitude, double latitude)
 {
     DebugDBusCall dbg{ "setPosition" };
-    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    auto format = boost::format("geo: %1% %2%") % latitude % longitude;
     const std::string message = format.str();
+    DBus::Struct<int, std::string> s;
+    s._1 = 1;
+    s._2 = message;
 
-    DBusHelpers::callNoReply("set_position", *(d->object.get()), message);
+    DBusHelpers::call("set_center", *(d->object.get()),s);
 }
 
 void NavitDBus::setPositionByInt(int x, int y)
@@ -393,38 +395,58 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& s
             DBus::MessageIter resultsIter{ results.reader() };
 
             std::int32_t resultId;
-            DBus::Struct<int, int, int> position;
+            DBus::Struct<double,double> position;
             typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
             LocationDBusType at;
-            int o, x, y;
+            double lat, lon;
 
             resultsIter >> resultId >> position;
+            nTrace() << "Read pos";
             resultsIter >> at;
-            o = position._1;
-            x = position._2;
-            y = position._3;
-            DBus::Error ex;
+            lat = position._1;
+            lon = position._2;
 
             nDebug() << "Search results: " << resultId << " Pos = "
-                     << position._1 << " " << position._2 << " " << position._3;
+                     << position._1 << " " << position._2;
 
             auto decodeCountry = [this](LocationDBusType& map) -> SearchResult::Country {
-                return SearchResult::Country{map.at("country").at("name"),
-                            map.at("country")["car"],
+                std::string car,name = map.at("country").at("name");
+                auto isCar = map.at("country").find("car");
+                if (isCar != map.at("country").end()) {
+                    auto reader = isCar->second.reader();
+                    reader >> car;
+                }
+                return SearchResult::Country{name,
+                            car,
                             map.at("country")["iso2"],
                             map.at("country")["iso3"]
                 };
             };
             auto decodeCity = [this](LocationDBusType& map) -> SearchResult::City {
+                std::string postal, postalMask;
+                auto isPostal = map.at("town").find("postal");
+                if (isPostal != map.at("town").end()) {
+                    postal = DBusHelpers::getFromIter<std::string>(isPostal->second.reader());
+                }
+                auto isPostalMask = map.at("town").find("postal_mask");
+                if (isPostalMask != map.at("town").end()) {
+                    postal = DBusHelpers::getFromIter<std::string>(isPostalMask->second.reader());
+                }
                 return SearchResult::City{
                     map.at("town").at("name"),
-                    map.at("town")["postal"],
-                    map.at("town")["postal_mask"]
+                            postal,
+                            postalMask
                 };
             };
             auto decodeStreet = [this](const LocationDBusType& map) -> SearchResult::Street {
+                std::string name;
+                auto isStreet = map.find("street");
+                if (isStreet != map.end()) {
+                    name = DBusHelpers::getFromIter<std::string>(isStreet->second.at("name").reader());
+
+                }
                 return SearchResult::Street{
-                    map.at("street").at("name")
+                    name
                 };
             };
             auto decodeHouse = [this](LocationDBusType& map) -> SearchResult::HouseNumber {
@@ -437,31 +459,31 @@ SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& s
 
             if (type == INavitIPC::SearchType::Country) {
                 // decode country
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(x, y), decodeCountry(at) });
+                ret.emplace_back(SearchResult{ resultId, std::make_pair(lat,lon), decodeCountry(at) });
                 nDebug() << "Country = " << ret.back().country.name;
             }
             else if (type == INavitIPC::SearchType::City) {
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(x, y), decodeCountry(at), decodeCity(at) });
+                ret.emplace_back(SearchResult{ resultId, std::make_pair(lat,lon), decodeCountry(at), decodeCity(at) });
                 nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
-            } else if(type == INavitIPC::SearchType::Street) {
+            }
+            else if (type == INavitIPC::SearchType::Street) {
                 ret.emplace_back(SearchResult{
-                                     resultId,
-                                     std::make_pair(x, y),
-                                     decodeCountry(at),
-                                     decodeCity(at),
-                                     decodeStreet(at)
-                                 });
+                    resultId,
+                    std::make_pair(lat, lon),
+                    decodeCountry(at),
+                    decodeCity(at),
+                    decodeStreet(at) });
                 nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
                          << " Street = " << ret.back().street.name;
-            } else if(type == INavitIPC::SearchType::Address) {
+            }
+            else if (type == INavitIPC::SearchType::Address) {
                 ret.emplace_back(SearchResult{
-                                     resultId,
-                                     std::make_pair(x, y),
-                                     decodeCountry(at),
-                                     decodeCity(at),
-                                     decodeStreet(at),
-                                     decodeHouse(at)
-                                 });
+                    resultId,
+                    std::make_pair(lat, lon),
+                    decodeCountry(at),
+                    decodeCity(at),
+                    decodeStreet(at),
+                    decodeHouse(at) });
                 nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
                          << " Street = " << ret.back().street.name << " House = " << ret.back().house.name;
             }

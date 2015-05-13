@@ -10,7 +10,7 @@ namespace NXE {
 
 struct SearchResult {
     const int32_t searchId;
-    const std::pair<int,int> position;
+    const std::pair<double, double> position;
     // Country
     struct Country {
         const std::string name;

@@ -96,11 +96,12 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             name = QString::fromStdString(pc.items.front().second);
         }
 
-        aDebug() << "Name = " << name.toStdString();
+        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
         auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
         // TODO: How to translate position?
 //        loc->setPosition(std::make_pair(pc.position.longitude, pc.position.latitude));
         // move to parent thread
+        loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
         connect(loc, &LocationProxy::favoriteChanged, [this, &loc](){
 
@@ -401,7 +402,7 @@ void NavitQuickProxy::setZoom(int newZoom)
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 {
     aDebug() << Q_FUNC_INFO;
-    std::pair<int, int> pos;
+    NXE::Position pos;
     int newZoomLevel = -1;
     std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &id, &pos](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
@@ -410,7 +411,8 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
+            pos.latitude = proxy->latitude();
+            pos.longitude = proxy->longitude();
         }
     });
 
@@ -422,7 +424,8 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
+            pos.latitude = proxy->latitude();
+            pos.longitude = proxy->longitude();
             newZoomLevel = 16;
         }
     });
@@ -434,7 +437,8 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
+            pos.latitude = proxy->latitude();
+            pos.longitude = proxy->longitude();
             newZoomLevel = 8;
         }
     });
@@ -451,14 +455,16 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
                 m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
         });
         emit currentlySelectedItemChanged();
-        aInfo() << "Setting location to " << pos.first << " " << pos.second;
-        nxeInstance->HandleMessage<SetPositionByIntMessageTag>(pos.first, pos.second);
+        aInfo() << "Setting location to " << pos.longitude << " " << pos.latitude;
+        nxeInstance->HandleMessage<SetPositionMessageTag>(pos.longitude, pos.latitude);
 
         // HACK: For some reasons setting zoom directly after
         // sending position message causes a deadlock
-        QTimer::singleShot(100, [this, newZoomLevel]() {
-            nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
-        });
+        if (newZoomLevel != -1) {
+            QTimer::singleShot(100, [this, newZoomLevel]() {
+                nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
+            });
+        }
     }
 }
 void NavitQuickProxy::hideLocationBars()
