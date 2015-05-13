@@ -1737,6 +1737,8 @@ request_navit_search_pois(DBusConnection *connection, DBusMessage *message)
 	dbus_message_iter_get_basic(&iter, &distance);
 	dbg(lvl_debug, " destination -> %s\n", distance);
 
+	empty_reply(connection, message);
+
 	if ((dist = strtol (distance,NULL,10)) > 0) {
 		navit_dbus_send_selected_pois(navit, &pc, dist);
 	}
