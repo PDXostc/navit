@@ -18,6 +18,10 @@ namespace Tags {
         typedef bool ValueType;
         constexpr static const char* path {"ftu"};
     };
+    struct Voice {
+        typedef bool ValueType;
+        constexpr static const char* path {"voice"};
+    };
     struct TopBarLocationVisible {
         typedef bool ValueType;
         constexpr static const char* path {"topBarLocationVisible"};

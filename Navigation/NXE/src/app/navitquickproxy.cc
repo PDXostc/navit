@@ -229,6 +229,9 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
         bool bRet = m_settings.get<Tags::EnablePoi>();
         aDebug() << "value for poi is " << bRet;
         ret = QString("%1").arg(bRet ? "on" : "off");
+    } else if(optionName == "voice") {
+        ret = m_settings.get<Tags::Voice>() ? "on" : "off";
+
     }
 
     return ret;
@@ -238,6 +241,9 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
 {
     if (optionName == "enablePoi") {
         setEnablePoi(newVal.toString() == "on");
+    } else if(optionName == "voice") {
+        m_settings.set<Tags::Voice>(newVal.toString() == "on");
+        nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
     }
 }
 
@@ -458,4 +464,7 @@ void NavitQuickProxy::synchronizeNavit()
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());
     setOrientation(m_settings.get<Tags::Orientation>());
+
+    // audio
+    nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
 }

@@ -45,6 +45,7 @@ struct NXEInstancePrivate {
     std::pair<int, int> geometry;
     Settings settings;
     bool initialized{ false };
+    bool mute {false};
 
     void setOrientation(int newOrientation)
     {
@@ -54,6 +55,12 @@ struct NXEInstancePrivate {
     void zoomBy(int factor)
     {
         ipc->zoomBy(factor);
+    }
+
+    void toogleAudio(bool volumeOn)
+    {
+        mute = !volumeOn;
+        nDebug() << "Turning audio " << (mute ? "off" : "on");
     }
 
     int zoomMessage()
@@ -109,7 +116,8 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<SearchSelectMessageTag>(bind(&INavitIPC::selectSearchResult, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<FinishSearchTag>(bind(&INavitIPC::finishSearch, d->ipc.get())),
           make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2)))
+          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2)),
+          make_pair<ToggleAudioMessageTag>(bind(&NXEInstancePrivate::toogleAudio, d.get(), placeholders::_1)))
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
@@ -150,7 +158,7 @@ void NXEInstance::Initialize()
         nDebug() << "Trying to start IPC Navit controller";
         d->ipc->speechSignal().connect([this](const std::string& string) {
             nDebug() << "Saying " << string << " speech pointer = " << static_cast<void*>(d->speech.get());
-            if (d->speech) {
+            if (d->speech && !(d->mute)) {
                 d->speech->say(string);
             }
         });

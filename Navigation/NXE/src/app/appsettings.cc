@@ -38,6 +38,7 @@ AppSettings::AppSettings()
         set<Tags::Orientation>(-1);
         set<Tags::Ftu>(true);
         set<Tags::TopBarLocationVisible>(false);
+        set<Tags::Voice>(true);
         save();
     }
 }
