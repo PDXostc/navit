@@ -121,7 +121,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
 int NavitQuickProxy::orientation()
 {
-    return m_settings.get<Tags::Orientation>() == "North-up" ? 0 : -1;
+    return m_settings.get<Tags::Orientation>();
 }
 
 void NavitQuickProxy::setOrientation(int orientation)
@@ -129,14 +129,13 @@ void NavitQuickProxy::setOrientation(int orientation)
     aDebug() << "Setting orientation to " << orientation;
     try {
         nxeInstance->HandleMessage<SetOrientationMessageTag>(orientation);
-        if (orientation == -1) {
-            m_settings.set<Tags::Orientation>("Heads-up");
-        }
-        else {
-            m_settings.set<Tags::Orientation>("North-up");
-        }
+        m_settings.set<Tags::Orientation>(orientation);
         aTrace() << "New orientation is " << m_settings.get<Tags::Orientation>();
         emit orientationChanged();
+
+        QTimer::singleShot(500, [this]() {
+            nxeInstance->HandleMessage<RenderMessageTag>();
+        });
     }
     catch (const std::exception& ex) {
         aError() << "An error happened during setting orientation. Ex= " << ex.what();
@@ -458,4 +457,5 @@ void NavitQuickProxy::synchronizeNavit()
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());
+    setOrientation(m_settings.get<Tags::Orientation>());
 }

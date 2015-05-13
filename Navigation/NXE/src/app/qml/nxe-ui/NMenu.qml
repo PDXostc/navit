@@ -61,7 +61,13 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: root.clicked("headOrientation")
+                onClicked: {
+                    if (navitProxy.orientation === 0) {
+                        navitProxy.orientation = -1;
+                    } else {
+                        navitProxy.orientation = 0;
+                    }
+                }
             }
 
         }

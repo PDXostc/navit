@@ -35,7 +35,7 @@ AppSettings::AppSettings()
         // create default config file
         aDebug() << "Creating default app settings under= " << m_configPath;
         set<Tags::EnablePoi>(true);
-        set<Tags::Orientation>("North-up");
+        set<Tags::Orientation>(-1);
         set<Tags::Ftu>(true);
         set<Tags::TopBarLocationVisible>(false);
         save();

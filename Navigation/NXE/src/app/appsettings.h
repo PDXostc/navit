@@ -10,7 +10,7 @@ namespace Tags {
     };
 
     struct Orientation {
-        typedef std::string ValueType;
+        typedef std::int8_t ValueType;
         constexpr static const char* path {"orientation"};
     };
 

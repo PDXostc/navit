@@ -67,12 +67,7 @@ Item {
                 rootStack.push(settingsView)
             } else if (item === "search") {
                 rootStack.push(locationsView)
-            } else if (item === "northOrientation") {
-                console.debug("North orientation activated")
-            } else if (item === "headOrientation") {
-                console.debug("Head orientation activated")
             } else if (item === "currentLocation") {
-                console.debug("Current location button clicked")
             }
         }
     }
