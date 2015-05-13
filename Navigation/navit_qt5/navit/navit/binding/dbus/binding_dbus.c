@@ -293,18 +293,18 @@ encode_attr(DBusMessageIter *iter1, struct attr *attr)
 	if ((attr->type >= attr_type_item_type_begin && attr->type <= attr_type_item_type_end) || attr->type == attr_item_type) {
 		encode_variant_string(iter1, item_to_name(attr->u.item_type));
 		attr->u.data = NULL;
-	}
+    }
 
-	if (attr->type >= attr_type_coord_geo_begin && attr->type <= attr_type_coord_geo_end) {
-		dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ad", &iter2);
-		dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "d", &iter3);
-		if (attr->u.coord_geo) {
-			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lat);
-			dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lng);
-		}
-		dbus_message_iter_close_container(&iter2, &iter3);
-		dbus_message_iter_close_container(iter1, &iter2);
-	}
+    if (attr->type >= attr_type_coord_geo_begin && attr->type <= attr_type_coord_geo_end) {
+        dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ad", &iter2);
+        dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "d", &iter3);
+        if (attr->u.coord_geo) {
+            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lat);
+            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lng);
+        }
+        dbus_message_iter_close_container(&iter2, &iter3);
+        dbus_message_iter_close_container(iter1, &iter2);
+    }
 
 	if (attr->type >= attr_type_pcoord_begin && attr->type <= attr_type_pcoord_end) {
 			dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ai", &iter2);
@@ -530,6 +530,22 @@ pcoord_encode(DBusMessageIter *iter, struct pcoord *pc)
 		dbus_message_iter_append_basic(&iter2, DBUS_TYPE_INT32, &n);
 	}
 	dbus_message_iter_close_container(iter, &iter2);
+}
+
+static void
+coord_geo_encode(DBusMessageIter *iter, struct coord_geo *pc)
+{
+    DBusMessageIter iter2;
+    dbus_message_iter_open_container(iter,DBUS_TYPE_STRUCT,NULL,&iter2);
+    if (pc) {
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lng);
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lat);
+    } else {
+        int n=0;
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &n);
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &n);
+    }
+    dbus_message_iter_close_container(iter, &iter2);
 }
 
 static enum attr_type
@@ -1826,7 +1842,18 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
 	reply = dbus_message_new_method_return(message);
 	dbus_message_iter_init_append(reply, &iter);
 	dbus_message_iter_append_basic(&iter, DBUS_TYPE_INT32, &result->id);
-	pcoord_encode(&iter, result->c);
+    struct coord c;
+    struct coord_geo g;
+    g.lat = 0;
+    g.lng = 0;
+    if(result->c != 0) {
+        c.x = result->c->x;
+        c.y = result->c->y;
+        transform_to_geo(result->c->pro, &c, &g);
+        dbg(lvl_error, " asd %f, %f", g.lng, g.lat);
+    }
+    coord_geo_encode(&iter, &g);
+
 	dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY, "{sa{sv}}", &iter2);
 	if (result->country && (result->country->car || result->country->iso2 || result->country->iso3 || result->country->name)) {
 		dbus_message_iter_open_container(&iter2, DBUS_TYPE_DICT_ENTRY, NULL, &iter3);

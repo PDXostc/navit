@@ -10,7 +10,7 @@ namespace NXE {
 
 struct SearchResult {
     const int32_t searchId;
-    const std::pair<int,int> position;
+    const std::pair<double, double> position;
     // Country
     struct Country {
         const std::string name;
@@ -84,6 +84,7 @@ public:
     virtual void searchPOIs(double longitude, double latitude, int distance) = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
+    virtual NXE::Position currentCenter() = 0;
 
     virtual void startSearch() = 0;
     virtual SearchResults search(SearchType type, const std::string& searchString) = 0;

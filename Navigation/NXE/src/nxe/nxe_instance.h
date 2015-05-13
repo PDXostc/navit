@@ -46,6 +46,8 @@ public:
 
     INavitIPC::PointClickedSignalType& pointClickedSignal();
 
+    INavitIPC* ipc() const;
+
 private:
     std::unique_ptr<NXEInstancePrivate> d;
     map_cb_type fusion_list;

@@ -96,10 +96,21 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             name = QString::fromStdString(pc.items.front().second);
         }
 
-        aDebug() << "Name = " << name.toStdString();
-        auto loc = new LocationProxy {LocationType::Street, name, false, "1234 N Main, Portland, OR 97208", false};
+        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
+        auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
+        // TODO: How to translate position?
+//        loc->setPosition(std::make_pair(pc.position.longitude, pc.position.latitude));
         // move to parent thread
+        loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
+        connect(loc, &LocationProxy::favoriteChanged, [this, &loc](){
+
+            if (loc->favorite()){
+                m_settings.addToFavorites(loc);
+            } else {
+                m_settings.removeFromFavorites(loc->id().toByteArray().data());
+            }
+        });
         emit pointClicked(loc);
     });
 
@@ -117,6 +128,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
 
     QTimer::singleShot(500, this, SLOT(initNavit()));
+
+    m_settings.favorites();
 }
 
 int NavitQuickProxy::orientation()
@@ -229,9 +242,9 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
         bool bRet = m_settings.get<Tags::EnablePoi>();
         aDebug() << "value for poi is " << bRet;
         ret = QString("%1").arg(bRet ? "on" : "off");
-    } else if(optionName == "voice") {
+    }
+    else if (optionName == "voice") {
         ret = m_settings.get<Tags::Voice>() ? "on" : "off";
-
     }
 
     return ret;
@@ -241,7 +254,8 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
 {
     if (optionName == "enablePoi") {
         setEnablePoi(newVal.toString() == "on");
-    } else if(optionName == "voice") {
+    }
+    else if (optionName == "voice") {
         m_settings.set<Tags::Voice>(newVal.toString() == "on");
         nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
     }
@@ -304,7 +318,7 @@ void NavitQuickProxy::searchStreet(const QString& street)
     emit searchDone();
 }
 
-void NavitQuickProxy::searchAddress(const QString &street)
+void NavitQuickProxy::searchAddress(const QString& street)
 {
     clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
 
@@ -319,7 +333,7 @@ void NavitQuickProxy::searchAddress(const QString &street)
     emit searchDone();
 }
 
-void NavitQuickProxy::searchSelect(const QString &what, int id)
+void NavitQuickProxy::searchSelect(const QString& what, int id)
 {
     if (id == -1) {
         aInfo() << "Id is -1, so no select";
@@ -330,13 +344,17 @@ void NavitQuickProxy::searchSelect(const QString &what, int id)
     NXE::INavitIPC::SearchType type;
     if (what == "country") {
         type = NXE::INavitIPC::SearchType::Country;
-    } else if(what == "city") {
+    }
+    else if (what == "city") {
         type = NXE::INavitIPC::SearchType::City;
-    } else if(what == "street") {
+    }
+    else if (what == "street") {
         type = NXE::INavitIPC::SearchType::Street;
-    } else if(what == "address") {
+    }
+    else if (what == "address") {
         type = NXE::INavitIPC::SearchType::Address;
-    } else {
+    }
+    else {
         throw std::runtime_error("Shouldn't happen");
     }
     nxeInstance->HandleMessage<SearchSelectMessageTag>(type, id);
@@ -351,7 +369,10 @@ void NavitQuickProxy::getFavorites()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_favoritesResults.append(new LocationProxy{ LocationType::City, "fav_test1", false, "", true });
+    auto favs = m_settings.favorites();
+    std::for_each(favs.begin(), favs.end(), [this](LocationProxy* p) {
+        m_favoritesResults.append(p);
+    });
 
     m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
 
@@ -361,7 +382,7 @@ void NavitQuickProxy::getHistory()
 {
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
-    m_historyResults.append(new LocationProxy{ LocationType::City, "hist_test1", false, "", true });
+    m_historyResults.append(new LocationProxy{ "hist_test1", false, "", true });
 
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
 
@@ -381,56 +402,48 @@ void NavitQuickProxy::setZoom(int newZoom)
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 {
     aDebug() << Q_FUNC_INFO;
-    std::pair<int, int> pos;
+    QObjectList tmp;
+    tmp.append(m_citiesSearchResults);
+    tmp.append(m_streetsSearchResults);
+    tmp.append(m_addressSearchResults);
+    tmp.append(m_favoritesResults);
     int newZoomLevel = -1;
-    std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &id, &pos](QObject* o) {
+    std::for_each(tmp.begin(), tmp.end(), [this, &id](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
         if (proxy->id() == id) {
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
-        }
-    });
-
-    // search in streets
-    std::for_each(m_streetsSearchResults.begin(), m_streetsSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
-        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
-
-        if (proxy->id() == id) {
-            // we have to copy this, since in a second the model will be deleted
-            // and this will points to an deleted object
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
-            newZoomLevel = 16;
-        }
-    });
-    // search in addresses
-    std::for_each(m_addressSearchResults.begin(), m_addressSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
-        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
-
-        if (proxy->id() == id) {
-            // we have to copy this, since in a second the model will be deleted
-            // and this will points to an deleted object
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            pos = std::make_pair(proxy->xPosition(), proxy->yPosition());
-            newZoomLevel = 8;
         }
     });
 
     if (!m_currentItem) {
         aFatal() << "Unable to find item= " << id.toByteArray().data();
+        return;
     }
-    else {
-        emit currentlySelectedItemChanged();
-        aInfo() << "Setting location to " << pos.first << " " << pos.second;
-        nxeInstance->HandleMessage<SetPositionByIntMessageTag>(pos.first, pos.second);
+    emit currentlySelectedItemChanged();
+    connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
+            aInfo() << "Adding " << m_currentItem->id().toByteArray().data() << " to favs";
+            if (m_currentItem->favorite())
+                m_settings.addToFavorites(m_currentItem.data());
+            else
+                m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
+    });
 
-        // HACK: For some reasons setting zoom directly after
-        // sending position message causes a deadlock
+    aInfo() << "Setting location to " << m_currentItem->longitude() << " " << m_currentItem->latitude();
+    nxeInstance->HandleMessage<SetPositionMessageTag>(m_currentItem->longitude(), m_currentItem->latitude());
+    if (m_streetsSearchResults.contains(m_currentItem.data()))
+        newZoomLevel = 16;
+
+    if (m_addressSearchResults.contains(m_currentItem.data()))
+        newZoomLevel = 8;
+
+    // HACK: For some reasons setting zoom directly after
+    // sending position message causes a deadlock
+    if (newZoomLevel != -1) {
         QTimer::singleShot(100, [this, newZoomLevel]() {
-            nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
+                nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
         });
     }
 }

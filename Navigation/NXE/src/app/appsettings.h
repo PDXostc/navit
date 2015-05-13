@@ -2,6 +2,9 @@
 #define APPSETTINGS_H
 
 #include <boost/property_tree/ptree.hpp>
+#include <QList>
+
+class LocationProxy;
 
 namespace Tags {
     struct EnablePoi {
@@ -50,13 +53,19 @@ public:
     template<typename RetVal>
     RetVal get(const std::string& key)
     {
-        return m_tree.get<RetVal> ( key );
+        return m_tree.get<RetVal> (key);
     }
 
     void save();
 
+    void addToFavorites(LocationProxy* proxy);
+    void removeFromFavorites(const std::string& id);
+
+    QList<LocationProxy*> favorites();
+
 private:
     const std::string m_configPath;
+    const std::string m_favoritesPath;
     boost::property_tree::ptree m_tree;
 };
 

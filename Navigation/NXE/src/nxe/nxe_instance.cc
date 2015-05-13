@@ -187,4 +187,10 @@ INavitIPC::PointClickedSignalType& NXEInstance::pointClickedSignal()
     return d->ipc->pointClickedSignal();
 }
 
+INavitIPC *NXEInstance::ipc() const
+{
+    assert(d && d->ipc);
+    return d->ipc.get();
+}
+
 } // namespace NXE
