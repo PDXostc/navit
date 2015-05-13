@@ -370,7 +370,7 @@ void NavitQuickProxy::getFavorites()
     aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
 
     auto favs = m_settings.favorites();
-    std::for_each(favs.begin(), favs.end(), [this] (LocationProxy* p) {
+    std::for_each(favs.begin(), favs.end(), [this](LocationProxy* p) {
         m_favoritesResults.append(p);
     });
 
@@ -402,81 +402,49 @@ void NavitQuickProxy::setZoom(int newZoom)
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 {
     aDebug() << Q_FUNC_INFO;
-    NXE::Position pos;
+    QObjectList tmp;
+    tmp.append(m_citiesSearchResults);
+    tmp.append(m_streetsSearchResults);
+    tmp.append(m_addressSearchResults);
+    tmp.append(m_favoritesResults);
     int newZoomLevel = -1;
-    std::for_each(m_citiesSearchResults.begin(), m_citiesSearchResults.end(), [this, &id, &pos](QObject* o) {
+    std::for_each(tmp.begin(), tmp.end(), [this, &id](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
         if (proxy->id() == id) {
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             m_currentItem.reset(LocationProxy::clone(proxy));
-            pos.latitude = proxy->latitude();
-            pos.longitude = proxy->longitude();
-        }
-    });
-
-    // search in streets
-    std::for_each(m_streetsSearchResults.begin(), m_streetsSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
-        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
-
-        if (proxy->id() == id) {
-            // we have to copy this, since in a second the model will be deleted
-            // and this will points to an deleted object
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            pos.latitude = proxy->latitude();
-            pos.longitude = proxy->longitude();
-            newZoomLevel = 16;
-        }
-    });
-    // search in addresses
-    std::for_each(m_addressSearchResults.begin(), m_addressSearchResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
-        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
-
-        if (proxy->id() == id) {
-            // we have to copy this, since in a second the model will be deleted
-            // and this will points to an deleted object
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            pos.latitude = proxy->latitude();
-            pos.longitude = proxy->longitude();
-            newZoomLevel = 8;
-        }
-    });
-    // search in favs
-    std::for_each(m_favoritesResults.begin(), m_favoritesResults.end(), [this, &id, &pos, &newZoomLevel](QObject* o) {
-        LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
-
-        if (proxy->id() == id) {
-            // we have to copy this, since in a second the model will be deleted
-            // and this will points to an deleted object
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            pos.latitude = proxy->latitude();
-            pos.longitude = proxy->longitude();
         }
     });
 
     if (!m_currentItem) {
         aFatal() << "Unable to find item= " << id.toByteArray().data();
+        return;
     }
-    else {
-        connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
+    emit currentlySelectedItemChanged();
+    connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
             aInfo() << "Adding " << m_currentItem->id().toByteArray().data() << " to favs";
             if (m_currentItem->favorite())
                 m_settings.addToFavorites(m_currentItem.data());
             else
                 m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
-        });
-        emit currentlySelectedItemChanged();
-        aInfo() << "Setting location to " << pos.longitude << " " << pos.latitude;
-        nxeInstance->HandleMessage<SetPositionMessageTag>(pos.longitude, pos.latitude);
+    });
 
-        // HACK: For some reasons setting zoom directly after
-        // sending position message causes a deadlock
-        if (newZoomLevel != -1) {
-            QTimer::singleShot(100, [this, newZoomLevel]() {
+    aInfo() << "Setting location to " << m_currentItem->longitude() << " " << m_currentItem->latitude();
+    nxeInstance->HandleMessage<SetPositionMessageTag>(m_currentItem->longitude(), m_currentItem->latitude());
+    if (m_streetsSearchResults.contains(m_currentItem.data()))
+        newZoomLevel = 16;
+
+    if (m_addressSearchResults.contains(m_currentItem.data()))
+        newZoomLevel = 8;
+
+    // HACK: For some reasons setting zoom directly after
+    // sending position message causes a deadlock
+    if (newZoomLevel != -1) {
+        QTimer::singleShot(100, [this, newZoomLevel]() {
                 nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
-            });
-        }
+        });
     }
 }
 void NavitQuickProxy::hideLocationBars()
