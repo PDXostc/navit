@@ -117,7 +117,8 @@ NXEInstance::NXEInstance(DI::Injector& impls)
           make_pair<FinishSearchTag>(bind(&INavitIPC::finishSearch, d->ipc.get())),
           make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
           make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2)),
-          make_pair<ToggleAudioMessageTag>(bind(&NXEInstancePrivate::toogleAudio, d.get(), placeholders::_1)))
+          make_pair<ToggleAudioMessageTag>(bind(&NXEInstancePrivate::toogleAudio, d.get(), placeholders::_1)),
+          make_pair<SearchPoisMessageTag>([this](double lon, double lat, int dist) { d->ipc->searchPOIs(lon,lat,dist);}))
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";

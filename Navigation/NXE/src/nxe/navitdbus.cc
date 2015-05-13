@@ -362,6 +362,18 @@ void NavitDBus::setScheme(const std::string& scheme)
     DBusHelpers::callNoReply("set_layout", *(d->object.get()), scheme);
 }
 
+void NavitDBus::searchPOIs(double longitude, double latitude, int dist)
+{
+    DebugDBusCall dbg{ "searchPOIs" };
+    nDebug() << "searchPOIs in " << dist << " distance";
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    auto format1 = boost::format("%1%") % dist;
+    const std::string center_coord = format.str();
+    const std::string distance = format1.str();
+
+    DBusHelpers::call("search_pois", *(d->object.get()), center_coord, distance);
+}
+
 void NavitDBus::startSearch()
 {
     nInfo() << "Creating new search";

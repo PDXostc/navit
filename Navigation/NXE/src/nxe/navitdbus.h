@@ -30,6 +30,7 @@ public:
     virtual void clearDestination() override;
     virtual void addWaypoint(double longitude, double latitude) override;
     virtual void setScheme(const std::string& scheme) override;
+    virtual void searchPOIs(double longitude, double latitude, int distance) override;
 
     virtual void startSearch() override;
     virtual SearchResults search(SearchType type, const std::string& searchString) override;

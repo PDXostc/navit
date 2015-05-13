@@ -107,6 +107,11 @@ TEST_F(NavitDBusTest, addWaypoint)
     connection.addWaypoint(11.586, 48.149);
 }
 
+TEST_F(NavitDBusTest, SearchPois)
+{
+	connection.searchPOIs(11.5659, 48.1392, 500);
+}
+
 TEST_F(NavitDBusTest, setScheme)
 {
     EXPECT_NO_THROW(

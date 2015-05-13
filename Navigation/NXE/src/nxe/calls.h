@@ -139,6 +139,11 @@ struct ToggleAudioMessageTag {
     typedef typename Parser::result_type ReturnType;
 };
 
+struct SearchPoisMessageTag {
+    typedef std::function<void (double, double, int)> Parser;
+    typedef typename Parser::result_type ReturnType;
+};
+
 
 // Containter
 typedef boost::mpl::vector<MoveByMessageTag, SetZoomMessageTag,ZoomByMessageTag, ZoomMessageTag, SetOrientationMessageTag,
@@ -147,7 +152,7 @@ typedef boost::mpl::vector<MoveByMessageTag, SetZoomMessageTag,ZoomByMessageTag,
       ClearDestinationMessageTag, SetPositionMessageTag,SetPositionByIntMessageTag,
       SetSchemeMessageTag,
       StartSearchTag, SearchMessageTag, SearchSelectMessageTag, FinishSearchTag,
-      AddWaypointMessageTag, ResizeMessageTag, ToggleAudioMessageTag
+      AddWaypointMessageTag, ResizeMessageTag, ToggleAudioMessageTag, SearchPoisMessageTag
     > Messages_type;
 
 template <typename T>
