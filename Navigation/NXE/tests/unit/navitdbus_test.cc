@@ -251,3 +251,27 @@ TEST_F(NavitDBusTest, currentCenter)
 {
     connection.currentCenter();
 }
+
+TEST_F(NavitDBusTest, changeCenter)
+{
+    if (!runNavit) {
+        return;
+    }
+    auto lastCenter = connection.currentCenter();
+    connection.setCenter(lastCenter.longitude + 12.0,
+                         lastCenter.latitude - 27);
+    auto lastCenter2 = connection.currentCenter();
+
+    EXPECT_NE(lastCenter.longitude, lastCenter2.longitude);
+
+    connection.quit();
+    process.stop();
+
+    process.start();
+    std::chrono::milliseconds dura(1000);
+    std::this_thread::sleep_for(dura);
+
+    auto newCenter = connection.currentCenter();
+
+    EXPECT_DOUBLE_EQ(lastCenter2.latitude, newCenter.latitude);
+}
