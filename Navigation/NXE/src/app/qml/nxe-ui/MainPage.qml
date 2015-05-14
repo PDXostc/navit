@@ -84,7 +84,9 @@ Item {
                 locationInfoTopComponent.destroy()
             }
 
-            createLocationComponent(navitProxy.currentlySelectedItem)
+            if (navitProxy.currentlySelectedItem) {
+                createLocationComponent(navitProxy.currentlySelectedItem)
+            }
         }
 
         onPointClicked: {
