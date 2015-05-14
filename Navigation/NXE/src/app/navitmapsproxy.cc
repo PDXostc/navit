@@ -36,7 +36,7 @@ NavitMapsProxy::~NavitMapsProxy()
 void NavitMapsProxy::downloadMap(const QString& map)
 {
     try {
-        nxeInstance->HandleMessage<DownloadMessageTag>(map.toStdString());
+        nxeInstance->mapDownloader()->download(map.toStdString());
     }
     catch (const std::exception& ex) {
         // this may throw if MapDownloader is not available
@@ -74,7 +74,7 @@ void NavitMapsProxy::reloadMaps()
     m_maps.clear();
 
     // Request for available maps
-    m_nxeMaps = nxeInstance->HandleMessage<MapsMessageTag>();
+    m_nxeMaps = nxeInstance->mapDownloader()->maps();
     std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [] (const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) ->bool {
         return lhs.name < rhs.name;
     });

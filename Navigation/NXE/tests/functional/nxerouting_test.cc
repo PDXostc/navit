@@ -45,22 +45,22 @@ struct NXEInstanceTest : public ::testing::Test {
 
     void setDestination(double lon, double lat, const char* desc)
     {
-         instance.HandleMessage<SetDestinationMessageTag>(lon, lat, desc);
+         instance.ipc()->setDestination(lon, lat, desc);
     }
 
     void setPosition(double lon, double lat)
     {
-         instance.HandleMessage<SetPositionMessageTag>(lon, lat);
+         instance.ipc()->setPosition(lon, lat);
     }
 
     void clearDestination()
     {
-        instance.HandleMessage<ClearDestinationMessageTag>();
+        instance.ipc()->clearDestination();
     }
 
     void addWaypoint(double lon, double lat)
     {
-        instance.HandleMessage<AddWaypointMessageTag>(lon, lat);
+        instance.ipc()->addWaypoint(lon, lat);
     }
 };
 
@@ -127,7 +127,6 @@ TEST_F(NXEInstanceTest, Waypoints)
 
 TEST_F(NXEInstanceTest, Routing_Portland)
 {
-    std::chrono::milliseconds dura_1s(1000);
     std::chrono::milliseconds dura_5s(5000);
     std::this_thread::sleep_for(dura_5s);
     clearDestination();

@@ -3,7 +3,6 @@
 #include "settings.h"
 #include "settingtags.h"
 #include "log.h"
-#include "calls.h"
 #include "inavitipc.h"
 #include "igpsprovider.h"
 #include "imapdownloader.h"
@@ -92,33 +91,6 @@ struct NXEInstancePrivate {
 
 NXEInstance::NXEInstance(DI::Injector& impls)
     : d(new NXEInstancePrivate{ impls, this })
-    , fusion_list(
-          make_pair<MoveByMessageTag>(bind(&INavitIPC::moveBy, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<SetZoomMessageTag>(bind(&INavitIPC::setZoom, d->ipc.get(), placeholders::_1)),
-          make_pair<ZoomByMessageTag>(bind(&NXEInstancePrivate::zoomBy, d.get(), placeholders::_1)),
-          make_pair<ZoomMessageTag>(bind(&NXEInstancePrivate::zoomMessage, d.get())),
-          make_pair<SetOrientationMessageTag>(bind(&NXEInstancePrivate::setOrientation, d.get(), placeholders::_1)),
-          make_pair<PositionMessageTag>(bind(&IGPSProvider::position, d->gps.get())),
-          make_pair<RenderMessageTag>(bind(&INavitIPC::render, d->ipc.get())),
-          make_pair<ExitMessageTag>(bind(&INavitIPC::quit, d->ipc.get())),
-          make_pair<OrientationMessageTag>(bind(&INavitIPC::orientation, d->ipc.get())),
-          make_pair<SetCenterMessageTag>(bind(&INavitIPC::setCenter, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<DownloadMessageTag>(bind(&IMapDownloader::download, d->mapDownloaderIPC.get(), placeholders::_1)),
-          make_pair<CancelDownloadMessageTag>(bind(&IMapDownloader::cancel, d->mapDownloaderIPC.get(), placeholders::_1)),
-          make_pair<MapsMessageTag>(bind(&IMapDownloader::maps, d->mapDownloaderIPC.get())),
-          make_pair<SetDestinationMessageTag>([this](double lon, double lat, const char* desc) { d->ipc->setDestination(lon,lat,desc); }),
-          make_pair<ClearDestinationMessageTag>(bind(&INavitIPC::clearDestination, d->ipc.get())),
-          make_pair<SetPositionMessageTag>(bind(&INavitIPC::setPosition, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<SetPositionByIntMessageTag>(bind(&INavitIPC::setPositionByInt, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<SetSchemeMessageTag>(bind(&INavitIPC::setScheme, d->ipc.get(), placeholders::_1)),
-          make_pair<StartSearchTag>(bind(&INavitIPC::startSearch, d->ipc.get())),
-          make_pair<SearchMessageTag>(bind(&INavitIPC::search, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<SearchSelectMessageTag>(bind(&INavitIPC::selectSearchResult, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<FinishSearchTag>(bind(&INavitIPC::finishSearch, d->ipc.get())),
-          make_pair<AddWaypointMessageTag>(bind(&INavitIPC::addWaypoint, d->ipc.get(), placeholders::_1, placeholders::_2)),
-          make_pair<ResizeMessageTag>(bind(&NXEInstancePrivate::resize, d.get(), placeholders::_1, placeholders::_2)),
-          make_pair<ToggleAudioMessageTag>(bind(&NXEInstancePrivate::toogleAudio, d.get(), placeholders::_1)),
-          make_pair<SearchPoisMessageTag>([this](double lon, double lat, int dist) { d->ipc->searchPOIs(lon,lat,dist);}))
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
@@ -174,6 +146,11 @@ void NXEInstance::Initialize()
 void NXEInstance::setWaylandSocketName(const std::string& socketName)
 {
     d->navitProcess->setSocketName(socketName);
+}
+
+void NXEInstance::setAudioMute(bool mute)
+{
+    d->mute = mute;
 }
 
 void NXEInstance::setMapDownloaderListener(const MapDownloaderListener& listener)

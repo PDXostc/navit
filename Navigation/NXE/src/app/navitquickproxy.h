@@ -6,11 +6,6 @@
 #include <QtQml/QQmlListProperty>
 #include <memory>
 
-// This include has to be here
-// in order for boost mpl to correctly mark
-// boost::mpl::vector size
-#include "calls.h"
-
 #include "appsettings.h"
 #include "imapdownloader.h"
 #include "navitmapsproxy.h"
@@ -74,14 +69,9 @@ signals:
     void navigationManuver(const QString& manuver);
 
 public slots:
-    void zoomIn();
-    void zoomOut();
-    void moveTo(int x, int y);
     void render();
-
     void reset();
     void quit();
-
 
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);

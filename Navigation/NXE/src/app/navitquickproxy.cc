@@ -98,8 +98,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
         aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
         auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
-        // TODO: How to translate position?
-//        loc->setPosition(std::make_pair(pc.position.longitude, pc.position.latitude));
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
@@ -146,13 +144,13 @@ void NavitQuickProxy::setOrientation(int orientation)
 {
     aDebug() << "Setting orientation to " << orientation;
     try {
-        nxeInstance->HandleMessage<SetOrientationMessageTag>(orientation);
+        nxeInstance->ipc()->setOrientation(orientation);
         m_settings.set<Tags::Orientation>(orientation);
         aTrace() << "New orientation is " << m_settings.get<Tags::Orientation>();
         emit orientationChanged();
 
         QTimer::singleShot(500, [this]() {
-            nxeInstance->HandleMessage<RenderMessageTag>();
+            nxeInstance->ipc()->render();
         });
     }
     catch (const std::exception& ex) {
@@ -178,12 +176,12 @@ bool NavitQuickProxy::enablePoi() const
 
 void NavitQuickProxy::resize(const QRect& rect)
 {
-    nxeInstance->HandleMessage<ResizeMessageTag>(rect.width(), rect.height());
+    nxeInstance->ipc()->resize(rect.width(), rect.height());
 }
 
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
-    nxeInstance->HandleMessage<SetSchemeMessageTag>(enable ? "Car-JLR" : "Car-JLR-nopoi");
+    nxeInstance->ipc()->setScheme(enable ? "Car-JLR" : "Car-JLR-nopoi");
     m_settings.set<Tags::EnablePoi>(enable);
 }
 
@@ -209,24 +207,9 @@ QObject* NavitQuickProxy::currentlySelectedItem() const
     return m_currentItem.data();
 }
 
-void NavitQuickProxy::zoomIn()
-{
-    nxeInstance->HandleMessage<ZoomByMessageTag>(2);
-}
-
-void NavitQuickProxy::zoomOut()
-{
-    nxeInstance->HandleMessage<ZoomByMessageTag>(-2);
-}
-
-void NavitQuickProxy::moveTo(int x, int y)
-{
-    nxeInstance->HandleMessage<MoveByMessageTag>(x, y);
-}
-
 void NavitQuickProxy::render()
 {
-    nxeInstance->HandleMessage<RenderMessageTag>();
+    nxeInstance->ipc()->render();
 }
 
 void NavitQuickProxy::reset()
@@ -279,7 +262,7 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
     }
     else if (optionName == "voice") {
         m_settings.set<Tags::Voice>(newVal.toString() == "on");
-        nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
+        nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
     } else if(optionName == "perspective") {
         aTrace() << "Perspective new val = " << newVal.toString().toStdString();
         m_settings.set<Tags::MapView>(newVal.toString().toStdString());
@@ -290,19 +273,19 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
 void NavitQuickProxy::startSearch()
 {
     finishSearch();
-    nxeInstance->HandleMessage<StartSearchTag>();
+    nxeInstance->ipc()->startSearch();
 }
 
 void NavitQuickProxy::finishSearch()
 {
-    nxeInstance->HandleMessage<FinishSearchTag>();
+    nxeInstance->ipc()->finishSearch();
 }
 
 void NavitQuickProxy::searchCountry(const QString& countryName)
 {
     clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
     aDebug() << "Search for country = " << countryName.toStdString();
-    auto countries = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Country, countryName.toStdString());
+    auto countries = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Country, countryName.toStdString());
     for (NXE::SearchResult result : countries) {
         aTrace() << "result " << result.country.name;
         m_countriesSearchResults.append(new LocationProxy{ result });
@@ -317,7 +300,7 @@ void NavitQuickProxy::searchCity(const QString& name)
 {
     clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
     aDebug() << "Search for city = " << name.toStdString();
-    auto cities = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::City, name.toStdString());
+    auto cities = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::City, name.toStdString());
     aDebug() << cities.size();
 
     for (NXE::SearchResult city : cities) {
@@ -333,7 +316,7 @@ void NavitQuickProxy::searchStreet(const QString& street)
     clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
 
     aDebug() << "Search for street = " << street.toStdString();
-    auto streets = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Street, street.toStdString());
+    auto streets = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Street, street.toStdString());
     aDebug() << streets.size();
 
     for (NXE::SearchResult street : streets) {
@@ -349,7 +332,7 @@ void NavitQuickProxy::searchAddress(const QString& street)
     clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
 
     aDebug() << "Search for address = " << street.toStdString();
-    auto results = nxeInstance->HandleMessage<SearchMessageTag>(NXE::INavitIPC::SearchType::Address, street.toStdString());
+    auto results = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Address, street.toStdString());
 
     for (NXE::SearchResult result : results) {
         m_addressSearchResults.append(new LocationProxy{ result });
@@ -383,7 +366,7 @@ void NavitQuickProxy::searchSelect(const QString& what, int id)
     else {
         throw std::runtime_error("Shouldn't happen");
     }
-    nxeInstance->HandleMessage<SearchSelectMessageTag>(type, id);
+    nxeInstance->ipc()->selectSearchResult(type, id);
 }
 
 void NavitQuickProxy::searchNear(const QString& str)
@@ -436,7 +419,7 @@ void NavitQuickProxy::cancelNavigation()
 
 void NavitQuickProxy::setZoom(int newZoom)
 {
-    nxeInstance->HandleMessage<SetZoomMessageTag>(newZoom);
+    nxeInstance->ipc()->setZoom(newZoom);
 }
 
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
@@ -474,7 +457,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     });
 
     aInfo() << "Setting location to " << m_currentItem->longitude() << " " << m_currentItem->latitude();
-    nxeInstance->HandleMessage<SetPositionMessageTag>(m_currentItem->longitude(), m_currentItem->latitude());
+    nxeInstance->ipc()->setPosition(m_currentItem->longitude(), m_currentItem->latitude());
     if (m_citiesSearchResults.contains(foundItem)){
             newZoomLevel = 4096;
     }
@@ -487,7 +470,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     aDebug() << " new zoom level = " << newZoomLevel;
     if (newZoomLevel != -1) {
         QTimer::singleShot(100, [this, newZoomLevel]() {
-                nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
+                nxeInstance->ipc()->setZoom(newZoomLevel);
         });
     }
 }
@@ -519,13 +502,13 @@ void NavitQuickProxy::synchronizeNavit()
         return;
     }
     // special case
-    nxeInstance->HandleMessage<ResizeMessageTag>(0, 0);
+    nxeInstance->ipc()->resize(0,0);
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());
     setOrientation(m_settings.get<Tags::Orientation>());
 
     // audio
-    nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
+    nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
     nxeInstance->ipc()->setPitch( m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
 }

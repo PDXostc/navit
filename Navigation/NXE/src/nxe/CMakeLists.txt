@@ -30,7 +30,6 @@ set(NXE_SRCS
 
     nxe_extension.cc
     nxe_instance.cc
-    calls.h
     log.h
     log.cc
     settings.cc

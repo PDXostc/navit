@@ -2,7 +2,6 @@
 #define NXE_NXEINSTANCE_H
 
 #include "context.h"
-#include "calls.h"
 #include "imapdownloader.h"
 #include "igpsprovider.h"
 #include "inavitipc.h"
@@ -33,14 +32,7 @@ public:
     virtual void Initialize();
 
     void setWaylandSocketName(const std::string& socketName);
-
-    template <typename T, typename... Args>
-    typename T::ReturnType HandleMessage(Args... args)
-    {
-        auto fn = boost::fusion::at_key<T>(fusion_list);
-        // fn function will throw on error
-        return fn(std::forward<Args>(args)...);
-    }
+    void setAudioMute(bool mute);
 
     void setMapDownloaderListener(const MapDownloaderListener& listener);
     void setPositionUpdateListener(const NXE::IGPSProvider::PositionUpdateCb& listener);
@@ -53,7 +45,6 @@ public:
 
 private:
     std::unique_ptr<NXEInstancePrivate> d;
-    map_cb_type fusion_list;
 };
 
 } // namespace NXE
