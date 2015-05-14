@@ -84,12 +84,13 @@ public slots:
     void render();
 
     void reset();
-
     void quit();
+
 
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);
 
+    // Search API
     void startSearch();
     void finishSearch();
     void searchCountry(const QString& name);
@@ -98,6 +99,9 @@ public slots:
     void searchAddress(const QString& street);
     void searchSelect(const QString& what, int id);
     void searchNear(const QString& str);
+
+    void moveToCurrentPosition();
+
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QUuid& id);

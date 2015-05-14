@@ -49,6 +49,7 @@ public:
 
     INavitIPC* ipc() const;
     IMapDownloader* mapDownloader() const;
+    IGPSProvider* gps() const;
 
 private:
     std::unique_ptr<NXEInstancePrivate> d;

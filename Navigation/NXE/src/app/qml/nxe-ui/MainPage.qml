@@ -68,6 +68,7 @@ Item {
             } else if (item === "search") {
                 rootStack.push(locationsView)
             } else if (item === "currentLocation") {
+                navitProxy.moveToCurrentPosition();
             }
         }
     }

@@ -401,6 +401,12 @@ void NavitQuickProxy::searchNear(const QString& str)
     // TODO: Implement me
 }
 
+void NavitQuickProxy::moveToCurrentPosition()
+{
+    auto pos = nxeInstance->gps()->position();
+    nxeInstance->ipc()->setPosition(pos.longitude, pos.latitude);
+}
+
 void NavitQuickProxy::getFavorites()
 {
     clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);

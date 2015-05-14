@@ -201,4 +201,11 @@ IMapDownloader *NXEInstance::mapDownloader() const
     return d->mapDownloaderIPC.get();
 }
 
+IGPSProvider *NXEInstance::gps() const
+{
+    assert(d && d->gps);
+    return d->gps.get();
+
+}
+
 } // namespace NXE
