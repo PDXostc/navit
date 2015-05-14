@@ -323,7 +323,7 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
 void NavitDBus::setPosition(double longitude, double latitude)
 {
     DebugDBusCall dbg{ "setPosition" };
-    auto format = boost::format("geo: %1% %2%") % latitude % longitude;
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
     DBus::Struct<int, std::string> s;
     s._1 = 1;
