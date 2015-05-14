@@ -125,7 +125,6 @@ void AppSettings::createDefaults()
     set<Tags::EnablePoi>(true);
     set<Tags::Orientation>(-1);
     set<Tags::Ftu>(true);
-    set<Tags::TopBarLocationVisible>(false);
     set<Tags::Voice>(true);
     set<Tags::MapView>("2D");
     save();

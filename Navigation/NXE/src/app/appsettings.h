@@ -25,10 +25,6 @@ namespace Tags {
         typedef bool ValueType;
         constexpr static const char* path {"voice"};
     };
-    struct TopBarLocationVisible {
-        typedef bool ValueType;
-        constexpr static const char* path {"topBarLocationVisible"};
-    };
     struct MapView {
         typedef std::string ValueType;
         constexpr static const char* path {"mapView"};

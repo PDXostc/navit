@@ -175,16 +175,6 @@ bool NavitQuickProxy::enablePoi() const
     return m_settings.get<Tags::EnablePoi>();
 }
 
-bool NavitQuickProxy::topBarLocationVisible() const
-{
-    return m_settings.get<Tags::TopBarLocationVisible>();
-}
-
-void NavitQuickProxy::setTopBarLocationVisible(bool value)
-{
-    m_settings.set<Tags::TopBarLocationVisible>(value);
-    topBarLocationVisibleChanged();
-}
 
 void NavitQuickProxy::resize(const QRect& rect)
 {
@@ -430,11 +420,6 @@ void NavitQuickProxy::getHistory()
     emit gettingHistoryDone();
 }
 
-void NavitQuickProxy::setTopBarVisibility(bool value)
-{
-    setTopBarLocationVisible(value);
-}
-
 void NavitQuickProxy::startNavigation()
 {
     aInfo() << "Starting Navigation for " << static_cast<void*>(m_currentItem.data());
@@ -505,12 +490,6 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
                 nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);
         });
     }
-}
-void NavitQuickProxy::hideLocationBars()
-{
-    m_currentItem.reset(nullptr);
-    setTopBarLocationVisible(false);
-    currentlySelectedItemChanged();
 }
 
 void NavitQuickProxy::initNavit()

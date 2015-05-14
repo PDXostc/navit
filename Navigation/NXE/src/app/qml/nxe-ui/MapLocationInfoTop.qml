@@ -15,6 +15,10 @@ Item {
     property string locationDescriptionString: locationComponent ? locationComponent.description : ""
     property var locationComponent: null
 
+    property bool extraInfoVisible: false
+
+    signal requestHideBars()
+
     Behavior on opacity {NumberAnimation {}}
 
     Item {
@@ -22,10 +26,8 @@ Item {
         anchors.fill: parent
         Item {
             id: buttonsBar
-            x: 0
-            y: 0
             width: 60
-            height: mainPageView.topBarExpanded ? parent.height : 60
+            height: parent.height
 
             Rectangle {
                 id: rectangle2
@@ -46,21 +48,19 @@ Item {
                 MouseArea {
                     id: topLocationBarBackButton
                     anchors.fill: parent
-                    onClicked: navitProxy.hideLocationBars()
+                    onClicked: requestHideBars()
                 }
             }
         }
 
         Item {
             id: item1
-            x: 58
-            y: 0
             anchors.left: buttonsBar.right
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.top: parent.top
             anchors.leftMargin: 0
-            visible: mainPageView.topBarExpanded
+            visible: extraInfoVisible
             Rectangle {
                 id: rectangle1
                 color: "#fbfbfb"
@@ -127,7 +127,7 @@ Item {
         anchors.right: parent.right
         width: 100
         height: 40
-        visible: mainPageView.topBarExpanded
+        visible: extraInfoVisible
         MouseArea {
             anchors.fill: parent
             onClicked: navitProxy.cancelNavigation()
@@ -135,7 +135,6 @@ Item {
         Image {
             width: 76
             height: 20
-            //            anchors.fill: parent
             anchors.centerIn: parent
             sourceSize.width: 60
             sourceSize.height: 50

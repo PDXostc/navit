@@ -11,7 +11,6 @@ Item {
     property var locationInfoTopComponent: null
     property var locationInfoObject: null
     property var locationInfoTopObject: null
-    property bool topBarExpanded: false
 
     function finishComponentCreation(location) {
         if (locationInfoComponent.status === Component.Ready) {
@@ -37,6 +36,11 @@ Item {
             locationInfoTopObject.anchors.right = mainPageView.right
             locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem
             locationInfoTopObject.opacity = 1
+
+            locationInfoTopObject.requestHideBars.connect(function() {
+                removeInfo();
+                removeTopInfo()
+            })
         }
     }
 
@@ -57,10 +61,26 @@ Item {
         }
     }
 
+    function removeInfo() {
+
+        if (locationInfoComponent) {
+            locationInfoComponent.destroy()
+            locationInfoObject.destroy()
+        }
+    }
+
+    function removeTopInfo() {
+
+        if (locationInfoTopComponent) {
+            locationInfoTopComponent.destroy()
+            locationInfoTopObject.destroy()
+        }
+    }
+
     NMenu {
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.topMargin: topBarExpanded ? 110 : 70 // parent.width * 0.2 : 70
+        anchors.topMargin: 110
 
         onClicked: {
             if (item === "menu") {
@@ -68,7 +88,7 @@ Item {
             } else if (item === "search") {
                 rootStack.push(locationsView)
             } else if (item === "currentLocation") {
-                navitProxy.moveToCurrentPosition();
+                navitProxy.moveToCurrentPosition()
             }
         }
     }
@@ -76,14 +96,8 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
-            if (locationInfoComponent) {
-                locationInfoComponent.destroy();
-                locationInfoObject.destroy()
-            }
-            if (locationInfoTopComponent) {
-                locationInfoTopComponent.destroy();
-                locationInfoTopComponent.destroy()
-            }
+            removeInfo()
+            removeTopInfo()
 
             if (navitProxy.currentlySelectedItem) {
                 createLocationComponent(navitProxy.currentlySelectedItem)
@@ -98,22 +112,20 @@ Item {
                 createLocationComponent(location)
             }
         }
-        onTopBarLocationVisibleChanged: {
-            mainPageView.topBarExpanded = navitProxy.topBarLocationVisible
-        }
 
         onNavigationStarted: {
-            navitProxy.setTopBarVisibility(true)
-            if (locationInfoComponent) {
-                locationInfoComponent.destroy();
-                locationInfoObject.destroy();
-            }
+            removeInfo()
+            locationInfoTopObject.extraInfoVisible =true;
         }
 
         onNavigationStopped: {
-            navitProxy.setTopBarVisibility(false)
-        }
+            console.debug('canceled')
+            locationInfoTopObject.extraInfoVisible = false;
+            removeInfo()
+            removeTopInfo()
 
+            // destroy everything!
+        }
     }
 
     Component {

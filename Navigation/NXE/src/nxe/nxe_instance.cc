@@ -133,8 +133,10 @@ NXEInstance::~NXEInstance()
     nTrace() << "Stopping controller. external navit=" << external;
 
     if (!external) {
-        d->ipc->clearDestination();
-        d->ipc->quit();
+        if (d->initialized) {
+            d->ipc->clearDestination();
+            d->ipc->quit();
+        }
         d->navitProcess->stop();
     }
 }

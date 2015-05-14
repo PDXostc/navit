@@ -7,6 +7,7 @@ QtObject {
     property QtObject currentlySelectedItem: null
     property ListModel favourites: ListModel {}
     property ListModel destinations: ListModel {}
+    property int orientation: 0
     property bool topBarLocationVisible : false
     // Real functions
     function valueFor(settingName) {
@@ -49,6 +50,13 @@ QtObject {
         fakeFavoritesTimer.start();
     }
 
+    function moveToCurrentPosition() {
+    }
+
+    function reset() {
+        ftu = true
+    }
+
     function quit() {
         Qt.quit();
     }
@@ -62,14 +70,17 @@ QtObject {
             topBarLocationVisible = value;
     }
 
-    function hideLocationBars() {
-        currentlySelectedItem = null
-        topBarLocationVisible = false;
-    }
-
     function setFavorite(name, favorite) {
         console.debug('Setting fav ', name, ' to ', favorite)
         fakeLocationObject.favorite = favorite;
+    }
+
+    function startNavigation() {
+        navigationStarted()
+    }
+
+    function cancelNavigation() {
+        navigationStopped()
     }
 
     // Real signals
@@ -78,6 +89,8 @@ QtObject {
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
     signal pointClicked(var location)
+    signal navigationStarted()
+    signal navigationStopped()
 
     // fake properties
     property QtObject fakeLocationObject: QtObject {
