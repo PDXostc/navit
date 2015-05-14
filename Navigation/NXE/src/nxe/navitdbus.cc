@@ -364,6 +364,13 @@ void NavitDBus::setScheme(const std::string& scheme)
     DBusHelpers::callNoReply("set_layout", *(d->object.get()), scheme);
 }
 
+void NavitDBus::setPitch(std::uint16_t newPitchValue)
+{
+    std::int32_t pitchVal = static_cast<std::int32_t>(newPitchValue);
+    nDebug() << "Setting pitch to = " << pitchVal;
+    DBusHelpers::setAttr("pitch", *(d->object.get()), pitchVal);
+}
+
 void NavitDBus::searchPOIs(double longitude, double latitude, int dist)
 {
     DebugDBusCall dbg{ "searchPOIs" };

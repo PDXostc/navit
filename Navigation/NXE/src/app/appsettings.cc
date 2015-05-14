@@ -127,5 +127,6 @@ void AppSettings::createDefaults()
     set<Tags::Ftu>(true);
     set<Tags::TopBarLocationVisible>(false);
     set<Tags::Voice>(true);
+    set<Tags::MapView>("2D");
     save();
 }

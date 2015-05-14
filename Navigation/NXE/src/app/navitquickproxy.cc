@@ -260,6 +260,10 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
     }
     else if (optionName == "voice") {
         ret = m_settings.get<Tags::Voice>() ? "on" : "off";
+    } else if(optionName == "perspective") {
+        const std::string value = m_settings.get<Tags::MapView>();
+        aTrace() << "Value for pers = " << value;
+        return QString::fromStdString(value);
     }
 
     return ret;
@@ -273,6 +277,10 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
     else if (optionName == "voice") {
         m_settings.set<Tags::Voice>(newVal.toString() == "on");
         nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
+    } else if(optionName == "perspective") {
+        aTrace() << "Perspective new val = " << newVal.toString().toStdString();
+        m_settings.set<Tags::MapView>(newVal.toString().toStdString());
+        nxeInstance->ipc()->setPitch( m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
     }
 }
 
@@ -495,4 +503,5 @@ void NavitQuickProxy::synchronizeNavit()
 
     // audio
     nxeInstance->HandleMessage<ToggleAudioMessageTag>(m_settings.get<Tags::Voice>());
+    nxeInstance->ipc()->setPitch( m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
 }

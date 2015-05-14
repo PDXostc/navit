@@ -30,6 +30,8 @@ public:
     virtual void clearDestination() override;
     virtual void addWaypoint(double longitude, double latitude) override;
     virtual void setScheme(const std::string& scheme) override;
+    virtual void setPitch(std::uint16_t newPitchValue) override;
+
     virtual void searchPOIs(double longitude, double latitude, int distance) override;
     virtual NXE::Position currentCenter() override;
 

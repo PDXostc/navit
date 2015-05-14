@@ -29,6 +29,10 @@ namespace Tags {
         typedef bool ValueType;
         constexpr static const char* path {"topBarLocationVisible"};
     };
+    struct MapView {
+        typedef std::string ValueType;
+        constexpr static const char* path {"mapView"};
+    };
 }
 
 class AppSettings

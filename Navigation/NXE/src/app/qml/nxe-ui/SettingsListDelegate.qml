@@ -17,6 +17,7 @@ Item {
         }
 
         var settingValue = navitProxy.valueFor(settingsValue);
+        console.debug('Value for', settingsValue, ' is ', settingValue);
 
         for(var i=0;i < maxOptions; ++i) {
             if (options.get(i).option === settingValue) {

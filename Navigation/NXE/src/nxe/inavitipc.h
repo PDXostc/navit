@@ -82,6 +82,7 @@ public:
     virtual void clearDestination() = 0;
     virtual void addWaypoint(double longitude, double latitude) = 0;
     virtual void searchPOIs(double longitude, double latitude, int distance) = 0;
+    virtual void setPitch(std::uint16_t newPitchValue) = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
     virtual NXE::Position currentCenter() = 0;
