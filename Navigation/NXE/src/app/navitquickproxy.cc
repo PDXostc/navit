@@ -115,6 +115,10 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit currentlySelectedItemChanged();
     });
 
+    nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver){
+        emit navigationManuver(QString::fromStdString(manuver));
+    });
+
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
         aDebug() << "Received position update";
         double lat = position.latitude;

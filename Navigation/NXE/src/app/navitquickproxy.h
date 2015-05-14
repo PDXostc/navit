@@ -72,8 +72,10 @@ signals:
 
     void pointClicked(LocationProxy* location);
 
+    // Navigation
     void navigationStarted();
     void navigationStopped();
+    void navigationManuver(const QString& manuver);
 
 public slots:
     void zoomIn();
