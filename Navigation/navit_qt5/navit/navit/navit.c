@@ -201,6 +201,36 @@ struct object_func navit_func;
 struct navit *global_navit;
 
 
+
+char *
+navit_compose_item_address_string(struct item *item, int prependPostal)
+{
+	char *s=g_strdup("");
+	struct attr attr;
+	if(prependPostal && item_attr_get(item, attr_postal, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_house_number, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_street_name, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_street_name_systematic, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_district_name, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_town_name, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_county_name, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+	if(item_attr_get(item, attr_country_name, &attr))
+		s=g_strjoin(" ",s,map_convert_string_tmp(item->map,attr.u.str),NULL);
+
+	if(item_attr_get(item, attr_address, &attr))
+		s=g_strjoin(" ",s,"|",map_convert_string_tmp(item->map,attr.u.str),NULL);
+	return s;
+}
+
+
+
 struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 {
 	struct displaylist_handle *dlh;
@@ -212,6 +242,8 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 
 	struct transformation *trans;
     struct coord c;
+    struct coord curr_coord;
+    char *address;
 
     // transform pixel coordinates to geo coordinates
     trans=navit_get_trans(this_);
@@ -230,6 +262,7 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 	dlh=graphics_displaylist_open(display);
 	while ((di=graphics_displaylist_next(dlh))) {
 		struct item *item=graphics_displayitem_get_item(di);
+		long int idist = 0;
 		//if (item_is_point(*item) && graphics_displayitem_get_displayed(di) &&
 		if (graphics_displayitem_get_displayed(di) &&
 			graphics_displayitem_within_dist(display, di, p, this_->radius)) {
@@ -246,6 +279,26 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 				}
 
 				attr_list=attr_generic_add_attr(attr_list, &attr);
+
+				if(this_->vehicle && this_->vehicle->vehicle ) {
+					struct attr pos_attr;
+
+					if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL) &&
+					   item_coord_get_pro(itemo, &c, 1, transform_get_projection(trans))) {
+
+					   transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
+					   attr.type = attr_curr_position_distance;
+
+					   attr.u.num = transform_distance(transform_get_projection(trans), &curr_coord, &c);
+					   attr_list=attr_generic_add_attr(attr_list, &attr);
+					}
+				}
+
+				if ((address=navit_compose_item_address_string(itemo,0)) !=NULL) {
+					attr.type = attr_address;
+					attr.u.str = address;
+					attr_list=attr_generic_add_attr(attr_list, &attr);
+				}
 			}
 			map_rect_destroy(mr);
 		}

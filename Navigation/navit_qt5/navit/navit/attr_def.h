@@ -182,7 +182,7 @@ ATTR(street_count)
 ATTR(min_dist)
 ATTR(max_dist)
 ATTR(cache_size)
-ATTR_UNUSED
+ATTR(curr_position_distance)
 ATTR_UNUSED
 ATTR_UNUSED
 ATTR_UNUSED
