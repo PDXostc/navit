@@ -18,5 +18,4 @@ add_library(testminimain STATIC ${MINI_MAIN})
 
 add_subdirectory(unit)
 add_subdirectory(functional)
-add_subdirectory(benchmarks)
 
