@@ -37,6 +37,7 @@ struct NXEInstanceTest : public ::testing::Test {
     }
 
     void SetUp() override {
+        dbusController.start();
         instance.Initialize();
         std::chrono::milliseconds dura(1000);
         std::this_thread::sleep_for(dura);
@@ -123,3 +124,18 @@ TEST_F(NXEInstanceTest, Waypoints)
     clearDestination();
 }
 
+
+TEST_F(NXEInstanceTest, Routing_Portland)
+{
+    std::chrono::milliseconds dura_1s(1000);
+    std::chrono::milliseconds dura_5s(5000);
+    std::this_thread::sleep_for(dura_5s);
+    clearDestination();
+    setDestination(-122.579,45.5621, "1");
+    std::this_thread::sleep_for(dura_5s);
+    std::this_thread::sleep_for(dura_5s);
+    std::this_thread::sleep_for(dura_5s);
+    std::this_thread::sleep_for(dura_5s);
+    std::this_thread::sleep_for(dura_5s);
+    std::this_thread::sleep_for(dura_5s);
+}

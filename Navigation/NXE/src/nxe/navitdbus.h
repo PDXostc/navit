@@ -43,6 +43,7 @@ public:
     virtual SpeechSignalType& speechSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;
     virtual InitializedSignalType& initializedSignal() override;
+    virtual RoutingSignalType& routingSignal() override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;

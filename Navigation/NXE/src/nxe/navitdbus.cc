@@ -104,6 +104,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     void signalCallback(const ::DBus::SignalMessage& sig)
     {
+        nTrace() << "Signal callback";
         inProgress = true;
         ::DBus::MessageIter it = sig.reader();
         std::vector<std::pair<std::string, DBus::Variant> > res;
@@ -117,6 +118,16 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             return false;
 
         }) != res.end();
+
+        bool isRoutingSignal = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, DBus::Variant>& val) -> bool {
+            if (val.first == "type") {
+                const std::string strVal = DBusHelpers::getFromIter<std::string>(val.second.reader());
+                return strVal == "routing";
+            }
+            return false;
+
+        }) != res.end();
+
 
         bool isPointClicked = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
             return val.first == "click_coord_geo";
@@ -132,6 +143,17 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
                 std::string data = DBusHelpers::getFromIter<std::string>(dataIter->second.reader());
                 nDebug() << " I have to say " << data;
                 speechSignal(data);
+            }
+        } else if (isRoutingSignal) {
+            nTrace() << "Routing signal!";
+            auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+                return val.first == "data";
+            });
+
+            if (dataIter != res.end()) {
+                std::string data = DBusHelpers::getFromIter<std::string>(dataIter->second.reader());
+                nDebug() << " Routing data=" << data;
+                routingSignal(data);
             }
         }
         else if (isPointClicked) {
@@ -187,6 +209,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     INavitIPC::SpeechSignalType speechSignal;
     INavitIPC::PointClickedSignalType pointClickedSignal;
     INavitIPC::InitializedSignalType initializedSignal;
+    INavitIPC::RoutingSignalType routingSignal;
     bool inProgress = false;
 };
 
@@ -560,6 +583,11 @@ INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()
 INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()
 {
     return d->object->initializedSignal;
+}
+
+INavitIPC::RoutingSignalType &NavitDBus::routingSignal()
+{
+    return d->object->routingSignal;
 }
 
 } // namespace NXE
