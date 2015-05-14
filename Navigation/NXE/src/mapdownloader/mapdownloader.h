@@ -61,6 +61,8 @@ public:
         cbOnFinished = cb;
     }
 
+    void removeMaps();
+
     CbOnError cbOnError;
     CbOnProgress cbOnProgress;
     CbOnFinished cbOnFinished;

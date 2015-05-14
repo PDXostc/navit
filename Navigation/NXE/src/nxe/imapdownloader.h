@@ -32,6 +32,7 @@ public:
     virtual void setListener(const MapDownloaderListener& listener) = 0;
     virtual void cancel(const std::string& region) = 0;
     virtual bool setOutputDirectory(const std::string& outDirectory) = 0;
+    virtual void removeAllMaps() = 0;
 };
 
 } // NXE

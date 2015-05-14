@@ -22,7 +22,13 @@ Item {
             source: ftu ? "FTUMainPage.qml" : "MainPage.qml"
 
             Connections {
-                target: ftu ? mainPageLoader.item : null
+                target: navitProxy
+                onFtuChanged: {
+                    console.debug('ftu changed!', ftu)
+                    if (ftu) {
+                        mainPageLoader.source = Qt.resolvedUrl("FTUMainPage.qml")
+                    }
+                }
             }
         }
     }

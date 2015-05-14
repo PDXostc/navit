@@ -38,17 +38,10 @@ Page {
                     // set ftu to true
                     // and pop to the main page
                     navitProxy.reset();
-//                    rootStack.push({
-//                                       item: Qt.resolvedUrl("SettingsView.qml"),
-//                                       properties: {
-//                                           ftu: true
-//                                       }
-//                                   })
-//                    rootStack.pop()o
                     rootStack.clear();
-                rootStack.push({
-                                   item: Qt.resolvedUrl("MainPage.qml")
-                               })
+                    rootStack.push({
+                                       item: Qt.resolvedUrl("NxeUI.qml")
+                                   })
                 }
             }
         }

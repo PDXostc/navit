@@ -10,6 +10,7 @@ struct MapDownloaderMock : public NXE::IMapDownloader {
     MOCK_METHOD1(setListener, void(const NXE::MapDownloaderListener& listener));
     MOCK_METHOD1(cancel, void(const std::string&));
     MOCK_METHOD1(setOutputDirectory, bool(const std::string&));
+    MOCK_METHOD0(removeAllMaps, void());
 };
 
 #endif // MAPDOWNLOADERMOCK_H 

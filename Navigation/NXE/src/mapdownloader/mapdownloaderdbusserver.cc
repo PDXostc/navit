@@ -73,6 +73,11 @@ bool MapDownloaderDBusServer::download(const std::string& mapName)
     }
 }
 
+void MapDownloaderDBusServer::removeAllMaps()
+{
+    d->downloader.removeMaps();
+}
+
 void MapDownloaderDBusServer::reportProgress(const bool& enable)
 {
     d->downloader.enableReportProgress(enable);

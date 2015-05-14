@@ -238,6 +238,7 @@ void NavitQuickProxy::reset()
     clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
 
     m_settings.remove();
+    nxeInstance->mapDownloader()->removeAllMaps();
 
     emit ftuChanged();
 }
@@ -430,12 +431,14 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     tmp.append(m_addressSearchResults);
     tmp.append(m_favoritesResults);
     int newZoomLevel = -1;
-    std::for_each(tmp.begin(), tmp.end(), [this, &id](QObject* o) {
+    QObject* foundItem = nullptr;
+    std::for_each(tmp.begin(), tmp.end(), [this, &id, &foundItem](QObject* o) {
         LocationProxy* proxy = qobject_cast<LocationProxy*>(o);
 
         if (proxy->id() == id) {
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
+            foundItem = proxy;
             m_currentItem.reset(LocationProxy::clone(proxy));
         }
     });
@@ -455,14 +458,18 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 
     aInfo() << "Setting location to " << m_currentItem->longitude() << " " << m_currentItem->latitude();
     nxeInstance->HandleMessage<SetPositionMessageTag>(m_currentItem->longitude(), m_currentItem->latitude());
-    if (m_streetsSearchResults.contains(m_currentItem.data()))
+    if (m_citiesSearchResults.contains(foundItem)){
+            newZoomLevel = 4096;
+    }
+    else if (m_streetsSearchResults.contains(m_currentItem.data()))
         newZoomLevel = 16;
 
-    if (m_addressSearchResults.contains(m_currentItem.data()))
+    else if (m_addressSearchResults.contains(m_currentItem.data()))
         newZoomLevel = 8;
 
     // HACK: For some reasons setting zoom directly after
     // sending position message causes a deadlock
+    aDebug() << " new zoom level = " << newZoomLevel;
     if (newZoomLevel != -1) {
         QTimer::singleShot(100, [this, newZoomLevel]() {
                 nxeInstance->HandleMessage<SetZoomMessageTag>(newZoomLevel);

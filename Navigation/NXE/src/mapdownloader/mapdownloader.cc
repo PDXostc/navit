@@ -329,3 +329,9 @@ bool MapDownloader::setMapFileDir(const std::string& dir)
     mdInfo() << "Setting maps dir to " << d->mapFilePath;
     return true;
 }
+
+void MapDownloader::removeMaps()
+{
+    bfs::remove_all(d->mapFilePath);
+    setMapFileDir(d->mapFilePath);
+}

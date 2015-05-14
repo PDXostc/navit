@@ -120,4 +120,9 @@ bool MapDownloaderDBus::setOutputDirectory(const std::string &outDirectory)
     return val;
 }
 
+void MapDownloaderDBus::removeAllMaps()
+{
+    DBusHelpers::callNoReply("removeAllMaps", *(d->proxy.get()));
+}
+
 }

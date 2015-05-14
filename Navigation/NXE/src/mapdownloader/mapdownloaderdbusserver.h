@@ -19,6 +19,7 @@ public:
 
     virtual bool setOutputDirectory(const std::string& path) override;
     bool download(const std::string& mapName) override;
+    virtual void removeAllMaps() override;
     virtual void reportProgress(const bool& enable) override;
     virtual void cancel(const std::string &mapName) override;
     virtual std::vector< DBus::Struct< std::string, uint64_t, bool, std::string> > maps() override;

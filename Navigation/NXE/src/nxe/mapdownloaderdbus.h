@@ -18,6 +18,7 @@ public:
     virtual void setListener(const MapDownloaderListener & listener) override;
     virtual void cancel(const std::string& region) override;
     virtual bool setOutputDirectory(const std::string &outDirectory) override;
+    virtual void removeAllMaps() override;
 
 private:
     std::unique_ptr<MapDownloaderDBusPrivate> d;

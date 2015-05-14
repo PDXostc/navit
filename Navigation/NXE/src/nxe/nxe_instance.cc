@@ -194,4 +194,10 @@ INavitIPC *NXEInstance::ipc() const
     return d->ipc.get();
 }
 
+IMapDownloader *NXEInstance::mapDownloader() const
+{
+    assert(d && d->mapDownloaderIPC);
+    return d->mapDownloaderIPC.get();
+}
+
 } // namespace NXE

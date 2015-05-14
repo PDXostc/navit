@@ -21,6 +21,7 @@ class INavitProcess;
 class INavitIPC;
 class NavitController;
 class IGPSProvider;
+class IMapDownloader;
 
 struct NXEInstancePrivate;
 class NXEInstance {
@@ -47,6 +48,7 @@ public:
     INavitIPC::PointClickedSignalType& pointClickedSignal();
 
     INavitIPC* ipc() const;
+    IMapDownloader* mapDownloader() const;
 
 private:
     std::unique_ptr<NXEInstancePrivate> d;
