@@ -253,7 +253,8 @@ void NavitQuickProxy::reset()
 void NavitQuickProxy::quit()
 {
     aInfo() << "Quiting application";
-    nxeInstance->HandleMessage<ExitMessageTag>();
+    nxeInstance->ipc()->clearDestination();
+    nxeInstance->ipc()->quit();
 
     emit quitSignal();
 }
@@ -422,6 +423,20 @@ void NavitQuickProxy::getHistory()
 void NavitQuickProxy::setTopBarVisibility(bool value)
 {
     setTopBarLocationVisible(value);
+}
+
+void NavitQuickProxy::startNavigation()
+{
+    aInfo() << "Starting Navigation for " << static_cast<void*>(m_currentItem.data());
+    nxeInstance->ipc()->setDestination(m_currentItem->longitude(), m_currentItem->latitude(),
+                                       m_currentItem->description().toStdString());
+    emit navigationStarted();
+}
+
+void NavitQuickProxy::cancelNavigation()
+{
+    nxeInstance->ipc()->clearDestination();
+    emit navigationStopped();
 }
 
 void NavitQuickProxy::setZoom(int newZoom)

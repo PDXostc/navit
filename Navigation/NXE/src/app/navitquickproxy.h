@@ -72,6 +72,9 @@ signals:
 
     void pointClicked(LocationProxy* location);
 
+    void navigationStarted();
+    void navigationStopped();
+
 public slots:
     void zoomIn();
     void zoomOut();
@@ -98,6 +101,10 @@ public slots:
     void setLocationPopUp(const QUuid& id);
     void hideLocationBars();
     void setTopBarVisibility(const bool value);
+
+    // Navigation API
+    void startNavigation();
+    void cancelNavigation();
 
     void setZoom(int newZoom);
 

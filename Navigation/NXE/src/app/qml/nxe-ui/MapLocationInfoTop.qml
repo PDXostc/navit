@@ -18,7 +18,7 @@ Item {
     Behavior on opacity {NumberAnimation {}}
 
     Item {
-        id: item3
+        id: mainItem
         anchors.fill: parent
         Item {
             id: buttonsBar
@@ -119,6 +119,33 @@ Item {
                 }
 
             }
+        }
+    }
+
+    Item {
+        anchors.top: mainItem.bottom
+        anchors.right: parent.right
+        width: 100
+        height: 40
+        visible: mainPageView.topBarExpanded
+        MouseArea {
+            anchors.fill: parent
+            onClicked: navitProxy.cancelNavigation()
+        }
+        Image {
+            width: 76
+            height: 20
+            //            anchors.fill: parent
+            anchors.centerIn: parent
+            sourceSize.width: 60
+            sourceSize.height: 50
+            source: "blue_forward_button_long_bg.png"
+        }
+        Text {
+            anchors.centerIn: parent
+            text: "Cancel"
+            color: "white"
+
         }
     }
 }

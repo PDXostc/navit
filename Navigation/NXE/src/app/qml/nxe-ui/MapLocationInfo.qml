@@ -10,6 +10,7 @@ Item {
     width: 400
     height: 150
 
+
     Connections {
         target: locationComponent ? locationComponent : null
         onFavoriteChanged: {
@@ -113,9 +114,13 @@ Item {
                     anchors.top: locationDescription.bottom
                     anchors.topMargin: 10
 
+                    onClicked: {
+                        console.debug('Start navigation')
+                        navitProxy.startNavigation();
+                    }
+
                     opacity: 0
                     Behavior on opacity { NumberAnimation {} }
-                     onClicked: {navitProxy.setTopBarVisibility(true)}
                     Image {
                         anchors.fill: parent
                         source: "blue_forward_button_long_bg.png"

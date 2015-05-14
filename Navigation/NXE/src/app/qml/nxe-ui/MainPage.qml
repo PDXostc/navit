@@ -98,6 +98,15 @@ Item {
         onTopBarLocationVisibleChanged: {
             mainPageView.topBarExpanded = navitProxy.topBarLocationVisible
         }
+
+        onNavigationStarted: {
+            navitProxy.setTopBarVisibility(true)
+        }
+
+        onNavigationStopped: {
+            navitProxy.setTopBarVisibility(false)
+        }
+
     }
 
     Component {
