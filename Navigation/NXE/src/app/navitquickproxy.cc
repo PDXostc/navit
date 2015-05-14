@@ -176,7 +176,7 @@ bool NavitQuickProxy::enablePoi() const
 
 void NavitQuickProxy::resize(const QRect& rect)
 {
-    nxeInstance->ipc()->resize(rect.width(), rect.height());
+    nxeInstance->resize(rect.width(), rect.height());
 }
 
 void NavitQuickProxy::setEnablePoi(bool enable)
@@ -502,7 +502,7 @@ void NavitQuickProxy::synchronizeNavit()
         return;
     }
     // special case
-    nxeInstance->ipc()->resize(0,0);
+    nxeInstance->resize(0,0);
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());

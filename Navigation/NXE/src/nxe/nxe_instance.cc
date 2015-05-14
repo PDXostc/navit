@@ -163,6 +163,11 @@ void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb
     d->gps->addPostionUpdate(listener);
 }
 
+void NXEInstance::resize(int w, int h)
+{
+    d->resize(w,h);
+}
+
 INavitIPC::PointClickedSignalType& NXEInstance::pointClickedSignal()
 {
     return d->ipc->pointClickedSignal();

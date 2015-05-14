@@ -37,6 +37,8 @@ public:
     void setMapDownloaderListener(const MapDownloaderListener& listener);
     void setPositionUpdateListener(const NXE::IGPSProvider::PositionUpdateCb& listener);
 
+    void resize(int w, int h);
+
     INavitIPC::PointClickedSignalType& pointClickedSignal();
 
     INavitIPC* ipc() const;
