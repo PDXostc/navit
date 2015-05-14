@@ -103,6 +103,10 @@ Item {
 
         onNavigationStarted: {
             navitProxy.setTopBarVisibility(true)
+            if (locationInfoComponent) {
+                locationInfoComponent.destroy();
+                locationInfoObject.destroy();
+            }
         }
 
         onNavigationStopped: {

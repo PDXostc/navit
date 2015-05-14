@@ -145,7 +145,7 @@ Item {
             anchors.centerIn: parent
             text: "Cancel"
             color: "white"
-
+            font.pixelSize: 16
         }
     }
 }
