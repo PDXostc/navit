@@ -42,19 +42,32 @@ Page {
                 width: parent.width
                 height: parent.height - 100
                 clip: true
-                onSubMenuRequest: {
-                    switch (url) {
-                    case "LocationsHistory.qml":
-                        root.busy = true;
-                        navitProxy.getHistory()
-                        break
-                    case "LocationsFavorites.qml":
-                        root.busy = true;
-                        navitProxy.getFavorites()
-                        break
-                    default:
-                        searchStackView.push(Qt.resolvedUrl(url))
+                delegate: SettingsListDelegate {
+                    Component.onCompleted: {
+                        console.debug(options.get(0).url)
+                        if (options.get(0).url === 'LocationsFavorites.qml') {
+                            enabled = (locationFavoritesResult.length !== 0)
+                        } else if (options.get(0).url === 'LocationsHistory.qml') {
+                            enabled = false;
+                        }
                     }
+                    width: locationsListView.width
+                    height: 50
+                    onSubMenuRequested: {
+                        switch (url) {
+                        case "LocationsHistory.qml":
+                            root.busy = true;
+                            navitProxy.getHistory()
+                            break
+                        case "LocationsFavorites.qml":
+                            root.busy = true;
+                            navitProxy.getFavorites()
+                            break
+                        default:
+                            searchStackView.push(Qt.resolvedUrl(url))
+                        }
+                    }
+                    opacity: enabled ? 1 : 0.4
                 }
             }
         }

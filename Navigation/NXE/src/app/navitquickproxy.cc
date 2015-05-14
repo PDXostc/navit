@@ -460,6 +460,7 @@ void NavitQuickProxy::initNavit()
     m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
     m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
+    m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
     aInfo() << "Launching navit";
     context->dbusController.start();
 

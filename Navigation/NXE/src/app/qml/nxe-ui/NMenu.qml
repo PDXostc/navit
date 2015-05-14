@@ -69,7 +69,6 @@ Item {
                     }
                 }
             }
-
         }
         Item {
             width: parent.width
