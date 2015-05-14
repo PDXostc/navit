@@ -43,13 +43,7 @@ AppSettings::AppSettings()
     }
     else {
         // create default config file
-        aDebug() << "Creating default app settings under= " << m_configPath;
-        set<Tags::EnablePoi>(true);
-        set<Tags::Orientation>(-1);
-        set<Tags::Ftu>(true);
-        set<Tags::TopBarLocationVisible>(false);
-        set<Tags::Voice>(true);
-        save();
+        createDefaults();
     }
 }
 
@@ -86,6 +80,19 @@ void AppSettings::removeFromFavorites(const std::string& id)
     aInfo() << "Remove " << id << " from favorites";
 }
 
+void AppSettings::remove()
+{
+    using boost::property_tree::read_json;
+    // remove ~/.NavIt/user.conf
+    bfs::remove(m_configPath);
+    bfs::remove_all(m_favoritesPath);
+
+    getConfigPath();
+    createDefaults();
+
+    read_json(m_configPath, m_tree);
+}
+
 QList<LocationProxy*> AppSettings::favorites()
 {
     aInfo() << "Reading favorites";
@@ -105,9 +112,20 @@ QList<LocationProxy*> AppSettings::favorites()
             QString::fromStdString(entryTree.get<std::string>("description")),
             false
         };
-        loc->setPosition(NXE::Position{entryTree.get<double>("longitude"), entryTree.get<double>("latitude")});
+        loc->setPosition(NXE::Position{ entryTree.get<double>("longitude"), entryTree.get<double>("latitude") });
         favs.append(loc);
     }
 
     return favs;
+}
+
+void AppSettings::createDefaults()
+{
+    aDebug() << "Creating default app settings under= " << m_configPath;
+    set<Tags::EnablePoi>(true);
+    set<Tags::Orientation>(-1);
+    set<Tags::Ftu>(true);
+    set<Tags::TopBarLocationVisible>(false);
+    set<Tags::Voice>(true);
+    save();
 }

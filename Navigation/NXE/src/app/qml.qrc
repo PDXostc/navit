@@ -65,5 +65,6 @@
         <file>qml/nxe-ui/LocationsStructuredSearch.qml</file>
         <file>qml/nxe-ui/FTUDialogPage.qml</file>
         <file>qml/nxe-ui/NDialog.qml</file>
+        <file>qml/nxe-ui/FactoryResetDialog.qml</file>
     </qresource>
 </RCC>

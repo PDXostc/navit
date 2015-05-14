@@ -61,9 +61,12 @@ public:
     void addToFavorites(LocationProxy* proxy);
     void removeFromFavorites(const std::string& id);
 
+    void remove();
+
     QList<LocationProxy*> favorites();
 
 private:
+    void createDefaults();
     const std::string m_configPath;
     const std::string m_favoritesPath;
     boost::property_tree::ptree m_tree;

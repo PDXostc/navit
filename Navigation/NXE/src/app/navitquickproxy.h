@@ -30,7 +30,7 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(QString version READ version CONSTANT)
     Q_PROPERTY(QString position READ position NOTIFY positionChanged)
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
-    Q_PROPERTY(bool ftu READ ftu WRITE setFtu)
+    Q_PROPERTY(bool ftu READ ftu WRITE setFtu NOTIFY ftuChanged)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
     Q_PROPERTY(bool topBarLocationVisible READ topBarLocationVisible WRITE setTopBarLocationVisible NOTIFY topBarLocationVisibleChanged)
 
@@ -61,11 +61,11 @@ signals:
     void orientationChanged();
     void positionChanged();
     void enablePoiChanged();
+    void ftuChanged();
 
     void quitSignal();
 
     void searchDone();
-    void gettingFavoritesDone();
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
     void topBarLocationVisibleChanged();
@@ -77,6 +77,8 @@ public slots:
     void zoomOut();
     void moveTo(int x, int y);
     void render();
+
+    void reset();
 
     void quit();
 

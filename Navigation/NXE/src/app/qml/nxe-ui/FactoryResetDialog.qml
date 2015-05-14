@@ -37,12 +37,18 @@ Page {
                     // we need to reset everything
                     // set ftu to true
                     // and pop to the main page
-                    rootStack.push({
-                                       item: Qt.resolvedUrl("SettingsView.qml"),
-                                       properties: {
-                                           ftu: true
-                                       }
-                                   })
+                    navitProxy.reset();
+//                    rootStack.push({
+//                                       item: Qt.resolvedUrl("SettingsView.qml"),
+//                                       properties: {
+//                                           ftu: true
+//                                       }
+//                                   })
+//                    rootStack.pop()o
+                    rootStack.clear();
+                rootStack.push({
+                                   item: Qt.resolvedUrl("MainPage.qml")
+                               })
                 }
             }
         }

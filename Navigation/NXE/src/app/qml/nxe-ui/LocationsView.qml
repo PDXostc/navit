@@ -46,6 +46,7 @@ Page {
                     Component.onCompleted: {
                         console.debug(options.get(0).url)
                         if (options.get(0).url === 'LocationsFavorites.qml') {
+                            navitProxy.getFavorites();
                             enabled = (locationFavoritesResult.length !== 0)
                         } else if (options.get(0).url === 'LocationsHistory.qml') {
                             enabled = false;
@@ -53,20 +54,7 @@ Page {
                     }
                     width: locationsListView.width
                     height: 50
-                    onSubMenuRequested: {
-                        switch (url) {
-                        case "LocationsHistory.qml":
-                            root.busy = true;
-                            navitProxy.getHistory()
-                            break
-                        case "LocationsFavorites.qml":
-                            root.busy = true;
-                            navitProxy.getFavorites()
-                            break
-                        default:
-                            searchStackView.push(Qt.resolvedUrl(url))
-                        }
-                    }
+                    onSubMenuRequested: searchStackView.push(Qt.resolvedUrl(url))
                     opacity: enabled ? 1 : 0.4
                 }
             }
@@ -78,13 +66,6 @@ Page {
                 searchStackView.push({
                                          item: Qt.resolvedUrl(
                                                    "LocationsHistory.qml")
-                                     })
-            }
-            onGettingFavoritesDone: {
-                root.busy = false;
-                searchStackView.push({
-                                         item: Qt.resolvedUrl(
-                                                   "LocationsFavorites.qml")
                                      })
             }
         }

@@ -200,6 +200,7 @@ bool NavitQuickProxy::ftu() const
 void NavitQuickProxy::setFtu(bool value)
 {
     m_settings.set<Tags::Ftu>(value);
+    emit ftuChanged();
 }
 
 QObject* NavitQuickProxy::currentlySelectedItem() const
@@ -225,6 +226,20 @@ void NavitQuickProxy::moveTo(int x, int y)
 void NavitQuickProxy::render()
 {
     nxeInstance->HandleMessage<RenderMessageTag>();
+}
+
+void NavitQuickProxy::reset()
+{
+    aInfo() << "Resetting all data";
+    clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
+    clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
+    clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
+    clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
+    clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
+
+    m_settings.remove();
+
+    emit ftuChanged();
 }
 
 void NavitQuickProxy::quit()
@@ -367,16 +382,15 @@ void NavitQuickProxy::searchNear(const QString& str)
 
 void NavitQuickProxy::getFavorites()
 {
-    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
+    clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
 
     auto favs = m_settings.favorites();
+    aTrace() << "favorites size=" << favs.size();
     std::for_each(favs.begin(), favs.end(), [this](LocationProxy* p) {
         m_favoritesResults.append(p);
     });
 
     m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
-
-    emit gettingFavoritesDone();
 }
 void NavitQuickProxy::getHistory()
 {
