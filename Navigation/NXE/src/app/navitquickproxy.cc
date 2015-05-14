@@ -111,7 +111,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_settings.removeFromFavorites(loc->id().toByteArray().data());
             }
         });
-        emit pointClicked(loc);
+        m_currentItem.reset(loc);
+        emit currentlySelectedItemChanged();
     });
 
     nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
@@ -200,6 +201,12 @@ bool NavitQuickProxy::ftu() const
 void NavitQuickProxy::setFtu(bool value)
 {
     m_settings.set<Tags::Ftu>(value);
+
+    if(!value) {
+        // ftu change to true
+        initNavit();
+    }
+
     emit ftuChanged();
 }
 
@@ -467,8 +474,6 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     else if (m_addressSearchResults.contains(m_currentItem.data()))
         newZoomLevel = 8;
 
-    // HACK: For some reasons setting zoom directly after
-    // sending position message causes a deadlock
     aDebug() << " new zoom level = " << newZoomLevel;
     if (newZoomLevel != -1) {
         QTimer::singleShot(100, [this, newZoomLevel]() {
@@ -485,13 +490,18 @@ void NavitQuickProxy::hideLocationBars()
 
 void NavitQuickProxy::initNavit()
 {
+    context->dbusController.start();
+
     m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
     m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
     m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
     m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
     m_rootContext->setContextProperty("locationFavoritesResult", QVariant::fromValue(m_favoritesResults));
+    if (m_settings.get<Tags::Ftu>()) {
+        aInfo() << "Ftu is set up no navit need to be run";
+        return;
+    }
     aInfo() << "Launching navit";
-    context->dbusController.start();
 
     nxeInstance->Initialize();
     QTimer::singleShot(500, this, SLOT(synchronizeNavit()));
@@ -501,6 +511,9 @@ void NavitQuickProxy::synchronizeNavit()
 {
     // TODO: Synchronize all NavIt settings
     aInfo() << "Synchronizing navit";
+    if (m_settings.get<Tags::Ftu>()) {
+        return;
+    }
     // special case
     nxeInstance->HandleMessage<ResizeMessageTag>(0, 0);
 

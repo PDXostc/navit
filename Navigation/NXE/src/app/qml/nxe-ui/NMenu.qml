@@ -54,7 +54,7 @@ Item {
             height: root.height/4
             Image {
                 anchors.centerIn: parent
-                source: navitProxy.orientation === -1 ? "northup_icon_white.png":"headup_icon_white.png"
+                source: navitProxy.orientation === 0 ? "northup_icon_white.png":"headup_icon_white.png"
 
                 sourceSize.width: 24
                 sourceSize.height: 24

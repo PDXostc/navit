@@ -75,14 +75,16 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
-            if (navitProxy.currentlySelectedItem === null) {
-                locationInfoComponent.destroy()
-                locationInfoTopComponent.destroy()
-                locationInfoTopObject.destroy()
+            if (locationInfoComponent) {
+                locationInfoComponent.destroy();
                 locationInfoObject.destroy()
-            } else {
-                createLocationComponent(navitProxy.currentlySelectedItem)
             }
+            if (locationInfoTopComponent) {
+                locationInfoTopComponent.destroy();
+                locationInfoTopComponent.destroy()
+            }
+
+            createLocationComponent(navitProxy.currentlySelectedItem)
         }
 
         onPointClicked: {
