@@ -130,6 +130,8 @@ void navit_set_visitbefore(struct navit *nav, struct pcoord *pc,int visitbefore)
 struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p);
 struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int distance);
 void navit_dbus_send_selected_pois(void* data, struct pcoord *pc, int distance);
+struct attr** navit_add_item_distance_from_curr_pos(struct navit *this_, struct item *item, struct attr **attr_list);
+struct attr** navit_add_item_address(struct navit *this_, struct item *item, struct attr **attr_list);
 /* end of prototypes */
 #ifdef __cplusplus
 }
