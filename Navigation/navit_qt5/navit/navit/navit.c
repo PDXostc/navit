@@ -229,6 +229,47 @@ navit_compose_item_address_string(struct item *item, int prependPostal)
 	return s;
 }
 
+struct attr** navit_add_item_distance_from_curr_pos(struct navit *this_, struct item *item, struct attr **attr_list)
+{
+	struct attr attr;
+
+	struct transformation *trans;
+    struct coord c;
+    struct coord curr_coord;
+
+    trans=navit_get_trans(this_);
+
+    if(this_->vehicle && this_->vehicle->vehicle ) {
+    	struct attr pos_attr;
+
+    	if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL) &&
+    	   item_coord_get_pro(item, &c, 1, transform_get_projection(trans))) {
+
+    	   transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
+    	   attr.type = attr_curr_position_distance;
+
+    	   attr.u.num = transform_distance(transform_get_projection(trans), &curr_coord, &c);
+    	   attr_list=attr_generic_add_attr(attr_list, &attr);
+    	}
+  	}
+
+    return attr_list;
+}
+
+
+struct attr** navit_add_item_address(struct navit *this_, struct item *item, struct attr **attr_list)
+{
+	struct attr attr;
+	char* address=NULL;
+
+    if ((address=navit_compose_item_address_string(item,0)) !=NULL) {
+    	attr.type = attr_address;
+    	attr.u.str = address;
+    	attr_list=attr_generic_add_attr(attr_list, &attr);
+    }
+
+    return attr_list;
+}
 
 
 struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
@@ -280,25 +321,10 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 
 				attr_list=attr_generic_add_attr(attr_list, &attr);
 
-				if(this_->vehicle && this_->vehicle->vehicle ) {
-					struct attr pos_attr;
-
-					if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL) &&
-					   item_coord_get_pro(itemo, &c, 1, transform_get_projection(trans))) {
-
-					   transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
-					   attr.type = attr_curr_position_distance;
-
-					   attr.u.num = transform_distance(transform_get_projection(trans), &curr_coord, &c);
-					   attr_list=attr_generic_add_attr(attr_list, &attr);
-					}
-				}
-
-				if ((address=navit_compose_item_address_string(itemo,0)) !=NULL) {
-					attr.type = attr_address;
-					attr.u.str = address;
-					attr_list=attr_generic_add_attr(attr_list, &attr);
-				}
+				// item distance from current position
+				attr_list=navit_add_item_distance_from_curr_pos(this_,itemo,attr_list);
+				// item address
+				attr_list=navit_add_item_address(this_,itemo,attr_list);
 			}
 			map_rect_destroy(mr);
 		}
@@ -390,6 +416,11 @@ struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int
                     }
 
                     attr_list=attr_generic_add_attr(attr_list, &attr);
+
+                    // item distance from current position
+    				attr_list=navit_add_item_distance_from_curr_pos(this_,item,attr_list);
+    				// item address
+    				attr_list=navit_add_item_address(this_,item,attr_list);
 	            }
 	    	}
 	    }
