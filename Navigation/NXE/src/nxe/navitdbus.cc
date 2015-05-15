@@ -340,7 +340,7 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
-    DBusHelpers::call("set_destination", *(d->object.get()), message, description);
+    DBusHelpers::callNoReply("set_destination", *(d->object.get()), message, description);
 }
 
 void NavitDBus::setPosition(double longitude, double latitude)
@@ -352,7 +352,7 @@ void NavitDBus::setPosition(double longitude, double latitude)
     s._1 = 1;
     s._2 = message;
 
-    DBusHelpers::call("set_center", *(d->object.get()),s);
+    DBusHelpers::callNoReply("set_center", *(d->object.get()),s);
 }
 
 void NavitDBus::setPositionByInt(int x, int y)
@@ -377,7 +377,7 @@ void NavitDBus::addWaypoint(double longitude, double latitude)
 void NavitDBus::clearDestination()
 {
     DebugDBusCall db{ "clear_destination" };
-    DBusHelpers::call("clear_destination", *(d->object.get()));
+    DBusHelpers::callNoReply("clear_destination", *(d->object.get()));
 }
 
 void NavitDBus::setScheme(const std::string& scheme)
