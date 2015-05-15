@@ -3,6 +3,7 @@
 #include <QtCore/QUuid>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCommandLineOption>
+#include <QtGui/QScreen>
 
 #include <memory>
 #include <vector>
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
     createLoggers();
     spdlog::set_pattern("[%H:%M:%S.%e] [%t] [%l] %v");
 
-    aInfo() << "NXE version is= " << gNXEVersion;
+    aInfo() << "NXE version is= " << gNXEVersion << " config path="<< s.configPath();
 
     qDebug() << " args=" << app.arguments();
     parser.parse(app.arguments());
@@ -114,7 +115,9 @@ int main(int argc, char* argv[])
 #if defined(NXE_OS_LINUX)
         view.showMaximized();
 #elif defined(NXE_OS_TIZEN)
-        view.showFullScreen();
+        QScreen* s = app.primaryScreen();
+        view.setGeometry(0,100, s->size().width(), s->size().height() - 200);
+        view.show();
 #endif
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));
