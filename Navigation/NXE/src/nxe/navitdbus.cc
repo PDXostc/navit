@@ -43,7 +43,7 @@ struct DBusQueuedMessage {
     enum class Type {
         Ping = 0,
         _Quit, // this Quit is reserved to quit dbus thread
-        Quit,  // This quit closes NavIt
+        Quit, // This quit closes NavIt
         SetZoom,
         Zoom,
         Render,
@@ -58,14 +58,17 @@ struct DBusQueuedMessage {
         SetScheme,
         SetPitch,
         SearchPOI,
-        CurrentCenter
+        CurrentCenter,
+        Search,
+        DestroySearch
     } type;
     typedef boost::variant<int,
         std::string,
         std::pair<int, int>, // for resize
         std::pair<std::string, std::string>, // for setDestination, searchPOI
         DBus::Struct<int, std::string>, // for setPosition
-        std::uint16_t // for pitch
+        std::uint16_t, // for pitch
+        std::pair<NXE::INavitIPC::SearchType, std::string> // for search
         > VariantType;
     VariantType value;
 };
@@ -236,7 +239,7 @@ struct NavitDBusPrivate {
                         quitMessageReceived = true;
                         break;
                     case DBusQueuedMessage::Type::Quit:
-                        DBusHelpers::callNoReply("quit", *(object.get()));
+                        DBusHelpers::call("quit", *(object.get()));
                         break;
                     case DBusQueuedMessage::Type::SetZoom:
                     {
@@ -263,7 +266,8 @@ struct NavitDBusPrivate {
                         DBusHelpers::setAttr("orientation", *(object.get()), boost::get<int>(msg.value));
                         break;
                     case DBusQueuedMessage::Type::SetCenter:
-                        DBusHelpers::callNoReply("set_center_by_string", *(object.get()), boost::get<std::string>(msg.value));
+                        dbusTrace() << "Set center, center= " << boost::get<std::string>(msg.value);
+                        DBusHelpers::call("set_center_by_string", *(object.get()), boost::get<std::string>(msg.value));
                         break;
                     case DBusQueuedMessage::Type::Resize:
                     {
@@ -306,9 +310,21 @@ struct NavitDBusPrivate {
                     {
                         nInfo() << "Current center";
                         auto ret = DBusHelpers::getAttr<DBus::Struct<double, double> >("center", *(object.get()));
-                        nInfo() << "Current center " << ret._1 << ret._2;
-                        currentCenterSignal(NXE::Position{ret._1, ret._2});
+                        nInfo() << "Current center lon= " << ret._2 <<" lat= "<< ret._1;
+                        currentCenterSignal(NXE::Position{ret._2, ret._1});
                         break;
+                    }
+                    case DBusQueuedMessage::Type::Search:
+                    {
+                        auto params = boost::get<std::pair<INavitIPC::SearchType, std::string>>(msg.value);
+                        searchSignal(search(params.first, params.second));
+                        break;
+                    }
+                    case DBusQueuedMessage::Type::DestroySearch:
+                    {
+                        DBusHelpers::call("destroy", *(searchObject.get()));
+                        nInfo() << "Search list destroyed";
+                        searchObject.reset();
                     }
                     } // switch end
                 }
@@ -332,6 +348,130 @@ struct NavitDBusPrivate {
         searchObject.reset(new NavitSearchObjectProxy{ searchListPath, con });
     }
 
+    SearchResults search(INavitIPC::SearchType type, const std::string& searchString)
+    {
+        if (!searchObject)
+            throw std::runtime_error("startSearch not called");
+
+        nTrace() << "Searching for " << searchString;
+        std::string tag = convert(type);
+
+        nTrace() << "Tag =" << tag;
+        SearchResults ret;
+
+        DBus::Variant var;
+        DBus::MessageIter variantIter = var.writer();
+        variantIter << searchString;
+
+        DBusHelpers::call("search", *(searchObject.get()), tag, var, static_cast<int>(1));
+        while (true) {
+            try {
+                DBus::Message results = DBusHelpers::call("get_result", *(searchObject.get()));
+                nTrace() << "Received result";
+                DBus::MessageIter resultsIter{ results.reader() };
+
+                std::int32_t resultId;
+                DBus::Struct<double, double> position;
+                typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
+                LocationDBusType at;
+                double lat, lon;
+
+                resultsIter >> resultId >> position;
+                nTrace() << "Read pos";
+                resultsIter >> at;
+                lat = position._2;
+                lon = position._1;
+
+                nDebug() << "Search results: " << resultId << " Pos = "
+                         << position._1 << " " << position._2;
+
+                auto decodeCountry = [this](LocationDBusType& map) -> SearchResult::Country {
+                    std::string car,name = map.at("country").at("name");
+                    auto isCar = map.at("country").find("car");
+                    if (isCar != map.at("country").end()) {
+                        auto reader = isCar->second.reader();
+                        reader >> car;
+                    }
+                    return SearchResult::Country{name,
+                            car,
+                            map.at("country")["iso2"],
+                            map.at("country")["iso3"]
+                        };
+                };
+                auto decodeCity = [this](LocationDBusType& map) -> SearchResult::City {
+                    std::string postal, postalMask;
+                    auto isPostal = map.at("town").find("postal");
+                    if (isPostal != map.at("town").end()) {
+                        postal = DBusHelpers::getFromIter<std::string>(isPostal->second.reader());
+                    }
+                    auto isPostalMask = map.at("town").find("postal_mask");
+                    if (isPostalMask != map.at("town").end()) {
+                        postal = DBusHelpers::getFromIter<std::string>(isPostalMask->second.reader());
+                    }
+                    return SearchResult::City{
+                        map.at("town").at("name"),
+                            postal,
+                            postalMask
+                    };
+                };
+                auto decodeStreet = [this](const LocationDBusType& map) -> SearchResult::Street {
+                    std::string name;
+                    auto isStreet = map.find("street");
+                    if (isStreet != map.end()) {
+                        name = DBusHelpers::getFromIter<std::string>(isStreet->second.at("name").reader());
+
+                    }
+                    return SearchResult::Street{
+                        name
+                    };
+                };
+                auto decodeHouse = [this](LocationDBusType& map) -> SearchResult::HouseNumber {
+                    return SearchResult::HouseNumber{
+                        map.at("housenumber").at("name"),
+                        map.at("housenumber")["postal"],
+                        map.at("housenumber")["postal_mask"]
+                    };
+                };
+
+                if (type == INavitIPC::SearchType::Country) {
+                    // decode country
+                    ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at) });
+                    nDebug() << "Country = " << ret.back().country.name;
+                }
+                else if (type == INavitIPC::SearchType::City) {
+                    ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at), decodeCity(at) });
+                    nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
+                }
+                else if (type == INavitIPC::SearchType::Street) {
+                    ret.emplace_back(SearchResult{
+                        resultId,
+                        std::make_pair(lon, lat),
+                        decodeCountry(at),
+                        decodeCity(at),
+                        decodeStreet(at) });
+                    nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
+                             << " Street = " << ret.back().street.name;
+                }
+                else if (type == INavitIPC::SearchType::Address) {
+                    ret.emplace_back(SearchResult{
+                        resultId,
+                        std::make_pair(lon, lat),
+                        decodeCountry(at),
+                        decodeCity(at),
+                        decodeStreet(at),
+                        decodeHouse(at) });
+                    nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
+                             << " Street = " << ret.back().street.name << " House = " << ret.back().house.name;
+                }
+            }
+            catch (const DBus::Error& ex) {
+                nInfo() << "Finished reading results " << ex.what();
+                break;
+            }
+        }
+        return ret;
+    }
+
     std::shared_ptr<NavitDBusObjectProxy> object;
     std::shared_ptr<NavitDBusObjectProxy> rootObject;
     std::shared_ptr<NavitSearchObjectProxy> searchObject;
@@ -344,6 +484,7 @@ struct NavitDBusPrivate {
     INavitIPC::IntSignalType orientationSignal;
     INavitIPC::EmptySignalType searchPoiSignal;
     INavitIPC::CurrentCenterSignalType currentCenterSignal;
+    INavitIPC::SearchResultsSignalType searchSignal;
 };
 
 NavitDBus::NavitDBus(DBusController& ctrl)
@@ -363,7 +504,7 @@ NavitDBus::~NavitDBus()
 
 void NavitDBus::quit()
 {
-    dbusInfo() << "Quiting Navit";
+    dbusInfo() << "Request Quiting Navit";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Quit });
 }
 
@@ -385,7 +526,7 @@ void NavitDBus::render()
 
 void NavitDBus::resize(int x, int y)
 {
-    dbusInfo() << "Resizing [" << x << "x" << y << "]";
+    dbusInfo() << "Request Resizing [" << x << "x" << y << "]";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Render, DBusQueuedMessage::VariantType{ std::make_pair(x, y) } });
 }
 
@@ -397,7 +538,7 @@ void NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
-    nDebug() << "Changing orientation to " << newOrientation;
+    nDebug() << "Request Changing orientation to " << newOrientation;
     if (newOrientation != 0 && newOrientation != -1) {
         nError() << "Unable to change orientation to " << newOrientation;
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
@@ -407,7 +548,7 @@ void NavitDBus::setOrientation(int newOrientation)
 
 void NavitDBus::setCenter(double longitude, double latitude)
 {
-    dbusInfo() << "Setting center lon= " << longitude << " lat= " << latitude;
+    dbusInfo() << "Request Setting center lon= " << longitude << " lat= " << latitude;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
@@ -416,7 +557,7 @@ void NavitDBus::setCenter(double longitude, double latitude)
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
 {
-    nDebug() << "Setting destionation to. name= " << description;
+    nDebug() << "Request Setting destionation to. name= " << description;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetDestination, DBusQueuedMessage::VariantType{ std::make_pair(message, description) } });
@@ -447,20 +588,20 @@ void NavitDBus::clearDestination()
 
 void NavitDBus::setScheme(const std::string& scheme)
 {
-    nDebug() << "Setting scheme to " << scheme;
+    dbusInfo() << "Request Setting scheme to " << scheme;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetScheme, DBusQueuedMessage::VariantType{ scheme } });
 }
 
 void NavitDBus::setPitch(std::uint16_t newPitchValue)
 {
     std::int32_t pitchVal = static_cast<std::int32_t>(newPitchValue);
-    nDebug() << "Setting pitch to = " << pitchVal;
+    dbusInfo() << "REquest Setting pitch to = " << pitchVal;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetPitch, DBusQueuedMessage::VariantType{ newPitchValue } });
 }
 
 void NavitDBus::searchPOIs(double longitude, double latitude, int dist)
 {
-    nDebug() << "searchPOIs in " << dist << " distance";
+    dbusInfo() << "Request searchPOIs in " << dist << " distance";
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     auto format1 = boost::format("%1%") % dist;
     const std::string center_coord = format.str();
@@ -477,132 +618,13 @@ void NavitDBus::currentCenter()
 
 void NavitDBus::startSearch()
 {
-    nInfo() << "Creating new search";
+    dbusInfo() << "Creating new search";
     d->createSearchList();
 }
 
-SearchResults NavitDBus::search(INavitIPC::SearchType type, const std::string& searchString)
+void NavitDBus::search(INavitIPC::SearchType type, const std::string& searchString)
 {
-    if (!d->searchObject)
-        throw std::runtime_error("startSearch not called");
-
-    nTrace() << "Searching for " << searchString;
-    std::string tag = convert(type);
-
-    nTrace() << "Tag =" << tag;
-    SearchResults ret;
-
-    DBus::Variant var;
-    DBus::MessageIter variantIter = var.writer();
-    variantIter << searchString;
-
-    DBusHelpers::call("search", *(d->searchObject.get()), tag, var, static_cast<int>(1));
-    while (true) {
-        try {
-            DBus::Message results = DBusHelpers::call("get_result", *(d->searchObject.get()));
-            nTrace() << "Received result";
-            DBus::MessageIter resultsIter{ results.reader() };
-
-            std::int32_t resultId;
-            DBus::Struct<double, double> position;
-            typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
-            LocationDBusType at;
-            double lat, lon;
-
-            resultsIter >> resultId >> position;
-            nTrace() << "Read pos";
-            resultsIter >> at;
-            lat = position._2;
-            lon = position._1;
-
-            nDebug() << "Search results: " << resultId << " Pos = "
-                     << position._1 << " " << position._2;
-
-            auto decodeCountry = [this](LocationDBusType& map) -> SearchResult::Country {
-                std::string car,name = map.at("country").at("name");
-                auto isCar = map.at("country").find("car");
-                if (isCar != map.at("country").end()) {
-                    auto reader = isCar->second.reader();
-                    reader >> car;
-                }
-                return SearchResult::Country{name,
-                            car,
-                            map.at("country")["iso2"],
-                            map.at("country")["iso3"]
-                };
-            };
-            auto decodeCity = [this](LocationDBusType& map) -> SearchResult::City {
-                std::string postal, postalMask;
-                auto isPostal = map.at("town").find("postal");
-                if (isPostal != map.at("town").end()) {
-                    postal = DBusHelpers::getFromIter<std::string>(isPostal->second.reader());
-                }
-                auto isPostalMask = map.at("town").find("postal_mask");
-                if (isPostalMask != map.at("town").end()) {
-                    postal = DBusHelpers::getFromIter<std::string>(isPostalMask->second.reader());
-                }
-                return SearchResult::City{
-                    map.at("town").at("name"),
-                            postal,
-                            postalMask
-                };
-            };
-            auto decodeStreet = [this](const LocationDBusType& map) -> SearchResult::Street {
-                std::string name;
-                auto isStreet = map.find("street");
-                if (isStreet != map.end()) {
-                    name = DBusHelpers::getFromIter<std::string>(isStreet->second.at("name").reader());
-
-                }
-                return SearchResult::Street{
-                    name
-                };
-            };
-            auto decodeHouse = [this](LocationDBusType& map) -> SearchResult::HouseNumber {
-                return SearchResult::HouseNumber{
-                    map.at("housenumber").at("name"),
-                    map.at("housenumber")["postal"],
-                    map.at("housenumber")["postal_mask"]
-                };
-            };
-
-            if (type == INavitIPC::SearchType::Country) {
-                // decode country
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at) });
-                nDebug() << "Country = " << ret.back().country.name;
-            }
-            else if (type == INavitIPC::SearchType::City) {
-                ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at), decodeCity(at) });
-                nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
-            }
-            else if (type == INavitIPC::SearchType::Street) {
-                ret.emplace_back(SearchResult{
-                    resultId,
-                    std::make_pair(lon, lat),
-                    decodeCountry(at),
-                    decodeCity(at),
-                    decodeStreet(at) });
-                nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
-                         << " Street = " << ret.back().street.name;
-            }
-            else if (type == INavitIPC::SearchType::Address) {
-                ret.emplace_back(SearchResult{
-                    resultId,
-                    std::make_pair(lon, lat),
-                    decodeCountry(at),
-                    decodeCity(at),
-                    decodeStreet(at),
-                    decodeHouse(at) });
-                nDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
-                         << " Street = " << ret.back().street.name << " House = " << ret.back().house.name;
-            }
-        }
-        catch (const DBus::Error& ex) {
-            nInfo() << "Finished reading results " << ex.what();
-            break;
-        }
-    }
-    return ret;
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Search, DBusQueuedMessage::VariantType{ std::make_pair(type, searchString) } });
 }
 
 void NavitDBus::selectSearchResult(INavitIPC::SearchType type, std::int32_t id)
@@ -621,9 +643,7 @@ void NavitDBus::finishSearch()
         return;
     }
 
-    DBusHelpers::call("destroy", *(d->searchObject.get()));
-    nInfo() << "Search list destroyed";
-    d->searchObject.reset();
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::DestroySearch });
 }
 
 INavitIPC::IntSignalType& NavitDBus::orientationResponse()
@@ -644,6 +664,11 @@ INavitIPC::EmptySignalType& NavitDBus::searchPoiResponse()
 INavitIPC::CurrentCenterSignalType& NavitDBus::currentCenterResponse()
 {
     return d->currentCenterSignal;
+}
+
+INavitIPC::SearchResultsSignalType &NavitDBus::searchResponse()
+{
+    return d->searchSignal;
 }
 
 INavitIPC::SpeechSignalType& NavitDBus::speechSignal()

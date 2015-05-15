@@ -9,33 +9,33 @@
 namespace NXE {
 
 struct SearchResult {
-    const int32_t searchId;
-    const std::pair<double, double> position;
+    int32_t searchId;
+    std::pair<double, double> position;
     // Country
     struct Country {
-        const std::string name;
-        const std::string car;
-        const std::string iso2;
-        const std::string iso3;
+        std::string name;
+        std::string car;
+        std::string iso2;
+        std::string iso3;
     };
     struct City {
-        const std::string name;
-        const std::string postal;
-        const std::string postal_mask;
+        std::string name;
+        std::string postal;
+        std::string postal_mask;
     };
     struct Street {
-        const std::string name;
+        std::string name;
     };
     struct HouseNumber {
-        const std::string name;
-        const std::string postal;
-        const std::string postal_mask;
+        std::string name;
+        std::string postal;
+        std::string postal_mask;
     };
 
-    const Country country;
-    const City city;
-    const Street street;
-    const HouseNumber house;
+    Country country;
+    City city;
+    Street street;
+    HouseNumber house;
 };
 
 typedef std::vector<SearchResult> SearchResults;
@@ -65,6 +65,7 @@ public:
     typedef boost::signals2::signal<void(int)> IntSignalType;
     typedef boost::signals2::signal<void()> EmptySignalType;
     typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
+    typedef boost::signals2::signal<void(SearchResults)> SearchResultsSignalType;
 
     virtual ~INavitIPC() {}
 
@@ -91,7 +92,7 @@ public:
     virtual void currentCenter() = 0;
 
     virtual void startSearch() = 0;
-    virtual SearchResults search(SearchType type, const std::string& searchString) = 0;
+    virtual void search(SearchType type, const std::string& searchString) = 0;
     virtual void selectSearchResult(SearchType type, std::int32_t id)  = 0;
     virtual void finishSearch() = 0;
 
@@ -100,6 +101,7 @@ public:
     virtual IntSignalType& zoomResponse() = 0;
     virtual EmptySignalType& searchPoiResponse() = 0;
     virtual CurrentCenterSignalType& currentCenterResponse() = 0;
+    virtual SearchResultsSignalType& searchResponse() = 0;
 
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;

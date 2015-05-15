@@ -33,7 +33,7 @@ public:
     virtual void currentCenter() override;
 
     virtual void startSearch() override;
-    virtual SearchResults search(SearchType type, const std::string& searchString) override;
+    virtual void search(SearchType type, const std::string& searchString) override;
     virtual void selectSearchResult(SearchType type, std::int32_t id) override;
     virtual void finishSearch() override;
 
@@ -41,6 +41,7 @@ public:
     virtual IntSignalType& zoomResponse() override;
     virtual EmptySignalType& searchPoiResponse() override;
     virtual CurrentCenterSignalType& currentCenterResponse() override;
+    virtual SearchResultsSignalType& searchResponse() override;
 
     virtual SpeechSignalType& speechSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;

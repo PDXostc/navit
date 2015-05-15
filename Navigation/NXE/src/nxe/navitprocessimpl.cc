@@ -95,6 +95,7 @@ bool NavitProcessImpl::start()
                 d->m_child.pid = invalidPid;
             } catch (const std::exception &ex) {
                 nError() << "Exception during waiting, probably because stop() call " << ex.what();
+                d->m_child.pid = invalidPid;
             }
         }));
     }
