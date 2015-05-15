@@ -132,6 +132,7 @@ struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int
 void navit_dbus_send_selected_pois(void* data, struct pcoord *pc, int distance);
 struct attr** navit_add_item_distance_from_curr_pos(struct navit *this_, struct item *item, struct attr **attr_list);
 struct attr** navit_add_item_address(struct navit *this_, struct item *item, struct attr **attr_list);
+int navit_create_curr_position_distance_attr(struct navit *this_, struct pcoord *c, struct attr *attr);
 /* end of prototypes */
 #ifdef __cplusplus
 }

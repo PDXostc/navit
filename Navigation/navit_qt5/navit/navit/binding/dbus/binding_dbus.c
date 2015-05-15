@@ -1832,6 +1832,12 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
 	char *town="town";
 	char *street="street";
 	char *house_number="housenumber";
+	struct attr attr;
+	struct navit *navit;
+
+	navit = object_get_from_message(message, "navit"); // this is not working!!!
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
 
 	search_list = object_get_from_message(message, "search_list");
 	if (! search_list)
@@ -1853,6 +1859,12 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
         dbg(lvl_error, " asd %f, %f", g.lng, g.lat);
     }
     coord_geo_encode(&iter, &g);
+
+    if (navit_create_curr_position_distance_attr(navit, result->c,&attr)) {
+    	//attr.type = attr_curr_position_distance;
+ 		//attr.u.num = 100;
+    	encode_attr(&iter, &attr);
+    }
 
 	dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY, "{sa{sv}}", &iter2);
 	if (result->country && (result->country->car || result->country->iso2 || result->country->iso3 || result->country->name)) {
@@ -1901,6 +1913,7 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
 		dbus_message_iter_close_container(&iter3, &iter4);
 		dbus_message_iter_close_container(&iter2, &iter3);
 	}
+
 	dbus_message_iter_close_container(&iter, &iter2);
 	dbus_connection_send (connection, reply, NULL);
 	dbus_message_unref (reply);
