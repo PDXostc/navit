@@ -22,6 +22,8 @@ int main(int argc, char* argv[])
     bool extNavit = std::find(arguments.begin(), arguments.end(), "--no-navit") != arguments.end();
 
     auto logger = spdlog::stdout_logger_mt("nxe");
+    auto dbusLogger = spdlog::stdout_logger_mt("dbus");
+    dbusLogger->set_level(spdlog::level::trace);
     auto perfLogger = spdlog::stdout_logger_mt("perf");
     if (perf) {
         perfLogger->set_level(spdlog::level::info);
@@ -30,6 +32,7 @@ int main(int argc, char* argv[])
     }
     if (debug) {
         logger->set_level(spdlog::level::trace);
+        dbusLogger->set_level(spdlog::level::trace);
         perfLogger->set_level(spdlog::level::info);
     }
     else {
@@ -39,7 +42,7 @@ int main(int argc, char* argv[])
     if (extNavit) {
         runNavit = false;
     }
-    spdlog::set_pattern("[%H:%M:%S.%e] [%t] [%l] %v");
+    spdlog::set_pattern("[%H:%M:%S.%e] [%n] [%t] [%l] %v");
 
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::UnitTest::GetInstance()->listeners().Append(new TestListener);

@@ -51,19 +51,27 @@ void DBusController::start()
     nTrace() << "EOF start";
 }
 
-DBusController::~DBusController()
+void DBusController::stop()
 {
-    nDebug() << "Stopping DBus Controller";
     if (d->conn) {
         d->conn->disconnect();
     }
-    if (::DBus::default_dispatcher == &d->dispatcher) {
+
+    if (::DBus::default_dispatcher == &d->dispatcher && DBus::default_dispatcher != nullptr) {
         ::DBus::default_dispatcher->leave();
+        DBus::default_dispatcher = nullptr;
     }
 
     if (d->dispatchingThread.joinable()) {
         d->dispatchingThread.join();
     }
+
+}
+
+DBusController::~DBusController()
+{
+    nDebug() << "Stopping DBus Controller";
+    stop();
 }
 
 } // namespace NXE
