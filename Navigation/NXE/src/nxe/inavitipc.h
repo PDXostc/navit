@@ -9,33 +9,33 @@
 namespace NXE {
 
 struct SearchResult {
-    const int32_t searchId;
-    const std::pair<double, double> position;
+    int32_t searchId;
+    std::pair<double, double> position;
     // Country
     struct Country {
-        const std::string name;
-        const std::string car;
-        const std::string iso2;
-        const std::string iso3;
+        std::string name;
+        std::string car;
+        std::string iso2;
+        std::string iso3;
     };
     struct City {
-        const std::string name;
-        const std::string postal;
-        const std::string postal_mask;
+        std::string name;
+        std::string postal;
+        std::string postal_mask;
     };
     struct Street {
-        const std::string name;
+        std::string name;
     };
     struct HouseNumber {
-        const std::string name;
-        const std::string postal;
-        const std::string postal_mask;
+        std::string name;
+        std::string postal;
+        std::string postal_mask;
     };
 
-    const Country country;
-    const City city;
-    const Street street;
-    const HouseNumber house;
+    Country country;
+    City city;
+    Street street;
+    HouseNumber house;
 };
 
 typedef std::vector<SearchResult> SearchResults;
@@ -61,37 +61,48 @@ public:
     typedef boost::signals2::signal<void(const PointClicked&)> PointClickedSignalType;
     typedef boost::signals2::signal<void()> InitializedSignalType;
 
+    // dbus get
+    typedef boost::signals2::signal<void(int)> IntSignalType;
+    typedef boost::signals2::signal<void()> EmptySignalType;
+    typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
+    typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
+
     virtual ~INavitIPC() {}
 
     virtual void quit() = 0;
 
     // Actuall interface description
-    virtual void moveBy(int x, int y) = 0;
-    virtual int zoom() = 0;
-    virtual void zoomBy(int factor) = 0;
+    virtual void zoom() = 0;
     virtual void setZoom(int newZoom) = 0;
     virtual void render() = 0;
     virtual void resize(int x, int y) = 0;
 
-    virtual int orientation() = 0;
+    virtual void orientation() = 0;
     virtual void setOrientation(int newOrientation) = 0;
 
     virtual void setCenter(double longitude, double latitude) = 0;
     virtual void setDestination(double longitude, double latitude, const std::string& description) = 0;
     virtual void setPosition(double longitude, double latitude) = 0;
-    virtual void setPositionByInt(int x, int y) = 0;
     virtual void clearDestination() = 0;
     virtual void addWaypoint(double longitude, double latitude) = 0;
     virtual void searchPOIs(double longitude, double latitude, int distance) = 0;
     virtual void setPitch(std::uint16_t newPitchValue) = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
-    virtual NXE::Position currentCenter() = 0;
+    virtual void currentCenter() = 0;
 
     virtual void startSearch() = 0;
-    virtual SearchResults search(SearchType type, const std::string& searchString) = 0;
+    virtual void search(SearchType type, const std::string& searchString) = 0;
     virtual void selectSearchResult(SearchType type, std::int32_t id)  = 0;
     virtual void finishSearch() = 0;
+    virtual void setTracking(bool tracking) = 0;
+
+    // DBus responses
+    virtual IntSignalType& orientationResponse() = 0;
+    virtual IntSignalType& zoomResponse() = 0;
+    virtual EmptySignalType& searchPoiResponse() = 0;
+    virtual CurrentCenterSignalType& currentCenterResponse() = 0;
+    virtual SearchResultsSignalType& searchResponse() = 0;
 
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;
@@ -99,6 +110,8 @@ public:
     virtual InitializedSignalType& initializedSignal() = 0;
     virtual RoutingSignalType& routingSignal() = 0;
 };
+
+
 
 } // NXE
 

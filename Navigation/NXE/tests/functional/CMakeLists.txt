@@ -5,6 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR}/tests)
 set(TEST_SRCS
     nxeinstance_test.cc
     nxerouting_test.cc
+    nxemultithreading_test.cc
 )
 
 

@@ -13,6 +13,12 @@
 #define nError() spdlog::get("nxe")->error() << __FILENAME__ << "@" << __LINE__ << " "
 #define nFatal() spdlog::get("nxe")->critical()
 
+#define dbusTrace() spdlog::get("dbus")->trace() << __FILENAME__ << "@" << __LINE__ << " "
+#define dbusDebug() spdlog::get("dbus")->debug() << __FILENAME__ << "@" << __LINE__ << " "
+#define dbusInfo() spdlog::get("dbus")->info() << __FILENAME__ << "@" << __LINE__ << " "
+#define dbusError() spdlog::get("dbus")->error() << __FILENAME__ << "@" << __LINE__ << " "
+#define dbusFatal() spdlog::get("dbus")->critical()
+
 namespace NXE {
 struct PointClicked;
 struct Position;

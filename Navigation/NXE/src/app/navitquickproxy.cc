@@ -113,17 +113,44 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit currentlySelectedItemChanged();
     });
 
-    nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver){
+    nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
         emit navigationManuver(QString::fromStdString(manuver));
     });
 
-    nxeInstance->setPositionUpdateListener([this](const NXE::Position& position) {
-        aDebug() << "Received position update";
-        double lat = position.latitude;
-        double lon = position.longitude;
-        double alt = position.altitude;
-        m_position = QString("%1 %2 %3").arg(lat).arg(lon).arg(alt);
-        emit positionChanged();
+    // Navit dbus responses
+
+    nxeInstance->ipc()->searchResponse().connect([this](NXE::SearchResults results, NXE::INavitIPC::SearchType type) {
+        if (type == NXE::INavitIPC::SearchType::Country) {
+            for (NXE::SearchResult result : results) {
+                aTrace() << "result " << result.country.name;
+                m_countriesSearchResults.append(new LocationProxy{ result });
+            }
+            aDebug() << "Country Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
+            m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
+        }
+        else if (type == NXE::INavitIPC::SearchType::City) {
+            for (NXE::SearchResult city : results) {
+                m_citiesSearchResults.append(new LocationProxy{ city });
+            }
+            aDebug() << "City Model size = " << m_citiesSearchResults.size();
+            m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
+        }
+        else if (type == NXE::INavitIPC::SearchType::Street) {
+
+            for (NXE::SearchResult street : results) {
+                m_streetsSearchResults.append(new LocationProxy{ street });
+            }
+            aDebug() << "Street Model size = " << m_streetsSearchResults.size();
+            m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
+        }
+        else if(type == NXE::INavitIPC::SearchType::Address ){
+            for (NXE::SearchResult result : results) {
+                m_addressSearchResults.append(new LocationProxy{ result });
+            }
+            aDebug() << "Address Model size = " << m_addressSearchResults.size();
+            m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
+        }
+        emit searchDone();
     });
 
     qRegisterMetaType<QObjectList>("QObjectList");
@@ -163,16 +190,10 @@ QString NavitQuickProxy::version() const
     return QString::fromStdString(gNXEVersion);
 }
 
-QString NavitQuickProxy::position() const
-{
-    return m_position;
-}
-
 bool NavitQuickProxy::enablePoi() const
 {
     return m_settings.get<Tags::EnablePoi>();
 }
-
 
 void NavitQuickProxy::resize(const QRect& rect)
 {
@@ -194,7 +215,7 @@ void NavitQuickProxy::setFtu(bool value)
 {
     m_settings.set<Tags::Ftu>(value);
 
-    if(!value) {
+    if (!value) {
         // ftu change to true
         initNavit();
     }
@@ -246,7 +267,8 @@ QString NavitQuickProxy::valueFor(const QString& optionName)
     }
     else if (optionName == "voice") {
         ret = m_settings.get<Tags::Voice>() ? "on" : "off";
-    } else if(optionName == "perspective") {
+    }
+    else if (optionName == "perspective") {
         const std::string value = m_settings.get<Tags::MapView>();
         aTrace() << "Value for pers = " << value;
         return QString::fromStdString(value);
@@ -263,10 +285,11 @@ void NavitQuickProxy::changeValueFor(const QString& optionName, const QVariant& 
     else if (optionName == "voice") {
         m_settings.set<Tags::Voice>(newVal.toString() == "on");
         nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
-    } else if(optionName == "perspective") {
+    }
+    else if (optionName == "perspective") {
         aTrace() << "Perspective new val = " << newVal.toString().toStdString();
         m_settings.set<Tags::MapView>(newVal.toString().toStdString());
-        nxeInstance->ipc()->setPitch( m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
+        nxeInstance->ipc()->setPitch(m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
     }
 }
 
@@ -285,61 +308,28 @@ void NavitQuickProxy::searchCountry(const QString& countryName)
 {
     clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
     aDebug() << "Search for country = " << countryName.toStdString();
-    auto countries = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Country, countryName.toStdString());
-    for (NXE::SearchResult result : countries) {
-        aTrace() << "result " << result.country.name;
-        m_countriesSearchResults.append(new LocationProxy{ result });
-    }
-    aDebug() << "Country Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
-    m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
-
-    emit searchDone();
+    nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Country, countryName.toStdString());
 }
 
 void NavitQuickProxy::searchCity(const QString& name)
 {
     clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
     aDebug() << "Search for city = " << name.toStdString();
-    auto cities = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::City, name.toStdString());
-    aDebug() << cities.size();
-
-    for (NXE::SearchResult city : cities) {
-        m_citiesSearchResults.append(new LocationProxy{ city });
-    }
-    aDebug() << "City Model size = " << m_citiesSearchResults.size();
-    m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
-    emit searchDone();
+    nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::City, name.toStdString());
 }
 
 void NavitQuickProxy::searchStreet(const QString& street)
 {
     clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
-
     aDebug() << "Search for street = " << street.toStdString();
-    auto streets = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Street, street.toStdString());
-    aDebug() << streets.size();
-
-    for (NXE::SearchResult street : streets) {
-        m_streetsSearchResults.append(new LocationProxy{ street });
-    }
-    aDebug() << "Street Model size = " << m_streetsSearchResults.size();
-    m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
-    emit searchDone();
+    nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Street, street.toStdString());
 }
 
 void NavitQuickProxy::searchAddress(const QString& street)
 {
     clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
-
     aDebug() << "Search for address = " << street.toStdString();
-    auto results = nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Address, street.toStdString());
-
-    for (NXE::SearchResult result : results) {
-        m_addressSearchResults.append(new LocationProxy{ result });
-    }
-    aDebug() << "Address Model size = " << m_addressSearchResults.size();
-    m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
-    emit searchDone();
+    nxeInstance->ipc()->search(NXE::INavitIPC::SearchType::Address, street.toStdString());
 }
 
 void NavitQuickProxy::searchSelect(const QString& what, int id)
@@ -376,6 +366,8 @@ void NavitQuickProxy::searchNear(const QString& str)
 
 void NavitQuickProxy::moveToCurrentPosition()
 {
+    nxeInstance->ipc()->setTracking(true);
+
     auto pos = nxeInstance->gps()->position();
     nxeInstance->ipc()->setPosition(pos.longitude, pos.latitude);
 }
@@ -407,7 +399,7 @@ void NavitQuickProxy::startNavigation()
 {
     aInfo() << "Starting Navigation for " << static_cast<void*>(m_currentItem.data());
     nxeInstance->ipc()->setDestination(m_currentItem->longitude(), m_currentItem->latitude(),
-                                       m_currentItem->description().toStdString());
+        m_currentItem->description().toStdString());
     emit navigationStarted();
 }
 
@@ -456,15 +448,19 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
                 m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
     });
 
+    // disable tracking
+
+    nxeInstance->ipc()->setTracking(false);
+
     aInfo() << "Setting location to " << m_currentItem->longitude() << " " << m_currentItem->latitude();
     nxeInstance->ipc()->setPosition(m_currentItem->longitude(), m_currentItem->latitude());
-    if (m_citiesSearchResults.contains(foundItem)){
-            newZoomLevel = 4096;
+    if (m_citiesSearchResults.contains(foundItem)) {
+        newZoomLevel = 4096;
     }
-    else if (m_streetsSearchResults.contains(m_currentItem.data()))
+    else if (m_streetsSearchResults.contains(foundItem))
         newZoomLevel = 16;
 
-    else if (m_addressSearchResults.contains(m_currentItem.data()))
+    else if (m_addressSearchResults.contains(foundItem))
         newZoomLevel = 8;
 
     aDebug() << " new zoom level = " << newZoomLevel;
@@ -502,7 +498,7 @@ void NavitQuickProxy::synchronizeNavit()
         return;
     }
     // special case
-    nxeInstance->resize(0,0);
+    nxeInstance->resize(0, 0);
 
     // set scheme
     setEnablePoi(m_settings.get<Tags::EnablePoi>());
@@ -510,5 +506,5 @@ void NavitQuickProxy::synchronizeNavit()
 
     // audio
     nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
-    nxeInstance->ipc()->setPitch( m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
+    nxeInstance->ipc()->setPitch(m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
 }

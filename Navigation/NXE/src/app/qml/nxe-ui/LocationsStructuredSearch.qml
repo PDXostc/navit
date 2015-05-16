@@ -18,6 +18,7 @@ Page {
     function startPredictiveSearch(string) {
         if (root.busy)
             return;
+        listViewItem.model = null;
         root.busy = true;
         currentSearchString = string
         console.debug('start searching for ', currentSearchString)
@@ -112,15 +113,6 @@ Page {
                     id: listViewItem
                     anchors.fill: parent
                     model: {
-                        if (searchForWhat === 'country') {
-                            return countrySearchResult
-                        } else if (searchForWhat === 'city') {
-                            return citySearchResult
-                        } else if (searchForWhat === 'street') {
-                            return streetSearchResult;
-                        } else if (searchForWhat === 'address') {
-                            return addressSearchResult;
-                        }
                     }
 
                     clip: true
@@ -211,6 +203,15 @@ Page {
         onSearchDone: {
             console.debug('search done');
             root.busy = false
+            if (searchForWhat === 'country') {
+                listViewItem.model = countrySearchResult
+            } else if (searchForWhat === 'city') {
+                listViewItem.model = citySearchResult
+            } else if (searchForWhat === 'street') {
+                listViewItem.model = streetSearchResult
+            } else if (searchForWhat === 'address') {
+                listViewItem.model = addressSearchResult
+            }
             resultListViewItem.height = 200
         }
     }

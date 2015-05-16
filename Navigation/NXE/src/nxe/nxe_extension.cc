@@ -16,6 +16,7 @@ void NXExtension::createLogger()
     std::shared_ptr<spdlog::sinks::sink> rot{ new spdlog::sinks::simple_file_sink_mt(path + "/nxe.log", true) };
     std::shared_ptr<spdlog::sinks::sink> out{ new spdlog::sinks::stdout_sink_mt() };
     spdlog::create("nxe", { rot, out});
+    spdlog::create("dbus", { rot, out});
 
     if (level == "debug") {
         spdlog::set_level(spdlog::level::debug);

@@ -20,6 +20,7 @@ public:
     DBus::Connection& connection() const noexcept;
 
     void start();
+    void stop();
 private:
     std::shared_ptr<DBusControllerPrivate> d;
 };

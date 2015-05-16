@@ -23,7 +23,6 @@ class NavitQuickProxy : public QObject
     Q_OBJECT
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_PROPERTY(QString version READ version CONSTANT)
-    Q_PROPERTY(QString position READ position NOTIFY positionChanged)
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu NOTIFY ftuChanged)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
@@ -50,7 +49,6 @@ public:
 
 signals:
     void orientationChanged();
-    void positionChanged();
     void enablePoiChanged();
     void ftuChanged();
 
@@ -106,7 +104,6 @@ private:
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QQmlContext* m_rootContext;
-    QString m_position;
     AppSettings m_settings;
     NavitMapsProxy mapsProxy;
     QObjectList m_countriesSearchResults;

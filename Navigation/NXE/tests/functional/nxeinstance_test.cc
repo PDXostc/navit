@@ -78,35 +78,9 @@ TEST_F(NXEInstanceTest, renderMessage_correct)
     instance.ipc()->render();
 }
 
-TEST_F(NXEInstanceTest, moveByMessage_correct)
-{
-    std::chrono::milliseconds dura(100);
-    std::this_thread::sleep_for(dura);
-    instance.ipc()->moveBy(10,10);
-}
-
-TEST_F(NXEInstanceTest, changeOrientation_correct)
-{
-    instance.ipc()->setOrientation(-1);
-    int orientation = instance.ipc()->orientation();
-
-    EXPECT_EQ(orientation, -1);
-}
-
 TEST_F(NXEInstanceTest, positionMessage_correct)
 {
     auto pos = instance.gps()->position();
-}
-
-TEST_F(NXEInstanceTest, changeOrientationMessage_incorrectValue)
-{
-    EXPECT_ANY_THROW(instance.ipc()->setOrientation(100));
-}
-
-TEST_F(NXEInstanceTest, set_position_and_set_zoom)
-{
-    instance.ipc()->setPositionByInt(100,100);
-    instance.ipc()->setZoom(16);
 }
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
