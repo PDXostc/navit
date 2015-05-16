@@ -39,7 +39,14 @@ AppSettings::AppSettings()
     , m_favoritesPath(getConfigPath().second)
 {
     if (bfs::exists(m_configPath)) {
-        boost::property_tree::read_json(m_configPath, m_tree);
+        try {
+            boost::property_tree::read_json(m_configPath, m_tree);
+        } catch(const std::exception&) {
+            // user.conf is not valid
+            bfs::remove(m_configPath);
+            createDefaults();
+            boost::property_tree::read_json(m_configPath, m_tree);
+        }
     }
     else {
         // create default config file
