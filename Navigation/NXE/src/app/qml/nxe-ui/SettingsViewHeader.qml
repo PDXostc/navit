@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
+import QtQml 2.2
 
 Item {
     id: header
@@ -32,6 +33,7 @@ Item {
             enabled: isHeaderEnabled
 
             onClicked: {
+                Qt.inputMethod.hide()
                 if (stack.depth !== 1) {
                     stack.pop()
                 } else {
@@ -69,7 +71,10 @@ Item {
                 iconSource: "map_icon_white.png"
                 anchors.left: bckB.right
                 anchors.leftMargin: 5
-                onClicked: backToMapRequest()
+                onClicked:{
+                    Qt.inputMethod.hide()
+                    backToMapRequest()
+                }
             }
         }
     }
