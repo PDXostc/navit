@@ -6,8 +6,8 @@ std::ostream& operator<<(std::ostream &os, const NXE::PointClicked &p)
 {
     os << p.position << " items = ";
 
-    std::for_each(p.items.begin(), p.items.end(), [&os]( const std::pair<std::string, std::string>& pair) {
-        os << "[" << pair.first << "] = [" << pair.second << "]";
+    std::for_each(p.items.begin(), p.items.end(), [&os]( const NXE::PointClicked::Info& pair) {
+        os << "[" << pair.type << "] = [" << pair.label << "]";
     });
     return os;
 }

@@ -226,7 +226,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         dbusDebug() << "Unpacking point";
         double longitude, latitude;
-        std::pair<std::string, std::string> oneEntry;
+        PointClicked::Info oneEntry;
         PointClicked::ItemArrayType items;
         std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
             dbusDebug() << "Entry= " << p.first;
@@ -235,16 +235,23 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
                 longitude = coords.at(0);
                 latitude = coords.at(1);
             } else if(p.first == "item_type") {
-                oneEntry.first = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                oneEntry.type = DBusHelpers::getFromIter<std::string>(p.second.reader());
             } else if(p.first == "label") {
-                oneEntry.second = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                oneEntry.label = DBusHelpers::getFromIter<std::string>(p.second.reader());
+            } else if(p.first == "curr_position_distance") {
+                oneEntry.distance = DBusHelpers::getFromIter<std::int32_t>(p.second.reader());
+            } else if(p.first == "address") {
+                oneEntry.address = DBusHelpers::getFromIter<std::string>(p.second.reader());
             }
 
-            if (oneEntry.first != "" && oneEntry.second != "") {
-                dbusDebug() << "Adding " << oneEntry.first << " " << oneEntry.second;
+
+            if (oneEntry.type != "" && oneEntry.label != "") {
+                dbusDebug() << "Adding " << oneEntry.type << " " << oneEntry.label;
                 items.push_back(oneEntry);
-                oneEntry.first = "";
-                oneEntry.second = "";
+                oneEntry.type = "";
+                oneEntry.label = "";
+                oneEntry.distance = 0;
+                oneEntry.address = "";
             }
         });
 

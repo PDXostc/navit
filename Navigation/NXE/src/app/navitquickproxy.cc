@@ -67,41 +67,43 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         // 3.) town
 
         // is this a street ?
-        auto streetIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>& p) -> bool {
-            return boost::algorithm::starts_with(p.first, "street_");
+        auto streetIter = std::find_if(pc.items.begin(), pc.items.end(), [](const NXE::PointClicked::Info& p) -> bool {
+            return boost::algorithm::starts_with(p.type, "street_");
         });
         if (streetIter != pc.items.end()) {
-            name = QString::fromStdString(streetIter->second);
+            name = QString::fromStdString(streetIter->label);
         }
 
-
         // is this a poi
-        auto poiIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "poi_");
+        auto poiIter = std::find_if(pc.items.begin(), pc.items.end(), [](const NXE::PointClicked::Info& p) ->bool {
+            return boost::algorithm::starts_with(p.type, "poi_");
         });
         if(poiIter != pc.items.end()) {
-            aDebug() << "we found a POI " << poiIter->second;
-            name = QString::fromStdString(poiIter->second);
+            aDebug() << "we found a POI " << poiIter->label;
+            name = QString::fromStdString(poiIter->label);
+            description = QString::fromStdString(poiIter->address);
         }
 
         // is this a town
-        auto townIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "town_label_");
+        auto townIter = std::find_if(pc.items.begin(), pc.items.end(), [](const NXE::PointClicked::Info& p) ->bool {
+            return boost::algorithm::starts_with(p.type, "town_label_");
         });
         if(townIter != pc.items.end()) {
-            aDebug() << "we found a town " << townIter->second;
-            name = QString::fromStdString(townIter->second);
+            aDebug() << "we found a town " << townIter->label;
+            name = QString::fromStdString(townIter->label);
+            description = QString::fromStdString(poiIter->address);
         }
 
         // if name is still empty and we have only one entry
         if (name.isEmpty() && pc.items.size() == 1) {
-            name = QString::fromStdString(pc.items.front().second);
+            name = QString::fromStdString(pc.items.front().label);
+            description = QString::fromStdString(poiIter->address);
         }
 
         nxeInstance->ipc()->setTracking(false);
 
         aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
-        auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
+        auto loc = new LocationProxy { name, false, description, false};
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
