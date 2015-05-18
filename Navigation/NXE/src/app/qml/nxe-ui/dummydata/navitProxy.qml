@@ -9,6 +9,9 @@ QtObject {
     property ListModel destinations: ListModel {}
     property int orientation: 0
     property bool topBarLocationVisible : false
+    property bool navigation: false
+    property int distanceToDestination: 5445
+    property int eta: 120
     // Real functions
     function valueFor(settingName) {
         if (settingName === 'orientation') {
@@ -81,22 +84,13 @@ QtObject {
         fakeLocationObject.favorite = favorite;
     }
 
-    function startNavigation() {
-        navigationStarted()
-    }
-
-    function cancelNavigation() {
-        navigationStopped()
-    }
-
     // Real signals
-
     signal searchDone();
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
-    signal pointClicked(var location)
     signal navigationStarted()
     signal navigationStopped()
+    signal navigationManuver(string manuverDescription);
 
     // fake properties
     property QtObject fakeLocationObject: QtObject {
@@ -130,11 +124,32 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: false
-        interval: 1000
+        running: true
+        interval: 1
         repeat: false
         onTriggered: {
-            pointClicked(fakeLocationObject)
+//            navigation = true
+            currentlySelectedItem = fakeLocationObject
+        }
+    }
+    property Timer fakeNextManuver: Timer {
+        property int count: 0
+        property var manuvers: ['Turn left in 100 meters',
+                                'Turn left now',
+                                'Turn right in 200 meters',
+                                'Turn right now',
+                                'Follow the road for next 2.6 kilometers',
+                                'Follow the road for next 2 kilometers',
+                                'Follow the road for next 1.5 kilometers',
+                                'Turn right soon',
+                                'When possible, please turn around',
+    ]
+        running: navigation
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            var str = manuvers[count++]
+            navigationManuver(str)
         }
     }
 }

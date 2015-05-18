@@ -116,7 +116,7 @@ Item {
 
                     onClicked: {
                         console.debug('Start navigation')
-                        navitProxy.startNavigation();
+                        navitProxy.navigation = true
                     }
 
                     opacity: 0

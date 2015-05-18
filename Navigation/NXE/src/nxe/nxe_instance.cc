@@ -12,15 +12,15 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <thread>
 
 using namespace std;
-using namespace boost::fusion;
 
 namespace NXE {
 
 struct NXEInstancePrivate {
 
-    NXEInstancePrivate(DI::Injector& ifaces, NXEInstance* qptr)
+    NXEInstancePrivate(DI::Injector& ifaces)
         : navitProcess(NXE::get<std::shared_ptr<INavitProcess> >(ifaces))
         , ipc(NXE::get<std::shared_ptr<INavitIPC> >(ifaces))
         , gps(NXE::get<std::shared_ptr<IGPSProvider> >(ifaces))
@@ -44,7 +44,9 @@ struct NXEInstancePrivate {
     std::pair<int, int> geometry;
     Settings settings;
     bool initialized{ false };
-    bool mute {false};
+    bool mute{ false };
+    std::thread distanceThread;
+    bool distanceThreadShouldRun{ false };
 
     void setOrientation(int newOrientation)
     {
@@ -77,10 +79,28 @@ struct NXEInstancePrivate {
             ipc->resize(geometry.first, geometry.second);
         }
     }
+
+    void getDistanceThread()
+    {
+        nDebug() << "Starting distance thread";
+        std::chrono::milliseconds dura_3s(3000);
+        std::this_thread::sleep_for(dura_3s);
+
+        while (distanceThreadShouldRun) {
+            nTrace() << "Getting navigation informations";
+            std::chrono::milliseconds dura_1s(1000);
+            std::this_thread::sleep_for(dura_1s);
+
+            ipc->distance();
+            ipc->eta();
+        }
+
+        nTrace() << "Finishing getDistanceThread()";
+    }
 };
 
 NXEInstance::NXEInstance(DI::Injector& impls)
-    : d(new NXEInstancePrivate{ impls, this })
+    : d(new NXEInstancePrivate{ impls })
 {
     nDebug() << "Creating NXE instance. Settings path = " << d->settings.configPath();
     nTrace() << "Connecting to navitprocess signals";
@@ -96,7 +116,6 @@ NXEInstance::~NXEInstance()
 
     if (!external) {
         if (d->initialized) {
-            d->ipc->clearDestination();
             d->ipc->quit();
         }
         d->navitProcess->stop();
@@ -155,7 +174,27 @@ void NXEInstance::setPositionUpdateListener(const IGPSProvider::PositionUpdateCb
 
 void NXEInstance::resize(int w, int h)
 {
-    d->resize(w,h);
+    d->resize(w, h);
+}
+
+void NXEInstance::startNavigation(double lat, double lon, const string& description)
+{
+    assert(d && d->ipc);
+    d->ipc->setDestination(lat, lon, description);
+    d->distanceThreadShouldRun = true;
+
+    d->distanceThread =std::thread { std::bind(&NXEInstancePrivate::getDistanceThread, d.get()) };
+}
+
+void NXEInstance::cancelNavigation()
+{
+    nDebug() << "Canceling navigation";
+    assert(d && d->ipc);
+    d->distanceThreadShouldRun = false;
+    if (d->distanceThread.joinable()) {
+        d->distanceThread.join();
+    }
+    d->ipc->clearDestination();
 }
 
 INavitIPC::PointClickedSignalType& NXEInstance::pointClickedSignal()
@@ -163,23 +202,22 @@ INavitIPC::PointClickedSignalType& NXEInstance::pointClickedSignal()
     return d->ipc->pointClickedSignal();
 }
 
-INavitIPC *NXEInstance::ipc() const
+INavitIPC* NXEInstance::ipc() const
 {
     assert(d && d->ipc);
     return d->ipc.get();
 }
 
-IMapDownloader *NXEInstance::mapDownloader() const
+IMapDownloader* NXEInstance::mapDownloader() const
 {
     assert(d && d->mapDownloaderIPC);
     return d->mapDownloaderIPC.get();
 }
 
-IGPSProvider *NXEInstance::gps() const
+IGPSProvider* NXEInstance::gps() const
 {
     assert(d && d->gps);
     return d->gps.get();
-
 }
 
 } // namespace NXE

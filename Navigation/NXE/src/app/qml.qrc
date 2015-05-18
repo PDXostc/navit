@@ -70,5 +70,15 @@
         <file>qml/nxe-ui/fonts/SourceSansPro-Regular.ttf</file>
         <file>qml/nxe-ui/LocationsStructuredSearchSelected.qml</file>
         <file>qml/nxe-ui/LocationsSearchInputItem.qml</file>
+        <file>qml/nxe-ui/infoObjectLogic.js</file>
+        <file>qml/nxe-ui/NavigationInfoListView.qml</file>
+        <file>qml/nxe-ui/NavigationInfo.qml</file>
+        <file>qml/nxe-ui/images/nav_left_1_bk.png</file>
+        <file>qml/nxe-ui/images/nav_right_1_bk.png</file>
+        <file>qml/nxe-ui/images/nav_straight_bk.png</file>
+        <file>qml/nxe-ui/images/nav_turnaround_right_bk.png</file>
+        <file>qml/nxe-ui/images/nav_turnaround_left_bk.png</file>
+        <file>qml/nxe-ui/images/expand_window_icon_grey.png</file>
+        <file>qml/nxe-ui/images/minimize_window_icon_grey.png</file>
     </qresource>
 </RCC>

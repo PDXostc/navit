@@ -45,7 +45,7 @@ struct NXEInstanceTest : public ::testing::Test {
 
     void setDestination(double lon, double lat, const char* desc)
     {
-         instance.ipc()->setDestination(lon, lat, desc);
+         instance.startNavigation(lon, lat, desc);
     }
 
     void setPosition(double lon, double lat)
@@ -55,7 +55,7 @@ struct NXEInstanceTest : public ::testing::Test {
 
     void clearDestination()
     {
-        instance.ipc()->clearDestination();
+         instance.cancelNavigation();
     }
 
     void addWaypoint(double lon, double lat)
@@ -132,9 +132,24 @@ TEST_F(NXEInstanceTest, Routing_Portland)
     clearDestination();
     setDestination(-122.579,45.5621, "1");
     std::this_thread::sleep_for(dura_5s);
+    EXPECT_TRUE(instance.ipc()->isNavigationRunning());
     std::this_thread::sleep_for(dura_5s);
     std::this_thread::sleep_for(dura_5s);
+
+    clearDestination();
+}
+
+
+TEST_F(NXEInstanceTest, Routing_Wrong_Portland)
+{
+    std::chrono::milliseconds dura_5s(5000);
+    std::this_thread::sleep_for(dura_5s);
+    clearDestination();
+    setDestination(53,45.5621, "1");
+    std::this_thread::sleep_for(dura_5s);
+    EXPECT_TRUE(instance.ipc()->isNavigationRunning());
     std::this_thread::sleep_for(dura_5s);
     std::this_thread::sleep_for(dura_5s);
-    std::this_thread::sleep_for(dura_5s);
+
+    clearDestination();
 }

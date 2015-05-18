@@ -62,7 +62,8 @@ public:
     typedef boost::signals2::signal<void()> InitializedSignalType;
 
     // dbus get
-    typedef boost::signals2::signal<void(int)> IntSignalType;
+    typedef boost::signals2::signal<void(std::int32_t)> IntSignalType;
+    typedef boost::signals2::signal<void(bool)> BoolSignalType;
     typedef boost::signals2::signal<void()> EmptySignalType;
     typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
     typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
@@ -82,6 +83,7 @@ public:
 
     virtual void setCenter(double longitude, double latitude) = 0;
     virtual void setDestination(double longitude, double latitude, const std::string& description) = 0;
+    virtual bool isNavigationRunning() = 0;
     virtual void setPosition(double longitude, double latitude) = 0;
     virtual void clearDestination() = 0;
     virtual void addWaypoint(double longitude, double latitude) = 0;
@@ -97,12 +99,18 @@ public:
     virtual void finishSearch() = 0;
     virtual void setTracking(bool tracking) = 0;
 
+    virtual void distance() = 0;
+    virtual void eta() = 0;
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
     virtual IntSignalType& zoomResponse() = 0;
     virtual EmptySignalType& searchPoiResponse() = 0;
     virtual CurrentCenterSignalType& currentCenterResponse() = 0;
     virtual SearchResultsSignalType& searchResponse() = 0;
+    virtual IntSignalType& distanceResponse() = 0;
+    virtual IntSignalType& etaResponse() = 0;
+    virtual BoolSignalType& navigationChanged() = 0;
+
 
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;

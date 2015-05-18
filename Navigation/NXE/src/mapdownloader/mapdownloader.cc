@@ -158,7 +158,7 @@ void MapDownloader::onDownloadError(const std::string& url, CURLcode err)
     }
 }
 
-int MapDownloader::onDownloadProgress(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
+int MapDownloader::onDownloadProgress(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t , curl_off_t )
 {
     if (dlnow == 0 || dltotal == 0) {
         //progress is 0, nothing to notify

@@ -46,7 +46,7 @@ void NavitMapsProxy::downloadMap(const QString& map)
 
 bool NavitMapsProxy::isMapDownloaded(const QString &mapName)
 {
-    std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
+    return std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
         return mi.name == mapName.toStdString() && mi.downloaded;
     }) != m_nxeMaps.end();
 }

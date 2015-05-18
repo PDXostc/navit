@@ -71,7 +71,7 @@ Item {
                 iconSource: "map_icon_white.png"
                 anchors.left: bckB.right
                 anchors.leftMargin: 5
-                onClicked:{
+                onClicked: {
                     Qt.inputMethod.hide()
                     backToMapRequest()
                 }

@@ -99,7 +99,20 @@ Item {
                     x: 302
                     y: 36
                     color: "#09bcdf"
-                    text: qsTr("3 min")
+                    text: {
+                        var str;
+                        if (navitProxy.eta === -1) {
+                            str = qsTr("Unknown eta");
+                        } else {
+                            if (navitProxy.eta < 60) {
+                                str = navitProxy.eta + " sec";
+                            } else {
+                                var minutes = Math.floor(navitProxy.eta / 60);
+                                str = minutes + " min";
+                            }
+                        }
+                        return str;
+                    }
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight
@@ -111,7 +124,20 @@ Item {
                     x: 284
                     y: 58
                     color: "#09bcdf"
-                    text: qsTr("0.2 miles")
+                    text: {
+                        if (navitProxy.distanceToDestination === -1) {
+                            return qsTr("Unknown distance")
+                        } else {
+                            var destStr;
+                            if (navitProxy.distanceToDestination > 1000 ) {
+                                var dist = Number(navitProxy.distanceToDestination/1000).toFixed(1);
+                                destStr = dist + " km";
+                            } else {
+                                destStr = navitProxy.distanceToDestination + " m";
+                            }
+                            return destStr;
+                        }
+                    }
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight
@@ -130,7 +156,7 @@ Item {
         visible: extraInfoVisible
         MouseArea {
             anchors.fill: parent
-            onClicked: navitProxy.cancelNavigation()
+            onClicked: navitProxy.navigation = false;
         }
         Image {
             width: 76
