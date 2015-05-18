@@ -246,7 +246,6 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
 
     qDebug() << Q_FUNC_INFO;
     mouseEvent(1, event->pos());
-
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event)
@@ -382,13 +381,16 @@ void RenderArea::mouseTimer()
     int button {0};
     struct point p;
 
+    p.x = lastTouchEvent.x();
+    p.y = lastTouchEvent.y();
+
     if (numberOfTaps > 3 || numberOfTaps == 1) {
         // don't do anything
+    	callback_list_call_attr_1(this->cbl, attr_signal_on_map_click_tap,  GINT_TO_POINTER(&p));
         numberOfTaps = 0;
         return;
     }
-    p.x = lastTouchEvent.x();
-    p.y = lastTouchEvent.y();
+
     if(numberOfTaps == 2) {
         qDebug() <<  "zoom in";
         button = 4;

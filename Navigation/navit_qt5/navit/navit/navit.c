@@ -134,7 +134,7 @@ struct navit {
 	GList *windows_items;
 	struct navit_vehicle *vehicle;
 	struct callback_list *attr_cbl;
-	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb, *clicked_point_cb;
+	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb, *clicked_point_cb, *clicked_point_tap_cb;
 	struct datawindow *roadbook_window;
 	struct map *former_destination;
 	struct point pressed, last, current;
@@ -369,6 +369,35 @@ void navit_dbus_send_point_info(void* data, struct point *p)
 	int valid=0;
 
 	attr_list = navit_get_point_attr_list(this,p);
+
+	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
+		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+
+	attr_list_free(attr_list);
+}
+
+static
+void navit_dbus_send_tap_point_info(void* data, struct point *p)
+{
+	struct navit *this=data;
+	struct attr attr, cb, **attr_list=NULL;
+	int valid=0;
+	struct transformation *trans;
+	struct coord c;
+	struct coord_geo g;
+
+	// transform pixel coordinates to geo coordinates
+    trans=navit_get_trans(this);
+    transform_reverse(trans, p, &c);
+    dbg(lvl_error, "%d %d", p->x, p->y);
+    dbg(lvl_error, "%d %d", c.x, c.y);
+    transform_to_geo(transform_get_projection(trans), &c, &g);
+
+	attr.u.coord_geo=&g;
+    attr.type=attr_tap_coord_geo;
+
+	    // add clicked point geo coordinates to atrributes list:
+    attr_list=attr_generic_add_attr(attr_list, &attr);
 
 	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
 		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
@@ -1784,6 +1813,8 @@ navit_set_graphics(struct navit *this_, struct graphics *gra)
 	graphics_add_callback(gra, this_->predraw_callback);
 	this_->clicked_point_cb=callback_new_attr_1(callback_cast(navit_dbus_send_point_info), attr_signal_on_map_click, this_);
 	graphics_add_callback(gra, this_->clicked_point_cb);
+	this_->clicked_point_tap_cb=callback_new_attr_1(callback_cast(navit_dbus_send_tap_point_info), attr_signal_on_map_click_tap, this_);
+	graphics_add_callback(gra, this_->clicked_point_tap_cb);
 
 	return 1;
 }
