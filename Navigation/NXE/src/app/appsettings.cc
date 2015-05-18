@@ -129,7 +129,7 @@ QList<LocationProxy*> AppSettings::favorites()
 void AppSettings::createDefaults()
 {
     aDebug() << "Creating default app settings under= " << m_configPath;
-    set<Tags::EnablePoi>(true);
+    set<Tags::EnablePoi>(false);
     set<Tags::Orientation>(-1);
     set<Tags::Ftu>(true);
     set<Tags::Voice>(true);
