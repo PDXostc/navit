@@ -16,6 +16,8 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/trim.hpp>
 
 namespace bfs = boost::filesystem;
 
@@ -34,11 +36,12 @@ struct MapFile {
     MapDownloader* this_;
     const std::string url;
     std::uint32_t currentProgress;
+    std::string timestamp;
 };
 
 struct MapDownloaderPrivate {
     std::thread currentThread;
-    bool downloading {false};
+    bool downloading{ false };
 
     std::string mapFilePath;
     std::vector<std::string> cancelRequests;
@@ -66,9 +69,9 @@ struct MapDownloaderPrivate {
 
     bool mapDownloaded(const std::string& map) const
     {
-        const bfs::path dir { mapFilePath };
+        const bfs::path dir{ mapFilePath };
         const std::string fileName = map + ".bin";
-        const bfs::path filePath { dir / fileName };
+        const bfs::path filePath{ dir / fileName };
         return bfs::exists(filePath);
     }
 };
@@ -125,6 +128,27 @@ size_t MapDownloader::dataWrite(void* buffer, size_t size, size_t nmemb, void* s
     return fwrite(buffer, size, nmemb, out->stream);
 }
 
+size_t MapDownloader::headersWrite(void* buffer, size_t size, size_t nmemb, void* userp)
+{
+    char* buff = reinterpret_cast<char*>(buffer);
+    struct MapFile* out = (struct MapFile*)userp;
+
+    int res = 0;
+    if (out) {
+        std::string headers{ buff, size * nmemb };
+        res = size * nmemb;
+        mdTrace() << "Header " << headers;
+        if (boost::algorithm::starts_with(headers, "Location:")) {
+            boost::algorithm::erase_all(headers, "Location:");
+            boost::algorithm::trim(headers);
+//            mdDebug() << "Correct location is = " << headers;
+            out->timestamp = headers;
+        }
+    }
+
+    return res;
+}
+
 void MapDownloader::onDownloadError(const std::string& url, CURLcode err)
 {
     mdDebug() << "onDownloadError: Code = " << err << " , " << curl_easy_strerror(err);
@@ -173,16 +197,15 @@ long MapDownloader::getEstimatedSize(const std::string& name)
     return 0;
 }
 
-std::string MapDownloader::createMapRequestString(const std::string& name)
+std::string MapDownloader::createMapRequestString(const std::string& name, const std::string& timestamp)
 {
     std::string res = "http://maps9.navit-project.org/api/map/?bbox=";
 
     boost::optional<MapData> m = d->mdesc.getMapData(name);
     if (m) {
-        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + "&timestamp=150513";
-//        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 ;
+        res += m->lon1 + "," + m->lat1 + "," + m->lon2 + "," + m->lat2 + timestamp;
         mdDebug() << "createMapRequestString : " << res;
-        mdInfo() << "Size for map " << name << " is " << m->size/1024/1024 << " MB";
+        mdInfo() << "Size for map " << name << " is " << m->size / 1024 / 1024 << " MB";
     }
     else {
         mdError() << "Unable to get address for " << name;
@@ -231,12 +254,8 @@ std::string MapDownloader::download(const std::string& name)
 
         if (curl) {
             curl_easy_setopt(curl, CURLOPT_URL, req.c_str());
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, dataWrite);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &mapfile);
-            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-            curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, onDownloadProgress);
-            curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &mapfile);
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, m_reportProgess ? 0 : 1);
+            curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, headersWrite);
+            curl_easy_setopt(curl, CURLOPT_WRITEHEADER, &mapfile);
             curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
             curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 15L);
 
@@ -244,28 +263,45 @@ std::string MapDownloader::download(const std::string& name)
             res = curl_easy_perform(curl);
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &respCode);
             mdDebug() << "CURL res=" << respCode;
-            curl_easy_cleanup(curl);
 
-            if (res != CURLE_OK || respCode > 500) {
-                onDownloadError(req, res);
-            } else {
-                const bfs::path newPath { mapFileName };
-                const bfs::path oldPath { mapfile.filename };
-                mdInfo() << "Renaming from " << oldPath.string() << " to " << newPath.string();
-                bfs::rename(oldPath, newPath);
-                // Download properly finished
-                if (mapfile.stream) {
-                    fclose(mapfile.stream);
-                }
-                mdInfo() << " Downloading " << req << " finished";
-                if(cbOnFinished) {
-                    cbOnFinished(req);
+            if (respCode == 302) {
+                const std::string newUrl = createMapRequestString(name,mapfile.timestamp);
+                mdInfo() << "Url for " << name << " is = " << newUrl;
+                curl_easy_reset(curl);
+                curl_easy_setopt(curl, CURLOPT_URL, newUrl.c_str());
+                curl_easy_setopt(curl, CURLOPT_FAILONERROR, true);
+                curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 15L);
+                curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, 0);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, dataWrite);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &mapfile);
+                curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, onDownloadProgress);
+                curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &mapfile);
+                curl_easy_setopt(curl, CURLOPT_NOPROGRESS, m_reportProgess ? 0 : 1);
+                res = curl_easy_perform(curl);
+
+                if (res != CURLE_OK || respCode > 500) {
+                    onDownloadError(req, res);
+                } else {
+                    const bfs::path newPath { mapFileName };
+                    const bfs::path oldPath { mapfile.filename };
+                    mdInfo() << "Renaming from " << oldPath.string() << " to " << newPath.string();
+                    bfs::rename(oldPath, newPath);
+                    // Download properly finished
+                    if (mapfile.stream) {
+                        fclose(mapfile.stream);
+                    }
+                    mdInfo() << " Downloading " << req << " finished";
+                    if(cbOnFinished) {
+                        cbOnFinished(req);
+                    }
                 }
             }
+
             mdInfo() << "Downloading done for " << name;
             d->downloading = false;
+            curl_easy_cleanup(curl);
         }
-    }};
+    } };
 
     d->currentThread = std::move(thread);
     return req;
@@ -280,7 +316,6 @@ std::vector<MapEntry> MapDownloader::maps() const
     });
     mdDebug() << "Available maps size= " << maps.size();
     return proper;
-
 }
 
 void MapDownloader::cancel(const std::string& reqUrl)
@@ -320,7 +355,8 @@ bool MapDownloader::setMapFileDir(const std::string& dir)
             mdError() << "Path " << mapPath.string() << " is not a directory";
             return false;
         }
-    } catch (const std::exception& err) {
+    }
+    catch (const std::exception& err) {
         mdError() << "An error= " << err.what() << " happened ";
         return false;
     }

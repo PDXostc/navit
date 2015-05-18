@@ -69,13 +69,13 @@ public:
 
 private:
     static size_t dataWrite(void* buffer, size_t size, size_t nmemb, void* stream);
+    static size_t headersWrite(void* buffer, size_t size, size_t nmemb, void* userp);
     void onDownloadError(const std::string& url, CURLcode err);
     static int onDownloadProgress(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
     static int onHeaderCallback(void* clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow);
 
     static std::string getDownloadErrorStr(CURLcode err);
-
-    std::string createMapRequestString(const std::string& name);
+    std::string createMapRequestString(const std::string& name, const std::string& timestamp = "");
 
     std::unique_ptr<MapDownloaderPrivate> d;
 
