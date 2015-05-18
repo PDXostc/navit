@@ -172,6 +172,10 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             return val.first == "click_coord_geo";
         }) != res.end();
 
+        bool isTap = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+            return val.first == "tap_coord_geo";
+        }) != res.end();
+
         if (isSpeechSignal) {
             dbusDebug() << "Speech callback";
             auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
@@ -201,6 +205,11 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             auto point = unpackPointClicked(res);
             pointClickedSignal(point);
         }
+        else if(isTap) {
+            dbusDebug() << "Tap event received";
+            auto point = unpackPointClicked(res);
+            tapSignal(point);
+        }
 
         inProgress = false;
     }
@@ -221,7 +230,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         PointClicked::ItemArrayType items;
         std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
             dbusDebug() << "Entry= " << p.first;
-            if (p.first == "click_coord_geo") {
+            if (p.first == "click_coord_geo" || p.first == "tap_coord_geo") {
                 std::vector<double> coords = DBusHelpers::getFromIter<std::vector<double>>(p.second.reader());
                 longitude = coords.at(0);
                 latitude = coords.at(1);
@@ -248,6 +257,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     INavitIPC::SpeechSignalType speechSignal;
     INavitIPC::PointClickedSignalType pointClickedSignal;
+    INavitIPC::PointClickedSignalType tapSignal;
     INavitIPC::InitializedSignalType initializedSignal;
     INavitIPC::RoutingSignalType routingSignal;
     bool inProgress = false;
@@ -836,6 +846,11 @@ INavitIPC::PointClickedSignalType& NavitDBus::pointClickedSignal()
 {
     assert(d && d->object);
     return d->object->pointClickedSignal;
+}
+
+INavitIPC::PointClickedSignalType &NavitDBus::tapSignal()
+{
+    return d->object->tapSignal;
 }
 
 INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()

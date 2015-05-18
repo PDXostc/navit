@@ -52,6 +52,7 @@ public:
 
     virtual SpeechSignalType& speechSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;
+    virtual PointClickedSignalType& tapSignal() override;
     virtual InitializedSignalType& initializedSignal() override;
     virtual RoutingSignalType& routingSignal() override;
 

@@ -115,6 +115,7 @@ public:
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;
     virtual PointClickedSignalType& pointClickedSignal() = 0;
+    virtual PointClickedSignalType& tapSignal() = 0;
     virtual InitializedSignalType& initializedSignal() = 0;
     virtual RoutingSignalType& routingSignal() = 0;
 };

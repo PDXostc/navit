@@ -117,6 +117,16 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit currentlySelectedItemChanged();
     });
 
+    nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
+        if(m_currentItem) {
+        aDebug() << "User tapped, dismiss location bar";
+            m_currentItem.reset();
+
+            emit currentlySelectedItemChanged();
+        }
+    });
+
+
     nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
         emit navigationManuver(QString::fromStdString(manuver));
     });
