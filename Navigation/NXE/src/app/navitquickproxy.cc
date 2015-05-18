@@ -121,7 +121,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         if(m_currentItem) {
         aDebug() << "User tapped, dismiss location bar";
             m_currentItem.reset();
-
             emit currentlySelectedItemChanged();
         }
     });
