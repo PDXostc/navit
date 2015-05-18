@@ -6,193 +6,124 @@ import QtQuick.Controls 1.2
 Page {
     id: root
 
-    property string searchForWhat: 'country'
-    property string selected
-    property string currentLocation
-    property int numberOfCharsToStartSearch: 2
+    property string selectedItemText
+    property string selectedItemDescription
+    property var selectedItemId
     property bool searchInProgress: false
+
+    // search state machine
+    property int __searchStateId: __CountrySearch
+    property int __CountrySearch: 0
+    property int __CitySearch: 1
+    property int __StreetSearch: 2
+    property int __AddressSearch: 3
+    property int __FinishSearch: 4
+
+    property var __searchFunctions: [function (str) {
+        navitProxy.searchCountry(str)
+    }, function (str) {
+        navitProxy.searchCity(str)
+    }, function (str) {
+        navitProxy.searchStreet(str)
+    }, function (str) {
+        navitProxy.searchAddress(str)
+    }]
+
+    property var __searchModels: [countrySearchResult, citySearchResult, streetSearchResult, addressSearchResult]
+    property var __searchHeaders: ["Country", "City", "Add a Street", "Add an Address Number"]
+    property var __searchSelectTag: ['country', 'city', 'street','address'];
 
     // Hack for weekeyboard
     property string currentSearchString
 
     function startPredictiveSearch(string) {
         if (root.busy)
-            return;
-        listViewItem.model = null;
-        root.busy = true;
+            return
+        listViewItem.model = null
+        root.busy = true
         currentSearchString = string
         console.debug('start searching for ', currentSearchString)
-        if (searchForWhat === 'country') {
-            navitProxy.searchCountry(string)
-        } else if (searchForWhat === 'city') {
-            navitProxy.searchCity(string)
-        } else if(searchForWhat === 'street') {
-            navitProxy.searchStreet(string)
-        } else if(searchForWhat === 'address') {
-            navitProxy.searchAddress(string)
-        }
+        __searchFunctions[__searchStateId](string)
     }
 
     Component.onCompleted: {
-        if (searchForWhat === 'country') {
+        console.debug(selectedItemText)
+        if (__searchStateId === __CountrySearch) {
             navitProxy.startSearch()
-        } else if (searchForWhat == 'address') {
-            startPredictiveSearch('');
+        } else if (__searchStateId === __AddressSearch) {
+            console.debug('start predictive search before')
+            // Search street address even if no input is provided
+            startPredictiveSearch('')
         }
     }
+    ColumnLayout {
+        anchors {
+            fill: parent
+            leftMargin: 10
+            rightMargin: 10
+        }
 
-    Column {
-        anchors.fill: parent
-
-        Item {
+        LocationsStructuredSearchSelected {
+            id: selectedItem
+            title: selectedItemText
+            description: selectedItemDescription
             width: parent.width
-            height: 30
-            Text {
-                text: selected
-                anchors.right: parent.right
-                color: "white"
-                font.pixelSize: 16
+            height: selectedItemText.length === 0 ? 0 : 50
+            Layout.fillWidth: true
+
+            onCarButtonClicked: {
+                Qt.inputMethod.hide()
+                rootStack.pop()
+                navitProxy.setLocationPopUp(selectedItemId)
+                navitProxy.finishSearch()
             }
         }
 
         Item {
             width: parent.width
-            height: 24
-            RowLayout {
-                id: rowLayout
+            height: selectedItem.height === 0 ? 0 : 10
+        }
+
+        Item {
+            id: titleItem
+            visible: __searchStateId !== __FinishSearch
+            width: parent.width
+            height: 30
+
+            Text {
+                text: __searchStateId !== __FinishSearch ? __searchHeaders[__searchStateId] : ""
+                color: 'white'
+                font.pixelSize: 16
                 anchors.fill: parent
-                anchors.leftMargin: 10
-                anchors.rightMargin: 10
+                anchors.leftMargin: 5
+            }
+        }
 
-                Text {
-                    text: searchForWhat
-                    color: "white"
-                }
-
-                Rectangle {
-                    Layout.fillWidth: true
-                    height: parent.height
-                    color: "white"
-
-                    TextEdit {
-                        id: searchInput
-                        color: "#242424"
-                        font.pixelSize: 17
-                        anchors.fill: parent
-                        onTextChanged: {
-                            console.debug('text has changed')
-                            if (searchForWhat == 'address') {
-                                startPredictiveSearch(text);
-                            } else {
-                                if (text.length >= numberOfCharsToStartSearch && currentSearchString != text) {
-                                    startPredictiveSearch(text)
-                                }
-                            }
-                        }
-                    }
-                }
+        LocationsSearchInputItem {
+            id: listViewItem
+            width: parent.width
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            visible: __searchStateId !== __FinishSearch
+            onTriggerSearch: {
+                console.debug('text has changed to', searchText, ' start searching')
+                startPredictiveSearch(searchText);
             }
 
-            Item {
-                id: resultListViewItem
-                width: searchInput.width
-                height: 0
-                anchors.top: rowLayout.bottom
-                anchors.topMargin: 5
-                anchors.right: rowLayout.right
+            onItemSelected: {
+                navitProxy.searchSelect(__searchSelectTag[__searchStateId], searchId)
+                var nextSearch = __searchStateId + 1
 
-                Rectangle {
-                    anchors.fill: parent
-                    color: "transparent"
-                    border.color: "white"
-                }
-
-                Behavior on height{ NumberAnimation{}}
-
-                ListView {
-                    id: listViewItem
-                    anchors.fill: parent
-                    model: {
-                    }
-
-                    clip: true
-                    delegate: MouseArea {
-                        width: resultListViewItem.width
-                        height: 40
-
-                        onClicked: {
-                            Qt.inputMethod.hide();
-
-                            if (searchForWhat === 'address') {
-                                rootStack.pop();
-                                navitProxy.setLocationPopUp(id);
-                                navitProxy.finishSearch();
-
-                            } else {
-                                navitProxy.searchSelect(searchForWhat, searchId);
-                                var nextSearch;
-                                if (searchForWhat === 'country') {
-                                    nextSearch = 'city'
-                                } else if (searchForWhat === 'city') {
-                                    nextSearch = 'street'
-                                } else if(searchForWhat === 'street') {
-                                    nextSearch = 'address';
-                                }
-
-                                var headerText
-                                if (selected.length !== 0) {
-                                    headerText = itemText + ", " + selected;
-                                } else {
-                                    headerText = itemText;
-                                }
-
-                                searchStackView.push({
-                                                         item: Qt.resolvedUrl(
-                                                                   "LocationsStructuredSearch.qml"),
-                                                         properties: {
-                                                             searchForWhat: nextSearch,
-                                                             selected: headerText,
-                                                             currentLocation: itemText
-                                                         }
-                                                     })
-                            }
-
-                        }
-
-                        Text {
-                            text: itemText
-                            color: "white"
-                            font.pixelSize: 16
-                            anchors.verticalCenter: parent.verticalCenter
-                        }
-
-                        NButton {
-                            visible: searchForWhat !== 'country' && searchForWhat !== 'address'
-                            width: 40
-                            height: 40
-                            anchors.right: parent.right
-                            anchors.rightMargin: 5
-                            iconSource: "map_icon_white.png"
-                            onClicked: {
-                                Qt.inputMethod.hide();
-                                console.debug('clicked', itemText);
-                                rootStack.pop();
-                                navitProxy.setLocationPopUp(id);
-                                navitProxy.finishSearch();
-                            }
-                        }
-
-                        Rectangle {
-                            width: parent.width
-                            height: 1
-                            anchors.bottom: parent.bottom
-                        }
-                    }
-                }
-
-                ScrollBar {
-                    flk: listViewItem
-                }
+                searchStackView.push({
+                                         item: Qt.resolvedUrl(
+                                                   "LocationsStructuredSearch.qml"),
+                                         properties: {
+                                             __searchStateId: nextSearch,
+                                             selectedItemText: itemText,
+                                             selectedItemDescription: itemDescription,
+                                             selectedItemId: itemId
+                                         }
+                                     })
             }
         }
     }
@@ -201,19 +132,10 @@ Page {
         target: navitProxy
         // @disable-check M16
         onSearchDone: {
-            console.debug('search done');
+            console.debug('search is done')
             root.busy = false
-            if (searchForWhat === 'country') {
-                listViewItem.model = countrySearchResult
-            } else if (searchForWhat === 'city') {
-                listViewItem.model = citySearchResult
-            } else if (searchForWhat === 'street') {
-                listViewItem.model = streetSearchResult
-            } else if (searchForWhat === 'address') {
-                listViewItem.model = addressSearchResult
-            }
-            resultListViewItem.height = 200
+            console.debug(__searchStateId, __searchModels[__searchStateId], __searchModels[__searchStateId])
+            listViewItem.model = __searchModels[__searchStateId]
         }
     }
 }
-

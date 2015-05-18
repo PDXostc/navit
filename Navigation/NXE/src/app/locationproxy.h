@@ -22,7 +22,7 @@ class LocationProxy : public QObject {
     Q_PROPERTY(int searchId READ searchId CONSTANT)
     Q_PROPERTY(double longitude READ longitude CONSTANT)
     Q_PROPERTY(double latitude READ latitude CONSTANT)
-    Q_PROPERTY(QUuid id READ id CONSTANT)
+    Q_PROPERTY(QUuid itemId READ id CONSTANT)
 public:
     LocationProxy(
         QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, QObject* parent = 0);

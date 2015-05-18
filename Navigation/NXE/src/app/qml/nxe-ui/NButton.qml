@@ -44,10 +44,9 @@ Item {
             anchors.fill: parent
             spacing: 5
 
-            Text {
+            NText {
                 id: buttonText
                 font.bold: root.bold
-                color: "white"
                 font.pixelSize: 18
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter

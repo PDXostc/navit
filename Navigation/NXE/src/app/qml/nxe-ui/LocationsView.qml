@@ -54,7 +54,11 @@ Page {
                     }
                     width: locationsListView.width
                     height: 50
-                    onSubMenuRequested: searchStackView.push(Qt.resolvedUrl(url))
+                    onSubMenuRequested: {
+
+                        console.debug('request ', Qt.resolvedUrl(url))
+                        searchStackView.push(Qt.resolvedUrl(url))
+                    }
                     opacity: enabled ? 1 : 0.4
                 }
             }
