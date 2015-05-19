@@ -9,20 +9,21 @@ ListModel {
         options: [
             ListElement {
                 text: "Search"
-                url: "LocationsSearch.qml"
-            }
-        ]
-    }
-    ListElement {
-        itemText: "Structured Search"
-        type: "sublist"
-        options: [
-            ListElement {
-                text: "StructureSearch"
+//                url: "LocationsSearch.qml"
                 url: "LocationsStructuredSearch.qml"
             }
         ]
     }
+//    ListElement {
+//        itemText: "Structured Search"
+//        type: "sublist"
+//        options: [
+//            ListElement {
+//                text: "StructureSearch"
+//                url: "LocationsStructuredSearch.qml"
+//            }
+//        ]
+//    }
     ListElement {
         itemText: "Favorites"
         type: "sublist"
