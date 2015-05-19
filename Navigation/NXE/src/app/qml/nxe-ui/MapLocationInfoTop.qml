@@ -45,11 +45,11 @@ Item {
                     source: "back_icon_white_lg.png"
                 }
 
-                MouseArea {
-                    id: topLocationBarBackButton
-                    anchors.fill: parent
-                    onClicked: requestHideBars()
-                }
+//                MouseArea {
+//                    id: topLocationBarBackButton
+//                    anchors.fill: parent
+//                    onClicked: requestHideBars()
+//                }
             }
         }
 
@@ -101,13 +101,13 @@ Item {
                     color: "#09bcdf"
                     text: {
                         var str;
-                        if (navitProxy.eta === -1) {
+                        if (navigationProxy.eta === -1) {
                             str = qsTr("Unknown eta");
                         } else {
-                            if (navitProxy.eta < 60) {
-                                str = navitProxy.eta + " sec";
+                            if (navigationProxy.eta < 60) {
+                                str = navigationProxy.eta + " sec";
                             } else {
-                                var minutes = Math.floor(navitProxy.eta / 60);
+                                var minutes = Math.floor(navigationProxy.eta / 60);
                                 str = minutes + " min";
                             }
                         }
@@ -125,15 +125,15 @@ Item {
                     y: 58
                     color: "#09bcdf"
                     text: {
-                        if (navitProxy.distanceToDestination === -1) {
+                        if (navigationProxy.distanceToDestination === -1) {
                             return qsTr("Unknown distance")
                         } else {
                             var destStr;
-                            if (navitProxy.distanceToDestination > 1000 ) {
-                                var dist = Number(navitProxy.distanceToDestination/1000).toFixed(1);
+                            if (navigationProxy.distanceToDestination > 1000 ) {
+                                var dist = Number(navigationProxy.distanceToDestination/1000).toFixed(1);
                                 destStr = dist + " km";
                             } else {
-                                destStr = navitProxy.distanceToDestination + " m";
+                                destStr = navigationProxy.distanceToDestination + " m";
                             }
                             return destStr;
                         }
@@ -156,7 +156,9 @@ Item {
         visible: extraInfoVisible
         MouseArea {
             anchors.fill: parent
-            onClicked: navitProxy.navigation = false;
+            onClicked: {
+                navigationProxy.stopNavigation()
+            }
         }
         Image {
             width: 76

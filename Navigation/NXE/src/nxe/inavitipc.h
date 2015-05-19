@@ -74,6 +74,8 @@ public:
     typedef boost::signals2::signal<void()> EmptySignalType;
     typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
     typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
+    typedef boost::signals2::signal<void(std::string)> StringSignalType;
+
 
     virtual ~INavitIPC() {}
 
@@ -108,6 +110,7 @@ public:
 
     virtual void distance() = 0;
     virtual void eta() = 0;
+    virtual void currentStreet() = 0;
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
     virtual IntSignalType& zoomResponse() = 0;
@@ -117,6 +120,7 @@ public:
     virtual IntSignalType& distanceResponse() = 0;
     virtual IntSignalType& etaResponse() = 0;
     virtual BoolSignalType& navigationChanged() = 0;
+    virtual StringSignalType& currentStreetResponse() = 0;
 
 
     // Signals from IPC

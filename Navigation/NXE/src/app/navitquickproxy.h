@@ -10,6 +10,7 @@
 #include "imapdownloader.h"
 #include "navitmapsproxy.h"
 #include "locationproxy.h"
+#include "navitnavigationproxy.h"
 
 namespace NXE {
 struct JSONMessage;
@@ -26,9 +27,6 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu NOTIFY ftuChanged)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
-    Q_PROPERTY(bool navigation READ navigation WRITE setNavigation NOTIFY navigationChanged)
-    Q_PROPERTY(int distanceToDestination READ distanceToDestination NOTIFY distanceToDestinationChanged)
-    Q_PROPERTY(int eta READ eta NOTIFY etaChanged)
 
 public:
     NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
@@ -48,34 +46,18 @@ public:
 
     QObject* currentlySelectedItem() const;
     QObject* navitMapsProxy() {return &mapsProxy;}
+    QObject* navitNavigationProxy() {return &navigationProxy;}
 
     void resize(const QRect& rect);
-
-    // Navigation API
-    void setNavigation(bool start);
-    bool navigation();
-
-    int distanceToDestination() const { return m_distance;}
-    int eta() { return m_eta;}
-
 signals:
     void orientationChanged();
     void enablePoiChanged();
     void ftuChanged();
-
     void quitSignal();
-
     void searchDone();
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
     void topBarLocationVisibleChanged();
-
-    // Navigation
-    void navigationChanged();
-    void navigationManuver(const QString& manuverDescription);
-
-    void distanceToDestinationChanged();
-    void etaChanged();
 
 public slots:
     void render();
@@ -94,13 +76,10 @@ public slots:
     void searchAddress(const QString& street);
     void searchSelect(const QString& what, int id);
     void searchNear(const QString& str);
-
     void moveToCurrentPosition();
-
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QUuid& id);
-
     void setZoom(int newZoom);
 
 private slots:
@@ -113,6 +92,7 @@ private:
     QQmlContext* m_rootContext;
     AppSettings m_settings;
     NavitMapsProxy mapsProxy;
+    NavitNavigationProxy navigationProxy;
     QObjectList m_countriesSearchResults;
     QObjectList m_citiesSearchResults;
     QObjectList m_streetsSearchResults;
@@ -120,8 +100,6 @@ private:
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;
-    int m_distance;
-    int m_eta;
     bool m_ignoreNextClick;
 };
 

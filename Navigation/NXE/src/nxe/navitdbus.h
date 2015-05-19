@@ -32,6 +32,7 @@ public:
 
     virtual void searchPOIs(double longitude, double latitude, int distance) override;
     virtual void currentCenter() override;
+    virtual void currentStreet() override;
 
     virtual void startSearch() override;
     virtual void search(SearchType type, const std::string& searchString) override;
@@ -49,6 +50,7 @@ public:
     virtual IntSignalType& distanceResponse() override;
     virtual IntSignalType& etaResponse() override;
     virtual BoolSignalType& navigationChanged() override;
+    virtual StringSignalType& currentStreetResponse() override;
 
     virtual SpeechSignalType& speechSignal() override;
     virtual PointClickedSignalType& pointClickedSignal() override;

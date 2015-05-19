@@ -74,6 +74,7 @@ function createNavigationInstructionsItem(manuverModel) {
     if (navigationInfoComponent.status === Component.Ready) {
         finishNavigationCreation(manuverModel);
     } else {
+        console.debug(navigationInfoComponent.errorString());
         navigationInfoComponent.statusChanged.connect(finishNavigationCreation(manuverModel))
     }
 }

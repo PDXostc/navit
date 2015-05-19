@@ -9,8 +9,6 @@ QtObject {
     property ListModel destinations: ListModel {}
     property int orientation: 0
     property bool topBarLocationVisible : false
-    property bool navigation: false
-    property int distanceToDestination: 5445
     property int eta: 120
     // Real functions
     function valueFor(settingName) {
@@ -76,7 +74,7 @@ QtObject {
     }
 
     function setTopBarVisibility(value) {
-            topBarLocationVisible = value;
+        topBarLocationVisible = value;
     }
 
     function setFavorite(name, favorite) {
@@ -88,15 +86,13 @@ QtObject {
     signal searchDone();
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
-    signal navigationStarted()
-    signal navigationStopped()
-    signal navigationManuver(string manuverDescription);
 
     // fake properties
     property QtObject fakeLocationObject: QtObject {
         property string itemText: "Plac Kościuszki"
         property bool favorite: false
         property string description: "This is a description"
+        property int distance: 1000
     }
 
     property Timer fakeSearchTimer: Timer {
@@ -128,28 +124,7 @@ QtObject {
         interval: 1
         repeat: false
         onTriggered: {
-//            navigation = true
             currentlySelectedItem = fakeLocationObject
-        }
-    }
-    property Timer fakeNextManuver: Timer {
-        property int count: 0
-        property var manuvers: ['Turn left in 100 meters',
-                                'Turn left now',
-                                'Turn right in 200 meters',
-                                'Turn right now',
-                                'Follow the road for next 2.6 kilometers',
-                                'Follow the road for next 2 kilometers',
-                                'Follow the road for next 1.5 kilometers',
-                                'Turn right soon',
-                                'When possible, please turn around',
-    ]
-        running: navigation
-        interval: 1000
-        repeat: true
-        onTriggered: {
-            var str = manuvers[count++]
-            navigationManuver(str)
         }
     }
 }

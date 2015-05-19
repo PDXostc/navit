@@ -25,6 +25,9 @@ const std::string searchNavitDBusInterface = "org.navit_project.navit.search_lis
 const std::string routeNavitDBusPath = "/org/navit_project/navit/default_navit/default_route";
 const std::string routeNavitDBusInterface = "org.navit_project.navit.route";
 
+const std::string trackingNavitDBusPath = "/org/navit_project/navit/default_navit/default_tracking";
+const std::string trackingNavitDBusInterface = "org.navit_project.navit.tracking";
+
 std::string convert(NXE::INavitIPC::SearchType type)
 {
     std::string tag;
@@ -67,7 +70,8 @@ struct DBusQueuedMessage {
         DestroySearch,
         SetTracking,
         Distance,
-        Eta
+        Eta,
+        CurrentStreet
     } type;
     typedef boost::variant<int,
         std::string,
@@ -125,7 +129,8 @@ inline std::ostream& operator << (std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(DestroySearch),
         ENUM(SetTracking),
         ENUM(Distance),
-        ENUM(Eta)
+        ENUM(Eta),
+        ENUM(CurrentStreet)
     };
     os << mapped.at(t);
     return os;
@@ -293,6 +298,13 @@ struct NavitRouteObjectProxy : public DBus::InterfaceProxy, public DBus::ObjectP
     {
     }
 };
+struct NavitTrackingObjectProxy : public DBus::InterfaceProxy, public DBus::ObjectProxy {
+    NavitTrackingObjectProxy(DBus::Connection& con)
+        : DBus::InterfaceProxy(trackingNavitDBusInterface)
+        , DBus::ObjectProxy(con, trackingNavitDBusPath, navitDBusDestination.c_str())
+    {
+    }
+};
 
 struct NavitDBusPrivate {
     NavitDBusPrivate(::DBus::Connection& _con)
@@ -430,11 +442,24 @@ struct NavitDBusPrivate {
                         }
                         case DBusQueuedMessage::Type::Eta:
                         {
-                            if(navigationCancelled) {
+                            if(!navigationCancelled) {
                                 std::int32_t eta = DBusHelpers::getAttr<std::int32_t>("destination_time", *(routeObject.get()));
                                 dbusInfo() << " Eta = " << eta;
                                 etaSignal(eta);
                             }
+                            break;
+                        }
+
+                        case DBusQueuedMessage::Type::CurrentStreet:
+                        {
+                            DBus::Message msg = DBusHelpers::call("get_attr", *(trackingObject.get()), std::string{"street_name"});
+                            auto iter = msg.reader();
+                            std::string ss;
+                            DBus::Variant v;
+                            iter >> ss >> v;
+                            auto streetName = DBusHelpers::getFromIter<std::string> (v.reader());
+                            dbusInfo() << "Current street is " << streetName;
+                            currentStreetSignal(streetName);
                             break;
                         }
 
@@ -601,6 +626,7 @@ struct NavitDBusPrivate {
     std::shared_ptr<NavitDBusObjectProxy> rootObject;
     std::shared_ptr<NavitSearchObjectProxy> searchObject;
     std::shared_ptr<NavitRouteObjectProxy> routeObject;
+    std::shared_ptr<NavitTrackingObjectProxy> trackingObject;
     DBus::Connection& con;
 
     std::thread dbusMainThread;
@@ -617,6 +643,7 @@ struct NavitDBusPrivate {
     INavitIPC::IntSignalType distanceSignal;
     INavitIPC::IntSignalType etaSignal;
     INavitIPC::BoolSignalType navigationChangedSignal;
+    INavitIPC::StringSignalType currentStreetSignal;
 };
 
 NavitDBus::NavitDBus(DBusController& ctrl)
@@ -626,6 +653,7 @@ NavitDBus::NavitDBus(DBusController& ctrl)
     d->object.reset(new NavitDBusObjectProxy(navitDBusInterface, ctrl.connection()));
     d->rootObject.reset(new NavitDBusObjectProxy(rootNavitDBusInterface, ctrl.connection()));
     d->routeObject.reset(new NavitRouteObjectProxy(ctrl.connection()));
+    d->trackingObject.reset(new NavitTrackingObjectProxy(ctrl.connection()));
 }
 
 NavitDBus::~NavitDBus()
@@ -766,6 +794,12 @@ void NavitDBus::currentCenter()
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::CurrentCenter });
 }
 
+void NavitDBus::currentStreet()
+{
+    dbusInfo() << "Requesting current street";
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::CurrentStreet });
+}
+
 void NavitDBus::startSearch()
 {
     dbusInfo() << "Creating new search";
@@ -849,6 +883,11 @@ INavitIPC::IntSignalType &NavitDBus::etaResponse()
 INavitIPC::BoolSignalType &NavitDBus::navigationChanged()
 {
     return d->navigationChangedSignal;
+}
+
+INavitIPC::StringSignalType &NavitDBus::currentStreetResponse()
+{
+    return d->currentStreetSignal;
 }
 
 INavitIPC::SpeechSignalType& NavitDBus::speechSignal()

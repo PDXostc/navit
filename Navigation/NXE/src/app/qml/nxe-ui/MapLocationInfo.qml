@@ -118,7 +118,7 @@ Item {
 
                     onClicked: {
                         console.debug('Start navigation')
-                        navitProxy.navigation = true
+                        navigationProxy.startNavigation(navitProxy.currentlySelectedItem);
                     }
 
                     opacity: 0

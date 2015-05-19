@@ -114,6 +114,7 @@ int main(int argc, char* argv[])
         NavitQuickProxy proxy{ view.socketName(), view.rootContext() };
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("navitMapsProxy", proxy.navitMapsProxy());
+        view.rootContext()->setContextProperty("navigationProxy", proxy.navitNavigationProxy());
         view.rootContext()->setContextProperty("compositor", &view);
         view.setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
 #if defined(NXE_OS_LINUX)

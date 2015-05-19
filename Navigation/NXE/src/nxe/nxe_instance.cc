@@ -47,6 +47,7 @@ struct NXEInstancePrivate {
     bool mute{ false };
     std::thread distanceThread;
     bool distanceThreadShouldRun{ false };
+    bool distanceThreadRunning {false};
 
     void setOrientation(int newOrientation)
     {
@@ -82,6 +83,7 @@ struct NXEInstancePrivate {
 
     void getDistanceThread()
     {
+        distanceThreadRunning = true;
         nDebug() << "Starting distance thread";
         std::chrono::milliseconds dura_3s(3000);
         std::this_thread::sleep_for(dura_3s);
@@ -93,9 +95,11 @@ struct NXEInstancePrivate {
 
             ipc->distance();
             ipc->eta();
+            ipc->currentStreet();
         }
 
         nTrace() << "Finishing getDistanceThread()";
+        distanceThreadRunning = false;
     }
 };
 
@@ -187,8 +191,12 @@ void NXEInstance::startNavigation(double lat, double lon, const string& descript
 {
     assert(d && d->ipc);
     d->ipc->setDestination(lat, lon, description);
-    d->distanceThreadShouldRun = true;
 
+    if (d->distanceThreadRunning) {
+        return;
+    }
+
+    d->distanceThreadShouldRun = true;
     d->distanceThread =std::thread { std::bind(&NXEInstancePrivate::getDistanceThread, d.get()) };
 }
 

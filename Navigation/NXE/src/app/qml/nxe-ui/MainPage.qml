@@ -39,21 +39,20 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
-            if (navitProxy.navigation) {
-            } else {
-                Info.remove(locationInfoComponent,locationInfoObject);
-                Info.remove(locationInfoTopComponent, locationInfoTopObject)
+            Info.remove(locationInfoComponent,locationInfoObject);
+            Info.remove(locationInfoTopComponent, locationInfoTopObject)
 
-                if (navitProxy.currentlySelectedItem) {
-                    Info.createLocationComponent(navitProxy.currentlySelectedItem)
-                }
+            if (navitProxy.currentlySelectedItem) {
+                Info.createLocationComponent(navitProxy.currentlySelectedItem)
             }
         }
+    }
+    Connections {
+        target: navigationProxy
 
         onNavigationChanged: {
-            console.debug('navigation is', navitProxy.navigation)
-            if (navitProxy.navigation) {
-                console.debug('navigation=', navitProxy.navigation);
+            console.debug('navigation is', navigationProxy.navigation)
+            if (navigationProxy.navigation) {
                 Info.remove(locationInfoComponent,locationInfoObject);
 
 

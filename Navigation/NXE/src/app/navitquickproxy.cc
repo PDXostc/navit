@@ -52,8 +52,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , nxeInstance(new NXE::NXEInstance{ context->injector })
     , m_rootContext(ctx)
     , mapsProxy(nxeInstance, ctx)
-    , m_distance(-1)
-    , m_eta(-1)
+    , navigationProxy(nxeInstance)
     , m_ignoreNextClick(false)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
@@ -132,12 +131,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     });
 
 
-    nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
-        emit navigationManuver(QString::fromStdString(manuver));
-    });
-
     // Navit dbus responses
-
     nxeInstance->ipc()->searchResponse().connect([this](NXE::SearchResults results, NXE::INavitIPC::SearchType type) {
         if (type == NXE::INavitIPC::SearchType::Country) {
             for (NXE::SearchResult result : results) {
@@ -170,28 +164,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
         }
         emit searchDone();
-    });
-
-    nxeInstance->ipc()->distanceResponse().connect([this] (std::int32_t distance) {
-        m_distance = distance;
-        emit distanceToDestinationChanged();
-    });
-
-    nxeInstance->ipc()->navigationChanged().connect([this](bool navi) {
-        aInfo() << "Navigation info changed to " << (navi ? "true":"false");
-        emit navigationChanged();
-    });
-
-    nxeInstance->ipc()->distanceResponse().connect([this] (std::int32_t eta) {
-        aDebug() << "Eta received " << eta;
-
-        // this is from Navit gui_gtk_statusbar.c
-        time_t _eta = time(NULL) + eta/10;
-        auto remainingEta = _eta - time(NULL);
-        aDebug() << _eta << " rem = " << remainingEta;
-
-        m_eta = remainingEta;
-        emit etaChanged();
     });
 
     qRegisterMetaType<QObjectList>("QObjectList");
@@ -243,22 +215,6 @@ bool NavitQuickProxy::enablePoi() const
 void NavitQuickProxy::resize(const QRect& rect)
 {
     nxeInstance->resize(rect.width(), rect.height());
-}
-
-void NavitQuickProxy::setNavigation(bool start)
-{
-    if (start) {
-        aInfo() << "Starting Navigation for " << static_cast<void*>(m_currentItem.data());
-        nxeInstance->startNavigation(m_currentItem->longitude(), m_currentItem->latitude(),
-                                           m_currentItem->description().toStdString());
-    } else {
-        nxeInstance->cancelNavigation();
-    }
-}
-
-bool NavitQuickProxy::navigation()
-{
-    return nxeInstance->ipc()->isNavigationRunning();
 }
 
 void NavitQuickProxy::setEnablePoi(bool enable)

@@ -362,3 +362,14 @@ TEST_F(NavitDBusTest, changeCenter)
 
     EXPECT_DOUBLE_EQ(lastCenter2.latitude, pos.latitude);
 }
+
+TEST_F(NavitDBusTest, getCurrentStreet)
+{
+    bool bRec{false};
+    connection.currentStreetResponse().connect([&](std::string center) {
+        bRec = true;
+    });
+
+    connection.currentStreet();
+    EXPECT_TRUE(waitFor(bRec));
+}
