@@ -25,6 +25,11 @@ Rectangle {
         delegate: LocationsResultDelegate {
             width: parent.width
             height: 50
+
+            onLocationClicked: {
+                console.debug(modelData)
+//                navitProxy.setLocationPopUp()
+            }
         }
     }
     ScrollBar {

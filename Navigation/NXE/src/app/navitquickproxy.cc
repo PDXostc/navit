@@ -193,6 +193,9 @@ NavitQuickProxy::~NavitQuickProxy()
 {
     aDebug() << __PRETTY_FUNCTION__;
     nxeInstance->setPositionUpdateListener(0);
+
+    qDeleteAll(m_historyResults);
+    m_historyResults.clear();
 }
 
 int NavitQuickProxy::orientation()
@@ -423,12 +426,7 @@ void NavitQuickProxy::getFavorites()
 }
 void NavitQuickProxy::getHistory()
 {
-    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
-
-    m_historyResults.append(new LocationProxy{ "hist_test1", false, "", true });
-
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
-
     emit gettingHistoryDone();
 }
 
@@ -461,6 +459,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // and this will points to an deleted object
             foundItem = proxy;
             m_currentItem.reset(LocationProxy::clone(proxy));
+            m_historyResults.append(LocationProxy::clone(proxy));
         }
     });
 

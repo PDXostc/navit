@@ -49,7 +49,8 @@ Page {
                             navitProxy.getFavorites();
                             enabled = (locationFavoritesResult.length !== 0)
                         } else if (options.get(0).url === 'LocationsHistory.qml') {
-                            enabled = false;
+                            navitProxy.getHistory();
+                            enabled = (locationHistoryResult.length !== 0)
                         }
                     }
                     width: locationsListView.width
@@ -65,13 +66,6 @@ Page {
         }
         Connections {
             target: navitProxy
-            onGettingHistoryDone: {
-                root.busy = false;
-                searchStackView.push({
-                                         item: Qt.resolvedUrl(
-                                                   "LocationsHistory.qml")
-                                     })
-            }
         }
     }
 }
