@@ -27,8 +27,10 @@ void NXExtension::createLogger()
     else if (level == "trace") {
         spdlog::set_level(spdlog::level::trace);
     }
+    else if (level == "info") {
+        spdlog::set_level(spdlog::level::info);
+    }
     else {
         spdlog::set_level(spdlog::level::err);
     }
-
 }

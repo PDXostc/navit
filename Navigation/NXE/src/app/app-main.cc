@@ -29,7 +29,7 @@ void qtLogOutput(QtMsgType type, const QMessageLogContext& ctx, const QString& m
     const std::string cat{ cats[ctx.category] };
     switch (type) {
     case QtDebugMsg:
-        spdlog::get(cat)->debug() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();
+        spdlog::get(cat)->warn() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();
         break;
     case QtWarningMsg:
         spdlog::get(cat)->warn() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();

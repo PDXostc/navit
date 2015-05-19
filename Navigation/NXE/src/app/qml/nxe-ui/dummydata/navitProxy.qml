@@ -5,6 +5,7 @@ QtObject {
     // real (c++ wise) properties
     property bool ftu: false
     property QtObject currentlySelectedItem: null
+    property QtObject waypointItem: null
     property ListModel favourites: ListModel {}
     property ListModel destinations: ListModel {}
     property int orientation: 0
@@ -120,11 +121,19 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: true
+        running: false
         interval: 1
         repeat: false
         onTriggered: {
             currentlySelectedItem = fakeLocationObject
+        }
+    }
+    property Timer fakeWaypointTimer: Timer {
+        running: true
+        interval: 1
+        repeat: false
+        onTriggered: {
+            waypointItem = fakeLocationObject
         }
     }
 }

@@ -197,7 +197,6 @@ Item {
                     x: 284
                     y: 58
                     color: "#09bcdf"
-//                    text: qsTr("0.2 miles")
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight

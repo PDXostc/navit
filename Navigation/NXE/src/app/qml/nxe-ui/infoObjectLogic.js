@@ -43,6 +43,19 @@ function finishNavigationCreation(model) {
     }
 }
 
+function finishWaypointComponent(location) {
+    if (waypointComponent.status === Component.Ready) {
+        waypointObject = waypointComponent.createObject(mainPageView, {
+                                                                    opacity: 0
+                                                                })
+        waypointObject.anchors.bottom = mainPageView.bottom
+        waypointObject.anchors.left = mainPageView.left
+        waypointObject.anchors.right = mainPageView.right
+        waypointObject.locationComponent = location
+        waypointObject.opacity = 1
+    }
+}
+
 function createLocationComponents(location) {
     createLocationComponent(location)
     createTopInfoComponent(location)
@@ -79,7 +92,18 @@ function createNavigationInstructionsItem(manuverModel) {
     }
 }
 
+function createWaypointItem(location) {
+    waypointComponent = Qt.createComponent("WaypointItem.qml")
+    if (waypointComponent.status === Component.Ready) {
+        finishWaypointComponent(location)
+    } else {
+        waypointComponent.statusChanged.connect(
+                    finishWaypointComponent(location))
+    }
+}
+
 function remove(component, component2) {
+    console.debug('Removing components', component, component2)
 
     if (component) {
         component.destroy()

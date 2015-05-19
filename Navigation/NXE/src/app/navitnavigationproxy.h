@@ -33,6 +33,7 @@ signals:
 
 public slots:
     void startNavigation(QObject* currentItem);
+    void addWaypoint(QObject* item);
     void stopNavigation();
 private:
     std::shared_ptr<NXE::NXEInstance> nxeInstance;

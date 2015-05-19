@@ -38,7 +38,6 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
         m_currentStreet = QString::fromStdString(st);
         emit currentStreetChanged();
     });
-
 }
 
 bool NavitNavigationProxy::navigation()
@@ -50,6 +49,13 @@ void NavitNavigationProxy::startNavigation(QObject* currentItem)
 {
     LocationProxy* p = qobject_cast<LocationProxy*>(currentItem);
     nxeInstance->startNavigation(p->longitude(), p->latitude(), p->description().toStdString());
+}
+
+void NavitNavigationProxy::addWaypoint(QObject *item)
+{
+    aDebug() << "Adding waypoint";
+    LocationProxy* p = qobject_cast<LocationProxy*>(item);
+    nxeInstance->ipc()->addWaypoint(p->longitude(), p->latitude());
 }
 
 void NavitNavigationProxy::stopNavigation()

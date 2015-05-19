@@ -27,6 +27,7 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu NOTIFY ftuChanged)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
+    Q_PROPERTY(QObject* waypointItem READ waypointItem NOTIFY waypointItemChanged)
 
 public:
     NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
@@ -44,6 +45,7 @@ public:
     bool ftu() const;
     void setFtu(bool value);
 
+    QObject* waypointItem() const;
     QObject* currentlySelectedItem() const;
     QObject* navitMapsProxy() {return &mapsProxy;}
     QObject* navitNavigationProxy() {return &navigationProxy;}
@@ -57,6 +59,7 @@ signals:
     void searchDone();
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
+    void waypointItemChanged();
     void topBarLocationVisibleChanged();
 
 public slots:
@@ -82,6 +85,8 @@ public slots:
     void setLocationPopUp(const QUuid& id);
     void setZoom(int newZoom);
 
+    void clearWaypoint();
+
 private slots:
     void initNavit();
     void synchronizeNavit();
@@ -100,6 +105,7 @@ private:
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;
+    QScopedPointer<LocationProxy> m_waypointItem;
     bool m_ignoreNextClick;
 };
 

@@ -68,6 +68,8 @@ Item {
                         height: 30
 
                         NText {
+                            opacity: root.state === 'normal' ? 0 : 1
+                            Behavior on opacity {NumberAnimation {}}
                             text: "Current:  " + navigationProxy.currentStreet
                             font.pixelSize: 12
                             anchors.verticalCenter: parent.verticalCenter
@@ -78,6 +80,8 @@ Item {
                         height: 30
 
                         NText {
+                            opacity: root.state === 'normal' ? 0 : 1
+                            Behavior on opacity {NumberAnimation {}}
                             text: "Next:  No data available"
                             font.pixelSize: 12
                             anchors.verticalCenter: parent.verticalCenter

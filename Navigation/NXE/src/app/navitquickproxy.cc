@@ -96,6 +96,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             distance = -1;
         }
 
+        // if we're navigating use different item
+
         nxeInstance->ipc()->setTracking(false);
 
         aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude
@@ -112,8 +114,16 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_settings.removeFromFavorites(loc->id().toByteArray().data());
             }
         });
-        m_currentItem.reset(loc);
-        emit currentlySelectedItemChanged();
+        if (navigationProxy.navigation()) {
+            aInfo() << "Navigation take place, use different item";
+            m_waypointItem.reset(loc);
+            emit waypointItemChanged();
+        }
+        else {
+            aInfo() << "Not navigating, select this and show on the screen";
+            m_currentItem.reset(loc);
+            emit currentlySelectedItemChanged();
+        }
         m_ignoreNextClick = true;
     });
 
@@ -123,8 +133,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             m_ignoreNextClick = false;
             return;
         }
+
+        if(navigationProxy.navigation()) {
+            // hey dude, don't dismiss navigation!
+            return;
+        }
+
         if(m_currentItem) {
-        aDebug() << "User tapped, dismiss location bar";
+            aDebug() << "User tapped, dismiss location bar";
             m_currentItem.reset();
             emit currentlySelectedItemChanged();
         }
@@ -238,6 +254,11 @@ void NavitQuickProxy::setFtu(bool value)
     }
 
     emit ftuChanged();
+}
+
+QObject *NavitQuickProxy::waypointItem() const
+{
+    return m_waypointItem.data();
 }
 
 QObject* NavitQuickProxy::currentlySelectedItem() const
@@ -414,6 +435,12 @@ void NavitQuickProxy::getHistory()
 void NavitQuickProxy::setZoom(int newZoom)
 {
     nxeInstance->ipc()->setZoom(newZoom);
+}
+
+void NavitQuickProxy::clearWaypoint()
+{
+    m_waypointItem.reset();
+    emit waypointItemChanged();
 }
 
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)

@@ -44,12 +44,6 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     source: "back_icon_white_lg.png"
                 }
-
-//                MouseArea {
-//                    id: topLocationBarBackButton
-//                    anchors.fill: parent
-//                    onClicked: requestHideBars()
-//                }
             }
         }
 

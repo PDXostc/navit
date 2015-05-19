@@ -82,5 +82,8 @@
         <file>qml/nxe-ui/images/minimize_window_icon_grey.png</file>
         <file>qml/nxe-ui/NavigationInfoExtraInfo.qml</file>
         <file>qml/nxe-ui/images/info_icon_white.png</file>
+        <file>qml/nxe-ui/WaypointItem.qml</file>
+        <file>qml/nxe-ui/images/navigate_icon_white.png</file>
+        <file>qml/nxe-ui/images/blue_forward_button_long_bg.png</file>
     </qresource>
 </RCC>

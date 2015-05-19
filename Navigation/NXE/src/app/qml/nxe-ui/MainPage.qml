@@ -17,6 +17,9 @@ Item {
     property var navigationInfoComponent: null
     property var navigationInfoObject: null
 
+    property var waypointComponent: null
+    property var waypointObject: null
+
     property ListModel navigationManuvers: ListModel {}
 
 
@@ -46,6 +49,15 @@ Item {
                 Info.createLocationComponent(navitProxy.currentlySelectedItem)
             }
         }
+        onWaypointItemChanged: {
+            Info.remove(waypointComponent,waypointObject)
+            console.debug('waypoint item', navitProxy.waypointItem)
+
+            if(navitProxy.waypointItem) {
+                console.debug('waypoint item!')
+                Info.createWaypointItem(navitProxy.waypointItem)
+            }
+        }
     }
     Connections {
         target: navigationProxy
@@ -54,7 +66,7 @@ Item {
             console.debug('navigation is', navigationProxy.navigation)
             if (navigationProxy.navigation) {
                 Info.remove(locationInfoComponent,locationInfoObject);
-
+                Info.remove(navigationInfoComponent, navigationInfoObject);
 
                 if (!locationInfoTopComponent) {
                     Info.createTopInfoComponent(null)

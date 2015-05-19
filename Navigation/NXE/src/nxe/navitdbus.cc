@@ -327,7 +327,7 @@ struct NavitDBusPrivate {
                             break;
                         }
                         case DBusQueuedMessage::Type::_Quit:
-                            dbusInfo() << "Quiting dbus processing thread";
+                            dbusTrace() << "Quiting dbus processing thread";
                             quitMessageReceived = true;
                             break;
                         case DBusQueuedMessage::Type::Quit:
@@ -337,9 +337,9 @@ struct NavitDBusPrivate {
                         case DBusQueuedMessage::Type::SetZoom:
                         {
                             int newZoomValue = boost::get<int>(msg.value);
-                            dbusInfo() << "Setting zoom to=" << newZoomValue;
+                            dbusDebug() << "Setting zoom to=" << newZoomValue;
                             DBusHelpers::setAttr("zoom", *(object.get()), newZoomValue);
-                            dbusInfo() << "Setting zoom finished";
+                            dbusTrace() << "Setting zoom finished";
                             break;
                         }
                         case DBusQueuedMessage::Type::Zoom:
@@ -406,9 +406,8 @@ struct NavitDBusPrivate {
                         }
                         case DBusQueuedMessage::Type::CurrentCenter:
                         {
-                            dbusInfo() << "Current center";
                             auto ret = DBusHelpers::getAttr<DBus::Struct<double, double> >("center", *(object.get()));
-                            dbusInfo() << "Current center lon= " << ret._2 <<" lat= "<< ret._1;
+                            dbusDebug() << "Current center lon= " << ret._2 <<" lat= "<< ret._1;
                             currentCenterSignal(NXE::Position{ret._2, ret._1});
                             break;
                         }
@@ -421,13 +420,12 @@ struct NavitDBusPrivate {
                         case DBusQueuedMessage::Type::DestroySearch:
                         {
                             DBusHelpers::call("destroy", *(searchObject.get()));
-                            dbusInfo() << "Search list destroyed";
                             searchObject.reset();
                             break;
                         }
                         case DBusQueuedMessage::Type::SetTracking:
                         {
-                            dbusInfo() << "Setting tracking to " << boost::get<bool>(msg.value);
+                            dbusDebug() << "Setting tracking to " << boost::get<bool>(msg.value);
                             DBusHelpers::setAttr("follow_cursor", *(object.get()), boost::get<bool>(msg.value));
                             break;
                         }
@@ -435,7 +433,6 @@ struct NavitDBusPrivate {
                         {
                             if (!navigationCancelled) {
                                 std::int32_t distance = DBusHelpers::getAttr<int>("destination_length", *(routeObject.get()));
-                                dbusInfo() << "Distance = " << distance;
                                 distanceSignal(distance);
                             }
                             break;
@@ -444,7 +441,6 @@ struct NavitDBusPrivate {
                         {
                             if(!navigationCancelled) {
                                 std::int32_t eta = DBusHelpers::getAttr<std::int32_t>("destination_time", *(routeObject.get()));
-                                dbusInfo() << " Eta = " << eta;
                                 etaSignal(eta);
                             }
                             break;
@@ -458,7 +454,6 @@ struct NavitDBusPrivate {
                             DBus::Variant v;
                             iter >> ss >> v;
                             auto streetName = DBusHelpers::getFromIter<std::string> (v.reader());
-                            dbusInfo() << "Current street is " << streetName;
                             currentStreetSignal(streetName);
                             break;
                         }
@@ -497,7 +492,7 @@ struct NavitDBusPrivate {
         dbusDebug() << "Searching for " << searchString;
         std::string tag = convert(type);
 
-        dbusDebug() << "Tag =" << tag;
+        dbusTrace() << "Tag =" << tag;
         SearchResults ret;
 
         DBus::Variant var;
@@ -518,7 +513,6 @@ struct NavitDBusPrivate {
                 double lat, lon;
 
                 resultsIter >> resultId >> position;
-                dbusDebug() << "Read pos";
                 resultsIter >> at;
                 lat = position._2;
                 lon = position._1;
@@ -586,11 +580,11 @@ struct NavitDBusPrivate {
                 if (type == INavitIPC::SearchType::Country) {
                     // decode country
                     ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at) });
-                    dbusDebug() << "Country = " << ret.back().country.name;
+                    dbusTrace() << "Country = " << ret.back().country.name;
                 }
                 else if (type == INavitIPC::SearchType::City) {
                     ret.emplace_back(SearchResult{ resultId, std::make_pair(lon, lat), decodeCountry(at), decodeCity(at) });
-                    dbusDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
+                    dbusTrace() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name;
                 }
                 else if (type == INavitIPC::SearchType::Street) {
                     ret.emplace_back(SearchResult{
@@ -599,7 +593,7 @@ struct NavitDBusPrivate {
                         decodeCountry(at),
                         decodeCity(at),
                         decodeStreet(at) });
-                    dbusDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
+                    dbusTrace() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
                                 << " Street = " << ret.back().street.name;
                 }
                 else if (type == INavitIPC::SearchType::Address) {
@@ -610,7 +604,7 @@ struct NavitDBusPrivate {
                         decodeCity(at),
                         decodeStreet(at),
                         decodeHouse(at) });
-                    dbusDebug() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
+                    dbusTrace() << "Country = " << ret.back().country.name << " City = " << ret.back().city.name
                                 << " Street = " << ret.back().street.name << " House = " << ret.back().house.name;
                 }
             }
@@ -669,9 +663,6 @@ void NavitDBus::quit()
         dbusInfo() << "Navit probably already closed";
         return;
     }
-    dbusDebug() << "Reset spsc";
-//    d->spsc_queue.reset();
-    dbusDebug() << "After";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Quit });
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::_Quit });
     d->dbusMainThread.join();
@@ -681,7 +672,6 @@ void NavitDBus::quit()
 
 void NavitDBus::setZoom(int newZoom)
 {
-    dbusInfo() << "Setting zoom = " << newZoom;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetZoom, DBusQueuedMessage::VariantType{ newZoom } });
 }
 
@@ -697,7 +687,6 @@ void NavitDBus::render()
 
 void NavitDBus::resize(int x, int y)
 {
-    dbusInfo() << "Request Resizing [" << x << "x" << y << "]";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Render, DBusQueuedMessage::VariantType{ std::make_pair(x, y) } });
 }
 
@@ -708,7 +697,6 @@ void NavitDBus::orientation()
 
 void NavitDBus::setOrientation(int newOrientation)
 {
-    dbusDebug() << "Request Changing orientation to " << newOrientation;
     if (newOrientation != 0 && newOrientation != -1) {
         dbusError() << "Unable to change orientation to " << newOrientation;
         throw std::runtime_error("Unable to change orientation. Incorrect value, value can only be -1/0");
@@ -718,7 +706,6 @@ void NavitDBus::setOrientation(int newOrientation)
 
 void NavitDBus::setCenter(double longitude, double latitude)
 {
-    dbusInfo() << "Request Setting center lon= " << longitude << " lat= " << latitude;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
 
@@ -727,7 +714,6 @@ void NavitDBus::setCenter(double longitude, double latitude)
 
 void NavitDBus::setDestination(double longitude, double latitude, const std::string& description)
 {
-    dbusDebug() << "Request Setting destionation to. name= " << description;
     d->navigationCancelled = false;
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     const std::string message = format.str();
@@ -759,27 +745,22 @@ void NavitDBus::addWaypoint(double longitude, double latitude)
 
 void NavitDBus::clearDestination()
 {
-    dbusInfo() << "Clearing destination";
     d->navigationCancelled = true;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ClearDestination });
 }
 
 void NavitDBus::setScheme(const std::string& scheme)
 {
-    dbusInfo() << "Request Setting scheme to " << scheme;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetScheme, DBusQueuedMessage::VariantType{ scheme } });
 }
 
 void NavitDBus::setPitch(std::uint16_t newPitchValue)
 {
-    std::int32_t pitchVal = static_cast<std::int32_t>(newPitchValue);
-    dbusInfo() << "REquest Setting pitch to = " << pitchVal;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetPitch, DBusQueuedMessage::VariantType{ newPitchValue } });
 }
 
 void NavitDBus::searchPOIs(double longitude, double latitude, int dist)
 {
-    dbusInfo() << "Request searchPOIs in " << dist << " distance";
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
     auto format1 = boost::format("%1%") % dist;
     const std::string center_coord = format.str();
@@ -790,19 +771,16 @@ void NavitDBus::searchPOIs(double longitude, double latitude, int dist)
 
 void NavitDBus::currentCenter()
 {
-    dbusInfo() << "Requesting current center";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::CurrentCenter });
 }
 
 void NavitDBus::currentStreet()
 {
-    dbusInfo() << "Requesting current street";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::CurrentStreet });
 }
 
 void NavitDBus::startSearch()
 {
-    dbusInfo() << "Creating new search";
     d->createSearchList();
 }
 
@@ -815,13 +793,11 @@ void NavitDBus::selectSearchResult(INavitIPC::SearchType type, std::int32_t id)
 {
     const std::string attr = convert(type);
 
-    dbusInfo() << "Select search result. id= " << id << " type = " << attr;
     DBusHelpers::call("select", *(d->searchObject.get()), attr, id, 1);
 }
 
 void NavitDBus::finishSearch()
 {
-    dbusInfo() << "Destroying search list";
     if (!d->searchObject) {
         dbusError() << "Search wasn't startd";
         return;
@@ -832,7 +808,6 @@ void NavitDBus::finishSearch()
 
 void NavitDBus::setTracking(bool tracking)
 {
-    dbusDebug() << "Request set tracking to " << (tracking ? "true" : "false");
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetTracking, tracking });
 }
 void NavitDBus::distance()
