@@ -23,7 +23,6 @@ int main(int argc, char* argv[])
 
     auto logger = spdlog::stdout_logger_mt("nxe");
     auto dbusLogger = spdlog::stdout_logger_mt("dbus");
-    dbusLogger->set_level(spdlog::level::trace);
     auto perfLogger = spdlog::stdout_logger_mt("perf");
     if (perf) {
         perfLogger->set_level(spdlog::level::info);
@@ -37,6 +36,7 @@ int main(int argc, char* argv[])
     }
     else {
         logger->set_level(spdlog::level::off);
+        dbusLogger->set_level(spdlog::level::off);
     }
 
     if (extNavit) {

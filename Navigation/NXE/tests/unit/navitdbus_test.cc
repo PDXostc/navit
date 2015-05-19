@@ -68,7 +68,6 @@ struct NavitDBusTest : public ::testing::Test {
 
     void recFunc(NXE::SearchResults res)
     {
-        nTrace() << "here";
         rec = true;
         results = res;
     }
@@ -246,10 +245,13 @@ TEST_F(NavitDBusTest, search_street_valid)
 {
     connection.startSearch();
     auto country = searchAndBlock(NXE::INavitIPC::SearchType::Country, "Germany");
-    auto city = searchAndBlock(NXE::INavitIPC::SearchType::City, "Berlin");
-    auto streets = searchAndBlock(NXE::INavitIPC::SearchType::Street, "Benfeyweg");
+    nDebug() << "Country size = " << country.size();
     ASSERT_NE(country.size(), 0);
+    auto city = searchAndBlock(NXE::INavitIPC::SearchType::City, "Berlin");
+    nDebug() << "City size = " << country.size();
     ASSERT_NE(city.size(), 0);
+    auto streets = searchAndBlock(NXE::INavitIPC::SearchType::Street, "Benfeyweg");
+    nDebug() << "Street size= " << streets.size();
     EXPECT_TRUE(std::find_if(streets.begin(), streets.end(), [](const NXE::SearchResult& street) -> bool {
         return street.street.name == "Benfeyweg";
     }) != streets.end());

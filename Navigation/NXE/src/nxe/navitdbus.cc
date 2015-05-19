@@ -68,6 +68,7 @@ struct DBusQueuedMessage {
         CurrentCenter,
         Search,
         DestroySearch,
+        SelectSearch,
         SetTracking,
         Distance,
         Eta,
@@ -80,6 +81,7 @@ struct DBusQueuedMessage {
         DBus::Struct<int, std::string>, // for setPosition
         std::uint16_t, // for pitch
         std::pair<NXE::INavitIPC::SearchType, std::string>, // for search
+        std::pair<NXE::INavitIPC::SearchType, std::int32_t>, // for select search
         bool> VariantType;
     VariantType value;
 };
@@ -126,6 +128,7 @@ inline std::ostream& operator << (std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(SearchPOI),
         ENUM(CurrentCenter),
         ENUM(Search),
+        ENUM(SelectSearch),
         ENUM(DestroySearch),
         ENUM(SetTracking),
         ENUM(Distance),
@@ -417,6 +420,15 @@ struct NavitDBusPrivate {
                             searchSignal(search(params.first, params.second), params.first);
                             break;
                         }
+                        case DBusQueuedMessage::Type::SelectSearch:
+                        {
+                            auto params = boost::get<std::pair<INavitIPC::SearchType, std::int32_t>>(msg.value);
+                            const std::string attr = convert(params.first);
+                            dbusTrace() << "Selecting search " << params.second;
+                            DBusHelpers::call("select", *(searchObject.get()), attr, params.second, 1);
+                            break;
+
+                        }
                         case DBusQueuedMessage::Type::DestroySearch:
                         {
                             DBusHelpers::call("destroy", *(searchObject.get()));
@@ -508,11 +520,16 @@ struct NavitDBusPrivate {
 
                 std::int32_t resultId;
                 DBus::Struct<double, double> position;
+                std::string currPosDistance;
+                DBus::Variant distanceVar;
                 typedef std::map<std::string, std::map<std::string, ::DBus::Variant> > LocationDBusType;
                 LocationDBusType at;
                 double lat, lon;
 
-                resultsIter >> resultId >> position;
+                resultsIter >> resultId >> position ;
+                if (type != INavitIPC::SearchType::Country) {
+                    resultsIter >> currPosDistance >> distanceVar;
+                }
                 resultsIter >> at;
                 lat = position._2;
                 lon = position._1;
@@ -791,9 +808,7 @@ void NavitDBus::search(INavitIPC::SearchType type, const std::string& searchStri
 
 void NavitDBus::selectSearchResult(INavitIPC::SearchType type, std::int32_t id)
 {
-    const std::string attr = convert(type);
-
-    DBusHelpers::call("select", *(d->searchObject.get()), attr, id, 1);
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SelectSearch, DBusQueuedMessage::VariantType{ std::make_pair(type, id) } });
 }
 
 void NavitDBus::finishSearch()
