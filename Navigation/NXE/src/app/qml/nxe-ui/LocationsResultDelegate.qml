@@ -7,13 +7,13 @@ Item {
     width: LocationResultListView.width
     height: 50
 
-    signal locationClicked(var id)
+    signal locationClicked(var itemId)
 
     MouseArea {
         anchors.fill: parent
 
         onClicked: {
-            locationClicked(id);
+            locationClicked(itemId);
         }
     }
     Row {

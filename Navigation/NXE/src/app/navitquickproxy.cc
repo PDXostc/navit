@@ -341,6 +341,10 @@ void NavitQuickProxy::startSearch()
 
 void NavitQuickProxy::finishSearch()
 {
+    clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
+    clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
+    clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
+    clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
     nxeInstance->ipc()->finishSearch();
 }
 
@@ -449,6 +453,14 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     tmp.append(m_streetsSearchResults);
     tmp.append(m_addressSearchResults);
     tmp.append(m_favoritesResults);
+    tmp.append(m_historyResults);
+
+    aDebug() << "Searching id =" <<id.toByteArray().data() << " in= ";
+    std::for_each(tmp.begin(), tmp.end(), [](QObject* o) {
+        LocationProxy* p = qobject_cast<LocationProxy*>(o);
+        aDebug() << p->id().toString().toStdString();
+    });
+
     int newZoomLevel = -1;
     QObject* foundItem = nullptr;
     std::for_each(tmp.begin(), tmp.end(), [this, &id, &foundItem](QObject* o) {

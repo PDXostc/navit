@@ -27,8 +27,8 @@ Rectangle {
             height: 50
 
             onLocationClicked: {
-                console.debug(modelData)
-//                navitProxy.setLocationPopUp()
+                navitProxy.setLocationPopUp(itemId)
+                rootStack.pop();
             }
         }
     }
