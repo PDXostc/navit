@@ -5,11 +5,11 @@ Item {
     property bool canNavigate: false
     property string locationName: locationComponent ? locationComponent.itemText : ""
     property string locationDescription: locationComponent ? locationComponent.description : ""
+    property int locationDistance: locationComponent ? locationComponent.distance : -1
     property bool isFavorite: locationComponent ? locationComponent.favorite : false
     property var locationComponent: null
     width: 400
     height: 150
-
 
     Connections {
         target: locationComponent ? locationComponent : null
@@ -18,7 +18,10 @@ Item {
         }
     }
 
-    Behavior on opacity {NumberAnimation {}}
+    Behavior on opacity {
+        NumberAnimation {
+        }
+    }
 
     Item {
         id: item3
@@ -42,13 +45,12 @@ Item {
                     width: 60
                     height: 75
                     onClicked: {
-                        if(locationComponent) {
+                        if (locationComponent) {
                             console.debug(locationComponent.favorite)
                             locationComponent.favorite = !locationComponent.favorite
                         }
                     }
                     Image {
-                        id: image1
                         x: 12
                         y: 19
                         width: 28
@@ -120,7 +122,10 @@ Item {
                     }
 
                     opacity: 0
-                    Behavior on opacity { NumberAnimation {} }
+                    Behavior on opacity {
+                        NumberAnimation {
+                        }
+                    }
                     Image {
                         anchors.fill: parent
                         source: "blue_forward_button_long_bg.png"
@@ -167,7 +172,21 @@ Item {
                     x: 302
                     y: 36
                     color: "#09bcdf"
-                    text: qsTr("3 min")
+                    text: {
+                        var destStr;
+                        if (locationDistance === -1) {
+                            return "N/A";
+                        }
+
+                        if (locationDistance > 1000) {
+                            var dist = Number(locationDistance / 1000).toFixed(1)
+                            destStr = dist + " km"
+                        } else {
+                            destStr = locationDistance + " m"
+                        }
+                        console.debug('distance=', destStr, locationDistance)
+                        return destStr
+                    }
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight
@@ -178,7 +197,7 @@ Item {
                     x: 284
                     y: 58
                     color: "#09bcdf"
-                    text: qsTr("0.2 miles")
+//                    text: qsTr("0.2 miles")
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight

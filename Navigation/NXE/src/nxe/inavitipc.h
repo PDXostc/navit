@@ -41,7 +41,14 @@ struct SearchResult {
 typedef std::vector<SearchResult> SearchResults;
 
 struct PointClicked {
-    typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
+    struct Info{
+        std::string type;
+        std::string label;
+        std::int32_t distance {-1};
+        std::string address;
+    };
+
+    typedef std::vector<Info> ItemArrayType;
     const Position position;
     const ItemArrayType items;
 };

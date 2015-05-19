@@ -120,6 +120,12 @@ NXEInstance::~NXEInstance()
         }
         d->navitProcess->stop();
     }
+
+    // stop destination thread
+    d->distanceThreadShouldRun = false;
+    if (d->distanceThread.joinable()) {
+        d->distanceThread.join();
+    }
 }
 
 void NXEInstance::Initialize()

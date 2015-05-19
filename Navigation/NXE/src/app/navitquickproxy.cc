@@ -1,6 +1,7 @@
 #include "navitquickproxy.h"
 #include "nxe_instance.h"
 #include "alog.h"
+#include "log.h"
 #include "navitdbus.h"
 #include "navitprocessimpl.h"
 #include "gpsdprovider.h"
@@ -53,12 +54,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , mapsProxy(nxeInstance, ctx)
     , m_distance(-1)
     , m_eta(-1)
+    , m_ignoreNextClick(false)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
 
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
         QString name, description;
+        int distance = -1;
 
         // We may have more than one entry on click (town, street and some poi)
         // The order of checking is (the least important is checked sooner)
@@ -66,42 +69,39 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         // 2.) poi
         // 3.) town
 
-        // is this a street ?
-        auto streetIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>& p) -> bool {
-            return boost::algorithm::starts_with(p.first, "street_");
-        });
-        if (streetIter != pc.items.end()) {
-            name = QString::fromStdString(streetIter->second);
+        auto fillItem = [&pc, &name, &description, &distance](const std::string& searchString) {
+            auto iter = std::find_if(pc.items.begin(), pc.items.end(), [&searchString](const NXE::PointClicked::Info& p) -> bool {
+                return boost::algorithm::starts_with(p.type, searchString);
+            });
+            if (iter != pc.items.end()) {
+                name = QString::fromStdString(iter->label);
+                description = QString::fromStdString(iter->address);
+                distance = iter->distance;
+            }
+        };
+
+        fillItem("street_");
+        fillItem("poly_");
+        fillItem("poi_");
+        fillItem("town_label_");
+
+        if (name.isEmpty()) {
+            aError() << "Name of clicked item cannot be empty pc= " << pc;
+            return;
         }
 
-
-        // is this a poi
-        auto poiIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "poi_");
-        });
-        if(poiIter != pc.items.end()) {
-            aDebug() << "we found a POI " << poiIter->second;
-            name = QString::fromStdString(poiIter->second);
-        }
-
-        // is this a town
-        auto townIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "town_label_");
-        });
-        if(townIter != pc.items.end()) {
-            aDebug() << "we found a town " << townIter->second;
-            name = QString::fromStdString(townIter->second);
-        }
-
-        // if name is still empty and we have only one entry
-        if (name.isEmpty() && pc.items.size() == 1) {
-            name = QString::fromStdString(pc.items.front().second);
+        // check if we have proper position
+        auto pos = nxeInstance->gps()->position();
+        if (std::isnan(pos.longitude) || std::isnan(pos.latitude)) {
+            aError() << "We don't have correct position so probably gps is not running";
+            distance = -1;
         }
 
         nxeInstance->ipc()->setTracking(false);
 
-        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
-        auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
+        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude
+                 << " distance = " << distance;
+        auto loc = new LocationProxy { name, false, description, false, -1, distance};
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
@@ -115,9 +115,15 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         });
         m_currentItem.reset(loc);
         emit currentlySelectedItemChanged();
+        m_ignoreNextClick = true;
     });
 
     nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
+        if(m_ignoreNextClick) {
+            aDebug() << "Ignoring next click";
+            m_ignoreNextClick = false;
+            return;
+        }
         if(m_currentItem) {
         aDebug() << "User tapped, dismiss location bar";
             m_currentItem.reset();
@@ -177,7 +183,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     });
 
     nxeInstance->ipc()->distanceResponse().connect([this] (std::int32_t eta) {
-        m_eta = eta;
+        aDebug() << "Eta received " << eta;
+
+        // this is from Navit gui_gtk_statusbar.c
+        time_t _eta = time(NULL) + eta/10;
+        auto remainingEta = _eta - time(NULL);
+        aDebug() << _eta << " rem = " << remainingEta;
+
+        m_eta = remainingEta;
         emit etaChanged();
     });
 

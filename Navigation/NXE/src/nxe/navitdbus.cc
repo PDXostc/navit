@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <map>
+#include <bitset>
 #include <dbus-c++/dbus.h>
 #include "dbus_helpers.hpp"
 
@@ -144,7 +145,7 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
 
     void signalCallback(const ::DBus::SignalMessage& sig)
     {
-        dbusDebug() << "Signal callback";
+        dbusTrace() << "Signal callback";
         inProgress = true;
         ::DBus::MessageIter it = sig.reader();
         std::vector<std::pair<std::string, DBus::Variant> > res;
@@ -177,36 +178,36 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         }) != res.end();
 
         if (isSpeechSignal) {
-            dbusDebug() << "Speech callback";
+            dbusTrace() << "Speech callback";
             auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
                 return val.first == "data";
             });
 
             if (dataIter != res.end()) {
                 std::string data = DBusHelpers::getFromIter<std::string>(dataIter->second.reader());
-                dbusDebug() << " I have to say " << data;
+                dbusTrace() << " I have to say " << data;
                 speechSignal(data);
             }
         }
         else if (isRoutingSignal) {
-            dbusDebug() << "Routing signal!";
+            dbusTrace() << "Routing signal!";
             auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
                 return val.first == "data";
             });
 
             if (dataIter != res.end()) {
                 std::string data = DBusHelpers::getFromIter<std::string>(dataIter->second.reader());
-                dbusDebug() << " Routing data=" << data;
+                dbusTrace() << " Routing data=" << data;
                 routingSignal(data);
             }
         }
         else if (isPointClicked) {
-            dbusDebug() << "Point callback";
+            dbusTrace() << "Point callback";
             auto point = unpackPointClicked(res);
             pointClickedSignal(point);
         }
         else if(isTap) {
-            dbusDebug() << "Tap event received";
+            dbusTrace() << "Tap event received";
             auto point = unpackPointClicked(res);
             tapSignal(point);
         }
@@ -226,25 +227,39 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         dbusDebug() << "Unpacking point";
         double longitude, latitude;
-        std::pair<std::string, std::string> oneEntry;
+        PointClicked::Info oneEntry;
         PointClicked::ItemArrayType items;
+        std::bitset<5> haveItems{0};
         std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
             dbusDebug() << "Entry= " << p.first;
             if (p.first == "click_coord_geo" || p.first == "tap_coord_geo") {
                 std::vector<double> coords = DBusHelpers::getFromIter<std::vector<double>>(p.second.reader());
                 longitude = coords.at(0);
                 latitude = coords.at(1);
+                haveItems.set(0);
             } else if(p.first == "item_type") {
-                oneEntry.first = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                oneEntry.type = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                haveItems.set(1);
             } else if(p.first == "label") {
-                oneEntry.second = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                oneEntry.label = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                haveItems.set(2);
+            } else if(p.first == "curr_position_distance") {
+                oneEntry.distance = DBusHelpers::getFromIter<std::int32_t>(p.second.reader());
+                haveItems.set(3);
+            } else if(p.first == "address") {
+                oneEntry.address = DBusHelpers::getFromIter<std::string>(p.second.reader());
+                haveItems.set(4);
             }
 
-            if (oneEntry.first != "" && oneEntry.second != "") {
-                dbusDebug() << "Adding " << oneEntry.first << " " << oneEntry.second;
+            if (haveItems.all()) {
+                dbusDebug() << "Adding " << oneEntry.type << " " << oneEntry.label
+                            << " dist=" << oneEntry.distance;
                 items.push_back(oneEntry);
-                oneEntry.first = "";
-                oneEntry.second = "";
+                oneEntry.type = "";
+                oneEntry.label = "";
+                oneEntry.distance = 0;
+                oneEntry.address = "";
+                haveItems.reset();
             }
         });
 
@@ -627,7 +642,7 @@ void NavitDBus::quit()
         return;
     }
     dbusDebug() << "Reset spsc";
-    d->spsc_queue.reset();
+//    d->spsc_queue.reset();
     dbusDebug() << "After";
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Quit });
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::_Quit });

@@ -122,6 +122,7 @@ private:
     QScopedPointer<LocationProxy> m_currentItem;
     int m_distance;
     int m_eta;
+    bool m_ignoreNextClick;
 };
 
 #endif // NAVITQUICKPROXY_H
