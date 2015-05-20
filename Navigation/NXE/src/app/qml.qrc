@@ -85,5 +85,9 @@
         <file>qml/nxe-ui/WaypointItem.qml</file>
         <file>qml/nxe-ui/images/navigate_icon_white.png</file>
         <file>qml/nxe-ui/images/blue_forward_button_long_bg.png</file>
+        <file>qml/nxe-ui/CLExpandableDelegate.qml</file>
+        <file>qml/nxe-ui/CLExpandedDelegate.qml</file>
+        <file>qml/nxe-ui/list_toggle_closed_white.png</file>
+        <file>qml/nxe-ui/list_toggle_open_white.png</file>
     </qresource>
 </RCC>

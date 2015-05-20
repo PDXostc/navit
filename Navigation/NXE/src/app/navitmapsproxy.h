@@ -37,6 +37,7 @@ private:
     NXE::MapDownloaderListener mapDownloaderListener;
     std::vector<NXE::MapInfo> m_nxeMaps;
     QQmlContext* m_ctx;
+    std::map<std::string, QObjectList> m_mapsByContinent;
 };
 
 #endif // NAVITMAPSPROXY_H

@@ -92,17 +92,10 @@ Rectangle {
 
     Component {
         id: allCountriesListDelegate
-        CLListDelegate {
-            property string type: 'checkbox'
-            property string itemText: mapName
+        CLExpandableDelegate {
+            continentText: mapName
             property ListModel options: ListModel {}
             width: list.width
-            height: 50
-
-            isDownloaded: downloaded
-            onChecked: {
-                mapEntryClicked(mapName, mapSize)
-            }
         }
     }
 
