@@ -41,6 +41,7 @@ public:
     virtual void distance() override;
     virtual void eta() override;
     virtual void setTracking(bool tracking) override;
+    virtual void zoomToRoute() override;
 
     virtual IntSignalType &orientationResponse() override;
     virtual IntSignalType& zoomResponse() override;

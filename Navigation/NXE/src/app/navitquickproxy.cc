@@ -131,6 +131,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     });
 
     nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
+        aTrace() << "Tap click";
         if(m_ignoreNextClick) {
             aDebug() << "Ignoring next click";
             m_ignoreNextClick = false;
@@ -147,6 +148,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             m_currentItem.reset();
             emit currentlySelectedItemChanged();
         }
+        nxeInstance->ipc()->setTracking(false);
     });
 
 
@@ -550,6 +552,7 @@ void NavitQuickProxy::synchronizeNavit()
     // audio
     nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
     nxeInstance->ipc()->setPitch(m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
+    nxeInstance->ipc()->setTracking(true);
 }
 
 void NavitQuickProxy::reloadQueueSlot(const QString &listName, const QObjectList &list)

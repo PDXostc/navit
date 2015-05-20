@@ -71,7 +71,8 @@ struct DBusQueuedMessage {
         SetTracking,
         Distance,
         Eta,
-        CurrentStreet
+        CurrentStreet,
+        ZoomToRoute
     } type;
     typedef boost::variant<int,
         std::string,
@@ -135,7 +136,8 @@ inline std::ostream& operator<<(std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(SetTracking),
         ENUM(Distance),
         ENUM(Eta),
-        ENUM(CurrentStreet)
+        ENUM(CurrentStreet),
+        ENUM(ZoomToRoute)
     };
     os << mapped.at(t);
     return os;
@@ -459,7 +461,6 @@ struct NavitDBusPrivate {
                         }
                         break;
                     }
-
                     case DBusQueuedMessage::Type::CurrentStreet:
                     {
                         DBus::Message msg = DBusHelpers::call("get_attr", *(trackingObject.get()), std::string{"street_name"});
@@ -469,6 +470,11 @@ struct NavitDBusPrivate {
                         iter >> ss >> v;
                         auto streetName = DBusHelpers::getFromIter<std::string> (v.reader());
                         currentStreetSignal(streetName);
+                        break;
+                    }
+                    case DBusQueuedMessage::Type::ZoomToRoute:
+                    {
+                        DBusHelpers::call("zoom_to_route", *(object.get()));
                         break;
                     }
 
@@ -824,6 +830,12 @@ void NavitDBus::finishSearch()
 void NavitDBus::setTracking(bool tracking)
 {
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetTracking, tracking });
+}
+
+void NavitDBus::zoomToRoute()
+{
+    dbusDebug() << "Zooming to route";
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ZoomToRoute});
 }
 void NavitDBus::distance()
 {

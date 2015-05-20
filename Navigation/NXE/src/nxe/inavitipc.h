@@ -111,6 +111,7 @@ public:
     virtual void distance() = 0;
     virtual void eta() = 0;
     virtual void currentStreet() = 0;
+    virtual void zoomToRoute() = 0;
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
     virtual IntSignalType& zoomResponse() = 0;

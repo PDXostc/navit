@@ -19,6 +19,10 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
 
     nxeInstance->ipc()->navigationChanged().connect([this](bool navi) {
         aInfo() << "Navigation info changed to " << (navi ? "true":"false");
+        if (navi) {
+            aDebug() << "Zoomin to route since navigation is on";
+            nxeInstance->ipc()->zoomToRoute();
+        }
         emit navigationChanged();
     });
 
