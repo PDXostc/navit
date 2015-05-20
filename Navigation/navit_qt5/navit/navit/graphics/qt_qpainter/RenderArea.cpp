@@ -252,6 +252,11 @@ void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 {
     qDebug() << Q_FUNC_INFO;
     mouseEvent(0, event->pos());
+    struct point p;
+
+    p.x = event->pos().x();
+    p.y = event->pos().y();
+    callback_list_call_attr_1(this->cbl, attr_signal_on_map_click_tap,  GINT_TO_POINTER(&p));
 }
 
 //##############################################################################################################
