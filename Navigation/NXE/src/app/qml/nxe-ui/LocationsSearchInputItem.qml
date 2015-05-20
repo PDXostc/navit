@@ -8,6 +8,7 @@ Item {
     height: 300
     property alias model: listViewItem.model
     property int numberOfCharsToStartSearch: 2
+    property string lastSearchedString
 
     signal itemSelected(var itemId, var searchId, string itemText, string itemDescription)
     signal triggerSearch(string searchText)
@@ -58,7 +59,12 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: 5
                 onTextChanged:  {
+                    if(text === lastSearchedString) {
+                        console.debug('Last search string is ', lastSearchedString, ' we will not search for it')
+                        return
+                    }
                     if (text.length >= numberOfCharsToStartSearch) {
+                        lastSearchedString = text
                         triggerSearch(text)
                     }
                 }

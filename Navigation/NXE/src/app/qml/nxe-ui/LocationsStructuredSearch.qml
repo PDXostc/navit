@@ -47,7 +47,7 @@ Page {
     }
 
     Component.onCompleted: {
-        console.debug(selectedItemText)
+        console.debug('creted LSS with selectedItemText=', selectedItemText)
         if (__searchStateId === __CountrySearch) {
             navitProxy.startSearch()
         } else if (__searchStateId === __AddressSearch) {
@@ -114,6 +114,7 @@ Page {
                 navitProxy.searchSelect(__searchSelectTag[__searchStateId], searchId)
                 var nextSearch = __searchStateId + 1
 
+                console.debug('Pushing new LocationSSearch page');
                 searchStackView.push({
                                          item: Qt.resolvedUrl(
                                                    "LocationsStructuredSearch.qml"),

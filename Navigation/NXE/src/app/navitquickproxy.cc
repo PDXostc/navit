@@ -57,6 +57,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
 
+    connect(this, &NavitQuickProxy::reloadQueue, this, &NavitQuickProxy::reloadQueueSlot, Qt::QueuedConnection);
+
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
         QString name, description;
@@ -155,14 +157,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_countriesSearchResults.append(new LocationProxy{ result });
             }
             aDebug() << "Country Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
-            m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
+            emit reloadQueue("countrySearchResult", m_countriesSearchResults);
         }
         else if (type == NXE::INavitIPC::SearchType::City) {
             for (NXE::SearchResult city : results) {
                 m_citiesSearchResults.append(new LocationProxy{ city });
             }
             aDebug() << "City Model size = " << m_citiesSearchResults.size();
-            m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
+            emit reloadQueue("citySearchResult", m_citiesSearchResults);
         }
         else if (type == NXE::INavitIPC::SearchType::Street) {
 
@@ -170,14 +172,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_streetsSearchResults.append(new LocationProxy{ street });
             }
             aDebug() << "Street Model size = " << m_streetsSearchResults.size();
-            m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
+            emit reloadQueue("streetSearchResult", m_streetsSearchResults);
         }
         else if(type == NXE::INavitIPC::SearchType::Address ){
             for (NXE::SearchResult result : results) {
                 m_addressSearchResults.append(new LocationProxy{ result });
             }
             aDebug() << "Address Model size = " << m_addressSearchResults.size();
-            m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
+            emit reloadQueue("addressSearchResult", m_addressSearchResults);
         }
         emit searchDone();
     });
@@ -547,4 +549,9 @@ void NavitQuickProxy::synchronizeNavit()
     // audio
     nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
     nxeInstance->ipc()->setPitch(m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
+}
+
+void NavitQuickProxy::reloadQueueSlot(const QString &listName, const QObjectList &list)
+{
+    m_rootContext->setContextProperty(listName, QVariant::fromValue(list));
 }

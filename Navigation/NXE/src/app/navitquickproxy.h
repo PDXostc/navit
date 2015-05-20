@@ -62,6 +62,8 @@ signals:
     void waypointItemChanged();
     void topBarLocationVisibleChanged();
 
+    void reloadQueue(const QString&, const QObjectList& l);
+
 public slots:
     void render();
     void reset();
@@ -90,6 +92,8 @@ public slots:
 private slots:
     void initNavit();
     void synchronizeNavit();
+
+    void reloadQueueSlot(const QString& listName, const QObjectList& list);
 private:
 
     std::shared_ptr<Context> context;

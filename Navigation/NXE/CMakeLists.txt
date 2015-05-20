@@ -61,7 +61,7 @@ if(NOT DISABLE_TESTS)
     enable_testing()
 endif()
 
-set(boost_components system filesystem thread chrono iostreams timer)
+set(boost_components system filesystem thread iostreams)
 
 # find Boost
 find_package(Boost 1.57.0 REQUIRED COMPONENTS ${boost_components})
