@@ -138,6 +138,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             return;
         }
 
+        // even if it's in navigation, we allow free map mode
+        nxeInstance->ipc()->setTracking(false);
+
         if(navigationProxy.navigation()) {
             // hey dude, don't dismiss navigation!
             return;
@@ -148,7 +151,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             m_currentItem.reset();
             emit currentlySelectedItemChanged();
         }
-        nxeInstance->ipc()->setTracking(false);
     });
 
 
