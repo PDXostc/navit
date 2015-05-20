@@ -132,11 +132,10 @@ SYSTEM "navit.dtd">
         <osd enabled="no" type="button" x="-96" y="-96" command="zoom_in()" src="zoom_in.svg"/>
         <osd enabled="no" type="button" x="36" y="-96" command="zoom_out()" src="zoom_out.svg"/>
 
-        <vehicle name="Local GPS" profilename="car" enabled="yes" active="1" source="gpsd://localhost" gpsd_query="w+xj">
+        <vehicle name="Local GPS" profilename="car" enabled="yes" active="1" follow="1" source="gpsd://localhost" gpsd_query="w+xj">
             <log enabled="no" type="gpx" attr_types="position_time_iso8601,position_direction,position_speed,profilename,position_radius" data="track_%Y%m%d-%%i.gpx" flush_size="1000" flush_time="30"/>
         </vehicle>
 
-        <vehicle name="Demo" profilename="car" enabled="no" active="yes" source="demo://"/>
         <tracking cdf_histsize="0"/>
         <vehicleprofile name="car" route_depth="4:25%,8:40000,18:10000" flags="0x4000000" flags_forward_mask="0x4000002" flags_reverse_mask="0x4000001" maxspeed_handling="0" route_mode="0" static_speed="5" static_distance="25">
             <roadprofile item_types="street_0,street_1_city,living_street,street_service,track_gravelled,track_unpaved,street_parking_lane" speed="10" route_weight="10">
@@ -633,7 +632,7 @@ SYSTEM "navit.dtd">
                     <text text_size="5" />
                 </itemgra>
                 <itemgra item_types="poly_park" order="11-">
-                    <polygon color="#7cc334" />
+                    <polygon color="#BADFC0" />
                     <text text_size="5" />
                 </itemgra>
                 <itemgra item_types="poly_pedestrian" order="14">
@@ -693,10 +692,10 @@ SYSTEM "navit.dtd">
                     <polygon color="#e3c6a6" />
                 </itemgra>
                 <itemgra item_types="poly_car_parking" order="15-">
-                    <polygon color="#e7cf87" />
+                    <polygon color="#F8E7B9" />
                 </itemgra>
                 <itemgra item_types="poly_building" order="14-">
-                    <polygon color="#b6a6a6" />
+                    <polygon color="#dfdcd7" />
                 </itemgra>
                 <itemgra item_types="rail" order="13-">
                     <polyline color="#696969" width="3" />
@@ -756,7 +755,7 @@ SYSTEM "navit.dtd">
                     <polyline color="#0070c0" width="6" />
                 </itemgra>
                 <itemgra item_types="forest_way_2" order="14-">
-                    <polyline color="#ff0000" width="3" />
+                    <polyline color="#D0D2BF" width="3" />
                 </itemgra>
                 <itemgra item_types="forest_way_3" order="14-">
                     <polyline color="#ff0000" width="1" dash="2,4" />
@@ -904,62 +903,62 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="11-12">
                     <polyline color="#c0c0c0" width="9" />
-                    <polyline color="#fefc8c" width="7" />
+                    <polyline color="#F2EB9F" width="7" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="13-14">
                     <polyline color="#c0c0c0" width="13" />
-                    <polyline color="#fefc8c" width="11" />
+                    <polyline color="#F2EB9F" width="11" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="15">
                     <polyline color="#c0c0c0" width="19" />
-                    <polyline color="#fefc8c" width="15" />
+                    <polyline color="#F2EB9F" width="15" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="16">
                     <polyline color="#c0c0c0" width="30" />
-                    <polyline color="#fefc8c" width="26" />
+                    <polyline color="#F2EB9F" width="26" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="17">
                     <polyline color="#c0c0c0" width="63" />
-                    <polyline color="#fefc8c" width="57" />
+                    <polyline color="#F2EB9F" width="57" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="18">
                     <polyline color="#c0c0c0" width="100" />
-                    <polyline color="#fefc8c" width="90" />
+                    <polyline color="#F2EB9F" width="90" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="11-12">
                     <polyline color="#a0a0a0" width="9" />
-                    <polyline color="#fefc8c" width="7" />
+                    <polyline color="#F2EB9F" width="7" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="13-14">
                     <polyline color="#a0a0a0" width="21" />
-                    <polyline color="#fefc8c" width="17" />
+                    <polyline color="#F2EB9F" width="17" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="15">
                     <polyline color="#a0a0a0" width="25" />
-                    <polyline color="#fefc8c" width="21" />
+                    <polyline color="#F2EB9F" width="21" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="16">
                     <polyline color="#a0a0a0" width="40" />
-                    <polyline color="#fefc8c" width="34" />
+                    <polyline color="#F2EB9F" width="34" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="17">
                     <polyline color="#a0a0a0" width="79" />
-                    <polyline color="#fefc8c" width="73" />
+                    <polyline color="#F2EB9F" width="73" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="18">
                     <polyline color="#a0a0a0" width="156" />
-                    <polyline color="#fefc8c" width="150" />
+                    <polyline color="#F2EB9F" width="150" />
                 </itemgra>
                 <itemgra item_types="street_4_city,street_4_land,street_n_lanes"
                     order="2-6">
@@ -1019,67 +1018,66 @@ SYSTEM "navit.dtd">
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="0-1">
-                    <polyline color="#fc843b" width="1" />
+		    <polyline color="#556F9A" width="0.75" />
+                    <polyline color="#C6D5F6" width="0.35" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="2">
-                    <polyline color="#fc843b" width="3" />
+		    <polyline color="#556F9A" width="2.25" />
+                    <polyline color="#C6D5F6" width="1.2" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="3-5">
-                    <polyline color="#fc843b" width="6" />
+		    <polyline color="#556F9A" width="4.5" />
+                    <polyline color="#C6D5F6" width="2.25" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="6">
-                    <polyline color="#fc843b" width="6" />
+                    <polyline color="#556F9A" width="6" />
+                    <polyline color="#C6D5F6" width="3" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="7-8">
-                    <polyline color="#fc843b" width="6" />
+                    <polyline color="#556F9A" width="6" />
+                    <polyline color="#C6D5F6" width="3" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="9">
-                    <polyline color="#fc843b" width="7" />
+                    <polyline color="#556F9A" width="5" />
+                    <polyline color="#C6D5F6" width="2.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="10">
-                    <polyline color="#fc843b" width="9" />
+                    <polyline color="#556F9A" width="10" />
+                    <polyline color="#C6D5F6" width="5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="11">
-                    <polyline color="#a8aab3" width="13" />
-                    <polyline color="#fc843b" width="9" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="13" />
+                    <polyline color="#C6D5F6" width="6.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="12">
-                    <polyline color="#a8aab3" width="15" />
-                    <polyline color="#fc843b" width="10" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="11" />
+                    <polyline color="#C6D5F6" width="5.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="13">
-                    <polyline color="#a8aab3" width="25" />
-                    <polyline color="#fc843b" width="17" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="19" />
+                    <polyline color="#C6D5F6" width="9.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="14">
-                    <polyline color="#a8aab3" width="31" />
-                    <polyline color="#fc843b" width="24" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="25" />
+                    <polyline color="#C6D5F6" width="12,5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="15">
-                    <polyline color="#a8aab3" width="33" />
-                    <polyline color="#fc843b" width="27" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="33" />
+                    <polyline color="#C6D5F6" width="16.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="16">
-                    <polyline color="#a8aab3" width="65" />
-                    <polyline color="#fc843b" width="59" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="49" />
+                    <polyline color="#C6D5F6" width="24.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="17">
-                    <polyline color="#a8aab3" width="133" />
-                    <polyline color="#fc843b" width="127" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="100" />
+                    <polyline color="#C6D5F6" width="50" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="18">
-                    <polyline color="#a8aab3" width="264" />
-                    <polyline color="#fc843b" width="258" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="198" />
+                    <polyline color="#C6D5F6" width="98" />
                 </itemgra>
                 <itemgra item_types="highway_exit_label" order="13-">
                     <circle color="#000000" radius="3" text_size="7" />
@@ -1097,56 +1095,56 @@ SYSTEM "navit.dtd">
                     <text text_size="9" />
                 </itemgra>
 		<itemgra item_types="street_route" order="2">
-                    <polyline color="#00A7B0" width="4" />
-	    	    <polyline color="#6EF8FF" width="0.5" />
+                    <polyline color="#53B5CE" width="4" />
+	    	    <polyline color="#B2F0FF" width="0.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="3-5">
-                    <polyline color="#00A7B0" width="6" />
-	    	    <polyline color="#6EF8FF" width="1" />
+                    <polyline color="#53B5CE" width="6" />
+	    	    <polyline color="#B2F0FF" width="1" />
                 </itemgra>
                 <itemgra item_types="street_route" order="6">
-                    <polyline color="#00A7B0" width="8" />
-	    	    <polyline color="#6EF8FF" width="1.5" />
+                    <polyline color="#53B5CE" width="8" />
+	    	    <polyline color="#B2F0FF" width="1.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="7-8">
-                    <polyline color="#00A7B0" width="10" />
-	    	    <polyline color="#6EF8FF" width="2" />
+                    <polyline color="#53B5CE" width="10" />
+	    	    <polyline color="#B2F0FF" width="2" />
                 </itemgra>
                 <itemgra item_types="street_route" order="9-10">
-                    <polyline color="#00A7B0" width="12" />
-	    	    <polyline color="#6EF8FF" width="2.5" />
+                    <polyline color="#53B5CE" width="12" />
+	    	    <polyline color="#B2F0FF" width="2.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="11">
-                    <polyline color="#00A7B0" width="14" />
-	    	    <polyline color="#6EF8FF" width="3" />
+                    <polyline color="#53B5CE" width="14" />
+	    	    <polyline color="#B2F0FF" width="3" />
                 </itemgra>
                 <itemgra item_types="street_route" order="12">
-                    <polyline color="#00A7B0" width="16" />
-	    	    <polyline color="#6EF8FF" width="3.5" />
+                    <polyline color="#53B5CE" width="16" />
+	    	    <polyline color="#B2F0FF" width="3.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="13">
-                    <polyline color="#00A7B0" width="18" />
-	    	    <polyline color="#6EF8FF" width="4" />
+                    <polyline color="#53B5CE" width="18" />
+	    	    <polyline color="#B2F0FF" width="4" />
                 </itemgra>
                 <itemgra item_types="street_route" order="14">
-                    <polyline color="#00A7B0" width="20" />
-	    	    <polyline color="#6EF8FF" width="4.5" />
+                    <polyline color="#53B5CE" width="20" />
+	    	    <polyline color="#B2F0FF" width="4.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="15">
-                    <polyline color="#00A7B0" width="22" />
-	    	    <polyline color="#6EF8FF" width="5" />
+                    <polyline color="#53B5CE" width="22" />
+	    	    <polyline color="#B2F0FF" width="5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="16">
-                    <polyline color="#00A7B0" width="24" />
-	    	    <polyline color="#6EF8FF" width="5.5" />
+                    <polyline color="#53B5CE" width="24" />
+	    	    <polyline color="#B2F0FF" width="5.5" />
                 </itemgra>
                 <itemgra item_types="street_route" order="17">
-                    <polyline color="#00A7B0" width="20" />
-	    	    <polyline color="#6EF8FF" width="6" />
+                    <polyline color="#53B5CE" width="20" />
+	    	    <polyline color="#B2F0FF" width="6" />
                 </itemgra>
                 <itemgra item_types="street_route" order="18">
-                    <polyline color="#00A7B0" width="28" />
-	    	    <polyline color="#6EF8FF" width="6.5" />
+                    <polyline color="#53B5CE" width="28" />
+	    	    <polyline color="#B2F0FF" width="6.5" />
                 </itemgra>
                 <itemgra item_types="traffic_distortion" order="7-8">
                     <polyline color="#ff9000" width="8" />
@@ -1985,7 +1983,7 @@ SYSTEM "navit.dtd">
                     <text text_size="5" />
                 </itemgra>
                 <itemgra item_types="poly_park" order="14-">
-                    <polygon color="#7cc334" />
+                    <polygon color="#BADFC0" />
                     <text text_size="5" />
                 </itemgra>
                 <itemgra item_types="poly_pedestrian" order="14">
@@ -2045,10 +2043,10 @@ SYSTEM "navit.dtd">
                     <polygon color="#e3c6a6" />
                 </itemgra>
                 <itemgra item_types="poly_car_parking" order="15-">
-                    <polygon color="#e7cf87" />
+                    <polygon color="#F8E7B9" />
                 </itemgra>
                 <itemgra item_types="poly_building" order="14-">
-                    <polygon color="#b6a6a6" />
+                    <polygon color="#dfdcd7" />
                 </itemgra>
                 <itemgra item_types="rail" order="13-">
                     <polyline color="#696969" width="3" />
@@ -2108,10 +2106,10 @@ SYSTEM "navit.dtd">
                     <polyline color="#0070c0" width="6" />
                 </itemgra>
                 <itemgra item_types="forest_way_2" order="14-">
-                    <polyline color="#ff0000" width="3" />
+                    <polyline color="#D0D2BF" width="3" />
                 </itemgra>
                 <itemgra item_types="forest_way_3" order="14-">
-                    <polyline color="#ff0000" width="1" dash="2,4" />
+                    <polyline color="#D0D2BF" width="1" dash="2,4" />
                 </itemgra>
                 <itemgra item_types="forest_way_4" order="14-">
                     <polyline color="#119a2e" width="1" dash="4,10" />
@@ -2256,62 +2254,62 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="11-12">
                     <polyline color="#c0c0c0" width="9" />
-                    <polyline color="#fefc8c" width="7" />
+                    <polyline color="#F2EB9F" width="7" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="13-14">
                     <polyline color="#c0c0c0" width="13" />
-                    <polyline color="#fefc8c" width="11" />
+                    <polyline color="#F2EB9F" width="11" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="15">
                     <polyline color="#c0c0c0" width="19" />
-                    <polyline color="#fefc8c" width="15" />
+                    <polyline color="#F2EB9F" width="15" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="16">
                     <polyline color="#c0c0c0" width="30" />
-                    <polyline color="#fefc8c" width="26" />
+                    <polyline color="#F2EB9F" width="26" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="17">
                     <polyline color="#c0c0c0" width="63" />
-                    <polyline color="#fefc8c" width="57" />
+                    <polyline color="#F2EB9F" width="57" />
                 </itemgra>
                 <itemgra item_types="street_2_city,street_2_land,ramp"
                     order="18">
                     <polyline color="#c0c0c0" width="100" />
-                    <polyline color="#fefc8c" width="90" />
+                    <polyline color="#F2EB9F" width="90" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="11-12">
                     <polyline color="#a0a0a0" width="9" />
-                    <polyline color="#fefc8c" width="7" />
+                    <polyline color="#F2EB9F" width="7" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="13-14">
                     <polyline color="#a0a0a0" width="21" />
-                    <polyline color="#fefc8c" width="17" />
+                    <polyline color="#F2EB9F" width="17" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="15">
                     <polyline color="#a0a0a0" width="25" />
-                    <polyline color="#fefc8c" width="21" />
+                    <polyline color="#F2EB9F" width="21" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="16">
                     <polyline color="#a0a0a0" width="40" />
-                    <polyline color="#fefc8c" width="34" />
+                    <polyline color="#F2EB9F" width="34" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="17">
                     <polyline color="#a0a0a0" width="79" />
-                    <polyline color="#fefc8c" width="73" />
+                    <polyline color="#F2EB9F" width="73" />
                 </itemgra>
                 <itemgra item_types="street_3_city,street_3_land,roundabout"
                     order="18">
                     <polyline color="#a0a0a0" width="156" />
-                    <polyline color="#fefc8c" width="150" />
+                    <polyline color="#F2EB9F" width="150" />
                 </itemgra>
                 <itemgra item_types="street_4_city,street_4_land,street_n_lanes"
                     order="2-6">
@@ -2371,71 +2369,67 @@ SYSTEM "navit.dtd">
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="0-1">
-                    <polyline color="#fc843b" width="1" />
+		    <polyline color="#556F9A" width="1" />
+                    <polyline color="#C6D5F6" width="0.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="2">
-                    <polyline color="#fc843b" width="3" />
+		    <polyline color="#556F9A" width="3" />
+                    <polyline color="#C6D5F6" width="1.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="3-5">
-                    <polyline color="#fc843b" width="6" />
+		    <polyline color="#556F9A" width="6" />
+                    <polyline color="#C6D5F6" width="3" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="6">
-                    <polyline color="#fc843b" width="6" />
+                    <polyline color="#556F9A" width="6" />
+                    <polyline color="#C6D5F6" width="3" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land"
                     order="7-8">
-                    <polyline color="#fc843b" width="6" />
+                    <polyline color="#556F9A" width="6" />
+                    <polyline color="#C6D5F6" width="3" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="9">
-                    <polyline color="#fc843b" width="7" />
+                    <polyline color="#556F9A" width="7" />
+                    <polyline color="#C6D5F6" width="3.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="10">
-                    <polyline color="#fc843b" width="9" />
+                    <polyline color="#556F9A" width="9" />
+                    <polyline color="#C6D5F6" width="4.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="11">
-                    <polyline color="#a8aab3" width="13" />
-                    <polyline color="#fc843b" width="9" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="13" />
+                    <polyline color="#C6D5F6" width="6.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="12">
-                    <polyline color="#a8aab3" width="15" />
-                    <polyline color="#fc843b" width="10" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="15" />
+                    <polyline color="#C6D5F6" width="7.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="13">
-                    <polyline color="#a8aab3" width="25" />
-                    <polyline color="#fc843b" width="17" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="25" />
+                    <polyline color="#C6D5F6" width="12.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="14">
-                    <polyline color="#a8aab3" width="31" />
-                    <polyline color="#fc843b" width="24" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="31" />
+                    <polyline color="#C6D5F6" width="15.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="15">
-                    <polyline color="#a8aab3" width="33" />
-                    <polyline color="#fc843b" width="27" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="33" />
+                    <polyline color="#C6D5F6" width="16.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="16">
-                    <polyline color="#a8aab3" width="65" />
-                    <polyline color="#fc843b" width="59" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="65" />
+                    <polyline color="#C6D5F6" width="30.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="17">
-                    <polyline color="#a8aab3" width="133" />
-                    <polyline color="#fc843b" width="127" />
-                    <polyline color="#a8aab3" width="1" />
+                    <polyline color="#556F9A" width="133" />
+                    <polyline color="#C6D5F6" width="66.5" />
                 </itemgra>
                 <itemgra item_types="highway_city,highway_land" order="18">
-                    <polyline color="#a8aab3" width="264" />
-                    <polyline color="#fc843b" width="258" />
-                    <polyline color="#a8aab3" width="1" />
-                </itemgra>
-                <itemgra item_types="highway_exit_label" order="13-">
-                    <circle color="#000000" radius="3" text_size="7" />
-                </itemgra>
+                    <polyline color="#556F9A" width="264" />
+                    <polyline color="#C6D5F6" width="132" />
+		</itemgra>
                 <itemgra item_types="highway_city,highway_land,street_4_city,street_4_land,street_n_lanes,living_street"
                     order="13-18">
                     <text text_size="8" />
