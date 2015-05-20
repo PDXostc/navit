@@ -66,7 +66,6 @@ overlay_rect(struct graphics_priv *parent, struct graphics_priv *overlay, int cl
 void
 qt_qpainter_draw(struct graphics_priv *gr, const QRect *r, int paintev)
 {
-    qDebug() << Q_FUNC_INFO;
 	if (!paintev) {
 #ifndef QT_QPAINTER_NO_WIDGET
 		dbg(lvl_debug,"update %d,%d %d x %d\n", r->x(), r->y(), r->width(), r->height());
@@ -153,7 +152,6 @@ static void graphics_destroy(struct graphics_priv *gr)
     if (gr == event_gr) {
         event_gr = 0;
     }
-    qDebug() << Q_FUNC_INFO << gr;
     delete gr->widget;
     gr->widget = 0;
 #ifdef QT_QPAINTER_USE_FREETYPE
@@ -517,7 +515,6 @@ static void background_gc(struct graphics_priv *gr, struct graphics_gc_priv *gc)
 //##############################################################################################################
 static void draw_mode(struct graphics_priv *gr, enum draw_mode_num mode)
 {
-    qDebug() << gr << mode;
 	dbg(lvl_debug,"mode for %p %d\n", gr, mode);
 	QRect r;
 	if (mode == draw_mode_begin) {
@@ -576,11 +573,9 @@ fullscreen(struct window *win, int on)
 
 #endif /* QT_QPAINTER_USE_EMBEDDING */
     if (on) {
-        qDebug() << "Fullscreen";
         _outerWidget->showFullScreen();
     }
     else {
-        qDebug() << "Maximized";
         _outerWidget->showMaximized();
     }
 #endif
@@ -629,7 +624,6 @@ static void * get_data(struct graphics_priv *this_, const char *type)
         _outerWidget->show();
 #endif /* QT_QPAINTER_USE_EMBEDDING */
         if (this_->w && this_->h) {
-//            qDebug() << "show" << this_->w << this_->h;
             this_->widget->setGeometry(0,0,1060, 1000);
             this_->widget->show();
         }
@@ -755,7 +749,6 @@ static struct graphics_priv * overlay_new(struct graphics_priv *gr, struct graph
 	}
 #endif
 	ret->widget= new RenderArea(ret,gr->widget,w,h,1);
-    qDebug() << "New widget" << ret->widget;
     ret->wraparound=wraparound;
 	ret->painter=new QPainter;
 	ret->p=*p;
@@ -775,14 +768,11 @@ static struct graphics_priv * overlay_new(struct graphics_priv *gr, struct graph
 static void
 event_qt_main_loop_run(void)
 {
-    qDebug() << Q_FUNC_INFO;
     event_gr->app->exec();
-    qDebug() << "Finished";
 }
 
 static void event_qt_main_loop_quit(void)
 {
-    qDebug() << Q_FUNC_INFO;
 	dbg(lvl_debug,"enter\n");
 	exit(0);
 }
@@ -939,7 +929,6 @@ static struct graphics_priv * graphics_qt_qpainter_new(struct navit *nav, struct
 	ret->painter = new QPainter;
 #ifdef QT_QPAINTER_USE_EVENT_QT
 	event_gr=ret;
-    qDebug() << "event_gr" << event_gr << "widget=" << ret->widget << event_gr->widget;
 #endif
     ret->w=800;
     ret->h=600;
