@@ -52,7 +52,7 @@ Item {
 
                         Image {
                             anchors.centerIn: parent
-                            source: "star_icon_empty_grey.png"
+                            source: "navigate_icon_white.png"
                             sourceSize.height: 32
                             sourceSize.width: 32
                         }

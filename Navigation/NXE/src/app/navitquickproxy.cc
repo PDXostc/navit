@@ -84,6 +84,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         fillItem("street_");
         fillItem("poly_");
         fillItem("poi_");
+        fillItem("house_");
         fillItem("town_label_");
 
         if (name.isEmpty()) {

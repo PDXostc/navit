@@ -26,8 +26,7 @@ Rectangle {
             width: parent.width
             height: 50
             onLocationClicked: {
-                console.debug('Location clicked')
-                navitProxy.setLocationPopUp(id)
+                navitProxy.setLocationPopUp(itemId)
                 rootStack.pop();
             }
         }
