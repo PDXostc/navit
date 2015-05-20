@@ -596,52 +596,21 @@ SYSTEM "navit.dtd">
         </layer>
 
         <layout name="Car-JLR" color="#fef9ee" font="Liberation Sans">
-            <cursor w="49" h="49">
-                <itemgra speed_range="-2">
-                    <polyline color="#00BC00" radius="0" width="4">
-                        <coord x="0" y="0" />
-                    </polyline>
-                    <circle color="#008500" radius="9" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                    <circle color="#00BC00" radius="13" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                    <circle color="#008500" radius="18" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                </itemgra>
-                <itemgra speed_range="3-">
-                    <polygon color="#00000066">
-                        <coord x="-21" y="-27" />
-                        <coord x="0" y="12" />
-                        <coord x="21" y="-27" />
-                        <coord x="0" y="-12" />
-                        <coord x="-21" y="-27" />
+             <cursor w="49" h="49">
+                <itemgra speed_range="0-">
+                    <polygon color="#000001">
+                        <coord x="-18" y="-18" />
+			<coord x="0" y="-6" />
+                        <coord x="18" y="-18" />
+                        <coord x="0" y="21" />
+                        <coord x="-18" y="-18" />
                     </polygon>
-                    <polygon color="#008500">
-                        <coord x="-21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="-21" y="-18" />
-                    </polygon>
-                    <polygon color="#00BC00">
-                        <coord x="21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="21" y="-18" />
-                    </polygon>
-                    <polyline color="#008500" width="1">
-                        <coord x="-21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="-21" y="-18" />
-                    </polyline>
-                    <polyline color="#008500" width="1">
-                        <coord x="21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="21" y="-18" />
+		    <polyline color="#ffffff" width="3">
+                        <coord x="-19" y="-19" />
+			<coord x="0" y="-7" />
+                        <coord x="19" y="-19" />
+                        <coord x="0" y="22" />
+                        <coord x="-19" y="-19" />
                     </polyline>
                 </itemgra>
             </cursor>
@@ -744,45 +713,6 @@ SYSTEM "navit.dtd">
                 </itemgra>
             </layer>
             <layer name="streets">
-                <itemgra item_types="street_route" order="2">
-                    <polyline color="#69e068" width="8" />
-                </itemgra>
-                <itemgra item_types="street_route" order="3-5">
-                    <polyline color="#69e068" width="10" />
-                </itemgra>
-                <itemgra item_types="street_route" order="6">
-                    <polyline color="#69e068" width="12" />
-                </itemgra>
-                <itemgra item_types="street_route" order="7-8">
-                    <polyline color="#69e068" width="16" />
-                </itemgra>
-                <itemgra item_types="street_route" order="9-10">
-                    <polyline color="#69e068" width="20" />
-                </itemgra>
-                <itemgra item_types="street_route" order="11">
-                    <polyline color="#69e068" width="28" />
-                </itemgra>
-                <itemgra item_types="street_route" order="12">
-                    <polyline color="#69e068" width="32" />
-                </itemgra>
-                <itemgra item_types="street_route" order="13">
-                    <polyline color="#69e068" width="52" />
-                </itemgra>
-                <itemgra item_types="street_route" order="14">
-                    <polyline color="#69e068" width="64" />
-                </itemgra>
-                <itemgra item_types="street_route" order="15">
-                    <polyline color="#69e068" width="68" />
-                </itemgra>
-                <itemgra item_types="street_route" order="16">
-                    <polyline color="#69e068" width="132" />
-                </itemgra>
-                <itemgra item_types="street_route" order="17">
-                    <polyline color="#69e068" width="268" />
-                </itemgra>
-                <itemgra item_types="street_route" order="18">
-                    <polyline color="#69e068" width="530" />
-                </itemgra>
                 <itemgra item_types="selected_line" order="2">
                     <polyline color="#ba00b8" width="4" />
                 </itemgra>
@@ -1165,6 +1095,58 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="street_nopass,street_0,street_1_city,street_1_land,footway"
                     order="13-18">
                     <text text_size="9" />
+                </itemgra>
+		<itemgra item_types="street_route" order="2">
+                    <polyline color="#00A7B0" width="4" />
+	    	    <polyline color="#6EF8FF" width="0.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="3-5">
+                    <polyline color="#00A7B0" width="6" />
+	    	    <polyline color="#6EF8FF" width="1" />
+                </itemgra>
+                <itemgra item_types="street_route" order="6">
+                    <polyline color="#00A7B0" width="8" />
+	    	    <polyline color="#6EF8FF" width="1.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="7-8">
+                    <polyline color="#00A7B0" width="10" />
+	    	    <polyline color="#6EF8FF" width="2" />
+                </itemgra>
+                <itemgra item_types="street_route" order="9-10">
+                    <polyline color="#00A7B0" width="12" />
+	    	    <polyline color="#6EF8FF" width="2.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="11">
+                    <polyline color="#00A7B0" width="14" />
+	    	    <polyline color="#6EF8FF" width="3" />
+                </itemgra>
+                <itemgra item_types="street_route" order="12">
+                    <polyline color="#00A7B0" width="16" />
+	    	    <polyline color="#6EF8FF" width="3.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="13">
+                    <polyline color="#00A7B0" width="18" />
+	    	    <polyline color="#6EF8FF" width="4" />
+                </itemgra>
+                <itemgra item_types="street_route" order="14">
+                    <polyline color="#00A7B0" width="20" />
+	    	    <polyline color="#6EF8FF" width="4.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="15">
+                    <polyline color="#00A7B0" width="22" />
+	    	    <polyline color="#6EF8FF" width="5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="16">
+                    <polyline color="#00A7B0" width="24" />
+	    	    <polyline color="#6EF8FF" width="5.5" />
+                </itemgra>
+                <itemgra item_types="street_route" order="17">
+                    <polyline color="#00A7B0" width="20" />
+	    	    <polyline color="#6EF8FF" width="6" />
+                </itemgra>
+                <itemgra item_types="street_route" order="18">
+                    <polyline color="#00A7B0" width="28" />
+	    	    <polyline color="#6EF8FF" width="6.5" />
                 </itemgra>
                 <itemgra item_types="traffic_distortion" order="7-8">
                     <polyline color="#ff9000" width="8" />
@@ -1967,51 +1949,20 @@ SYSTEM "navit.dtd">
 
         <layout name="Car-JLR-nopoi" color="#fef9ee" font="Liberation Sans">
             <cursor w="49" h="49">
-                <itemgra speed_range="-2">
-                    <polyline color="#00BC00" radius="0" width="4">
-                        <coord x="0" y="0" />
-                    </polyline>
-                    <circle color="#008500" radius="9" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                    <circle color="#00BC00" radius="13" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                    <circle color="#008500" radius="18" width="3">
-                        <coord x="0" y="0" />
-                    </circle>
-                </itemgra>
-                <itemgra speed_range="3-">
-                    <polygon color="#00000066">
-                        <coord x="-21" y="-27" />
-                        <coord x="0" y="12" />
-                        <coord x="21" y="-27" />
-                        <coord x="0" y="-12" />
-                        <coord x="-21" y="-27" />
+                <itemgra speed_range="0-">
+                    <polygon color="#000001">
+                        <coord x="-18" y="-18" />
+			<coord x="0" y="-6" />
+                        <coord x="18" y="-18" />
+                        <coord x="0" y="21" />
+                        <coord x="-18" y="-18" />
                     </polygon>
-                    <polygon color="#008500">
-                        <coord x="-21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="-21" y="-18" />
-                    </polygon>
-                    <polygon color="#00BC00">
-                        <coord x="21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="21" y="-18" />
-                    </polygon>
-                    <polyline color="#008500" width="1">
-                        <coord x="-21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="-21" y="-18" />
-                    </polyline>
-                    <polyline color="#008500" width="1">
-                        <coord x="21" y="-18" />
-                        <coord x="0" y="21" />
-                        <coord x="0" y="-3" />
-                        <coord x="21" y="-18" />
+		    <polyline color="#ffffff" width="3">
+                        <coord x="-19" y="-19" />
+			<coord x="0" y="-7" />
+                        <coord x="19" y="-19" />
+                        <coord x="0" y="22" />
+                        <coord x="-19" y="-19" />
                     </polyline>
                 </itemgra>
             </cursor>
@@ -2114,45 +2065,6 @@ SYSTEM "navit.dtd">
                 </itemgra>
             </layer>
             <layer name="streets">
-                <itemgra item_types="street_route" order="2">
-                    <polyline color="#69e068" width="8" />
-                </itemgra>
-                <itemgra item_types="street_route" order="3-5">
-                    <polyline color="#69e068" width="10" />
-                </itemgra>
-                <itemgra item_types="street_route" order="6">
-                    <polyline color="#69e068" width="12" />
-                </itemgra>
-                <itemgra item_types="street_route" order="7-8">
-                    <polyline color="#69e068" width="16" />
-                </itemgra>
-                <itemgra item_types="street_route" order="9-10">
-                    <polyline color="#69e068" width="20" />
-                </itemgra>
-                <itemgra item_types="street_route" order="11">
-                    <polyline color="#69e068" width="28" />
-                </itemgra>
-                <itemgra item_types="street_route" order="12">
-                    <polyline color="#69e068" width="32" />
-                </itemgra>
-                <itemgra item_types="street_route" order="13">
-                    <polyline color="#69e068" width="52" />
-                </itemgra>
-                <itemgra item_types="street_route" order="14">
-                    <polyline color="#69e068" width="64" />
-                </itemgra>
-                <itemgra item_types="street_route" order="15">
-                    <polyline color="#69e068" width="68" />
-                </itemgra>
-                <itemgra item_types="street_route" order="16">
-                    <polyline color="#69e068" width="132" />
-                </itemgra>
-                <itemgra item_types="street_route" order="17">
-                    <polyline color="#69e068" width="268" />
-                </itemgra>
-                <itemgra item_types="street_route" order="18">
-                    <polyline color="#69e068" width="530" />
-                </itemgra>
                 <itemgra item_types="selected_line" order="2">
                     <polyline color="#ba00b8" width="4" />
                 </itemgra>
@@ -2536,6 +2448,45 @@ SYSTEM "navit.dtd">
                     order="13-18">
                     <text text_size="9" />
                 </itemgra>
+	        <itemgra item_types="street_oe" order="2">
+                    <polyline color="#69e068" width="8" />
+                </itemgra>
+                <itemgra item_types="street_route" order="3-5">
+                    <polyline color="#69e068" width="10" />
+                </itemgra>
+                <itemgra item_types="street_route" order="6">
+                    <polyline color="#69e068" width="12" />
+                </itemgra>
+                <itemgra item_types="street_route" order="7-8">
+                    <polyline color="#69e068" width="16" />
+                </itemgra>
+                <itemgra item_types="street_route" order="9-10">
+                    <polyline color="#69e068" width="20" />
+                </itemgra>
+                <itemgra item_types="street_route" order="11">
+                    <polyline color="#69e068" width="28" />
+                </itemgra>
+                <itemgra item_types="street_route" order="12">
+                    <polyline color="#69e068" width="32" />
+                </itemgra>
+                <itemgra item_types="street_route" order="13">
+                    <polyline color="#69e068" width="52" />
+                </itemgra>
+                <itemgra item_types="street_route" order="14">
+                    <polyline color="#69e068" width="64" />
+                </itemgra>
+                <itemgra item_types="street_route" order="15">
+                    <polyline color="#69e068" width="68" />
+                </itemgra>
+                <itemgra item_types="street_route" order="16">
+                    <polyline color="#69e068" width="132" />
+                </itemgra>
+                <itemgra item_types="street_route" order="17">
+                    <polyline color="#69e068" width="268" />
+                </itemgra>
+                <itemgra item_types="street_route" order="18">
+                    <polyline color="#69e068" width="530" />
+                </itemgra>
                 <itemgra item_types="traffic_distortion" order="7-8">
                     <polyline color="#ff9000" width="8" />
                 </itemgra>
@@ -2566,6 +2517,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="traffic_distortion" order="18">
                     <polyline color="#ff9000" width="265" />
                 </itemgra>
+
             </layer>
             <layer name="polylines">
                 <itemgra item_types="rail_tram" order="13-">
