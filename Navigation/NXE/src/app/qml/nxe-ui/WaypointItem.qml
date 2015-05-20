@@ -57,7 +57,7 @@ Rectangle {
                             NText {
                                 color: "black"
                                 text: locationName
-                                font.pointSize: 14
+                                font.pixelSize: 14
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -67,7 +67,7 @@ Rectangle {
                             NText {
                                 color: "black"
                                 text: locationDescription
-                                font.pointSize: 10
+                                font.pixelSize: 10
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
