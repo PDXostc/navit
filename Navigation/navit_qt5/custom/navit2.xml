@@ -593,7 +593,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poly_terminal" order="14-">
                     <polygon color="#e3c6a6" />
                 </itemgra>
-                <itemgra item_types="poly_car_parking" order="15-">
+                <itemgra item_types="poly_car_parking" order="18-">
                     <polygon color="#F8E7B9" />
                 </itemgra>
                 <itemgra item_types="poly_building" order="14-">
@@ -1301,13 +1301,13 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_airport" order="5-">
                     <icon src="airport.png" />
                 </itemgra>
-                <itemgra item_types="town_ghost" order="10-">
+                <itemgra item_types="town_ghost" order="12-">
                     <icon src="ghost_town.png" />
                 </itemgra>
                 <itemgra item_types="poi_hotel" order="12-">
                     <icon src="hotel.png" />
                 </itemgra>
-                <itemgra item_types="poi_car_parking" order="11-">
+                <itemgra item_types="poi_car_parking" order="14-">
                     <icon src="parking.png" />
                 </itemgra>
                 <itemgra item_types="poi_car_dealer_parts" order="12-">
@@ -1319,7 +1319,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_shopping" order="12-">
                     <icon src="shopping.png" />
                 </itemgra>
-                <itemgra item_types="poi_attraction" order="11-">
+                <itemgra item_types="poi_attraction" order="14-">
                     <icon src="attraction.png" />
                 </itemgra>
                 <itemgra item_types="poi_cafe" order="12-">
@@ -1334,7 +1334,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_bridge" order="12-">
                     <icon src="bridge.png" />
                 </itemgra>
-                <itemgra item_types="highway_exit" order="11-">
+                <itemgra item_types="highway_exit" order="12-">
                     <icon src="exit.png" />
                 </itemgra>
                 <itemgra item_types="poi_camp_rv" order="12-">
@@ -1406,25 +1406,25 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_cemetery" order="12-">
                     <icon src="cemetery.xpm" />
                 </itemgra>
-                <itemgra item_types="poi_church" order="11-">
+                <itemgra item_types="poi_church" order="14-">
                     <icon src="church.png" />
                 </itemgra>
-                <itemgra item_types="poi_bahai" order="11-">
+                <itemgra item_types="poi_bahai" order="14-">
                     <icon src="bahai.png"/>
                 </itemgra>
-                <itemgra item_types="poi_buddhist" order="11-">
+                <itemgra item_types="poi_buddhist" order="14-">
                     <icon src="buddhist.png"/>
                 </itemgra>
-                <itemgra item_types="poi_hindu" order="11-">
+                <itemgra item_types="poi_hindu" order="14-">
                     <icon src="hindu.png"/>
                 </itemgra>
-                <itemgra item_types="poi_islamic" order="11-">
+                <itemgra item_types="poi_islamic" order="14-">
                     <icon src="islamic.png"/>
                 </itemgra>
                 <itemgra item_types="poi_jain" order="11-">
                     <icon src="jain.png"/>
                 </itemgra>
-                <itemgra item_types="poi_jewish" order="11-">
+                <itemgra item_types="poi_jewish" order="14-">
                     <icon src="jewish.png"/>
                 </itemgra>
                 <itemgra item_types="poi_pagan" order="11-">
@@ -1454,7 +1454,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_cove" order="12-">
                     <icon src="cove.png" />
                 </itemgra>
-                <itemgra item_types="poi_crossing" order="12-">
+                <itemgra item_types="poi_crossing" order="18-">
                     <icon src="crossing.png" />
                 </itemgra>
                 <itemgra item_types="poi_dam" order="12-">
@@ -1484,7 +1484,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_firebrigade" order="12-">
                     <icon src="firebrigade.png" />
                 </itemgra>
-                <itemgra item_types="poi_fish" order="9-">
+                <itemgra item_types="poi_fish" order="12-">
                     <icon src="fish.png" />
                 </itemgra>
                 <itemgra item_types="poi_forbidden_area" order="12-">
@@ -1502,7 +1502,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_height" order="12-">
                     <icon src="height.png" />
                 </itemgra>
-                <itemgra item_types="poi_heliport" order="8-">
+                <itemgra item_types="poi_heliport" order="12-">
                     <icon src="heliport.png" />
                 </itemgra>
                 <itemgra item_types="poi_hotspring" order="12-">
@@ -1523,7 +1523,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_levee" order="12-">
                     <icon src="levee.png" />
                 </itemgra>
-                <itemgra item_types="poi_level_crossing" order="11-">
+                <itemgra item_types="poi_level_crossing" order="18-">
                     <icon src="level_crossing.xpm" />
                 </itemgra>
                 <itemgra item_types="poi_library" order="12-">
@@ -1562,7 +1562,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_oil_field" order="12-">
                     <icon src="oil_field.png" />
                 </itemgra>
-                <itemgra item_types="poi_peak" order="7-">
+                <itemgra item_types="poi_peak" order="12-">
                     <icon src="peak.png" />
                 </itemgra>
                 <itemgra item_types="poi_personal_service" order="12-">
@@ -1578,24 +1578,24 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_public_office" order="12-">
                     <icon src="public_office.png" />
                 </itemgra>
-                <itemgra item_types="poi_rail_halt" order="11-">
-                    <circle color="#ff0000" radius="3" width="3" />
-                    <circle color="#000000" radius="5" width="2"
-                        text_size="8" />
-                </itemgra>
-                <itemgra item_types="poi_rail_station" order="9-">
-                    <circle color="#ff0000" radius="3" width="3" />
-                    <circle color="#000000" radius="6" width="2"
-                        text_size="8" />
-                </itemgra>
-                <itemgra item_types="poi_rail_tram_stop" order="10-11">
-                    <circle color="#ff0000" radius="2" width="2" />
-                </itemgra>
-                <itemgra item_types="poi_rail_tram_stop" order="12-">
-                    <circle color="#ff0000" radius="3" width="3" />
-                    <circle color="#606060" radius="5" width="2"
-                        text_size="8" />
-                </itemgra>
+                <!--<itemgra item_types="poi_rail_halt" order="11-">-->
+                    <!--<circle color="#ff0000" radius="3" width="3" />-->
+                    <!--<circle color="#000000" radius="5" width="2"-->
+                        <!--text_size="8" />-->
+                <!--</itemgra>-->
+                <!--<itemgra item_types="poi_rail_station" order="12-">-->
+                    <!--<circle color="#ff0000" radius="3" width="3" />-->
+                    <!--<circle color="#000000" radius="6" width="2"-->
+                        <!--text_size="8" />-->
+                <!--</itemgra>-->
+                <!--<itemgra item_types="poi_rail_tram_stop" order="10-11">-->
+                    <!--<circle color="#ff0000" radius="2" width="2" />-->
+                <!--</itemgra>-->
+                <!--<itemgra item_types="poi_rail_tram_stop" order="12-">-->
+                    <!--<circle color="#ff0000" radius="3" width="3" />-->
+                    <!--<circle color="#606060" radius="5" width="2"-->
+                        <!--text_size="8" />-->
+                <!--</itemgra>-->
                 <itemgra item_types="poi_repair_service" order="12-">
                     <icon src="repair_service.png" />
                 </itemgra>
@@ -1665,7 +1665,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_sport" order="12-">
                     <icon src="sport.png" />
                 </itemgra>
-                <itemgra item_types="poi_stadium" order="11-">
+                <itemgra item_types="poi_stadium" order="14-">
                     <icon src="stadium.png" />
                 </itemgra>
                 <itemgra item_types="poi_swimming" order="12-">
@@ -1698,13 +1698,13 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_wine" order="12-">
                     <icon src="wine.png" />
                 </itemgra>
-                <itemgra item_types="poi_worship" order="8-">
+                <itemgra item_types="poi_worship" order="12-">
                     <icon src="worship.png" />
                 </itemgra>
                 <itemgra item_types="poi_wrecker" order="12-">
                     <icon src="wrecker.png" />
                 </itemgra>
-                <itemgra item_types="poi_zoo" order="9-">
+                <itemgra item_types="poi_zoo" order="12-">
                     <icon src="zoo.png" />
                 </itemgra>
                 <itemgra item_types="poi_picnic" order="12-">
@@ -1767,7 +1767,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_monument" order="12-">
                     <icon src="memorial.png" />
                 </itemgra>
-                <itemgra item_types="poi_shelter" order="11-">
+                <itemgra item_types="poi_shelter" order="14-">
                     <icon src="shelter.png" />
                 </itemgra>
                 <itemgra item_types="poi_fountain" order="13-">
@@ -1779,7 +1779,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_toilets" order="12-">
                     <icon src="toilets.png" />
                 </itemgra>
-                <itemgra item_types="poi_viewpoint" order="10-">
+                <itemgra item_types="poi_viewpoint" order="12-">
                     <icon src="viewpoint.png" />
                 </itemgra>
                 <itemgra item_types="tec_common" order="11-">
