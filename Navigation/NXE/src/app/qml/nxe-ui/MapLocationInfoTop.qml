@@ -34,6 +34,11 @@ Item {
                 color: "#242424"
                 anchors.fill: parent
 
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {}
+                }
+
                 Image {
                     id: image1
                     x: 18

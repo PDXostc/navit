@@ -53,7 +53,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , m_rootContext(ctx)
     , mapsProxy(nxeInstance, ctx)
     , navigationProxy(nxeInstance)
-    , m_ignoreNextClick(false)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
 
@@ -127,17 +126,10 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             m_currentItem.reset(loc);
             emit currentlySelectedItemChanged();
         }
-        m_ignoreNextClick = true;
     });
 
     nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
         aTrace() << "Tap click";
-        if(m_ignoreNextClick) {
-            aDebug() << "Ignoring next click";
-            m_ignoreNextClick = false;
-            return;
-        }
-
         // even if it's in navigation, we allow free map mode
         nxeInstance->ipc()->setTracking(false);
 

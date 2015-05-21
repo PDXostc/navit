@@ -110,7 +110,6 @@ private:
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;
     QScopedPointer<LocationProxy> m_waypointItem;
-    bool m_ignoreNextClick;
 };
 
 #endif // NAVITQUICKPROXY_H

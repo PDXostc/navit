@@ -31,10 +31,16 @@ signals:
     void etaChanged();
     void currentStreetChanged();
 
+
+    // Private don't use
+    void requestMoveToCurrentPosition(int timeout);
+
 public slots:
     void startNavigation(QObject* currentItem);
     void addWaypoint(QObject* item);
     void stopNavigation();
+private slots:
+    void moveToCurrentPositionWitTimeout(int timeout);
 private:
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     int m_distance;

@@ -3,12 +3,16 @@
 #include "alog.h"
 #include "locationproxy.h"
 
+#include <QtCore/QTimer>
+
 NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QObject *parent)
     : QObject(parent)
     , nxeInstance(nxe)
     , m_distance(-1)
     , m_eta(-1)
 {
+    connect(this, &NavitNavigationProxy::requestMoveToCurrentPosition, this, &NavitNavigationProxy::moveToCurrentPositionWitTimeout, Qt::QueuedConnection);
+
     nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
         emit navigationManuver(QString::fromStdString(manuver));
     });
@@ -22,6 +26,7 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
         if (navi) {
             aDebug() << "Zoomin to route since navigation is on";
             nxeInstance->ipc()->zoomToRoute();
+            emit requestMoveToCurrentPosition(5000);
         }
         emit navigationChanged();
     });
@@ -65,4 +70,13 @@ void NavitNavigationProxy::addWaypoint(QObject *item)
 void NavitNavigationProxy::stopNavigation()
 {
     nxeInstance->cancelNavigation();
+}
+
+void NavitNavigationProxy::moveToCurrentPositionWitTimeout(int timeout)
+{
+    QTimer::singleShot(timeout, [this]() {
+        nxeInstance->ipc()->setTracking(true);
+        auto pos = nxeInstance->gps()->position();
+        nxeInstance->ipc()->setPosition(pos.longitude, pos.latitude);
+    });
 }
