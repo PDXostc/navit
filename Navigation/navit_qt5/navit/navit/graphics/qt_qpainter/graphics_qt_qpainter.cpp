@@ -922,6 +922,8 @@ static struct graphics_priv * graphics_qt_qpainter_new(struct navit *nav, struct
 	ret->app = new QPEApplication(argc, argv);
 #else
 	ret->app = new QApplication(argc, argv);
+    ret->app->setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
+    ret->app->setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
 #endif
 #endif
 	ret->widget= new RenderArea(ret);
