@@ -94,9 +94,6 @@ void MapDownloaderDBusServer::cancel(const std::string &mapName)
 
     if (it != d->requests.end()) {
         d->downloader.cancel(it->first);
-        d->requests.erase(it);
-        mdDebug() << "Requests canceled and erased";
-        mdTrace() << "size after " << d->requests.size();
     } else {
         mdError() << "Unable to find " << mapName;
     }

@@ -71,6 +71,11 @@ qreal NavitMapsProxy::mapSize(const QString &mapName)
     }
 }
 
+void NavitMapsProxy::cancelDownload(const QString &mapName)
+{
+    nxeInstance->mapDownloader()->cancel(mapName.toStdString());
+}
+
 void NavitMapsProxy::reloadMaps()
 {
     qDeleteAll(m_maps);

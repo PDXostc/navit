@@ -89,5 +89,6 @@
         <file>qml/nxe-ui/CLExpandedDelegate.qml</file>
         <file>qml/nxe-ui/list_toggle_closed_white.png</file>
         <file>qml/nxe-ui/list_toggle_open_white.png</file>
+        <file>qml/nxe-ui/DownloadCancelConfirmationDialog.qml</file>
     </qresource>
 </RCC>

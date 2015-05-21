@@ -24,6 +24,7 @@ public slots:
     void downloadMap(const QString& map);
     bool isMapDownloaded(const QString& mapName);
     qreal mapSize(const QString& mapName);
+    void cancelDownload(const QString& mapName);
 signals:
     void mapDownloadError(const QString& error);
     void mapDownloadProgress(quint64 now, quint64 total, const QString& map);

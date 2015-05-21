@@ -3,7 +3,6 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 
 Page {
-    id: page1
 
     property var maps
     property string currentDownloadMap
@@ -15,13 +14,13 @@ Page {
 
     Component.onCompleted: {
         currentDownloadMap = maps[currentDownloadIndex]
-        navitMapsProxy.downloadMap(currentDownloadMap);
-        etaCalculationTimer.start();
+        navitMapsProxy.downloadMap(currentDownloadMap)
+        etaCalculationTimer.start()
     }
 
     function downloadNextMap() {
         currentDownloadIndex++
-        progressBarItem.value = 0;
+        progressBarItem.value = 0
 
         if (currentDownloadIndex === maps.length) {
             // push FTUMapDownloadCompleted.qml
@@ -31,8 +30,8 @@ Page {
                            })
         } else {
             currentDownloadMap = maps[currentDownloadIndex]
-            navitMapsProxy.downloadMap(currentDownloadMap);
-            etaCalculationTimer.restart();
+            navitMapsProxy.downloadMap(currentDownloadMap)
+            etaCalculationTimer.restart()
         }
     }
 
@@ -43,24 +42,24 @@ Page {
         repeat: true
         property int numberOfSeconds: 0
         onTriggered: {
-            sumBytes += bytesDownloaded;
+            sumBytes += bytesDownloaded
             if (sumBytes === 0)
-                return;
+                return
             numberOfSeconds++
 
-            var allSeconds = totalBytes * numberOfSeconds / bytesDownloaded;
-            console.debug('All sec = ', allSeconds);
-            console.debug('Left = ', allSeconds - numberOfSeconds);
+            var allSeconds = totalBytes * numberOfSeconds / bytesDownloaded
+            var secondsLeft = allSeconds - numberOfSeconds
+            console.debug('All sec = ', allSeconds)
+            console.debug('Left = ', secondsLeft)
 
-            var leftSeconds = allSeconds - numberOfSeconds;
-            etaTextItem.text = "" + Math.ceil(leftSeconds) + " sec";
+            etaTextItem.text = "" + Math.ceil(secondsLeft) + " sec"
         }
     }
 
     Connections {
         target: navitMapsProxy
         onMapDownloadError: {
-            console.error("An error during map download")
+            console.error("An error during map download ", error)
         }
 
         onMapDownloadProgress: {
@@ -80,8 +79,8 @@ Page {
         }
 
         onMapDownloadFinished: {
-            etaCalculationTimer.stop();
-            downloadNextMap();
+            etaCalculationTimer.stop()
+            downloadNextMap()
         }
     }
 
@@ -127,7 +126,10 @@ Page {
             width: parent.width
             height: 15
             value: 0
-            Behavior on value { NumberAnimation {} }
+            Behavior on value {
+                NumberAnimation {
+                }
+            }
             style: ProgressBarStyle {
                 background: Rectangle {
                     radius: 2
@@ -186,11 +188,19 @@ Page {
         }
     }
 
-    Item {
-        id: item1
-        width: 100
-        height: 62
+    NButton {
+        text: "Cancel"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: rect.bottom
+        iconSource: "next_icon_white.png"
+        onClicked: {
+            rootStack.push({
+                               item: Qt.resolvedUrl(
+                                         "DownloadCancelConfirmationDialog.qml"),
+                               properties: {
+                                   mapName: currentDownloadMap
+                               }
+                           })
+        }
     }
 }

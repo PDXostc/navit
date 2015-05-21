@@ -141,7 +141,6 @@ size_t MapDownloader::headersWrite(void* buffer, size_t size, size_t nmemb, void
         if (boost::algorithm::starts_with(headers, "Location:")) {
             boost::algorithm::erase_all(headers, "Location:");
             boost::algorithm::trim(headers);
-//            mdDebug() << "Correct location is = " << headers;
             out->timestamp = headers;
         }
     }
@@ -153,8 +152,14 @@ void MapDownloader::onDownloadError(const std::string& url, CURLcode err)
 {
     mdDebug() << "onDownloadError: Code = " << err << " , " << curl_easy_strerror(err);
 
+    std::string errStr = curl_easy_strerror(err);
+
+    if (err == CURLE_ABORTED_BY_CALLBACK) {
+        errStr = "Canceled";
+    }
+
     if (cbOnError) {
-        cbOnError(url, curl_easy_strerror(err));
+        cbOnError(url, errStr);
     }
 }
 

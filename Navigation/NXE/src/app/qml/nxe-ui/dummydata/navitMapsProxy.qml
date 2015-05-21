@@ -11,11 +11,17 @@ QtObject {
     }
 
     function isMapDownloaded(mapName) {
-        return mapName === 'Oregon' || mapName === 'Poland';
+//        return mapName === 'Oregon' || mapName === 'Poland';
+        return false
     }
 
     function mapSize(name) {
         return 9 * 1024 * 1024 * 1024;
+    }
+
+    function cancelDownload() {
+        mapDownloadError('Oregon', 'Canceled')
+        fakeTimer.stop()
     }
 
     // real signals

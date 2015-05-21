@@ -130,7 +130,7 @@ QtObject {
     }
     property Timer fakeWaypointTimer: Timer {
         running: false
-        interval: 1
+        interval: 500
         repeat: false
         onTriggered: {
             waypointItem = fakeLocationObject

@@ -99,10 +99,12 @@ Rectangle {
                         color: "#242424"
                     }
                     Image {
-                        sourceSize.width: parent.width
+                        width: parent.width
+                        height: parent.height - 20
                         source: "images/blue_forward_button_long_bg.png"
                         sourceSize.height: 40
                         anchors.verticalCenter: parent.verticalCenter
+
                         Row {
                             anchors {
                                 fill: parent
@@ -139,7 +141,8 @@ Rectangle {
                         color: "#242424"
                     }
                     Image {
-                        sourceSize.width: parent.width
+                        width: parent.width
+                        height: parent.height - 20
                         source: "images/blue_forward_button_long_bg.png"
                         sourceSize.height: 40
                         anchors.verticalCenter: parent.verticalCenter
