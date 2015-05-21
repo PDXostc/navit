@@ -1734,7 +1734,7 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="poi_gc_webcam" order="12-">
                     <icon src="gc_webcam.xpm" />
                 </itemgra>
-                <itemgra item_types="traffic_signals" order="13-">
+                <itemgra item_types="traffic_signals" order="18-">
                     <icon src="traffic_signals.png" />
                 </itemgra>
                 <itemgra item_types="poi_wifi" order="13-">
