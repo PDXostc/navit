@@ -79,8 +79,8 @@ try ssh root@$TIZEN_IP rpm -ivh /root/navit_packages/nxe*.rpm
 
 ssh root@$TIZEN_IP rm /root/navit_packages -rf
 ssh app@$TIZEN_IP killall mapdownloader
-try ssh app@$TIZEN_IP rm /home/app/.NavIt -rfv
-try ssh app@$TIZEN_IP rm /home/app/.navit -rfv 
+ssh app@$TIZEN_IP rm /home/app/.NavIt -rfv
+ssh app@$TIZEN_IP rm /home/app/.navit -rfv 
 
 if [ "$LAUNCH" == true ]; then
     ssh app@$TIZEN_IP XDG_RUNTIME_DIR=/run/user/5000 QT_WAYLAND_DISABLE_WINDOWDECORATION=1 nxe-app
