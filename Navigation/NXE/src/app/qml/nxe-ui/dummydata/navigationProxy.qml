@@ -7,6 +7,7 @@ QtObject {
     property string currentStreet: "Seseame street"
     signal navigationStarted()
     signal navigationStopped()
+    signal navigationFinished()
     signal navigationManuver(string manuverDescription);
 
     function startNavigation() {

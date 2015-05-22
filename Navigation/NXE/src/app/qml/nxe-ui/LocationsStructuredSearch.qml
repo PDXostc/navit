@@ -85,6 +85,12 @@ Page {
         }
 
         Item {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            visible: __searchStateId === __FinishSearch
+        }
+
+        Item {
             id: titleItem
             visible: __searchStateId !== __FinishSearch
             width: parent.width
@@ -135,7 +141,7 @@ Page {
         onSearchDone: {
             console.debug('search is done')
             root.busy = false
-            console.debug(__searchStateId, __searchModels[__searchStateId], __searchModels[__searchStateId])
+            console.debug(__searchStateId, __searchModels[__searchStateId])
             listViewItem.model = __searchModels[__searchStateId]
         }
     }
