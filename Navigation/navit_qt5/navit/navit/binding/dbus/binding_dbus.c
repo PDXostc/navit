@@ -2041,6 +2041,42 @@ request_vehicleprofile_attr_iter_destroy(DBusConnection *connection, DBusMessage
 	return request_attr_iter_destroy(connection, message, "vehicleprofile", (void (*)(struct attr_iter *))vehicleprofile_attr_iter_destroy);
 }
 
+static DBusHandlerResult
+request_navit_draw_sel_point(DBusConnection *connection, DBusMessage *message)
+{
+	struct pcoord pc;
+	struct navit *navit;
+	DBusMessageIter iter;
+	char *description;
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	dbus_message_iter_init(message, &iter);
+	if (!pcoord_get_from_message(message, &iter, &pc))
+    		return dbus_error_invalid_parameter(connection, message);
+
+	navit_show_selection_point_pcoord(navit, &pc,1);
+	return empty_reply(connection, message);
+}
+
+static DBusHandlerResult
+request_navit_clear_sel_point(DBusConnection *connection, DBusMessage *message)
+{
+	struct navit *navit;
+	struct pcoord pc = {0,};
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	navit_show_selection_point_pcoord(navit, &pc,0);
+	return empty_reply(connection, message);
+}
+
+
+
 struct dbus_method {
 	char *path;
 	char *method;
@@ -2073,9 +2109,9 @@ struct dbus_method {
 	{".navit",  "zoom",                "i(ii)",   "factor(pixel_x,pixel_y)",                 "",   "",      request_navit_zoom},
 	{".navit",  "zoom",                "i",       "factor",                                  "",   "",      request_navit_zoom},
 	{".navit",  "zoom_to_route",       "",        "",                                        "",   "",      request_navit_zoom_to_route},
-        {".navit",  "quit",                "",        "",                                        "",   "",      request_navit_quit},
+    {".navit",  "quit",                "",        "",                                        "",   "",      request_navit_quit},
 	{".navit",  "export_as_gpx",       "s",       "filename",                                "",   "",      request_navit_route_export_gpx},
-        {".navit",  "export_as_geojson",   "s",       "filename",                                "",   "",      request_navit_route_export_geojson},
+    {".navit",  "export_as_geojson",   "s",       "filename",                                "",   "",      request_navit_route_export_geojson},
 	{".navit",  "block",               "i",       "mode",                                    "",   "",      request_navit_block},
 	{".navit",  "resize",              "ii",      "upperleft,lowerright",                    "",   "",      request_navit_resize},
 	{".navit",  "attr_iter",           "",        "",                                        "o",  "attr_iter",  request_navit_attr_iter},
@@ -2094,6 +2130,8 @@ struct dbus_method {
 	{".navit",  "clear_destination",   "",        "",                                        "",   "",      request_navit_clear_destination},
 	{".navit",  "add_waypoint",        "s",       "(coordinates)",                           "",   "",      request_navit_add_waypoint},
 	{".navit",  "search_pois",         "ss",      "coordinates,distance",                    "",   "",      request_navit_search_pois},
+	{".navit",  "draw_sel_point",          "s",       "coordinates",                         "",   "",      request_navit_draw_sel_point},
+	{".navit",  "clear_sel_point",   "",        "",                                          "",   "",      request_navit_clear_sel_point},
 	{".navit",  "evaluate", 	   "s",	      "command",				 "s",  "",      request_navit_evaluate},
 	{".layout", "get_attr",		   "s",	      "attribute",                               "sv",  "attrname,value", request_layout_get_attr},
 	{".map",    "get_attr",            "s",       "attribute",                               "sv",  "attrname,value", request_map_get_attr},

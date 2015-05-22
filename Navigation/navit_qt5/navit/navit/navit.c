@@ -375,6 +375,40 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 	return attr_list;
 }
 
+
+void navit_show_selection_point(void* data, struct point *p, int enable)
+{
+	struct navit *this=data;
+	struct coord sel;
+	struct transformation *trans;
+
+	trans=navit_get_trans(this);
+	transform_reverse(trans, p, &sel);
+
+	route_set_selection_point(this->route, &sel, enable);
+
+	if (this->ready == 3)
+		navit_draw(this);
+}
+
+
+void navit_show_selection_point_pcoord(void* data, struct pcoord *p, int enable)
+{
+	struct navit *this=data;
+	struct coord sel;
+	struct transformation *trans;
+
+	sel.x = p->x;
+	sel.y = p->y;
+
+	route_set_selection_point(this->route, &sel, enable);
+
+	if (this->ready == 3)
+		navit_draw(this);
+}
+
+
+
 static
 void navit_dbus_send_point_info(void* data, struct point *p)
 {

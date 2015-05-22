@@ -65,6 +65,11 @@ struct street_data {
 						 *   DO NOT INSERT FIELDS AFTER THIS. */
 };
 
+struct sel_point {
+	struct coord coord;
+	int visible;
+};
+
 /* prototypes */
 enum attr_type;
 enum projection;
@@ -121,6 +126,7 @@ void route_attr_iter_destroy(struct attr_iter *iter);
 int route_get_attr(struct route *this_, enum attr_type type, struct attr *attr, struct attr_iter *iter);
 void route_init(void);
 void route_destroy(struct route *this_);
+void route_set_selection_point(struct route *this_, struct coord *sel, int enable);
 /* end of prototypes */
 #ifdef __cplusplus
 }

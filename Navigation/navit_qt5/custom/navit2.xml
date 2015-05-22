@@ -1282,7 +1282,9 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="waypoint,route_end" order="18">
                     <circle color="#000000" radius="530" width="8" text_size="48"/>
                 </itemgra>
-
+                <itemgra item_types="selection_point" order="0-">
+                    <icon src="location_marker_icon.png" w="59" h="59" x="30" y="30"/>
+                </itemgra>
                 <itemgra item_types="nav_none" order="0-">
                     <icon src="unknown.png" />
                 </itemgra>
@@ -2581,7 +2583,9 @@ SYSTEM "navit.dtd">
                 <itemgra item_types="waypoint,route_end" order="18">
                     <circle color="#000000" radius="530" width="8" text_size="48"/>
                 </itemgra>
-
+                <itemgra item_types="selection_point" order="0-">
+                    <icon src="location_marker_icon.png" w="59" h="59" x="30" y="30"/>
+                </itemgra>
                 <itemgra item_types="nav_none" order="0-">
                     <icon src="unknown.png" />
                 </itemgra>

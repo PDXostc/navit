@@ -258,6 +258,7 @@ struct route {
 	int link_path;			/**< Link paths over multiple waypoints together */
 	struct pcoord pc;
 	struct vehicle *v;
+	struct sel_point selp;
 };
 
 /**
@@ -1114,6 +1115,18 @@ route_clear_destinations(struct route *this_)
 	g_list_free(this_->destinations);
 	this_->destinations=NULL;
 }
+
+
+void
+route_set_selection_point(struct route *this, struct coord *sel, int enable)
+{
+	if (enable) {
+		this->selp.coord = *sel;
+	}
+	this->selp.visible = enable;
+}
+
+
 
 /**
  * @brief Sets the destination of a route
@@ -3291,7 +3304,7 @@ rm_coord_get(void *priv_data, struct coord *c, int count)
 
 	if (pro == projection_none)
 		return 0;
-	if (mr->item.type == type_route_start || mr->item.type == type_route_start_reverse || mr->item.type == type_route_end || mr->item.type == type_waypoint ) {
+	if (mr->item.type == type_selection_point || mr->item.type == type_route_start || mr->item.type == type_route_start_reverse || mr->item.type == type_route_end || mr->item.type == type_waypoint ) {
 		if (! count || mr->last_coord)
 			return 0;
 		mr->last_coord=1;
@@ -3299,6 +3312,9 @@ rm_coord_get(void *priv_data, struct coord *c, int count)
 			c[0]=r->pos->c;
 		else if (mr->item.type == type_waypoint) {
 			c[0]=((struct route_info *)mr->dest->data)->c;
+		}
+		else if (mr->item.type == type_selection_point) {
+			c[0]=r->selp.coord;
 		} else { /*type_route_end*/
 			c[0]=route_get_dst(r)->c;
 		}
@@ -3708,6 +3724,11 @@ rm_get_item(struct map_rect_priv *mr)
 
 	switch (mr->item.type) {
 	case type_none:
+		if (route->selp.visible) {
+			mr->item.type=type_selection_point;
+			break;
+		}
+	case type_selection_point:
 		if (route->pos && route->pos->street_direction && route->pos->street_direction != route->pos->dir)
 			mr->item.type=type_route_start_reverse;
 		else
