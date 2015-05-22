@@ -6,18 +6,17 @@ Page {
 
     signal backToMapRequest
     signal showLocationRequest
-    property string headerSmallText
     property var choosenLocation
 
-    onHeaderSmallTextChanged: {
-        if (headerSmallText !== "") {
-            slashSymbol.text = "/"
-            smallText.text = headerSmallText
-        } else {
-            slashSymbol.text = ""
-            smallText.text = ""
-        }
-    }
+//    onHeaderSmallTextChanged: {
+//        if (headerSmallText !== "") {
+//            slashSymbol.text = "/"
+//            smallText.text = headerSmallText
+//        } else {
+//            slashSymbol.text = ""
+//            smallText.text = ""
+//        }
+//    }
     Column {
         anchors.fill: parent
         anchors.leftMargin: 10
@@ -32,6 +31,7 @@ Page {
             height: 50
             header: "Locations"
             stack: searchStackView
+            id: header
         }
 
         StackView {
@@ -49,25 +49,23 @@ Page {
                             navitProxy.getFavorites();
                             enabled = (locationFavoritesResult.length !== 0)
                         } else if (options.get(0).url === 'LocationsHistory.qml') {
-                            enabled = false;
+                            navitProxy.getHistory();
+                            enabled = (locationHistoryResult.length !== 0)
                         }
                     }
                     width: locationsListView.width
                     height: 50
-                    onSubMenuRequested: searchStackView.push(Qt.resolvedUrl(url))
+                    onSubMenuRequested: {
+                        console.debug('request ', Qt.resolvedUrl(url))
+                        searchStackView.push(Qt.resolvedUrl(url))
+                        header.subHeader = itemText
+                    }
                     opacity: enabled ? 1 : 0.4
                 }
             }
         }
         Connections {
             target: navitProxy
-            onGettingHistoryDone: {
-                root.busy = false;
-                searchStackView.push({
-                                         item: Qt.resolvedUrl(
-                                                   "LocationsHistory.qml")
-                                     })
-            }
         }
     }
 }

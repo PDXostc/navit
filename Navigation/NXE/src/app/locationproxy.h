@@ -22,10 +22,11 @@ class LocationProxy : public QObject {
     Q_PROPERTY(int searchId READ searchId CONSTANT)
     Q_PROPERTY(double longitude READ longitude CONSTANT)
     Q_PROPERTY(double latitude READ latitude CONSTANT)
-    Q_PROPERTY(QUuid id READ id CONSTANT)
+    Q_PROPERTY(QUuid itemId READ id CONSTANT)
+    Q_PROPERTY(int distance READ distance CONSTANT)
 public:
     LocationProxy(
-        QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, QObject* parent = 0);
+        QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, int distance = -1, QObject* parent = 0);
 
     LocationProxy(const NXE::SearchResult& searchResult);
 
@@ -49,6 +50,7 @@ public:
     double latitude() {return _coords.latitude;}
 
     void setPosition(const NXE::Position& p) {_coords = p;}
+    int distance() const {return _distance;}
 
 signals:
 
@@ -64,6 +66,7 @@ private:
     bool _bolded;
     NXE::Position _coords;
     int _searchId;
+    int _distance;
     QUuid _id;
 };
 

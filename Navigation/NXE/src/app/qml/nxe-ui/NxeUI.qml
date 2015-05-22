@@ -8,6 +8,11 @@ Item {
 
     property bool ftu: navitProxy.ftu
 
+    FontLoader {
+        source: "fonts/SourceSansPro-Regular.ttf"
+        onNameChanged: console.debug(name)
+    }
+
     StackView {
         id: rootStack
         anchors.fill: parent

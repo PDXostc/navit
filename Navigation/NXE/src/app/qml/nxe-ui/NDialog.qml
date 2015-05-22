@@ -34,12 +34,11 @@ Item {
             source: "download_hex_icon.png"
         }
 
-        Text {
+        NText {
             id: headerTextItem
             font.pixelSize: 29
             font.bold: true
             anchors.horizontalCenter: parent.horizontalCenter
-            color: "white"
         }
 
         Item {
@@ -52,7 +51,7 @@ Item {
             width: parent.width
             height: 122
 
-            Text {
+            NText {
                 id: mainTextItem
                 anchors.margins: 10
                 width: parent.width / 2
@@ -61,7 +60,6 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: 23
                 wrapMode: Text.WordWrap
-                color: "white"
             }
         }
 

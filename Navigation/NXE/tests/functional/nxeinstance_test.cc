@@ -80,7 +80,7 @@ TEST_F(NXEInstanceTest, renderMessage_correct)
 
 TEST_F(NXEInstanceTest, positionMessage_correct)
 {
-    auto pos = instance.gps()->position();
+    instance.gps()->position();
 }
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)

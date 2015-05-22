@@ -7,7 +7,6 @@ Item {
     width: 400
     height: 50
     property bool isDownloaded: false
-
     signal checked()
 
     signal subList(string url)

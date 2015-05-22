@@ -53,7 +53,7 @@ void NavitSubCompositor::setFullscreenSurface(QWaylandQuickSurface *surface)
 
 void NavitSubCompositor::surfaceCreated(QWaylandSurface* surface)
 {
-    aInfo() << "An surface was created";
+    aInfo() << "An surface was created " << static_cast<void*>(surface);
     connect(surface, &QWaylandSurface::surfaceDestroyed, this, &NavitSubCompositor::surfaceDestroyed);
     connect(surface, &QWaylandSurface::mapped, this, &NavitSubCompositor::surfaceMapped);
     connect(surface, &QWaylandSurface::unmapped, this, &NavitSubCompositor::surfaceUnmapped);
@@ -75,6 +75,7 @@ void NavitSubCompositor::surfaceUnmapped()
 {
     QWaylandSurface* surface = qobject_cast<QWaylandSurface*>(sender());
     aTrace() << "Surface unmapped" << static_cast<void*>(surface);
+    emit windowDestroyed(QVariant::fromValue(surface));
 }
 
 void NavitSubCompositor::surfaceDestroyed()

@@ -14,4 +14,9 @@ QString MapInfoProxy::mapName() const
 {
     return QString::fromStdString(info.name);
 }
+QString MapInfoProxy::continent() const
+{
+    return QString::fromStdString(info.continent);
+}
+
 

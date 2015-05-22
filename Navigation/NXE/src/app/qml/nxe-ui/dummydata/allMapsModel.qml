@@ -4,12 +4,6 @@ ListModel {
     id: allMapsModel
 
     ListElement {
-        mapName: "All Earth"
-        downloaded: false
-        mapSize: 1024
-    }
-
-    ListElement {
         mapName: "Africa"
         downloaded: false
         mapSize: 1024
@@ -19,5 +13,23 @@ ListModel {
         downloaded: false
         mapSize: 1024
     }
+
+    ListElement {
+        mapName: "Europe"
+        downloaded: false
+        mapSize: 1024
+    }
+    ListElement {
+            mapName: "Europe"
+            downloaded: false
+            mapSize: 1024
+        }
+    ListElement {
+            mapName: "Europe"
+            downloaded: false
+            mapSize: 1024
+        }
+
 }
+
 

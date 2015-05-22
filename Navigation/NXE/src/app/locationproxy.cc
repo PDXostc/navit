@@ -4,13 +4,14 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 
-LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bolded, int searchId, QObject* parent)
+LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bolded, int searchId, int distance, QObject* parent)
     : QObject(parent)
     , _itemText(itemText)
     , _favorite(fav)
     , _description(desc)
     , _bolded(bolded)
     , _searchId(searchId)
+    , _distance(distance)
     , _id(QUuid::createUuid())
 {
 }
@@ -71,7 +72,9 @@ LocationProxy* LocationProxy::clone(LocationProxy* rhs)
     auto p = new LocationProxy{ rhs->itemText(),
         rhs->favorite(),
         rhs->description(),
-        rhs->bolded() };
+        rhs->bolded(),
+        rhs->searchId(),
+        rhs->distance()};
 
     p->_searchId = rhs->_searchId;
     p->_id = rhs->_id;

@@ -2,6 +2,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.2
 
+import 'infoObjectLogic.js' as Info
+
 Item {
     id: mainPageView
     width: 400
@@ -12,70 +14,14 @@ Item {
     property var locationInfoObject: null
     property var locationInfoTopObject: null
 
-    function finishComponentCreation(location) {
-        if (locationInfoComponent.status === Component.Ready) {
-            locationInfoObject = locationInfoComponent.createObject(
-                        mainPageView, {
-                            opacity: 0
-                        })
-            locationInfoObject.anchors.bottom = mainPageView.bottom
-            locationInfoObject.anchors.left = mainPageView.left
-            locationInfoObject.anchors.right = mainPageView.right
-            locationInfoObject.locationComponent = location
-            locationInfoObject.opacity = 1
-        }
-    }
-    function finishTopComponentCreation() {
-        if (locationInfoTopComponent.status === Component.Ready) {
-            locationInfoTopObject = locationInfoTopComponent.createObject(
-                        mainPageView, {
-                            opacity: 0
-                        })
-            locationInfoTopObject.anchors.top = mainPageView.top
-            locationInfoTopObject.anchors.left = mainPageView.left
-            locationInfoTopObject.anchors.right = mainPageView.right
-            locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem
-            locationInfoTopObject.opacity = 1
+    property var navigationInfoComponent: null
+    property var navigationInfoObject: null
 
-            locationInfoTopObject.requestHideBars.connect(function() {
-                removeInfo();
-                removeTopInfo()
-            })
-        }
-    }
+    property var waypointComponent: null
+    property var waypointObject: null
 
-    function createLocationComponent(location) {
-        locationInfoComponent = Qt.createComponent("MapLocationInfo.qml")
-        locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml")
-        if (locationInfoComponent.status === Component.Ready) {
-            finishComponentCreation(location)
-        } else {
-            locationInfoComponent.statusChanged.connect(finishComponentCreation(
-                                                            location))
-        }
-        if (locationInfoTopComponent.status === Component.Ready) {
-            finishTopComponentCreation(location)
-        } else {
-            locationInfoTopComponent.statusChanged.connect(
-                        finishTopComponentCreation(location))
-        }
-    }
+    property ListModel navigationManuvers: ListModel {}
 
-    function removeInfo() {
-
-        if (locationInfoComponent) {
-            locationInfoComponent.destroy()
-            locationInfoObject.destroy()
-        }
-    }
-
-    function removeTopInfo() {
-
-        if (locationInfoTopComponent) {
-            locationInfoTopComponent.destroy()
-            locationInfoTopObject.destroy()
-        }
-    }
 
     NMenu {
         anchors.left: parent.left
@@ -96,35 +42,53 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
-            removeInfo()
-            removeTopInfo()
+            Info.remove(locationInfoComponent,locationInfoObject);
+            Info.remove(locationInfoTopComponent, locationInfoTopObject)
 
             if (navitProxy.currentlySelectedItem) {
-                createLocationComponent(navitProxy.currentlySelectedItem)
+                Info.createLocationComponent(navitProxy.currentlySelectedItem)
             }
         }
+        onWaypointItemChanged: {
+            Info.remove(waypointComponent,waypointObject)
+            console.debug('waypoint item', navitProxy.waypointItem)
 
-        onPointClicked: {
-            if (locationInfoComponent && locationInfoObject) {
-                locationInfoObject.locationComponent = location
+            if(navitProxy.waypointItem) {
+                console.debug('waypoint item!')
+                Info.createWaypointItem(navitProxy.waypointItem)
+            }
+        }
+    }
+    Connections {
+        target: navigationProxy
+
+        onNavigationChanged: {
+            console.debug('navigation is', navigationProxy.navigation)
+            if (navigationProxy.navigation) {
+                Info.remove(locationInfoComponent,locationInfoObject);
+                Info.remove(navigationInfoComponent, navigationInfoObject);
+
+                if (!locationInfoTopComponent) {
+                    Info.createTopInfoComponent(null)
+                }
+                locationInfoTopObject.extraInfoVisible = true;
+
+                // clear manuver list
+                navigationManuvers.clear();
+                Info.createNavigationInstructionsItem(navigationManuvers);
             } else {
-                console.debug(location.itemText)
-                createLocationComponent(location)
+                console.debug('Navigation stopped')
+                Info.remove(locationInfoComponent,locationInfoObject);
+                Info.remove(locationInfoTopComponent, locationInfoTopObject)
+                Info.remove(navigationInfoComponent, navigationInfoObject)
             }
         }
 
-        onNavigationStarted: {
-            removeInfo()
-            locationInfoTopObject.extraInfoVisible =true;
-        }
-
-        onNavigationStopped: {
-            console.debug('canceled')
-            locationInfoTopObject.extraInfoVisible = false;
-            removeInfo()
-            removeTopInfo()
-
-            // destroy everything!
+        onNavigationManuver: {
+            for(var i = 0; i < navigationManuvers.count; ++i) {
+                navigationManuvers.get(i).active = false;
+            }
+            navigationManuvers.append({manuver: "turnLeft", manuverText: manuverDescription, active: true})
         }
     }
 

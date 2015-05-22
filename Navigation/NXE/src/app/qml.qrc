@@ -66,5 +66,29 @@
         <file>qml/nxe-ui/FTUDialogPage.qml</file>
         <file>qml/nxe-ui/NDialog.qml</file>
         <file>qml/nxe-ui/FactoryResetDialog.qml</file>
+        <file>qml/nxe-ui/NText.qml</file>
+        <file>qml/nxe-ui/fonts/SourceSansPro-Regular.ttf</file>
+        <file>qml/nxe-ui/LocationsStructuredSearchSelected.qml</file>
+        <file>qml/nxe-ui/LocationsSearchInputItem.qml</file>
+        <file>qml/nxe-ui/infoObjectLogic.js</file>
+        <file>qml/nxe-ui/NavigationInfoListView.qml</file>
+        <file>qml/nxe-ui/NavigationInfo.qml</file>
+        <file>qml/nxe-ui/images/nav_left_1_bk.png</file>
+        <file>qml/nxe-ui/images/nav_right_1_bk.png</file>
+        <file>qml/nxe-ui/images/nav_straight_bk.png</file>
+        <file>qml/nxe-ui/images/nav_turnaround_right_bk.png</file>
+        <file>qml/nxe-ui/images/nav_turnaround_left_bk.png</file>
+        <file>qml/nxe-ui/images/expand_window_icon_grey.png</file>
+        <file>qml/nxe-ui/images/minimize_window_icon_grey.png</file>
+        <file>qml/nxe-ui/NavigationInfoExtraInfo.qml</file>
+        <file>qml/nxe-ui/images/info_icon_white.png</file>
+        <file>qml/nxe-ui/WaypointItem.qml</file>
+        <file>qml/nxe-ui/images/navigate_icon_white.png</file>
+        <file>qml/nxe-ui/images/blue_forward_button_long_bg.png</file>
+        <file>qml/nxe-ui/CLExpandableDelegate.qml</file>
+        <file>qml/nxe-ui/CLExpandedDelegate.qml</file>
+        <file>qml/nxe-ui/list_toggle_closed_white.png</file>
+        <file>qml/nxe-ui/list_toggle_open_white.png</file>
+        <file>qml/nxe-ui/DownloadCancelConfirmationDialog.qml</file>
     </qresource>
 </RCC>

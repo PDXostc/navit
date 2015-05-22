@@ -28,10 +28,6 @@ struct GPSDProviderPrivate {
             while (m_bThreadRunning) {
                 if (gps_waiting(&gps_data, 5000)) {
                     if (gps_read(&gps_data) != -1) {
-                        nTrace() << "[longitude, latitude, altitude] [ "
-                                 << gps_data.fix.longitude << " , "
-                                 << gps_data.fix.latitude
-                                 << " , " << gps_data.fix.altitude << " ]";
                         m_currentPosition.altitude = gps_data.fix.altitude;
                         m_currentPosition.longitude = gps_data.fix.longitude;
                         m_currentPosition.latitude = gps_data.fix.latitude;

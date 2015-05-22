@@ -11,7 +11,12 @@ Item {
     opacity: isHeaderEnabled ? 1 : 0.4
 
     property alias header: backButton.text
+    property string subHeader
     property var stack: null
+
+    onSubHeaderChanged: {
+        subHeaderText.text = " /" + subHeader
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -36,6 +41,7 @@ Item {
                 Qt.inputMethod.hide()
                 if (stack.depth !== 1) {
                     stack.pop()
+                    subHeaderText.text = ""
                 } else {
                     backToMapRequest()
                 }
@@ -46,6 +52,15 @@ Item {
             width: parent.width - backButton.width - backButtonItem.width
             height: parent.height
             Layout.fillWidth: true
+
+            NText {
+                id: subHeaderText
+                anchors.leftMargin: 5
+                color: "gray"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.verticalCenterOffset: 1
+                font.pixelSize: 14
+            }
         }
 
         Item {
@@ -71,7 +86,7 @@ Item {
                 iconSource: "map_icon_white.png"
                 anchors.left: bckB.right
                 anchors.leftMargin: 5
-                onClicked:{
+                onClicked: {
                     Qt.inputMethod.hide()
                     backToMapRequest()
                 }

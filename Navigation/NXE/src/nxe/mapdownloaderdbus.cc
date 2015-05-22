@@ -75,13 +75,13 @@ MapDownloaderDBus::~MapDownloaderDBus()
 std::vector<MapInfo> MapDownloaderDBus::maps()
 {
     nInfo() << "Calling available maps IPC";
-    std::vector<DBus::Struct<std::string, std::uint64_t, bool>> result;
+    std::vector<DBus::Struct<std::string, std::uint64_t, bool, std::string> > result;
     std::vector<MapInfo> maps;
     auto retMessage = DBusHelpers::call("maps", *(d->proxy.get()));
     auto iter = retMessage.reader();
     iter >> result;
-    std::for_each(result.begin(), result.end(), [&maps] (const ::DBus::Struct<std::string, std::uint64_t, bool>& entry){
-        maps.emplace_back(MapInfo{entry._1, entry._2, entry._3});
+    std::for_each(result.begin(), result.end(), [&maps] (const ::DBus::Struct<std::string, std::uint64_t, bool, std::string>& entry){
+        maps.emplace_back(MapInfo{entry._1, entry._2, entry._3, entry._4});
 
     });
     return maps;

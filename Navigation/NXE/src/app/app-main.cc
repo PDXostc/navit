@@ -29,7 +29,7 @@ void qtLogOutput(QtMsgType type, const QMessageLogContext& ctx, const QString& m
     const std::string cat{ cats[ctx.category] };
     switch (type) {
     case QtDebugMsg:
-        spdlog::get(cat)->debug() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();
+        spdlog::get(cat)->warn() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();
         break;
     case QtWarningMsg:
         spdlog::get(cat)->warn() << ctx.file << "@" << ctx.line << " " << msg.toLatin1().data();
@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 
     // remove all navit instances
     system("killall navit");
+    system("rm -rf ~/.navit/destination.txt");
 
     // Parse app settings
     QCommandLineParser parser;
@@ -84,14 +85,17 @@ int main(int argc, char* argv[])
     });
 
     createLoggers();
-    spdlog::set_pattern("[%H:%M:%S.%e] [%t] [%l] %v");
+    spdlog::set_pattern("[%H:%M:%S.%e] [%n] [%t] [%l] %v");
 
     aInfo() << "NXE version is= " << gNXEVersion << " config path="<< s.configPath();
 
     qDebug() << " args=" << app.arguments();
     parser.parse(app.arguments());
-#if NXE_OS_LINUX
-    s.set<SettingsTags::Navit::Path>(parser.isSet("navit-path") ? parser.value("navit-path").toLatin1().data() : "/usr/bin/");
+#if defined(NXE_OS_LINUX)
+    const QString navitPath = parser.value("navit-path");
+    const QString rmDest = QString("rm -rf %1/destination.txt").arg(navitPath);
+    system(rmDest.toLatin1().data());
+    s.set<SettingsTags::Navit::Path>(parser.isSet("navit-path") ? navitPath.toStdString() : "/usr/bin/");
     s.save();
     s.set<SettingsTags::Navit::ExternalNavit>(parser.isSet("external-navit"));
     s.save();
@@ -110,6 +114,7 @@ int main(int argc, char* argv[])
         NavitQuickProxy proxy{ view.socketName(), view.rootContext() };
         view.rootContext()->setContextProperty("navitProxy", &proxy);
         view.rootContext()->setContextProperty("navitMapsProxy", proxy.navitMapsProxy());
+        view.rootContext()->setContextProperty("navigationProxy", proxy.navitNavigationProxy());
         view.rootContext()->setContextProperty("compositor", &view);
         view.setSource(QUrl("qrc:///qml/CompositorMainView.qml"));
 #if defined(NXE_OS_LINUX)
@@ -127,7 +132,12 @@ int main(int argc, char* argv[])
         });
 
         QObject::connect(&proxy, &NavitQuickProxy::quitSignal, &app, &QGuiApplication::quit);
+        QObject::connect(&view, &NavitSubCompositor::windowDestroyed, [](QVariant) {
+            aInfo() << "Window destroyed!!!!";
+        });
+
         ret = app.exec();
+
     }
     catch (const std::exception& ex) {
         aFatal() << "An error ocurred while running nxe-app. Error code= " << ex.what();

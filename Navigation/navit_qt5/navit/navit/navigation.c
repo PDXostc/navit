@@ -1000,7 +1000,7 @@ calculate_dest_distance(struct navigation *this_, int incr)
 		itm->dest_count=count++;
 		itm=itm->prev;
 	}
-	dbg(lvl_debug,"len %d time %d\n", len, time);
+    dbg(lvl_error,"len %d time %d\n", len, time);
 }
 
 /**

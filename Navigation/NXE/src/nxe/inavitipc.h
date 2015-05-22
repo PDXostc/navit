@@ -41,7 +41,14 @@ struct SearchResult {
 typedef std::vector<SearchResult> SearchResults;
 
 struct PointClicked {
-    typedef std::vector<std::pair<std::string, std::string>> ItemArrayType;
+    struct Info{
+        std::string type;
+        std::string label;
+        std::int32_t distance {-1};
+        std::string address;
+    };
+
+    typedef std::vector<Info> ItemArrayType;
     const Position position;
     const ItemArrayType items;
 };
@@ -62,10 +69,13 @@ public:
     typedef boost::signals2::signal<void()> InitializedSignalType;
 
     // dbus get
-    typedef boost::signals2::signal<void(int)> IntSignalType;
+    typedef boost::signals2::signal<void(std::int32_t)> IntSignalType;
+    typedef boost::signals2::signal<void(bool)> BoolSignalType;
     typedef boost::signals2::signal<void()> EmptySignalType;
     typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
     typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
+    typedef boost::signals2::signal<void(std::string)> StringSignalType;
+
 
     virtual ~INavitIPC() {}
 
@@ -82,6 +92,7 @@ public:
 
     virtual void setCenter(double longitude, double latitude) = 0;
     virtual void setDestination(double longitude, double latitude, const std::string& description) = 0;
+    virtual bool isNavigationRunning() = 0;
     virtual void setPosition(double longitude, double latitude) = 0;
     virtual void clearDestination() = 0;
     virtual void addWaypoint(double longitude, double latitude) = 0;
@@ -97,16 +108,26 @@ public:
     virtual void finishSearch() = 0;
     virtual void setTracking(bool tracking) = 0;
 
+    virtual void distance() = 0;
+    virtual void eta() = 0;
+    virtual void currentStreet() = 0;
+    virtual void zoomToRoute() = 0;
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
     virtual IntSignalType& zoomResponse() = 0;
     virtual EmptySignalType& searchPoiResponse() = 0;
     virtual CurrentCenterSignalType& currentCenterResponse() = 0;
     virtual SearchResultsSignalType& searchResponse() = 0;
+    virtual IntSignalType& distanceResponse() = 0;
+    virtual IntSignalType& etaResponse() = 0;
+    virtual BoolSignalType& navigationChanged() = 0;
+    virtual StringSignalType& currentStreetResponse() = 0;
+
 
     // Signals from IPC
     virtual SpeechSignalType& speechSignal() = 0;
     virtual PointClickedSignalType& pointClickedSignal() = 0;
+    virtual PointClickedSignalType& tapSignal() = 0;
     virtual InitializedSignalType& initializedSignal() = 0;
     virtual RoutingSignalType& routingSignal() = 0;
 };

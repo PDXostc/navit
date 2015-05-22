@@ -279,7 +279,7 @@ ATTR(phone)
 ATTR(entry_fee)
 ATTR(open_hours)
 ATTR(skin)
-ATTR_UNUSED
+ATTR(signal_on_map_click_tap)
 ATTR_UNUSED
 ATTR_UNUSED
 ATTR(window_title)
@@ -423,6 +423,7 @@ ATTR2(0x00060000,type_coord_geo_begin)
 ATTR(position_coord_geo)
 ATTR(center)
 ATTR(click_coord_geo)
+ATTR(tap_coord_geo)
 ATTR2(0x0006ffff,type_coord_geo_end)
 ATTR2(0x00070000,type_color_begin)
 ATTR(color)

@@ -5,10 +5,12 @@ QtObject {
     // real (c++ wise) properties
     property bool ftu: false
     property QtObject currentlySelectedItem: null
+    property QtObject waypointItem: null
     property ListModel favourites: ListModel {}
     property ListModel destinations: ListModel {}
     property int orientation: 0
     property bool topBarLocationVisible : false
+    property int eta: 120
     // Real functions
     function valueFor(settingName) {
         if (settingName === 'orientation') {
@@ -38,8 +40,14 @@ QtObject {
     function searchStreet(searchString) {
         fakeSearchTimer.start();
     }
+    function searchAddress(searchString) {
+        fakeSearchTimer.start();
+    }
 
     function searchNear(string) {
+    }
+
+    function searchSelect(what, id) {
     }
 
     function getHistory() {
@@ -61,13 +69,13 @@ QtObject {
         Qt.quit();
     }
 
-    function setLocationPopUp(itemName) {
-        console.debug('set popup=', itemName)
+    function setLocationPopUp(itemId) {
+        console.debug('set popup=', itemId)
         currentlySelectedItem = fakeLocationObject;
     }
 
     function setTopBarVisibility(value) {
-            topBarLocationVisible = value;
+        topBarLocationVisible = value;
     }
 
     function setFavorite(name, favorite) {
@@ -75,28 +83,17 @@ QtObject {
         fakeLocationObject.favorite = favorite;
     }
 
-    function startNavigation() {
-        navigationStarted()
-    }
-
-    function cancelNavigation() {
-        navigationStopped()
-    }
-
     // Real signals
-
     signal searchDone();
     signal gettingFavoritesDone();
     signal gettingHistoryDone();
-    signal pointClicked(var location)
-    signal navigationStarted()
-    signal navigationStopped()
 
     // fake properties
     property QtObject fakeLocationObject: QtObject {
         property string itemText: "Plac Kościuszki"
         property bool favorite: false
         property string description: "This is a description"
+        property int distance: 1000
     }
 
     property Timer fakeSearchTimer: Timer {
@@ -124,11 +121,19 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: true
-        interval: 1000
+        running: false
+        interval: 1
         repeat: false
         onTriggered: {
-            pointClicked(fakeLocationObject)
+            currentlySelectedItem = fakeLocationObject
+        }
+    }
+    property Timer fakeWaypointTimer: Timer {
+        running: false
+        interval: 500
+        repeat: false
+        onTriggered: {
+            waypointItem = fakeLocationObject
         }
     }
 }

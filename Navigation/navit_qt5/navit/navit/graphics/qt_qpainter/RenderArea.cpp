@@ -29,6 +29,10 @@ bool gestureInProgress = false;
 int numberOfTaps =0;
 bool mouseTimerRunning = false;
 QPoint lastTouchEvent;
+QPoint touchPosition;
+QPoint firstTouchPosition;
+bool sentSignal = false;
+bool isTapAndHold =false;
 #ifdef QT_QPAINTER_USE_EMBEDDING
 EmbeddedWidget::EmbeddedWidget(struct graphics_priv *priv, QWidget* child, QWidget *parent) 
 : QX11EmbedWidget(parent) {
@@ -98,7 +102,6 @@ bool RenderArea::event(QEvent *event)
 {
 	if (event->type() == QEvent::Gesture) {
         QGestureEvent* gest = static_cast<QGestureEvent*>(event);
-        qDebug() << Q_FUNC_INFO<< "Gesture" << gest;
         if( QGesture* pinch = gest->gesture(Qt::PinchGesture) ) {
             // pinch gesture
             QPinchGesture *pinchEve = static_cast<QPinchGesture *>(pinch);
@@ -142,18 +145,23 @@ bool RenderArea::event(QEvent *event)
                     point p;
                     p.x=pressPoint.x();
                     p.y=pressPoint.y();
+                    qDebug() << "Sending t&h signal";
                     callback_list_call_attr_1(this->cbl, attr_signal_on_map_click,  GINT_TO_POINTER(&p));
+                    isTapAndHold = true;
                 }
             }
         }
 
-        return true;
         event->accept();
+        return true;
     } else if(event->type() == QEvent::TouchBegin) {
         if (!gestureInProgress) {
             qDebug() << "Touch begin";
             QTouchEvent* te = static_cast<QTouchEvent*>(event);
             QTouchEvent::TouchPoint p = te->touchPoints().at(0);
+            touchPosition = p.pos().toPoint();
+            firstTouchPosition = touchPosition;
+            qDebug() << "Touch point " << touchPosition;
             mouseEvent(1, p.pos().toPoint());
         }
         event->accept();
@@ -164,6 +172,8 @@ bool RenderArea::event(QEvent *event)
             struct point p;
             p.x=point.pos().x();
             p.y=point.pos().y();
+            touchPosition = point.pos().toPoint();
+            qDebug() << "Touch point " << touchPosition;
             callback_list_call_attr_1(this->cbl, attr_motion, (void *)&p);
         }
         event->accept();
@@ -172,7 +182,28 @@ bool RenderArea::event(QEvent *event)
             QTouchEvent* te = static_cast<QTouchEvent*>(event);
             QTouchEvent::TouchPoint p = te->touchPoints().at(0);
             mouseEvent(0, p.pos().toPoint());
+            qDebug() << "First = " << firstTouchPosition << " last=" << touchPosition;
+            QRect firstRect (firstTouchPosition.x() - 2, firstTouchPosition.y() - 2, 4, 4);
+            QRect lastRect ( touchPosition.x() - 2, touchPosition.y() - 2, 4, 4);
+            qDebug() << "frect = " << firstRect << "lrect=" << lastRect;
+            if (firstRect.intersects(lastRect)) {
+                // this is a tap
+                if (!isTapAndHold) {
+                    qDebug() << "Single tap detected!";
+                    callback_list_call_attr_1(this->cbl, attr_signal_on_map_click_tap,  GINT_TO_POINTER(&p));
+                } else {
+                    qDebug() << "Single tap, but t&h already sent";
+                }
+            } else {
+                if (!isTapAndHold) {
+                    // this was a move opeartion
+                    qDebug() << "Move gesture, sent click_tap";
+                    callback_list_call_attr_1(this->cbl, attr_signal_on_map_click_tap,  GINT_TO_POINTER(&p));
+                }
+            }
+            touchPosition = p.pos().toPoint();
         }
+        isTapAndHold = false;
         event->accept();
     } else {
         return QWidget::event(event);
@@ -246,13 +277,22 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
 
     qDebug() << Q_FUNC_INFO;
     mouseEvent(1, event->pos());
-
 }
 
 void RenderArea::mouseReleaseEvent(QMouseEvent *event)
 {
     qDebug() << Q_FUNC_INFO;
     mouseEvent(0, event->pos());
+    struct point p;
+
+    p.x = event->pos().x();
+    p.y = event->pos().y();
+    if (!sentSignal) {
+        qDebug() << "Sending click_tap singal";
+        callback_list_call_attr_1(this->cbl, attr_signal_on_map_click_tap,  GINT_TO_POINTER(&p));
+    }
+
+    sentSignal = false;
 }
 
 //##############################################################################################################
@@ -382,13 +422,15 @@ void RenderArea::mouseTimer()
     int button {0};
     struct point p;
 
+    p.x = lastTouchEvent.x();
+    p.y = lastTouchEvent.y();
+
     if (numberOfTaps > 3 || numberOfTaps == 1) {
         // don't do anything
         numberOfTaps = 0;
         return;
     }
-    p.x = lastTouchEvent.x();
-    p.y = lastTouchEvent.y();
+
     if(numberOfTaps == 2) {
         qDebug() <<  "zoom in";
         button = 4;

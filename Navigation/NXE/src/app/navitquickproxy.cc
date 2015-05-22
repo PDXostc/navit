@@ -1,6 +1,7 @@
 #include "navitquickproxy.h"
 #include "nxe_instance.h"
 #include "alog.h"
+#include "log.h"
 #include "navitdbus.h"
 #include "navitprocessimpl.h"
 #include "gpsdprovider.h"
@@ -51,12 +52,16 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     , nxeInstance(new NXE::NXEInstance{ context->injector })
     , m_rootContext(ctx)
     , mapsProxy(nxeInstance, ctx)
+    , navigationProxy(nxeInstance)
 {
     nxeInstance->setWaylandSocketName(socketName.toLatin1().data());
+
+    connect(this, &NavitQuickProxy::reloadQueue, this, &NavitQuickProxy::reloadQueueSlot, Qt::QueuedConnection);
 
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
         QString name, description;
+        int distance = -1;
 
         // We may have more than one entry on click (town, street and some poi)
         // The order of checking is (the least important is checked sooner)
@@ -64,40 +69,42 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         // 2.) poi
         // 3.) town
 
-        // is this a street ?
-        auto streetIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>& p) -> bool {
-            return boost::algorithm::starts_with(p.first, "street_");
-        });
-        if (streetIter != pc.items.end()) {
-            name = QString::fromStdString(streetIter->second);
+        auto fillItem = [&pc, &name, &description, &distance](const std::string& searchString) {
+            auto iter = std::find_if(pc.items.begin(), pc.items.end(), [&searchString](const NXE::PointClicked::Info& p) -> bool {
+                return boost::algorithm::starts_with(p.type, searchString);
+            });
+            if (iter != pc.items.end()) {
+                name = QString::fromStdString(iter->label);
+                description = QString::fromStdString(iter->address);
+                distance = iter->distance;
+            }
+        };
+
+        fillItem("street_");
+        fillItem("poly_");
+        fillItem("poi_");
+        fillItem("house_");
+        fillItem("town_label_");
+
+        if (name.isEmpty()) {
+            aError() << "Name of clicked item cannot be empty pc= " << pc;
+            return;
         }
 
-
-        // is this a poi
-        auto poiIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "poi_");
-        });
-        if(poiIter != pc.items.end()) {
-            aDebug() << "we found a POI " << poiIter->second;
-            name = QString::fromStdString(poiIter->second);
+        // check if we have proper position
+        auto pos = nxeInstance->gps()->position();
+        if (std::isnan(pos.longitude) || std::isnan(pos.latitude)) {
+            aError() << "We don't have correct position so probably gps is not running";
+            distance = -1;
         }
 
-        // is this a town
-        auto townIter = std::find_if(pc.items.begin(), pc.items.end(), [](const std::pair<std::string, std::string>&p) ->bool {
-            return boost::algorithm::starts_with(p.first, "town_label_");
-        });
-        if(townIter != pc.items.end()) {
-            aDebug() << "we found a town " << townIter->second;
-            name = QString::fromStdString(townIter->second);
-        }
+        // if we're navigating use different item
 
-        // if name is still empty and we have only one entry
-        if (name.isEmpty() && pc.items.size() == 1) {
-            name = QString::fromStdString(pc.items.front().second);
-        }
+        nxeInstance->ipc()->setTracking(false);
 
-        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude;
-        auto loc = new LocationProxy { name, false, "1234 N Main, Portland, OR 97208", false};
+        aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude
+                 << " distance = " << distance;
+        auto loc = new LocationProxy { name, false, description, false, -1, distance};
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
@@ -109,16 +116,37 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_settings.removeFromFavorites(loc->id().toByteArray().data());
             }
         });
-        m_currentItem.reset(loc);
-        emit currentlySelectedItemChanged();
+        if (navigationProxy.navigation()) {
+            aInfo() << "Navigation take place, use different item";
+            m_waypointItem.reset(loc);
+            emit waypointItemChanged();
+        }
+        else {
+            aInfo() << "Not navigating, select this and show on the screen";
+            m_currentItem.reset(loc);
+            emit currentlySelectedItemChanged();
+        }
     });
 
-    nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
-        emit navigationManuver(QString::fromStdString(manuver));
+    nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
+        aTrace() << "Tap click";
+        // even if it's in navigation, we allow free map mode
+        nxeInstance->ipc()->setTracking(false);
+
+        if(navigationProxy.navigation()) {
+            // hey dude, don't dismiss navigation!
+            return;
+        }
+
+        if(m_currentItem) {
+            aDebug() << "User tapped, dismiss location bar";
+            m_currentItem.reset();
+            emit currentlySelectedItemChanged();
+        }
     });
+
 
     // Navit dbus responses
-
     nxeInstance->ipc()->searchResponse().connect([this](NXE::SearchResults results, NXE::INavitIPC::SearchType type) {
         if (type == NXE::INavitIPC::SearchType::Country) {
             for (NXE::SearchResult result : results) {
@@ -126,14 +154,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_countriesSearchResults.append(new LocationProxy{ result });
             }
             aDebug() << "Country Model size = " << m_countriesSearchResults.size() << static_cast<void*>(m_rootContext);
-            m_rootContext->setContextProperty("countrySearchResult", QVariant::fromValue(m_countriesSearchResults));
+            emit reloadQueue("countrySearchResult", m_countriesSearchResults);
         }
         else if (type == NXE::INavitIPC::SearchType::City) {
             for (NXE::SearchResult city : results) {
                 m_citiesSearchResults.append(new LocationProxy{ city });
             }
             aDebug() << "City Model size = " << m_citiesSearchResults.size();
-            m_rootContext->setContextProperty("citySearchResult", QVariant::fromValue(m_citiesSearchResults));
+            emit reloadQueue("citySearchResult", m_citiesSearchResults);
         }
         else if (type == NXE::INavitIPC::SearchType::Street) {
 
@@ -141,14 +169,14 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
                 m_streetsSearchResults.append(new LocationProxy{ street });
             }
             aDebug() << "Street Model size = " << m_streetsSearchResults.size();
-            m_rootContext->setContextProperty("streetSearchResult", QVariant::fromValue(m_streetsSearchResults));
+            emit reloadQueue("streetSearchResult", m_streetsSearchResults);
         }
         else if(type == NXE::INavitIPC::SearchType::Address ){
             for (NXE::SearchResult result : results) {
                 m_addressSearchResults.append(new LocationProxy{ result });
             }
             aDebug() << "Address Model size = " << m_addressSearchResults.size();
-            m_rootContext->setContextProperty("addressSearchResult", QVariant::fromValue(m_addressSearchResults));
+            emit reloadQueue("addressSearchResult", m_addressSearchResults);
         }
         emit searchDone();
     });
@@ -158,8 +186,15 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
 
     QTimer::singleShot(500, this, SLOT(initNavit()));
+}
 
-    m_settings.favorites();
+NavitQuickProxy::~NavitQuickProxy()
+{
+    aDebug() << __PRETTY_FUNCTION__;
+    nxeInstance->setPositionUpdateListener(0);
+
+    qDeleteAll(m_historyResults);
+    m_historyResults.clear();
 }
 
 int NavitQuickProxy::orientation()
@@ -223,6 +258,11 @@ void NavitQuickProxy::setFtu(bool value)
     emit ftuChanged();
 }
 
+QObject *NavitQuickProxy::waypointItem() const
+{
+    return m_waypointItem.data();
+}
+
 QObject* NavitQuickProxy::currentlySelectedItem() const
 {
     return m_currentItem.data();
@@ -251,7 +291,6 @@ void NavitQuickProxy::reset()
 void NavitQuickProxy::quit()
 {
     aInfo() << "Quiting application";
-    nxeInstance->ipc()->clearDestination();
     nxeInstance->ipc()->quit();
 
     emit quitSignal();
@@ -301,6 +340,10 @@ void NavitQuickProxy::startSearch()
 
 void NavitQuickProxy::finishSearch()
 {
+    clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
+    clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
+    clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
+    clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
     nxeInstance->ipc()->finishSearch();
 }
 
@@ -386,32 +429,19 @@ void NavitQuickProxy::getFavorites()
 }
 void NavitQuickProxy::getHistory()
 {
-    aFatal() << "Not implemented " << __PRETTY_FUNCTION__;
-
-    m_historyResults.append(new LocationProxy{ "hist_test1", false, "", true });
-
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
-
     emit gettingHistoryDone();
-}
-
-void NavitQuickProxy::startNavigation()
-{
-    aInfo() << "Starting Navigation for " << static_cast<void*>(m_currentItem.data());
-    nxeInstance->ipc()->setDestination(m_currentItem->longitude(), m_currentItem->latitude(),
-        m_currentItem->description().toStdString());
-    emit navigationStarted();
-}
-
-void NavitQuickProxy::cancelNavigation()
-{
-    nxeInstance->ipc()->clearDestination();
-    emit navigationStopped();
 }
 
 void NavitQuickProxy::setZoom(int newZoom)
 {
     nxeInstance->ipc()->setZoom(newZoom);
+}
+
+void NavitQuickProxy::clearWaypoint()
+{
+    m_waypointItem.reset();
+    emit waypointItemChanged();
 }
 
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
@@ -422,6 +452,14 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
     tmp.append(m_streetsSearchResults);
     tmp.append(m_addressSearchResults);
     tmp.append(m_favoritesResults);
+    tmp.append(m_historyResults);
+
+    aDebug() << "Searching id =" <<id.toByteArray().data() << " in= ";
+    std::for_each(tmp.begin(), tmp.end(), [](QObject* o) {
+        LocationProxy* p = qobject_cast<LocationProxy*>(o);
+        aDebug() << p->id().toString().toStdString();
+    });
+
     int newZoomLevel = -1;
     QObject* foundItem = nullptr;
     std::for_each(tmp.begin(), tmp.end(), [this, &id, &foundItem](QObject* o) {
@@ -432,6 +470,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // and this will points to an deleted object
             foundItem = proxy;
             m_currentItem.reset(LocationProxy::clone(proxy));
+            m_historyResults.append(LocationProxy::clone(proxy));
         }
     });
 
@@ -507,4 +546,10 @@ void NavitQuickProxy::synchronizeNavit()
     // audio
     nxeInstance->setAudioMute(!(m_settings.get<Tags::Voice>()));
     nxeInstance->ipc()->setPitch(m_settings.get<Tags::MapView>() == "2D" ? 0 : 30);
+    nxeInstance->ipc()->setTracking(true);
+}
+
+void NavitQuickProxy::reloadQueueSlot(const QString &listName, const QObjectList &list)
+{
+    m_rootContext->setContextProperty(listName, QVariant::fromValue(list));
 }

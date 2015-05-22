@@ -53,7 +53,7 @@ Item {
     Row {
         anchors.fill: parent
 
-        Text {
+        NText {
             id: mainTextItem
             width: parent.width * 2 / 3
             height: parent.height
@@ -67,7 +67,7 @@ Item {
             width: parent.width - mainTextItem.width
             height: parent.height
 
-            Text {
+            NText {
                 id: optionText
                 text: type === "text" ? options.get(currentOption).option : ""
                 visible: type === "text"

@@ -134,7 +134,7 @@ struct navit {
 	GList *windows_items;
 	struct navit_vehicle *vehicle;
 	struct callback_list *attr_cbl;
-	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb, *clicked_point_cb;
+	struct callback *nav_speech_cb, *roadbook_callback, *popup_callback, *route_cb, *progress_cb, *clicked_point_cb, *clicked_point_tap_cb;
 	struct datawindow *roadbook_window;
 	struct map *former_destination;
 	struct point pressed, last, current;
@@ -229,6 +229,74 @@ navit_compose_item_address_string(struct item *item, int prependPostal)
 	return s;
 }
 
+int navit_create_curr_position_distance_attr(struct pcoord *c, struct attr *attr)
+{
+	struct transformation *trans;
+	struct coord curr_coord;
+	struct coord coord;
+	int ret=0;
+	struct navit *this_ = global_navit;
+
+	coord.x = c->x;
+	coord.y = c->y;
+
+	trans=navit_get_trans(this_);
+
+	if(this_->vehicle && this_->vehicle->vehicle ) {
+	   struct attr pos_attr;
+
+	   if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL)) {
+		  transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
+		  attr->type = attr_curr_position_distance;
+		  attr->u.num = transform_distance(c->pro, &curr_coord, &coord);
+		  ret=1;
+	   }
+	}
+
+	return ret;
+}
+
+struct attr** navit_add_item_distance_from_curr_pos(struct navit *this_, struct item *item, struct attr **attr_list)
+{
+	struct attr attr;
+
+	struct transformation *trans;
+    struct coord c;
+    struct coord curr_coord;
+
+    trans=navit_get_trans(this_);
+
+    if(this_->vehicle && this_->vehicle->vehicle ) {
+    	struct attr pos_attr;
+
+    	if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL) &&
+    	   item_coord_get_pro(item, &c, 1, transform_get_projection(trans))) {
+
+    	   transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
+    	   attr.type = attr_curr_position_distance;
+
+    	   attr.u.num = transform_distance(transform_get_projection(trans), &curr_coord, &c);
+    	   attr_list=attr_generic_add_attr(attr_list, &attr);
+    	}
+  	}
+
+    return attr_list;
+}
+
+
+struct attr** navit_add_item_address(struct navit *this_, struct item *item, struct attr **attr_list)
+{
+	struct attr attr;
+	char* address=NULL;
+
+    if ((address=navit_compose_item_address_string(item,0)) !=NULL) {
+    	attr.type = attr_address;
+    	attr.u.str = address;
+    	attr_list=attr_generic_add_attr(attr_list, &attr);
+    }
+
+    return attr_list;
+}
 
 
 struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
@@ -280,25 +348,10 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 
 				attr_list=attr_generic_add_attr(attr_list, &attr);
 
-				if(this_->vehicle && this_->vehicle->vehicle ) {
-					struct attr pos_attr;
-
-					if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL) &&
-					   item_coord_get_pro(itemo, &c, 1, transform_get_projection(trans))) {
-
-					   transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
-					   attr.type = attr_curr_position_distance;
-
-					   attr.u.num = transform_distance(transform_get_projection(trans), &curr_coord, &c);
-					   attr_list=attr_generic_add_attr(attr_list, &attr);
-					}
-				}
-
-				if ((address=navit_compose_item_address_string(itemo,0)) !=NULL) {
-					attr.type = attr_address;
-					attr.u.str = address;
-					attr_list=attr_generic_add_attr(attr_list, &attr);
-				}
+				// item distance from current position
+				attr_list=navit_add_item_distance_from_curr_pos(this_,itemo,attr_list);
+				// item address
+				attr_list=navit_add_item_address(this_,itemo,attr_list);
 			}
 			map_rect_destroy(mr);
 		}
@@ -316,6 +369,35 @@ void navit_dbus_send_point_info(void* data, struct point *p)
 	int valid=0;
 
 	attr_list = navit_get_point_attr_list(this,p);
+
+	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
+		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+
+	attr_list_free(attr_list);
+}
+
+static
+void navit_dbus_send_tap_point_info(void* data, struct point *p)
+{
+	struct navit *this=data;
+	struct attr attr, cb, **attr_list=NULL;
+	int valid=0;
+	struct transformation *trans;
+	struct coord c;
+	struct coord_geo g;
+
+	// transform pixel coordinates to geo coordinates
+    trans=navit_get_trans(this);
+    transform_reverse(trans, p, &c);
+    dbg(lvl_error, "%d %d", p->x, p->y);
+    dbg(lvl_error, "%d %d", c.x, c.y);
+    transform_to_geo(transform_get_projection(trans), &c, &g);
+
+	attr.u.coord_geo=&g;
+    attr.type=attr_tap_coord_geo;
+
+	    // add clicked point geo coordinates to atrributes list:
+    attr_list=attr_generic_add_attr(attr_list, &attr);
 
 	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
 		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
@@ -390,6 +472,11 @@ struct attr** navit_get_selected_pois(struct navit *this_, struct pcoord cn, int
                     }
 
                     attr_list=attr_generic_add_attr(attr_list, &attr);
+
+                    // item distance from current position
+    				attr_list=navit_add_item_distance_from_curr_pos(this_,item,attr_list);
+    				// item address
+    				attr_list=navit_add_item_address(this_,item,attr_list);
 	            }
 	    	}
 	    }
@@ -1726,6 +1813,8 @@ navit_set_graphics(struct navit *this_, struct graphics *gra)
 	graphics_add_callback(gra, this_->predraw_callback);
 	this_->clicked_point_cb=callback_new_attr_1(callback_cast(navit_dbus_send_point_info), attr_signal_on_map_click, this_);
 	graphics_add_callback(gra, this_->clicked_point_cb);
+	this_->clicked_point_tap_cb=callback_new_attr_1(callback_cast(navit_dbus_send_tap_point_info), attr_signal_on_map_click_tap, this_);
+	graphics_add_callback(gra, this_->clicked_point_tap_cb);
 
 	return 1;
 }

@@ -6,6 +6,7 @@ Page {
     NDialog {
         id: dialogItem
         headerText: "Are you sure?"
+        width: parent.width
         dialogText: "All saved maps, locations, destinations and settings will be removed"
         bottomBarComponent: Row {
             width: dialogItem.width

@@ -40,6 +40,9 @@ Rectangle {
                 if (currentItem && currentItem.customHeader) {
                     console.debug(currentItem, currentItem.customHeader)
                     settingsHeaderItem.header = currentItem.customHeader
+                    if (ftu) {
+                        settingsHeaderItem.isHeaderEnabled = (settingsStackView.depth == 3)
+                    }
                 }
             }
 

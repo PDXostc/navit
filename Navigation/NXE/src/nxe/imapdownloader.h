@@ -11,6 +11,7 @@ struct MapInfo {
     std::string name;
     std::uint64_t size;
     bool downloaded;
+    std::string continent;
 };
 
 struct MapDownloaderListener {

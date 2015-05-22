@@ -34,6 +34,11 @@ Item {
                 color: "#242424"
                 anchors.fill: parent
 
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {}
+                }
+
                 Image {
                     id: image1
                     x: 18
@@ -43,12 +48,6 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     source: "back_icon_white_lg.png"
-                }
-
-                MouseArea {
-                    id: topLocationBarBackButton
-                    anchors.fill: parent
-                    onClicked: requestHideBars()
                 }
             }
         }
@@ -99,7 +98,20 @@ Item {
                     x: 302
                     y: 36
                     color: "#09bcdf"
-                    text: qsTr("3 min")
+                    text: {
+                        var str;
+                        if (navigationProxy.eta === -1) {
+                            str = qsTr("Unknown eta");
+                        } else {
+                            if (navigationProxy.eta < 60) {
+                                str = navigationProxy.eta + " sec";
+                            } else {
+                                var minutes = Math.floor(navigationProxy.eta / 60);
+                                str = minutes + " min";
+                            }
+                        }
+                        return str;
+                    }
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight
@@ -111,7 +123,20 @@ Item {
                     x: 284
                     y: 58
                     color: "#09bcdf"
-                    text: qsTr("0.2 miles")
+                    text: {
+                        if (navigationProxy.distanceToDestination === -1) {
+                            return qsTr("Unknown distance")
+                        } else {
+                            var destStr;
+                            if (navigationProxy.distanceToDestination > 1000 ) {
+                                var dist = Number(navigationProxy.distanceToDestination/1000).toFixed(1);
+                                destStr = dist + " km";
+                            } else {
+                                destStr = navigationProxy.distanceToDestination + " m";
+                            }
+                            return destStr;
+                        }
+                    }
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     horizontalAlignment: Text.AlignRight
@@ -130,7 +155,9 @@ Item {
         visible: extraInfoVisible
         MouseArea {
             anchors.fill: parent
-            onClicked: navitProxy.cancelNavigation()
+            onClicked: {
+                navigationProxy.stopNavigation()
+            }
         }
         Image {
             width: 76

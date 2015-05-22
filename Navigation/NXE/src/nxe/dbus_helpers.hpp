@@ -4,6 +4,9 @@
 #include <dbus-c++/interface.h>
 #include <dbus-c++/message.h>
 
+#include <chrono>
+#include "log.h"
+
 namespace NXE {
 namespace DBusHelpers {
 
@@ -54,17 +57,30 @@ namespace __details {
     bool callNoReply(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
         using namespace __details;
+        using std::chrono::high_resolution_clock;
+        using std::chrono::milliseconds;
+
+        auto _start = high_resolution_clock::now();
+
         DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member(methodName.c_str());
         unpack(it, attr...);
-        return proxy.invoke_method_noreply(call);
+        bool val = proxy.invoke_method_noreply(call);
+
+        dbusTrace() << "Call " << methodName << " took "
+                    << std::chrono::duration_cast<milliseconds>(high_resolution_clock::now() - _start).count() << " ms";
+
+        return val;
     }
 
     template <typename... Args>
     ::DBus::Message call(const std::string& methodName, ::DBus::InterfaceProxy& proxy, Args... attr)
     {
+        using std::chrono::high_resolution_clock;
+        using std::chrono::milliseconds;
         using namespace __details;
+        auto _start = high_resolution_clock::now();
         DBus::CallMessage call;
         ::DBus::MessageIter it = call.writer();
         call.member(methodName.c_str());
@@ -74,6 +90,8 @@ namespace __details {
         if (ret.is_error()) {
             throw std::runtime_error("Unable to call" + methodName);
         }
+        dbusTrace() << "Call " << methodName << " took "
+                    << std::chrono::duration_cast<milliseconds>(high_resolution_clock::now() - _start).count() << " ms";
         return ret;
     }
 
@@ -83,7 +101,7 @@ namespace __details {
         ::DBus::Variant val;
         ::DBus::MessageIter ww = val.writer();
         ww << value;
-        callNoReply("set_attr", proxy, attrName, val);
+        call("set_attr", proxy, attrName, val);
     }
 
     template<typename T>

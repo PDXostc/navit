@@ -10,6 +10,7 @@
 #include "imapdownloader.h"
 #include "navitmapsproxy.h"
 #include "locationproxy.h"
+#include "navitnavigationproxy.h"
 
 namespace NXE {
 struct JSONMessage;
@@ -26,9 +27,11 @@ class NavitQuickProxy : public QObject
     Q_PROPERTY(bool enablePoi READ enablePoi WRITE setEnablePoi NOTIFY enablePoiChanged)
     Q_PROPERTY(bool ftu READ ftu WRITE setFtu NOTIFY ftuChanged)
     Q_PROPERTY(QObject* currentlySelectedItem READ currentlySelectedItem NOTIFY currentlySelectedItemChanged)
+    Q_PROPERTY(QObject* waypointItem READ waypointItem NOTIFY waypointItemChanged)
 
 public:
-    explicit NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
+    NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QObject *parent = 0);
+    ~NavitQuickProxy();
 
     int orientation();
     void setOrientation(int);
@@ -42,29 +45,24 @@ public:
     bool ftu() const;
     void setFtu(bool value);
 
+    QObject* waypointItem() const;
     QObject* currentlySelectedItem() const;
     QObject* navitMapsProxy() {return &mapsProxy;}
+    QObject* navitNavigationProxy() {return &navigationProxy;}
 
     void resize(const QRect& rect);
-
 signals:
     void orientationChanged();
     void enablePoiChanged();
     void ftuChanged();
-
     void quitSignal();
-
     void searchDone();
     void gettingHistoryDone();
     void currentlySelectedItemChanged();
+    void waypointItemChanged();
     void topBarLocationVisibleChanged();
 
-    void pointClicked(LocationProxy* location);
-
-    // Navigation
-    void navigationStarted();
-    void navigationStopped();
-    void navigationManuver(const QString& manuver);
+    void reloadQueue(const QString&, const QObjectList& l);
 
 public slots:
     void render();
@@ -83,22 +81,19 @@ public slots:
     void searchAddress(const QString& street);
     void searchSelect(const QString& what, int id);
     void searchNear(const QString& str);
-
     void moveToCurrentPosition();
-
     void getFavorites();
     void getHistory();
     void setLocationPopUp(const QUuid& id);
-
-    // Navigation API
-    void startNavigation();
-    void cancelNavigation();
-
     void setZoom(int newZoom);
+
+    void clearWaypoint();
 
 private slots:
     void initNavit();
     void synchronizeNavit();
+
+    void reloadQueueSlot(const QString& listName, const QObjectList& list);
 private:
 
     std::shared_ptr<Context> context;
@@ -106,6 +101,7 @@ private:
     QQmlContext* m_rootContext;
     AppSettings m_settings;
     NavitMapsProxy mapsProxy;
+    NavitNavigationProxy navigationProxy;
     QObjectList m_countriesSearchResults;
     QObjectList m_citiesSearchResults;
     QObjectList m_streetsSearchResults;
@@ -113,6 +109,7 @@ private:
     QObjectList m_favoritesResults;
     QObjectList m_historyResults;
     QScopedPointer<LocationProxy> m_currentItem;
+    QScopedPointer<LocationProxy> m_waypointItem;
 };
 
 #endif // NAVITQUICKPROXY_H
