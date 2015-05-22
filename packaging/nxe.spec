@@ -1,8 +1,8 @@
 %define nxe_dir Navigation/NXE
 
 Name:           nxe
-Version:        1.0
-Release:        6
+Version:        1.1
+Release:        0
 Summary:        Crosswalk extension to control Navit
 
 Group:          Applications/Navigation
