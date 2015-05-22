@@ -58,6 +58,13 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
     connect(this, &NavitQuickProxy::reloadQueue, this, &NavitQuickProxy::reloadQueueSlot, Qt::QueuedConnection);
 
+    connect(&navigationProxy, &NavitNavigationProxy::navigationChanged, [this]() {
+        if (!navigationProxy.navigation()) {
+            aDebug() << "Navigation canceled, change current item";
+            changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
+        }
+    });
+
     nxeInstance->pointClickedSignal().connect([this](const NXE::PointClicked& pc) {
 
         QString name, description;
@@ -188,7 +195,12 @@ NavitQuickProxy::~NavitQuickProxy()
     aDebug() << __PRETTY_FUNCTION__;
     nxeInstance->setPositionUpdateListener(0);
 
-    reset();
+    clearList(m_countriesSearchResults, "countrySearchResult", m_rootContext);
+    clearList(m_citiesSearchResults, "citySearchResult", m_rootContext);
+    clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
+    clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
+    clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
+    clearList(m_historyResults, "locationHistoryResult", m_rootContext);
 }
 
 int NavitQuickProxy::orientation()
@@ -572,6 +584,7 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
             delete proxy;
         }
         aDebug() << "Changing to " << tmpProxy->itemText().toStdString() << " ptr-" << static_cast<void*>(tmpProxy);
+        assert(tmpProxy);
         m_currentItem.reset(tmpProxy);
         m_historyResults.append(LocationProxy::clone(tmpProxy));
         tmpProxy->moveToThread(this->thread());

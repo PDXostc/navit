@@ -8,6 +8,8 @@ namespace NXE{
 class NXEInstance;
 }
 
+class LocationProxy;
+
 class NavitNavigationProxy : public QObject
 {
     Q_OBJECT
@@ -23,6 +25,8 @@ public:
     int distanceToDestination() const { return m_distance;}
     int eta() { return m_eta;}
     QString currentStreet() const {return m_currentStreet;}
+
+    LocationProxy* currentNaviItem() const {return m_currentNavigationItem.data();}
 signals:
     // Navigation
     void navigationChanged();
@@ -31,7 +35,6 @@ signals:
     void etaChanged();
     void currentStreetChanged();
     void navigationFinished();
-
 
     // Private don't use
     void requestMoveToCurrentPosition(int timeout);
@@ -47,6 +50,7 @@ private:
     int m_distance;
     int m_eta;
     QString m_currentStreet;
+    QScopedPointer<LocationProxy> m_currentNavigationItem;
 };
 
 #endif // NAVITNAVIGATIONPROXY_H
