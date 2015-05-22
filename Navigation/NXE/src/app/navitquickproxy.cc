@@ -281,6 +281,7 @@ void NavitQuickProxy::reset()
     clearList(m_streetsSearchResults, "streetSearchResult", m_rootContext);
     clearList(m_addressSearchResults, "addressSearchResult", m_rootContext);
     clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
+    clearList(m_historyResults, "locationHistoryResult", m_rootContext);
 
     m_settings.remove();
     nxeInstance->mapDownloader()->removeAllMaps();
