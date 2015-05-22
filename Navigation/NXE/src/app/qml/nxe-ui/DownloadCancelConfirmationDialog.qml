@@ -34,7 +34,7 @@ Page {
 
             NButton {
                 id: cancelItem
-                text: "Yes"
+                text: navitProxy.ftu? "Cancel": "Yes"
                 iconSource: "next_icon_white.png"
                 onClicked: {
                     root.busy = true;
