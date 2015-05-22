@@ -110,27 +110,20 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
-        connect(loc, &LocationProxy::favoriteChanged, [this, &loc](){
-
-            if (loc->favorite()){
-                m_settings.addToFavorites(loc);
-            } else {
-                m_settings.removeFromFavorites(loc->id().toByteArray().data());
-            }
-        });
         if (navigationProxy.navigation()) {
-            aInfo() << "Navigation take place, use different item";
+            aInfo() << "Navigation take place, this will be an waypoint";
             m_waypointItem.reset(loc);
             emit waypointItemChanged();
         }
         else {
             aInfo() << "Not navigating, select this and show on the screen";
-            m_currentItem.reset(loc);
-            emit currentlySelectedItemChanged();
+            // before checking refresh favorites
+            getFavorites();
+            changeCurrentItem(loc);
         }
     });
 
-    nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p){
+    nxeInstance->ipc()->tapSignal().connect([this](const NXE::PointClicked& p) {
         aTrace() << "Tap click";
         // even if it's in navigation, we allow free map mode
         nxeInstance->ipc()->setTracking(false);
@@ -195,8 +188,7 @@ NavitQuickProxy::~NavitQuickProxy()
     aDebug() << __PRETTY_FUNCTION__;
     nxeInstance->setPositionUpdateListener(0);
 
-    qDeleteAll(m_historyResults);
-    m_historyResults.clear();
+    reset();
 }
 
 int NavitQuickProxy::orientation()
@@ -260,7 +252,7 @@ void NavitQuickProxy::setFtu(bool value)
     emit ftuChanged();
 }
 
-QObject *NavitQuickProxy::waypointItem() const
+QObject* NavitQuickProxy::waypointItem() const
 {
     return m_waypointItem.data();
 }
@@ -450,18 +442,16 @@ void NavitQuickProxy::clearWaypoint()
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
 {
     aDebug() << Q_FUNC_INFO;
+
+    // clear all popup
+    changeCurrentItem(nullptr);
+
     QObjectList tmp;
     tmp.append(m_citiesSearchResults);
     tmp.append(m_streetsSearchResults);
     tmp.append(m_addressSearchResults);
     tmp.append(m_favoritesResults);
     tmp.append(m_historyResults);
-
-    aDebug() << "Searching id =" <<id.toByteArray().data() << " in= ";
-    std::for_each(tmp.begin(), tmp.end(), [](QObject* o) {
-        LocationProxy* p = qobject_cast<LocationProxy*>(o);
-        aDebug() << p->id().toString().toStdString();
-    });
 
     int newZoomLevel = -1;
     QObject* foundItem = nullptr;
@@ -472,8 +462,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             foundItem = proxy;
-            m_currentItem.reset(LocationProxy::clone(proxy));
-            m_historyResults.append(LocationProxy::clone(proxy));
+            changeCurrentItem(LocationProxy::clone(proxy));
         }
     });
 
@@ -481,14 +470,6 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
         aFatal() << "Unable to find item= " << id.toByteArray().data();
         return;
     }
-    emit currentlySelectedItemChanged();
-    connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
-            aInfo() << "Adding " << m_currentItem->id().toByteArray().data() << " to favs";
-            if (m_currentItem->favorite())
-                m_settings.addToFavorites(m_currentItem.data());
-            else
-                m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
-    });
 
     // disable tracking
 
@@ -552,7 +533,56 @@ void NavitQuickProxy::synchronizeNavit()
     nxeInstance->ipc()->setTracking(true);
 }
 
-void NavitQuickProxy::reloadQueueSlot(const QString &listName, const QObjectList &list)
+void NavitQuickProxy::reloadQueueSlot(const QString& listName, const QObjectList& list)
 {
     m_rootContext->setContextProperty(listName, QVariant::fromValue(list));
+}
+
+void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
+{
+    aDebug() << "Currently selected item ptr=" << static_cast<void*>(proxy);
+    if (proxy == nullptr ) {
+        if (m_currentItem) {
+            aTrace() << "Request for clear all current item";
+            QObject::disconnect(m_currentItem.data());
+            m_currentItem.reset();
+        }
+    }
+    else {
+
+        // check if this is already in favorites, and if so, change the falue of favorite
+        LocationProxy* tmpProxy = proxy;
+
+        auto favIter = std::find_if(m_favoritesResults.begin(), m_favoritesResults.end(), [&proxy, &tmpProxy](QObject* o) -> bool {
+            LocationProxy* _proxy = qobject_cast<LocationProxy*>(o);
+            if (_proxy->itemText() == proxy->itemText()) {
+                aDebug() << "Found item in favorites, use this one ";
+                // favorite list is managed by m_favoritesResults and this list will be cleared (and deleted)
+                // every time someone calls getFavorites
+                tmpProxy = LocationProxy::clone(_proxy);
+                return true;
+            }
+
+            return false;
+        });
+
+        if (favIter != m_favoritesResults.end()) {
+            // already in favorites, use favorite item which is not pointed by tmpProxy
+            aDebug() << "Since we found a fav we need to free ptr= " << static_cast<void*>(proxy);
+            delete proxy;
+        }
+        aDebug() << "Changing to " << tmpProxy->itemText().toStdString() << " ptr-" << static_cast<void*>(tmpProxy);
+        m_currentItem.reset(tmpProxy);
+        m_historyResults.append(LocationProxy::clone(tmpProxy));
+        tmpProxy->moveToThread(this->thread());
+
+        connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
+                aInfo() << "Adding " << m_currentItem->id().toByteArray().data() << " to favs";
+                if (m_currentItem->favorite())
+                    m_settings.addToFavorites(m_currentItem.data());
+                else
+                    m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
+        });
+    }
+    emit currentlySelectedItemChanged();
 }

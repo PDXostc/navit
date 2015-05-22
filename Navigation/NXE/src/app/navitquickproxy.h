@@ -96,6 +96,8 @@ private slots:
     void reloadQueueSlot(const QString& listName, const QObjectList& list);
 private:
 
+    void changeCurrentItem(LocationProxy* proxy);
+
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QQmlContext* m_rootContext;
