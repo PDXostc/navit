@@ -90,6 +90,19 @@ Item {
             }
             navigationManuvers.append({manuver: "turnLeft", manuverText: manuverDescription, active: true})
         }
+
+        onNavigationFinished: {
+            navigationCancellationTimer.start();
+        }
+    }
+
+    Timer {
+        id: navigationCancellationTimer
+        running: false
+        interval: 3000
+        onTriggered: {
+            navigationProxy.stopNavigation();
+        }
     }
 
     Component {

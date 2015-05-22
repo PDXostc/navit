@@ -81,6 +81,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         };
 
         fillItem("street_");
+        fillItem("cycleway");
+        fillItem("highway_");
         fillItem("poly_");
         fillItem("poi_");
         fillItem("house_");

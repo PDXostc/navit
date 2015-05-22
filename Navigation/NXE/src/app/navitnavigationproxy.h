@@ -30,6 +30,7 @@ signals:
     void distanceToDestinationChanged();
     void etaChanged();
     void currentStreetChanged();
+    void navigationFinished();
 
 
     // Private don't use

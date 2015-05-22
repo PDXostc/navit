@@ -90,5 +90,7 @@
         <file>qml/nxe-ui/list_toggle_closed_white.png</file>
         <file>qml/nxe-ui/list_toggle_open_white.png</file>
         <file>qml/nxe-ui/DownloadCancelConfirmationDialog.qml</file>
+        <file>qml/nxe-ui/images/flag_icon_black.png</file>
+        <file>qml/nxe-ui/NavigationImages.js</file>
     </qresource>
 </RCC>

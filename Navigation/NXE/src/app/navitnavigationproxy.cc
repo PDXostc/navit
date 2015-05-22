@@ -5,7 +5,7 @@
 
 #include <QtCore/QTimer>
 
-NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QObject *parent)
+NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QObject* parent)
     : QObject(parent)
     , nxeInstance(nxe)
     , m_distance(-1)
@@ -14,9 +14,15 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
     connect(this, &NavitNavigationProxy::requestMoveToCurrentPosition, this, &NavitNavigationProxy::moveToCurrentPositionWitTimeout, Qt::QueuedConnection);
 
     nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
-        emit navigationManuver(QString::fromStdString(manuver));
+        if (manuver == "You have reached your destination now") {
+            emit navigationManuver("You have arrived");
+            emit navigationFinished();
+        }
+        else {
+            emit navigationManuver(QString::fromStdString(manuver));
+        }
     });
-    nxeInstance->ipc()->distanceResponse().connect([this] (std::int32_t distance) {
+    nxeInstance->ipc()->distanceResponse().connect([this](std::int32_t distance) {
         m_distance = distance;
         emit distanceToDestinationChanged();
     });
@@ -31,7 +37,7 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
         emit navigationChanged();
     });
 
-    nxeInstance->ipc()->etaResponse().connect([this] (std::int32_t eta) {
+    nxeInstance->ipc()->etaResponse().connect([this](std::int32_t eta) {
         aDebug() << "Eta received " << eta;
 
         // this is from Navit gui_gtk_statusbar.c
@@ -60,7 +66,7 @@ void NavitNavigationProxy::startNavigation(QObject* currentItem)
     nxeInstance->startNavigation(p->longitude(), p->latitude(), p->description().toStdString());
 }
 
-void NavitNavigationProxy::addWaypoint(QObject *item)
+void NavitNavigationProxy::addWaypoint(QObject* item)
 {
     aDebug() << "Adding waypoint";
     LocationProxy* p = qobject_cast<LocationProxy*>(item);
