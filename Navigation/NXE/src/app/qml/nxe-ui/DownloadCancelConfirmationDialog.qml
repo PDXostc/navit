@@ -14,6 +14,7 @@ Page {
                 rootStack.push({
                            item: Qt.resolvedUrl("NxeUI.qml")
                        })
+                navitProxy.quit();
             }
         }
     }
@@ -34,7 +35,7 @@ Page {
 
             NButton {
                 id: cancelItem
-                text: navitProxy.ftu? "Cancel": "Yes"
+                text: "Quit"
                 iconSource: "next_icon_white.png"
                 onClicked: {
                     root.busy = true;
