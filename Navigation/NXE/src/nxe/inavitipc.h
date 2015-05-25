@@ -98,6 +98,8 @@ public:
     virtual void addWaypoint(double longitude, double latitude) = 0;
     virtual void searchPOIs(double longitude, double latitude, int distance) = 0;
     virtual void setPitch(std::uint16_t newPitchValue) = 0;
+    virtual void setLocationPoint(double longitude, double latitude) = 0;
+    virtual void clearLocationPoint() = 0;
 
     virtual void setScheme(const std::string& scheme) = 0;
     virtual void currentCenter() = 0;

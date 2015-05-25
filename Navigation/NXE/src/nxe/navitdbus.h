@@ -29,6 +29,8 @@ public:
     virtual void addWaypoint(double longitude, double latitude) override;
     virtual void setScheme(const std::string& scheme) override;
     virtual void setPitch(std::uint16_t newPitchValue) override;
+    virtual void setLocationPoint(double longitude, double latitude) override;
+    virtual void clearLocationPoint() override;
 
     virtual void searchPOIs(double longitude, double latitude, int distance) override;
     virtual void currentCenter() override;

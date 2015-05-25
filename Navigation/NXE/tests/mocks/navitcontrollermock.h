@@ -36,6 +36,8 @@ struct NavitIPCMock : public NXE::INavitIPC {
     MOCK_METHOD1(setPitch, void(std::uint16_t));
     MOCK_METHOD0(distance, std::int32_t());
     MOCK_METHOD0(eta, std::int32_t());
+    MOCK_METHOD0(clearLocationPoint, void());
+    MOCK_METHOD2(setLocationPoint, void(double,double));
 };
 
 #endif // NAVITCONTROLLERMOCK_H

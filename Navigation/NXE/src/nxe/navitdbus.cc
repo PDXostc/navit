@@ -72,7 +72,9 @@ struct DBusQueuedMessage {
         Distance,
         Eta,
         CurrentStreet,
-        ZoomToRoute
+        ZoomToRoute,
+        SetLocationPoint,
+        ClearLocationPoint
     } type;
     typedef boost::variant<int,
         std::string,
@@ -137,7 +139,9 @@ inline std::ostream& operator<<(std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(Distance),
         ENUM(Eta),
         ENUM(CurrentStreet),
-        ENUM(ZoomToRoute)
+        ENUM(ZoomToRoute),
+        ENUM(SetLocationPoint),
+        ENUM(ClearLocationPoint),
     };
     os << mapped.at(t);
     return os;
@@ -478,6 +482,20 @@ struct NavitDBusPrivate {
                         break;
                     }
 
+                    case DBusQueuedMessage::Type::SetLocationPoint:
+                    {
+                            dbusTrace() << "Set Location point at= " << boost::get<std::string>(msg.value);
+                            DBusHelpers::call("draw_sel_point", *(object.get()), boost::get<std::string>(msg.value));
+                            break;
+                    }
+
+                    case DBusQueuedMessage::Type::ClearLocationPoint:
+                    {
+                        dbusDebug() << "Clear location point";
+                        DBusHelpers::call("clear_sel_point", *(object.get()));
+                    }
+
+
                     } // switch end
                 } catch(const std::exception& ex) {
                     dbusError() << "An exception occured during dbus call " << msg.type << " message = " << ex.what();
@@ -741,6 +759,14 @@ void NavitDBus::setDestination(double longitude, double latitude, const std::str
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetDestination, DBusQueuedMessage::VariantType{ std::make_pair(message, description) } });
 }
 
+void NavitDBus::setLocationPoint(double longitude, double latitude)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::SetLocationPoint, DBusQueuedMessage::VariantType{ message } });
+}
+
 bool NavitDBus::isNavigationRunning()
 {
     return d->navigation;
@@ -768,6 +794,11 @@ void NavitDBus::clearDestination()
 {
     d->navigationCancelled = true;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ClearDestination });
+}
+
+void NavitDBus::clearLocationPoint()
+{
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ClearLocationPoint });
 }
 
 void NavitDBus::setScheme(const std::string& scheme)
