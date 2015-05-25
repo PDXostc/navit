@@ -6,6 +6,7 @@ Item {
     id: root
     width: 400
     height: 300
+    focus: true
     property alias model: listViewItem.model
     property int numberOfCharsToStartSearch: 2
     property string lastSearchedString
@@ -40,6 +41,7 @@ Item {
 
     Column {
         anchors.fill: parent
+        focus: true
         spacing: 5
         anchors {
             leftMargin: 5
@@ -51,6 +53,7 @@ Item {
             height: 20
             width: parent.width
             color: "white"
+            focus: true
 
             TextEdit {
                 id: searchInputTextItem
@@ -58,6 +61,10 @@ Item {
                 font.pixelSize: 15
                 anchors.fill: parent
                 anchors.leftMargin: 5
+                Component.onCompleted: {
+                    searchInputTextItem.focus = true
+                    searchInputTextItem.forceActiveFocus();
+                }
                 onTextChanged:  {
                     if(text === lastSearchedString) {
                         console.debug('Last search string is ', lastSearchedString, ' we will not search for it')
