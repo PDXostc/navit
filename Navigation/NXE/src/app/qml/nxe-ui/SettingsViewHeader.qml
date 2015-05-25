@@ -15,7 +15,11 @@ Item {
     property var stack: null
 
     onSubHeaderChanged: {
-        subHeaderText.text = " /" + subHeader
+        if (subHeader === "") {
+            subHeaderText.text = ""
+        } else {
+            subHeaderText.text = " /" + subHeader
+        }
     }
 
     Rectangle {

@@ -8,6 +8,10 @@ Rectangle {
 
     property bool busy: false
 
+    MouseArea {
+        anchors.fill: parent
+    }
+
     onBusyChanged: {
         if (busy) {
             root.state = "busy"

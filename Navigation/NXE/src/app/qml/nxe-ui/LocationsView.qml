@@ -8,15 +8,6 @@ Page {
     signal showLocationRequest
     property var choosenLocation
 
-//    onHeaderSmallTextChanged: {
-//        if (headerSmallText !== "") {
-//            slashSymbol.text = "/"
-//            smallText.text = headerSmallText
-//        } else {
-//            slashSymbol.text = ""
-//            smallText.text = ""
-//        }
-//    }
     Column {
         anchors.fill: parent
         anchors.leftMargin: 10
@@ -58,9 +49,16 @@ Page {
                     onSubMenuRequested: {
                         console.debug('request ', Qt.resolvedUrl(url))
                         searchStackView.push(Qt.resolvedUrl(url))
-                        header.subHeader = itemText
                     }
                     opacity: enabled ? 1 : 0.4
+                }
+            }
+
+            onCurrentItemChanged: {
+                if (currentItem && currentItem.subHeader) {
+                    header.subHeader = currentItem.subHeader
+                } else {
+                    header.subHeader = "";
                 }
             }
         }

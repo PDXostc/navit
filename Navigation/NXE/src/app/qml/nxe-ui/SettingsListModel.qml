@@ -16,20 +16,6 @@ ListModel {
             }
         ]
     }
-
-    ListElement {
-        itemText: "Orientation"
-        type: "text"
-        settingsValue: "orientation"
-        options: [
-            ListElement {
-                option: "north-up"
-            },
-            ListElement {
-                option: "follow"
-            }
-        ]
-    }
     ListElement {
         itemText: "2D/3D View"
         type: "text"

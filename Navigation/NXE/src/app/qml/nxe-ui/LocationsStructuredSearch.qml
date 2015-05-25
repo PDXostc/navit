@@ -10,6 +10,7 @@ Page {
     property string selectedItemDescription
     property var selectedItemId
     property bool searchInProgress: false
+    property string subHeader: "Search"
 
     // search state machine
     property int __searchStateId: __CountrySearch
@@ -61,6 +62,7 @@ Page {
             fill: parent
             leftMargin: 10
             rightMargin: 10
+            bottomMargin: 10
         }
 
         LocationsStructuredSearchSelected {
@@ -131,6 +133,47 @@ Page {
                                              selectedItemId: itemId
                                          }
                                      })
+            }
+        }
+
+        Item {
+            Layout.fillWidth: true
+            height: 80
+
+
+            Item {
+                anchors.fill: parent
+                Row {
+                    anchors.fill: parent
+                    spacing: 5
+
+                    NText {
+                        font.family: "FontAwesome"
+                        text: "\uf104"
+                        font.pixelSize: 22
+                    }
+
+                    NText {
+                        text: "Start over"
+                        anchors.top: parent.top
+                        anchors.topMargin: 0
+                        font.pixelSize: 18
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.debug('start over')
+                        searchStackView.clear();
+                        var aa = null
+                        searchStackView.clear();
+                        navitProxy.finishSearch();
+                        searchStackView.push({item:locationsListView, immediate: true})
+                        searchStackView.push({item: Qt.resolvedUrl("LocationsStructuredSearch.qml"), immediate: true})
+                        // start over!
+                    }
+                }
             }
         }
     }
