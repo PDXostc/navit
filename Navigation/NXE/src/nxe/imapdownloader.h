@@ -15,9 +15,9 @@ struct MapInfo {
 };
 
 struct MapDownloaderListener {
-    typedef std::function<void(const std::string&, std::uint64_t, std::uint64_t)> ProgressCallback;
-    typedef std::function<void(const std::string&, const std::string&)> ErrorCallback;
-    typedef std::function<void(const std::string&)> FinishedCallback;
+    typedef std::function<void(std::string, std::uint64_t, std::uint64_t)> ProgressCallback;
+    typedef std::function<void(std::string, std::string)> ErrorCallback;
+    typedef std::function<void(std::string)> FinishedCallback;
 
     ProgressCallback progressCb;
     ErrorCallback errorCb;

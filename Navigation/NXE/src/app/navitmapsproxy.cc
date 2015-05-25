@@ -11,19 +11,18 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QQm
     , m_ctx(ctx)
 {
     // mapDownloaderCallbacks!
-    mapDownloaderListener.progressCb = [this](const std::string& mapName, std::uint64_t now, std::uint64_t total) {
+    mapDownloaderListener.progressCb = [this](std::string mapName, std::uint64_t now, std::uint64_t total) {
         emit mapDownloadProgress(now, total, QString::fromStdString(mapName));
     };
-    mapDownloaderListener.errorCb = [this](const std::string&, const std::string& strError) {
+    mapDownloaderListener.errorCb = [this](std::string, std::string strError) {
         emit mapDownloadError(QString::fromStdString(strError));
     };
-    mapDownloaderListener.finishedCb = [this](const std::string& map) {
+    mapDownloaderListener.finishedCb = [this](std::string map) {
         reloadMaps();
         emit mapDownloadFinished(QString::fromStdString(map));
     };
 
     nxeInstance->setMapDownloaderListener(mapDownloaderListener);
-
     reloadMaps();
 }
 
@@ -57,14 +56,14 @@ bool NavitMapsProxy::isMapDownloaded(const QString &mapName)
 qreal NavitMapsProxy::mapSize(const QString &mapName)
 {
     auto it = std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
-        return mi.name == mapName.toStdString() && mi.downloaded;
+        return mi.name == mapName.toStdString();
     });
 
     if ( it != m_nxeMaps.end() ) {
 
         qreal ret = (it != m_nxeMaps.end() ? it->size/(1024 * 1024) : -1);
-        aTrace() << "Map size for " << mapName.toStdString() << " is " << ret;
-        return ret;
+        aTrace() << "Map size for " << mapName.toStdString() << " is " << ret << " raw = " << it->size;
+        return it->size;
     } else {
         aError() << "Unable to find map size for " << mapName.toStdString();
         return 0;

@@ -31,7 +31,7 @@ Rectangle {
         var properMapSize = Math.ceil(mapSize / (1024 * 1024))
         var _index = mapsToDownload.indexOf(itemText)
         if (_index === -1) {
-            console.debug('Map size', properMapSize)
+            console.debug('Map size', properMapSize, mapSize, 'for ',itemText)
             mapsToDownload.push(itemText)
             dialog.downloadSize += properMapSize
         } else {
@@ -69,8 +69,7 @@ Rectangle {
             width: parent.width
             height: 50
             isDownloaded: navitMapsProxy.isMapDownloaded(itemText)
-            property real _mapSize: navitMapsProxy.mapSize(
-                                        itemText) / (1024 * 1024 * 1024)
+            property real _mapSize: navitMapsProxy.mapSize(itemText)
 
             onSubList: {
                 // all maps list requested
