@@ -59,7 +59,11 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
     connect(this, &NavitQuickProxy::reloadQueue, this, &NavitQuickProxy::reloadQueueSlot, Qt::QueuedConnection);
 
     connect(&navigationProxy, &NavitNavigationProxy::navigationChanged, [this]() {
-        if (!navigationProxy.navigation()) {
+        //
+        aDebug() << "Navigation changed to " << (navigationProxy.navigation() ? " navi " : "no-navi");
+        if (navigationProxy.navigation()) {
+            m_historyResults.append(LocationProxy::clone(navigationProxy.currentNaviItem()));
+        } else {
             aDebug() << "Navigation canceled, change current item";
             changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
         }
@@ -586,7 +590,6 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
         aDebug() << "Changing to " << tmpProxy->itemText().toStdString() << " ptr-" << static_cast<void*>(tmpProxy);
         assert(tmpProxy);
         m_currentItem.reset(tmpProxy);
-        m_historyResults.append(LocationProxy::clone(tmpProxy));
         tmpProxy->moveToThread(this->thread());
 
         connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
