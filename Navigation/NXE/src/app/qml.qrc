@@ -92,5 +92,6 @@
         <file>qml/nxe-ui/DownloadCancelConfirmationDialog.qml</file>
         <file>qml/nxe-ui/images/flag_icon_black.png</file>
         <file>qml/nxe-ui/NavigationImages.js</file>
+        <file>qml/nxe-ui/fonts/fontawesome-webfont.ttf</file>
     </qresource>
 </RCC>

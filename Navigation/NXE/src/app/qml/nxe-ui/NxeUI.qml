@@ -13,6 +13,10 @@ Item {
         onNameChanged: console.debug(name)
     }
 
+    FontLoader {
+        source: "fonts/fontawesome-webfont.ttf"
+    }
+
     StackView {
         id: rootStack
         anchors.fill: parent
