@@ -237,21 +237,35 @@ int navit_create_curr_position_distance_attr(struct pcoord *c, struct attr *attr
 	int ret=0;
 	struct navit *this_ = global_navit;
 
-	coord.x = c->x;
-	coord.y = c->y;
+    if (c) {
+        coord.x = c->x;
+        coord.y = c->y;
 
-	trans=navit_get_trans(this_);
+        trans=navit_get_trans(this_);
 
-	if(this_->vehicle && this_->vehicle->vehicle ) {
-	   struct attr pos_attr;
+        if(this_->vehicle && this_->vehicle->vehicle ) {
+           struct attr pos_attr;
 
-	   if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL)) {
-		  transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
-		  attr->type = attr_curr_position_distance;
-		  attr->u.num = transform_distance(c->pro, &curr_coord, &coord);
-		  ret=1;
-	   }
-	}
+           if(vehicle_get_attr(this_->vehicle->vehicle,attr_position_coord_geo,&pos_attr,NULL)) {
+              transform_from_geo(transform_get_projection(trans),pos_attr.u.coord_geo, &curr_coord);
+              attr->type = attr_curr_position_distance;
+              attr->u.num = transform_distance(c->pro, &curr_coord, &coord);
+              ret=1;
+           }
+        } else {
+            coord.x = 0;
+            coord.y = 0;
+            attr->type = attr_curr_position_distance;
+            attr->u.num = -1;
+            ret = 1;
+        }
+    } else {
+        coord.x = 0;
+        coord.y = 0;
+        attr->type = attr_curr_position_distance;
+        attr->u.num = -1;
+        ret = 1;
+    }
 
 	return ret;
 }

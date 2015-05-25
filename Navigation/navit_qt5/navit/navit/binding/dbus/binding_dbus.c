@@ -1855,10 +1855,8 @@ request_search_list_get_result(DBusConnection *connection, DBusMessage *message)
     }
     coord_geo_encode(&iter, &g);
 
-    if (result->c) {
-    	if (navit_create_curr_position_distance_attr(result->c,&attr)) {
-    		encode_attr(&iter, &attr);
-    	}
+    if (navit_create_curr_position_distance_attr(result->c,&attr)) {
+        encode_attr(&iter, &attr);
     }
 
 	dbus_message_iter_open_container(&iter, DBUS_TYPE_ARRAY, "{sa{sv}}", &iter2);

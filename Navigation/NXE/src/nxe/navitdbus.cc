@@ -534,9 +534,7 @@ struct NavitDBusPrivate {
                 double lat, lon;
 
                 resultsIter >> resultId >> position;
-                if (type != INavitIPC::SearchType::Country) {
-                    resultsIter >> currPosDistance >> distanceVar;
-                }
+                resultsIter >> currPosDistance >> distanceVar;
                 resultsIter >> at;
                 lat = position._2;
                 lon = position._1;
