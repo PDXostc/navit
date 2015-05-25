@@ -149,23 +149,26 @@ Item {
 
     Item {
         anchors.top: mainItem.bottom
+        anchors.topMargin: 5
         anchors.right: parent.right
         width: 100
         height: 40
         visible: extraInfoVisible
         MouseArea {
+            x: 0
             anchors.fill: parent
             onClicked: {
                 navigationProxy.stopNavigation()
             }
         }
         Image {
-            width: 76
-            height: 20
-            anchors.centerIn: parent
-            sourceSize.width: 60
-            sourceSize.height: 50
+            id: blueImage
+            x: -10
+            height: 40
             source: "blue_forward_button_long_bg.png"
+            rotation: 180
+            fillMode: Image.PreserveAspectCrop
+            smooth: true
         }
         Text {
             anchors.centerIn: parent
