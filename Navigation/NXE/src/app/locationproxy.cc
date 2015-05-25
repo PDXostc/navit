@@ -40,7 +40,7 @@ LocationProxy::LocationProxy(const NXE::SearchResult& searchResult)
         _description = QString("%1, %2").arg(QString::fromStdString(searchResult.city.name)).arg(QString::fromStdString(searchResult.country.name));
     }
     else if (!searchResult.city.name.empty()) {
-        _itemText = QString("%1 (%2)")
+        _itemText = QString("%1")
                         .arg(QString::fromStdString(searchResult.city.name))
                         .arg(QString::fromStdString(searchResult.city.postal));
     }
