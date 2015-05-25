@@ -93,8 +93,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
         fillItem("street_");
         fillItem("cycleway");
-        fillItem("highway_");
         fillItem("poly_");
+        fillItem("highway_");
         fillItem("poi_");
         fillItem("house_");
         fillItem("town_label_");
@@ -293,8 +293,10 @@ void NavitQuickProxy::reset()
     clearList(m_favoritesResults, "locationFavoritesResult", m_rootContext);
     clearList(m_historyResults, "locationHistoryResult", m_rootContext);
 
+
     m_settings.remove();
     nxeInstance->mapDownloader()->removeAllMaps();
+    mapsProxy.reloadMaps();
 
     emit ftuChanged();
 }

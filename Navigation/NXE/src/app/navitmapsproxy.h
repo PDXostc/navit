@@ -25,13 +25,14 @@ public slots:
     bool isMapDownloaded(const QString& mapName);
     qreal mapSize(const QString& mapName);
     void cancelDownload(const QString& mapName);
+
+    void reloadMaps();
 signals:
     void mapDownloadError(const QString& error);
     void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
     void mapDownloadFinished(const QString& map);
 private:
 
-    void reloadMaps();
 
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QObjectList m_maps;
