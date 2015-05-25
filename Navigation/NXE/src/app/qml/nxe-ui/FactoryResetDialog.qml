@@ -35,14 +35,15 @@ Page {
                 text: "Factory Reset Now"
                 iconSource: "next_icon_white.png"
                 onClicked: {
-                    // we need to reset everything
-                    // set ftu to true
-                    // and pop to the main page
-                    navitProxy.reset();
-                    rootStack.clear();
-                    rootStack.push({
-                                       item: Qt.resolvedUrl("NxeUI.qml")
-                                   })
+//                    // we need to reset everything
+//                    // set ftu to true
+//                    // and pop to the main page
+//                    navitProxy.reset();
+//                    rootStack.clear();
+//                    rootStack.push({
+//                                       item: Qt.resolvedUrl("NxeUI.qml")
+//                                   })
+                    rootStack.push(Qt.resolvedUrl("FactoryResetProgressDialog.qml"));
                 }
             }
         }

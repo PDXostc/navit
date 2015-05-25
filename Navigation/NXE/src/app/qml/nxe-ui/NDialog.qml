@@ -10,6 +10,7 @@ Item {
     property alias headerText: headerTextItem.text
     property alias iconSource: logoImage.source
     property Component bottomBarComponent: null
+    property alias bckColor: blueRectangle.color
 
     Rectangle {
         id: blueRectangle
