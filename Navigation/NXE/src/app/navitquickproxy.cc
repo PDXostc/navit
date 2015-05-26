@@ -62,7 +62,20 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         //
         aDebug() << "Navigation changed to " << (navigationProxy.navigation() ? " navi " : "no-navi");
         if (navigationProxy.navigation()) {
-            m_historyResults.append(LocationProxy::clone(navigationProxy.currentNaviItem()));
+            // find in m_history first
+            auto currItem = navigationProxy.currentNaviItem();
+            auto iter = std::find_if(m_historyResults.begin(), m_historyResults.end(), [this, currItem](QObject *o) -> bool{
+                LocationProxy* p = qobject_cast<LocationProxy*>(o);
+                return p->itemText() == currItem->itemText() ||
+                       p->id() == currItem->id() ||
+                       (p->longitude() == currItem->longitude() && p->latitude() == currItem->latitude());
+            });
+            if( iter == m_historyResults.end()) {
+                aDebug() << "History result wasn't found in history list, adding " << currItem->itemText().toStdString();
+                m_historyResults.append(LocationProxy::clone(currItem));
+            } else {
+                aInfo() << "Item " << currItem->itemText().toStdString() << " was found in history, skip it";
+            }
         } else {
             aDebug() << "Navigation canceled, change current item";
             changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
