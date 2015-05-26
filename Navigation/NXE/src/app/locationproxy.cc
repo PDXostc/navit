@@ -4,7 +4,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 
-LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bolded, int searchId, int distance, QObject* parent)
+LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bolded, int searchId, int distance, const QString &uuid, QObject* parent)
     : QObject(parent)
     , _itemText(itemText)
     , _favorite(fav)
@@ -12,7 +12,7 @@ LocationProxy::LocationProxy(QString itemText, bool fav, QString desc, bool bold
     , _bolded(bolded)
     , _searchId(searchId)
     , _distance(distance)
-    , _id(QUuid::createUuid())
+    , _id(uuid.isEmpty() ? QUuid::createUuid() : uuid)
 {
 }
 

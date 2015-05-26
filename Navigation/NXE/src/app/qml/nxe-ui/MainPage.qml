@@ -81,6 +81,7 @@ Item {
                 Info.remove(locationInfoComponent,locationInfoObject);
                 Info.remove(locationInfoTopComponent, locationInfoTopObject)
                 Info.remove(navigationInfoComponent, navigationInfoObject)
+                Info.remove(waypointComponent, waypointObject)
             }
         }
 

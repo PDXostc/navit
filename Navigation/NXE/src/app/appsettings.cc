@@ -85,6 +85,12 @@ void AppSettings::addToFavorites(LocationProxy* proxy)
 void AppSettings::removeFromFavorites(const std::string& id)
 {
     aInfo() << "Remove " << id << " from favorites";
+    const std::string name = "fav_" + id;
+    bfs::path favPath{ bfs::path{ m_favoritesPath } / name };
+
+    if(!bfs::remove(favPath)) {
+        aError() << "Unable to remove " << favPath.string();
+    }
 }
 
 void AppSettings::remove()
@@ -113,11 +119,16 @@ QList<LocationProxy*> AppSettings::favorites()
         aInfo() << "Reading " << entry;
         read_json(entry.path().string(), entryTree);
 
+        aInfo() << "ID = " << entryTree.get<std::string>("id");
+
         auto loc = new LocationProxy{
             QString::fromStdString(entryTree.get<std::string>("itemText")),
             true,
             QString::fromStdString(entryTree.get<std::string>("description")),
-            false
+            false,
+            -1,
+            -1,
+            QString::fromStdString(entryTree.get<std::string>("id"))
         };
         loc->setPosition(NXE::Position{ entryTree.get<double>("longitude"), entryTree.get<double>("latitude") });
         favs.append(loc);

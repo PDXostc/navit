@@ -26,7 +26,7 @@ class LocationProxy : public QObject {
     Q_PROPERTY(int distance READ distance CONSTANT)
 public:
     LocationProxy(
-        QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, int distance = -1, QObject* parent = 0);
+        QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, int distance = -1, const QString& uuid = "",QObject* parent = 0);
 
     LocationProxy(const NXE::SearchResult& searchResult);
 

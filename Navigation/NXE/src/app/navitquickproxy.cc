@@ -78,6 +78,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             }
         } else {
             aDebug() << "Navigation canceled, change current item";
+
+            // oh clear all items
+
             changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
         }
     });
@@ -501,6 +504,7 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // we have to copy this, since in a second the model will be deleted
             // and this will points to an deleted object
             foundItem = proxy;
+            aDebug() << "Found item " << proxy->itemText().toStdString() << " with id= " << proxy->id().toString().toStdString();
             changeCurrentItem(LocationProxy::clone(proxy));
         }
     });
@@ -620,10 +624,12 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
 
         connect(m_currentItem.data(), &LocationProxy::favoriteChanged, [this]() {
                 aInfo() << "Adding " << m_currentItem->id().toByteArray().data() << " to favs";
-                if (m_currentItem->favorite())
+                if (m_currentItem->favorite()) {
                     m_settings.addToFavorites(m_currentItem.data());
-                else
+                }
+                else {
                     m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
+                }
         });
     }
 
