@@ -36,7 +36,8 @@ Page {
             NButton {
                 id: cancelItem
                 text: "Quit"
-                iconSource: "next_icon_white.png"
+                iconType: "arrow_right"
+                iconHeight: 30
                 onClicked: {
                     root.busy = true;
                     navitMapsProxy.cancelDownload(mapName);
@@ -51,7 +52,8 @@ Page {
             NButton {
                 id: factoryResetItem
                 text: "Continue Downloading"
-                iconSource: "next_icon_white.png"
+                iconType: "arrow_right"
+                iconHeight: 30
                 onClicked: rootStack.pop()
             }
         }

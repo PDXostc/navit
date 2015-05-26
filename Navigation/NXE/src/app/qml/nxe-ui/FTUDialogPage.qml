@@ -39,7 +39,8 @@ Page {
                 id: downloadButtonItem
                 text: "Download a map"
                 bold: true
-                iconSource: "next_icon_white.png"
+                iconType: "arrow_right"
+                iconHeight: 30
                 onClicked: {
                     rootStack.push({
                                        item: Qt.resolvedUrl("SettingsView.qml"),

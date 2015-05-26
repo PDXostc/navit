@@ -192,7 +192,8 @@ Page {
         text: "Cancel"
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: rect.bottom
-        iconSource: "next_icon_white.png"
+        iconType: "arrow_right"
+        iconHeight: 30
         onClicked: {
             rootStack.push({
                                item: Qt.resolvedUrl(

@@ -13,6 +13,7 @@ Item {
     property alias iconWidth: imageItem.sourceSize.width
     property alias iconHeight: imageItem.sourceSize.height
     property alias layout: rowLayout.layoutDirection
+    property string iconType : ""
 
     height: 60
 
@@ -56,10 +57,17 @@ Item {
                     recalculateWidth()
                 }
             }
-
+            NText {
+                anchors.left: parent
+                font.family: "FontAwesome"
+                visible: (iconType === "arrow_right" || iconType === "arrow_left")
+                text: (iconType === "arrow_left") ? "\uf104" : "\uf105"
+                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: iconHeight
+            }
             Image {
                 id: imageItem
-                visible: iconVisible
+                visible: (iconType === "arrow_right" || iconType === "arrow_left") ? false : iconVisible
                 anchors.verticalCenter: parent.verticalCenter
             }
         }

@@ -30,17 +30,19 @@ Item {
     Row {
         anchors.fill: parent
         spacing: 0
+        Item {
+            width: 15
+            height: parent.height
+        }
 
         NButton {
             id: backButton
             height: parent.height
             width: 100
-            iconSource: "back_icon_white_lg.png"
-            iconWidth: 24
-            iconHeight: 24
+            iconType: "arrow_left"
+            iconHeight: 36
             layout: Qt.RightToLeft
             enabled: isHeaderEnabled
-
             onClicked: {
                 Qt.inputMethod.hide()
                 if (stack.depth !== 1) {
@@ -53,7 +55,7 @@ Item {
         }
 
         Item {
-            width: parent.width - backButton.width - backButtonItem.width
+            width: parent.width - backButton.width - backButtonItem.width - 15
             height: parent.height
             Layout.fillWidth: true
 
@@ -71,12 +73,13 @@ Item {
             id: backButtonItem
             width: 50
             height: parent.height
-
             NButton {
                 id: bckB
                 width: 16
                 height: parent.height
-                iconSource: "back_icon_white_sm.png"
+                iconType: "arrow_left"
+                iconWidth: 16
+                iconHeight: 36
                 onClicked: backToMapRequest()
                 enabled: isHeaderEnabled
             }
@@ -89,7 +92,7 @@ Item {
                 iconHeight: 24
                 iconSource: "map_icon_white.png"
                 anchors.left: bckB.right
-                anchors.leftMargin: 5
+                anchors.leftMargin: 15
                 onClicked: {
                     Qt.inputMethod.hide()
                     backToMapRequest()

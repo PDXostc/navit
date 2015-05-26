@@ -19,7 +19,8 @@ Page {
             NButton {
                 id: cancelItem
                 text: "Cancel"
-                iconSource: "next_icon_white.png"
+                iconType: "arrow_right"
+                iconHeight: 30
                 onClicked: rootStack.pop({
                                              immediate: true
                                          })
@@ -33,7 +34,8 @@ Page {
             NButton {
                 id: factoryResetItem
                 text: "Factory Reset Now"
-                iconSource: "next_icon_white.png"
+                iconType: "arrow_right"
+                iconHeight: 30
                 onClicked: {
 //                    // we need to reset everything
 //                    // set ftu to true

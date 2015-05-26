@@ -88,9 +88,8 @@ Item {
                     visible: type === "sublist"
                     anchors.right: parent.right
                     anchors.rightMargin: 5
-                    iconSource: "next_icon_white.png"
-                    iconWidth: 16
-                    iconHeight: 16
+                    iconType: "arrow_right"
+                    iconHeight: 22
                 }
             }
         }
