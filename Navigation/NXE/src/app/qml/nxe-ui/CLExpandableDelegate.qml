@@ -12,6 +12,7 @@ Item {
     property var mapsModel
     property int mapsCount : 0
     signal checked()
+    signal mapEntryClicked(string mapName, int mapSize)
 
     Component.onCompleted: {
         switch (continentText) {
@@ -102,7 +103,7 @@ Item {
             itemSize: mapSize
             isDownloaded: downloaded
             onChecked: {
-                mapEntryClicked(mapName, mapSize)
+                root.mapEntryClicked(mapName, mapSize)
             }
         }
     }

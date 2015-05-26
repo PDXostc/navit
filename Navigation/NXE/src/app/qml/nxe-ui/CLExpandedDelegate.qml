@@ -5,7 +5,7 @@ import QtQuick.Controls.Styles 1.2
 Item {
     id: root
     property bool isDownloaded: false
-    signal checked()
+    signal checked(bool checked)
     property string itemText
     property string itemSize
 
@@ -18,11 +18,15 @@ Item {
         return ("(" + Math.round(bytes * 1024 * 10) / 10 + " " + suffix[res]+")");
     }
 
-    Rectangle {
-        id: rectangle1
-        color: "#000000"
+    Item {
         anchors.fill: parent
-
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    checkBoxItem.checked = !checkBoxItem.checked
+                    root.checked(checkBoxItem.checked)
+                }
+            }
 
         NText {
             id: nameText
@@ -34,7 +38,9 @@ Item {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: 18
+
         }
+
         NText {
             y: 0
             height: parent.height
@@ -58,20 +64,20 @@ Item {
             anchors.topMargin: 49
         }
 
-
-
         CheckBox {
+            id: checkBoxItem
             visible: true
             anchors.right: parent.right
             anchors.rightMargin: 6
             anchors.verticalCenter: parent.verticalCenter
             enabled: !isDownloaded
-
             checked: isDownloaded
 
-            onClicked: {
-                root.checked(checked)
-            }
+//            onCheckedChanged: {
+//                if (checked !== initialState) {
+//                    root.checked(checked)
+//                }
+//            }
 
             style: CheckBoxStyle {
                 indicator: Rectangle {

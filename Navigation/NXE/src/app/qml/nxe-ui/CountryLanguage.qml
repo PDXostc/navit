@@ -2,105 +2,106 @@ import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 
-Rectangle {
-    id: root
-    color: "black"
-    width: 400
-    height: 800
-    state: "noDialog"
-
+Page {
     property variant mapsToDownload: []
     property int count: 0
-    property string customHeader: mapsType === 'suggested' ? "Recommended" : "Earth"
+    property string customHeader: "Download Maps"
 
-    // by default we're using suggested country model
-    property var listModel: allMapsModel
-
-    property string mapsType: "all"
-
-    function updateState() {
-        if (mapsToDownload.length !== 0) {
-            root.state = 'dialog'
-        } else {
-            root.state = 'noDialog'
-        }
-        count = mapsToDownload.length
-    }
-
-    function mapEntryClicked(itemText, mapSize) {
-        var properMapSize = Math.ceil(mapSize / (1024 * 1024))
-        var _index = mapsToDownload.indexOf(itemText)
-        if (_index === -1) {
-            console.debug('Map size', properMapSize, mapSize, 'for ',itemText)
-            mapsToDownload.push(itemText)
-            dialog.downloadSize += properMapSize
-        } else {
-            mapsToDownload.splice(_index, 1)
-            dialog.downloadSize -= properMapSize
-        }
-        updateState()
-    }
-
-    function downloadMaps() {
-        rootStack.push({
-                           item: Qt.resolvedUrl("DownloadMaps.qml"),
-                           replace: true,
-                           properties: {
-                               maps: mapsToDownload
-                           }
-                       })
-    }
-
-    ListView {
-        id: list
+    Item {
+        id: root
         anchors.fill: parent
-        model: root.listModel
-        clip: true
-        delegate: mapsType === "all" ? allCountriesListDelegate : suggestedCountriesListDelegate
-    }
+        state: "noDialog"
 
-    ScrollBar {
-        flk: list
-    }
 
-    Component {
-        id: allCountriesListDelegate
-        CLExpandableDelegate {
-            continentText: mapName
-            property ListModel options: ListModel {}
-            width: list.width
-        }
-    }
-
-    CLDialog {
-        id: dialog
-        width: parent.width
-        height: 200
-        numberOfDowloads: count
-        onStartDownloadClicked: downloadMaps()
-    }
-
-    states: [
-        State {
-            name: "noDialog"
-            AnchorChanges {
-                target: dialog
-                anchors.top: list.bottom
-                anchors.bottom: undefined
+        function updateState() {
+            if (mapsToDownload.length !== 0) {
+                root.state = 'dialog'
+            } else {
+                root.state = 'noDialog'
             }
-        },
-        State {
-            name: "dialog"
-            AnchorChanges {
-                target: dialog
-                anchors.bottom: list.bottom
-                anchors.top: undefined
+            count = mapsToDownload.length
+        }
+
+        function mapEntryClicked(itemText, mapSize) {
+            var properMapSize = Math.ceil(mapSize / (1024 * 1024))
+            var _index = mapsToDownload.indexOf(itemText)
+            if (_index === -1) {
+                console.debug('Map size', properMapSize, mapSize, 'for ',itemText)
+                mapsToDownload.push(itemText)
+                dialog.downloadSize += properMapSize
+            } else {
+                mapsToDownload.splice(_index, 1)
+                dialog.downloadSize -= properMapSize
+            }
+            updateState()
+        }
+
+        function downloadMaps() {
+            rootStack.push({
+                               item: Qt.resolvedUrl("DownloadMaps.qml"),
+                               replace: true,
+                               properties: {
+                                   maps: mapsToDownload
+                               }
+                           })
+        }
+
+        ListView {
+            id: list
+            anchors.fill: parent
+            model: allMapsModel
+            clip: true
+            delegate: allCountriesListDelegate
+        }
+
+        ScrollBar {
+            flk: list
+        }
+
+        Component {
+            id: allCountriesListDelegate
+            CLExpandableDelegate {
+                continentText: mapName
+                property ListModel options: ListModel {}
+                width: list.width
+
+                onMapEntryClicked: {
+                    console.debug('clicked ', mapName)
+                    root.mapEntryClicked(mapName, mapSize)
+                }
             }
         }
-    ]
-    transitions: Transition {
-        AnchorAnimation {
-            duration: 500
+
+        CLDialog {
+            id: dialog
+            width: parent.width
+            height: 200
+            numberOfDowloads: count
+            onStartDownloadClicked: downloadMaps()
+        }
+
+        states: [
+            State {
+                name: "noDialog"
+                AnchorChanges {
+                    target: dialog
+                    anchors.top: list.bottom
+                    anchors.bottom: undefined
+                }
+            },
+            State {
+                name: "dialog"
+                AnchorChanges {
+                    target: dialog
+                    anchors.bottom: list.bottom
+                    anchors.top: undefined
+                }
+            }
+        ]
+        transitions: Transition {
+            AnchorAnimation {
+                duration: 500
+            }
         }
     }
 }
