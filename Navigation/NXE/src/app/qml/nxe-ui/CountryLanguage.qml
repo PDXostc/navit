@@ -14,9 +14,9 @@ Rectangle {
     property string customHeader: mapsType === 'suggested' ? "Recommended" : "Earth"
 
     // by default we're using suggested country model
-    property var listModel: CLSuggestedCountriesModel {}
+    property var listModel: allMapsModel
 
-    property string mapsType: "suggested"
+    property string mapsType: "all"
 
     function updateState() {
         if (mapsToDownload.length !== 0) {
@@ -61,32 +61,6 @@ Rectangle {
 
     ScrollBar {
         flk: list
-    }
-
-    Component {
-        id: suggestedCountriesListDelegate
-        CLListDelegate {
-            width: parent.width
-            height: 50
-            isDownloaded: navitMapsProxy.isMapDownloaded(itemText)
-            property real _mapSize: navitMapsProxy.mapSize(itemText)
-
-            onSubList: {
-                // all maps list requested
-                settingsStackView.push({
-                                           item: Qt.resolvedUrl(
-                                                     "CountryLanguage.qml"),
-                                           properties: {
-                                               listModel: allMapsModel,
-                                               mapsType: "all"
-                                           }
-                                       })
-            }
-
-            onChecked: {
-                mapEntryClicked(itemText, _mapSize)
-            }
-        }
     }
 
     Component {

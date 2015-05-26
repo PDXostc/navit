@@ -36,6 +36,8 @@ private:
 
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QObjectList m_maps;
+    QObjectList m_mapsRecommended;
+    QObjectList m_mapsDownloaded;
     NXE::MapDownloaderListener mapDownloaderListener;
     std::vector<NXE::MapInfo> m_nxeMaps;
     QQmlContext* m_ctx;

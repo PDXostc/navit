@@ -15,24 +15,33 @@ Item {
 
     Component.onCompleted: {
         switch (continentText) {
+        case "Downloaded Maps":
+            mapsModel = downloadedMapsModel
+            break
+        case "Recommended Maps":
+            mapsModel = recommendedMapsModel
+            break
+        case "Earth":
+            mapsModel = earthModel
+            break
         case "Africa":
-            mapsModel = africaModel;
-            break;
+            mapsModel = africaModel
+            break
         case "Asia":
-            mapsModel = asiaModel;
-            break;
+            mapsModel = asiaModel
+            break
         case "Australia":
-            mapsModel = australiaModel;
-            break;
+            mapsModel = australiaModel
+            break
         case "Europe":
-            mapsModel = europeModel;
-            break;
+            mapsModel = europeModel
+            break
         case "North America":
-            mapsModel = northAmericaModel;
-            break;
+            mapsModel = northAmericaModel
+            break
         case "South+Middle America":
-            mapsModel = southMiddleAmericaModel;
-            break;
+            mapsModel = southMiddleAmericaModel
+            break
         }
         for(var _mapsModel in mapsModel) mapsCount += 1;
     }
@@ -91,6 +100,7 @@ Item {
             width: root.width
             itemText: mapName
             itemSize: mapSize
+            isDownloaded: downloaded
             onChecked: {
                 mapEntryClicked(mapName, mapSize)
             }
