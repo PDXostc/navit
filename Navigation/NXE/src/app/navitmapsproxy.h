@@ -31,6 +31,8 @@ signals:
     void mapDownloadError(const QString& error);
     void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
     void mapDownloadFinished(const QString& map);
+
+    void _forceReloadMaps();
 private:
 
 

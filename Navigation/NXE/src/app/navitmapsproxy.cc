@@ -10,6 +10,9 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQm
     , nxeInstance(nxe)
     , m_ctx(ctx)
 {
+
+    connect(this, &NavitMapsProxy::_forceReloadMaps, this, &NavitMapsProxy::reloadMaps, Qt::QueuedConnection);
+
     // mapDownloaderCallbacks!
     mapDownloaderListener.progressCb = [this](std::string mapName, std::uint64_t now, std::uint64_t total) {
         emit mapDownloadProgress(now, total, QString::fromStdString(mapName));
@@ -18,7 +21,7 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQm
         emit mapDownloadError(QString::fromStdString(strError));
     };
     mapDownloaderListener.finishedCb = [this](std::string map) {
-        reloadMaps();
+        emit _forceReloadMaps();
         emit mapDownloadFinished(QString::fromStdString(map));
     };
 
