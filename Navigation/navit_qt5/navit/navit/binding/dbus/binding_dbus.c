@@ -545,15 +545,30 @@ static void
 coord_geo_encode(DBusMessageIter *iter, struct coord_geo *pc)
 {
     DBusMessageIter iter2;
+
+    char* lng = (char*)g_malloc(30);
+    char* lat = (char*)g_malloc(30);
+
     dbus_message_iter_open_container(iter,DBUS_TYPE_STRUCT,NULL,&iter2);
     if (pc) {
-        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lng);
-        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &pc->lat);
+        g_snprintf(lng,30,"%f",pc->lng);
+        g_snprintf(lat,30,"%f",pc->lat);
+
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_STRING, &lng);
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_STRING, &lat);
     } else {
         int n=0;
-        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &n);
-        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_DOUBLE, &n);
+
+        g_snprintf(lat,30,"%f",n);
+        g_snprintf(lng,30,"%f",n);
+
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_STRING, &lng);
+        dbus_message_iter_append_basic(&iter2, DBUS_TYPE_STRING, &lat);
     }
+
+    g_free(lat);
+    g_free(lng);
+
     dbus_message_iter_close_container(iter, &iter2);
 }
 
