@@ -16,11 +16,15 @@ Page {
             interval: 5000
             onTriggered: {
 
-                navitProxy.ftu = false
-                rootStack.clear()
+                if(navitProxy.ftu) {
+                    navitProxy.ftu = false;
+                } else {
+                    navitProxy.restartNavit();
+                }
+                rootStack.clear();
                 rootStack.push({
                                    item: Qt.resolvedUrl("MainPage.qml")
-                               })
+                               });
             }
         }
 

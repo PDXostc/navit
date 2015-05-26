@@ -23,7 +23,10 @@ public:
     NXEInstance(DI::Injector& impls);
     ~NXEInstance();
 
-    virtual void Initialize();
+    virtual void startNavit();
+    virtual void stopNavit();
+
+    virtual void restartNavit();
 
     void setWaylandSocketName(const std::string& socketName);
     void setAudioMute(bool mute);

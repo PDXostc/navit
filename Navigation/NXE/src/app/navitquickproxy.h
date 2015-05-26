@@ -68,6 +68,8 @@ public slots:
     void render();
     void reset();
     void quit();
+    void restartNavit();
+    void stopNavit();
 
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);

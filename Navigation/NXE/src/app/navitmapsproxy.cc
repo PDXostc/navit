@@ -5,7 +5,7 @@
 
 #include <QtQml/QQmlContext>
 
-NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QQmlContext *ctx, QObject *parent)
+NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQmlContext* ctx, QObject* parent)
     : QObject(parent)
     , nxeInstance(nxe)
     , m_ctx(ctx)
@@ -34,7 +34,7 @@ NavitMapsProxy::~NavitMapsProxy()
     m_maps.clear();
     m_mapsRecommended.clear();
     m_mapsDownloaded.clear();
-    for(auto iter = m_mapsByContinent.begin(); iter != m_mapsByContinent.end(); ++iter)
+    for (auto iter = m_mapsByContinent.begin(); iter != m_mapsByContinent.end(); ++iter)
         qDeleteAll(iter->second);
     m_mapsByContinent.clear();
 }
@@ -50,31 +50,32 @@ void NavitMapsProxy::downloadMap(const QString& map)
     }
 }
 
-bool NavitMapsProxy::isMapDownloaded(const QString &mapName)
+bool NavitMapsProxy::isMapDownloaded(const QString& mapName)
 {
-    return std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
+    return std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool {
         return mi.name == mapName.toStdString() && mi.downloaded;
     }) != m_nxeMaps.end();
 }
 
-qreal NavitMapsProxy::mapSize(const QString &mapName)
+qreal NavitMapsProxy::mapSize(const QString& mapName)
 {
-    auto it = std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool{
+    auto it = std::find_if(m_nxeMaps.begin(), m_nxeMaps.end(), [&mapName](const NXE::MapInfo& mi) -> bool {
         return mi.name == mapName.toStdString();
     });
 
-    if ( it != m_nxeMaps.end() ) {
+    if (it != m_nxeMaps.end()) {
 
-        qreal ret = (it != m_nxeMaps.end() ? it->size/(1024 * 1024) : -1);
+        qreal ret = (it != m_nxeMaps.end() ? it->size / (1024 * 1024) : -1);
         aTrace() << "Map size for " << mapName.toStdString() << " is " << ret << " raw = " << it->size;
         return it->size;
-    } else {
+    }
+    else {
         aError() << "Unable to find map size for " << mapName.toStdString();
         return 0;
     }
 }
 
-void NavitMapsProxy::cancelDownload(const QString &mapName)
+void NavitMapsProxy::cancelDownload(const QString& mapName)
 {
     nxeInstance->mapDownloader()->cancel(mapName.toStdString());
 }
@@ -87,34 +88,50 @@ void NavitMapsProxy::reloadMaps()
     m_maps.clear();
     m_mapsRecommended.clear();
     m_mapsDownloaded.clear();
-    NXE::MapInfo downloaded = {"Downloaded Maps", 0, false, ""};
-    NXE::MapInfo recommended = {"Recommended Maps", 0, false, ""};
-    NXE::MapInfo earth = {"Earth", 0, false, "Earth"};
-    m_maps.append(new MapInfoProxy{downloaded});
-    m_maps.append(new MapInfoProxy{recommended});
-    m_maps.append(new MapInfoProxy{earth});
-    for(auto iter = m_mapsByContinent.begin(); iter != m_mapsByContinent.end(); ++iter)
+
+    NXE::MapInfo downloaded = { "Downloaded Maps", 0, false, "" };
+    NXE::MapInfo recommended = { "Recommended Maps", 0, false, "" };
+    NXE::MapInfo earth = { "Earth", 0, false, "Earth" };
+    auto p = new MapInfoProxy{ downloaded };
+    p->moveToThread(m_ctx->thread());
+    m_maps.append(p);
+
+    p = new MapInfoProxy{ recommended };
+    p->moveToThread(m_ctx->thread());
+    m_maps.append(p);
+
+    p = new MapInfoProxy{ earth };
+    p->moveToThread(m_ctx->thread());
+    m_maps.append(p);
+
+    for (auto iter = m_mapsByContinent.begin(); iter != m_mapsByContinent.end(); ++iter)
         qDeleteAll(iter->second);
     m_mapsByContinent.clear();
     // Request for available maps
     m_nxeMaps = nxeInstance->mapDownloader()->maps();
-    std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [] (const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) ->bool {
+    std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [](const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) -> bool {
         return lhs.name < rhs.name;
     });
     std::for_each(m_nxeMaps.begin(), m_nxeMaps.end(), [this](const NXE::MapInfo& mi) {
         if(mi.name != mi.continent) {
-           m_mapsByContinent[mi.continent].append(new MapInfoProxy{mi});
-           if(mi.downloaded)
-               m_mapsDownloaded.append(new MapInfoProxy{mi});
+            auto p = new MapInfoProxy{mi};
+            p->moveToThread(m_ctx->thread());
+            m_mapsByContinent[mi.continent].append(p);
+            if(mi.downloaded) {
+                p = new MapInfoProxy{mi};
+                p->moveToThread(m_ctx->thread());
+                m_mapsDownloaded.append(p);
+            }
         }
         else {
-           if (mi.continent != "Australia+Oceania" && mi.name != "Whole Planet") {
-                m_maps.append(new MapInfoProxy{mi});
-           }
-           else if (mi.name == "Whole Planet") {
-              m_mapsByContinent["Whole Planet"].append(new MapInfoProxy{mi});
-           }
-
+            if (mi.continent != "Australia+Oceania" && mi.name != "Whole Planet") {
+                 m_maps.append(new MapInfoProxy{mi});
+            }
+            else if (mi.name == "Whole Planet") {
+                auto p = new MapInfoProxy{mi};
+                p->moveToThread(m_ctx->thread());
+                m_mapsByContinent["Whole Planet"].append(p);
+            }
         }
     });
     m_ctx->setContextProperty("africaModel", QVariant::fromValue(m_mapsByContinent["Africa"]));

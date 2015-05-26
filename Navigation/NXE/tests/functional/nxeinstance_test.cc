@@ -37,7 +37,7 @@ struct NXEInstanceTest : public ::testing::Test {
     }
 
     void SetUp() override {
-        instance.Initialize();
+        instance.startNavit();
         std::chrono::milliseconds dura(1000);
         std::this_thread::sleep_for(dura);
     }
@@ -58,7 +58,7 @@ TEST_F(NXEInstanceTest, DISABLED_speechTest)
 {
     // by default each time we want to draw a
     // speech 'draw' will be triggered
-    instance.Initialize();
+    instance.startNavit();
     zoom(2);
 }
 
@@ -85,7 +85,7 @@ TEST_F(NXEInstanceTest, positionMessage_correct)
 
 TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
 {
-    EXPECT_NO_THROW(instance.Initialize());
+    EXPECT_NO_THROW(instance.startNavit());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
     auto maps = instance.mapDownloader()->maps();
@@ -94,7 +94,7 @@ TEST_F(NXEInstanceTest, DISABLED_availableMessages_correct)
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
 {
     // Arrange
-    EXPECT_NO_THROW(instance.Initialize());
+    EXPECT_NO_THROW(instance.startNavit());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
 
@@ -107,7 +107,7 @@ TEST_F(NXEInstanceTest, DISABLED_downloadMessage_incorrect_country)
 TEST_F(NXEInstanceTest, DISABLED_downloadMessage_correct_country)
 {
     // Arrange
-    EXPECT_NO_THROW(instance.Initialize());
+    EXPECT_NO_THROW(instance.startNavit());
     std::chrono::milliseconds dura(100);
     std::this_thread::sleep_for(dura);
 

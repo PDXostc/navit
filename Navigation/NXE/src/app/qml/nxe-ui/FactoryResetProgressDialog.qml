@@ -4,7 +4,10 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 
 Page {
-    Component.onCompleted: navitProxy.reset();
+    Component.onCompleted: {
+        navitProxy.reset();
+        navitProxy.stopNavit();
+    }
 
     NDialog {
         id: dialogItem

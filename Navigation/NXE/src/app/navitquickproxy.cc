@@ -295,7 +295,7 @@ void NavitQuickProxy::reset()
     nxeInstance->mapDownloader()->removeAllMaps();
     mapsProxy.reloadMaps();
 
-    emit ftuChanged();
+    setFtu(true);
 }
 
 void NavitQuickProxy::quit()
@@ -304,6 +304,17 @@ void NavitQuickProxy::quit()
     nxeInstance->ipc()->quit();
 
     emit quitSignal();
+}
+
+void NavitQuickProxy::restartNavit()
+{
+    aInfo() << "Restart Navit";
+    nxeInstance->restartNavit();
+}
+
+void NavitQuickProxy::stopNavit()
+{
+    nxeInstance->stopNavit();
 }
 
 QString NavitQuickProxy::valueFor(const QString& optionName)
@@ -524,7 +535,7 @@ void NavitQuickProxy::initNavit()
     }
     aInfo() << "Launching navit";
 
-    nxeInstance->Initialize();
+    nxeInstance->startNavit();
     QTimer::singleShot(500, this, SLOT(synchronizeNavit()));
 }
 

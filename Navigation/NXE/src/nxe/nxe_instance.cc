@@ -132,7 +132,7 @@ NXEInstance::~NXEInstance()
     }
 }
 
-void NXEInstance::Initialize()
+void NXEInstance::startNavit()
 {
     if (d->initialized) {
         nDebug() << "Already initilized";
@@ -160,6 +160,19 @@ void NXEInstance::Initialize()
         });
     }
     d->initialized = true;
+}
+
+void NXEInstance::restartNavit()
+{
+    stopNavit();
+    startNavit();
+}
+
+void NXEInstance::stopNavit()
+{
+    d->ipc->quit();
+    d->navitProcess->stop();
+    d->initialized = false;
 }
 
 void NXEInstance::setWaylandSocketName(const std::string& socketName)
