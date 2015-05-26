@@ -77,7 +77,7 @@ ListModel {
         type: "sublist"
         options: [
             ListElement {
-                url: ""
+                url: "ManagePOIs.qml"
             }
         ]
     }

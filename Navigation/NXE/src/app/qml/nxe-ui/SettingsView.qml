@@ -39,13 +39,14 @@ Rectangle {
             onCurrentItemChanged: {
                 if (currentItem && currentItem.customHeader) {
                     console.debug(currentItem, currentItem.customHeader)
-                    settingsHeaderItem.header = currentItem.customHeader
+                    settingsHeaderItem.subHeader = currentItem.customHeader
+                } else {
+                    settingsHeaderItem.subHeader = ""
                 }
             }
 
 
             initialItem: Item {
-                property string customHeader: "Settings"
                 width: parent.width
                 height: parent.height - 100
 

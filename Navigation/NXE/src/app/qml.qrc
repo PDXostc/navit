@@ -94,5 +94,6 @@
         <file>qml/nxe-ui/NavigationImages.js</file>
         <file>qml/nxe-ui/fonts/fontawesome-webfont.ttf</file>
         <file>qml/nxe-ui/FactoryResetProgressDialog.qml</file>
+        <file>qml/nxe-ui/ManagePOIs.qml</file>
     </qresource>
 </RCC>
