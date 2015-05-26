@@ -3302,7 +3302,7 @@ rm_coord_get(void *priv_data, struct coord *c, int count)
 	struct route *r = mr->mpriv->route;
 	enum projection pro = route_projection(r);
 
-	if (pro == projection_none)
+	if (pro == projection_none && mr->item.type != type_selection_point)
 		return 0;
 	if (mr->item.type == type_selection_point || mr->item.type == type_route_start || mr->item.type == type_route_start_reverse || mr->item.type == type_route_end || mr->item.type == type_waypoint ) {
 		if (! count || mr->last_coord)
