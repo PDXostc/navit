@@ -57,8 +57,8 @@ Item {
                     recalculateWidth()
                 }
             }
+
             NText {
-                anchors.left: parent
                 font.family: "FontAwesome"
                 visible: (iconType === "arrow_right" || iconType === "arrow_left")
                 text: (iconType === "arrow_left") ? "\uf104" : "\uf105"
@@ -72,6 +72,7 @@ Item {
             }
         }
     }
+
     MouseArea {
         anchors.fill: parent
         onClicked: {

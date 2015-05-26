@@ -10,7 +10,7 @@ Page {
     property string selectedItemDescription
     property var selectedItemId
     property bool searchInProgress: false
-    property string subHeader: "Search"
+    property string customHeader: "Search"
 
     // search state machine
     property int __searchStateId: __CountrySearch

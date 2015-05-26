@@ -8,6 +8,7 @@ Rectangle {
 
     property string queryText
     property bool queryBarEnabled: true
+    property string customHeader: "History"
 
 
     ListView {

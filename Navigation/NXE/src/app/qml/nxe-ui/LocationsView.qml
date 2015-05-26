@@ -27,6 +27,7 @@ Page {
 
         StackView {
             id: searchStackView
+
             initialItem: SettingsListView {
                 id: locationsListView
                 model: LocationsListModel {}
@@ -55,8 +56,8 @@ Page {
             }
 
             onCurrentItemChanged: {
-                if (currentItem && currentItem.subHeader) {
-                    header.subHeader = currentItem.subHeader
+                if (currentItem && currentItem.customHeader) {
+                    header.subHeader = currentItem.customHeader
                 } else {
                     header.subHeader = "";
                 }

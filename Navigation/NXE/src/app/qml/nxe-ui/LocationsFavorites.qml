@@ -8,6 +8,8 @@ Rectangle {
 
     property string queryText
     property bool queryBarEnabled: true
+    property string customHeader: "Favorites"
+
 
 
     ListView {
