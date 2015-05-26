@@ -24,7 +24,7 @@ Page {
         width: parent.width
         anchors.verticalCenter: parent.verticalCenter
         headerText: "Are you sure?"
-        dialogText: "All maps currently downloaded will be removed"
+        dialogText: "All maps currently downloaded will be removed."
         bottomBarComponent: Row {
             width: dialogItem.width
             height: 60
