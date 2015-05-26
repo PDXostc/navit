@@ -72,7 +72,9 @@ struct DBusQueuedMessage {
         Distance,
         Eta,
         CurrentStreet,
-        ZoomToRoute
+        ZoomToRoute,
+        AddMapMarker,
+        ClearMapMarker
     } type;
     typedef boost::variant<int,
         std::string,
@@ -137,7 +139,9 @@ inline std::ostream& operator<<(std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(Distance),
         ENUM(Eta),
         ENUM(CurrentStreet),
-        ENUM(ZoomToRoute)
+        ENUM(ZoomToRoute),
+        ENUM(AddMapMarker),
+        ENUM(ClearMapMarker)
     };
     os << mapped.at(t);
     return os;
@@ -475,6 +479,17 @@ struct NavitDBusPrivate {
                     case DBusQueuedMessage::Type::ZoomToRoute:
                     {
                         DBusHelpers::call("zoom_to_route", *(object.get()));
+                        break;
+                    }
+                    case DBusQueuedMessage::Type::AddMapMarker:
+                    {
+                        const std::string geo = boost::get<std::string>(msg.value);
+                        DBusHelpers::call("draw_sel_point", *(object.get()), geo);
+                        break;
+                    }
+                    case DBusQueuedMessage::Type::ClearMapMarker:
+                    {
+                        DBusHelpers::call("clear_sel_point", *(object.get()));
                         break;
                     }
 
@@ -833,7 +848,19 @@ void NavitDBus::setTracking(bool tracking)
 void NavitDBus::zoomToRoute()
 {
     dbusDebug() << "Zooming to route";
-    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ZoomToRoute});
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ZoomToRoute });
+}
+
+void NavitDBus::addMapMarker(double longitude, double latitude)
+{
+    auto format = boost::format("geo: %1% %2%") % longitude % latitude;
+    const std::string message = format.str();
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::AddMapMarker, message });
+}
+
+void NavitDBus::clearMapMarker()
+{
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ClearMapMarker });
 }
 void NavitDBus::distance()
 {

@@ -112,6 +112,9 @@ public:
     virtual void eta() = 0;
     virtual void currentStreet() = 0;
     virtual void zoomToRoute() = 0;
+    virtual void addMapMarker(double longitude, double latitude) = 0;
+    virtual void clearMapMarker() = 0;
+
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
     virtual IntSignalType& zoomResponse() = 0;

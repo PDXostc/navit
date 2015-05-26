@@ -98,6 +98,7 @@ if(XPM2PNG)
       endif()
    endforeach()
 else()
+   list(APPEND IMAGES_TO_COPY "location_marker_icon.png")
    list(APPEND IMAGES_TO_COPY ${XPM_FILES})
 endif(XPM2PNG)
 

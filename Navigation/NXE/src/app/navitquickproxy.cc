@@ -144,11 +144,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             return;
         }
 
-        if(m_currentItem) {
-            aDebug() << "User tapped, dismiss location bar";
-            m_currentItem.reset();
-            emit currentlySelectedItemChanged();
-        }
+        aDebug() << "User tapped, dismiss location bar";
+        changeCurrentItem(nullptr);
     });
 
 
@@ -558,12 +555,15 @@ void NavitQuickProxy::reloadQueueSlot(const QString& listName, const QObjectList
 
 void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
 {
+    nxeInstance->ipc()->clearMapMarker();
     aDebug() << "Currently selected item ptr=" << static_cast<void*>(proxy);
     if (proxy == nullptr ) {
         if (m_currentItem) {
             aTrace() << "Request for clear all current item";
             QObject::disconnect(m_currentItem.data());
             m_currentItem.reset();
+
+            // clear marker
         }
     }
     else {
@@ -602,5 +602,12 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
                     m_settings.removeFromFavorites(m_currentItem->id().toByteArray().data());
         });
     }
+
+    if (m_currentItem) {
+        // add marker
+        aTrace() << "Adding map marker";
+        nxeInstance->ipc()->addMapMarker(m_currentItem->longitude(), m_currentItem->latitude());
+    }
+
     emit currentlySelectedItemChanged();
 }
