@@ -31,7 +31,9 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
         aInfo() << "Navigation info changed to " << (navi ? "true":"false");
         if (navi) {
             aDebug() << "Zoomin to route since navigation is on";
+            nxeInstance->ipc()->clearMapMarker();
             nxeInstance->ipc()->zoomToRoute();
+            nxeInstance->ipc()->render();
             emit requestMoveToCurrentPosition(5000);
         }
         emit navigationChanged();
@@ -72,6 +74,8 @@ void NavitNavigationProxy::addWaypoint(QObject* item)
     aDebug() << "Adding waypoint";
     LocationProxy* p = qobject_cast<LocationProxy*>(item);
     nxeInstance->ipc()->addWaypoint(p->longitude(), p->latitude());
+
+    emit waypointAdded();
 }
 
 void NavitNavigationProxy::stopNavigation()

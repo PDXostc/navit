@@ -36,6 +36,8 @@ signals:
     void currentStreetChanged();
     void navigationFinished();
 
+    void waypointAdded();
+
     // Private don't use
     void requestMoveToCurrentPosition(int timeout);
 

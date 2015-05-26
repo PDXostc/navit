@@ -22,7 +22,6 @@ Item {
 
     property ListModel navigationManuvers: ListModel {}
 
-
     NMenu {
         anchors.left: parent.left
         anchors.top: parent.top
@@ -54,8 +53,15 @@ Item {
             console.debug('waypoint item', navitProxy.waypointItem)
 
             if(navitProxy.waypointItem) {
+
+                // hide navigationInfoObject
+                navigationInfoObject.opacity = 0;
+
                 console.debug('waypoint item!')
                 Info.createWaypointItem(navitProxy.waypointItem)
+            } else {
+                // show navigationInfoObject
+                navigationInfoObject.opacity = 1;
             }
         }
     }
@@ -76,6 +82,7 @@ Item {
                 // clear manuver list
                 navigationManuvers.clear();
                 Info.createNavigationInstructionsItem(navigationManuvers);
+
             } else {
                 console.debug('Navigation stopped')
                 Info.remove(locationInfoComponent,locationInfoObject);
@@ -94,6 +101,10 @@ Item {
 
         onNavigationFinished: {
             navigationCancellationTimer.start();
+        }
+
+        onWaypointAdded: {
+            navitProxy.moveToCurrentPosition();
         }
     }
 
