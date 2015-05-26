@@ -296,11 +296,20 @@ encode_attr(DBusMessageIter *iter1, struct attr *attr)
     }
 
     if (attr->type >= attr_type_coord_geo_begin && attr->type <= attr_type_coord_geo_end) {
-        dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "ad", &iter2);
-        dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "d", &iter3);
+        dbus_message_iter_open_container(iter1, DBUS_TYPE_VARIANT, "as", &iter2);
+        dbus_message_iter_open_container(&iter2, DBUS_TYPE_ARRAY, "s", &iter3);
         if (attr->u.coord_geo) {
-            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lat);
-            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_DOUBLE , &attr->u.coord_geo->lng);
+            char* lat = (char*)g_malloc(30);
+            char* lng = (char*)g_malloc(30);
+
+            g_snprintf(lat,30,"%f",attr->u.coord_geo->lat);
+            g_snprintf(lng,30,"%f",attr->u.coord_geo->lng);
+
+            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_STRING, &lat);
+            dbus_message_iter_append_basic(&iter3, DBUS_TYPE_STRING , &lng);
+
+            g_free(lat);
+            g_free(lng);
         }
         dbus_message_iter_close_container(&iter2, &iter3);
         dbus_message_iter_close_container(iter1, &iter2);
