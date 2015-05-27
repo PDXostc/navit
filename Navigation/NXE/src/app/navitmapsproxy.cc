@@ -85,11 +85,17 @@ void NavitMapsProxy::cancelDownload(const QString& mapName)
 
 void NavitMapsProxy::reloadMaps()
 {
+
+    m_ctx->setContextProperty("allMapsModel", QVariant::fromValue(QObjectList{}));
     qDeleteAll(m_maps);
-    qDeleteAll(m_mapsRecommended);
-    qDeleteAll(m_mapsDownloaded);
     m_maps.clear();
+
+    m_ctx->setContextProperty("recommendedMapsModel", QVariant::fromValue(QObjectList{}));
+    qDeleteAll(m_mapsRecommended);
     m_mapsRecommended.clear();
+
+    m_ctx->setContextProperty("downloadedMapsModel", QVariant::fromValue(QObjectList{}));
+    qDeleteAll(m_mapsDownloaded);
     m_mapsDownloaded.clear();
 
     NXE::MapInfo downloaded = { "Downloaded Maps", 0, false, "" };
