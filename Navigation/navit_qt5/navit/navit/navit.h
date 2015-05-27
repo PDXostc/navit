@@ -134,6 +134,7 @@ struct attr** navit_add_item_distance_from_curr_pos(struct navit *this_, struct 
 struct attr** navit_add_item_address(struct navit *this_, struct item *item, struct attr **attr_list);
 int navit_create_curr_position_distance_attr(struct pcoord *c, struct attr *attr);
 void navit_show_selection_point_pcoord(void* data, struct pcoord *p, int enable);
+int navit_check_point_is_poi(struct navit *this_, struct point *p);
 /* end of prototypes */
 #ifdef __cplusplus
 }
