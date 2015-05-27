@@ -854,7 +854,8 @@ void NavitDBus::zoomToRoute()
 void NavitDBus::addMapMarker(double longitude, double latitude)
 {
     auto format = boost::format("geo: %1% %2%") % longitude % latitude;
-    const std::string message = format.str();
+    std::string message = std::string{"geo: "} + std::to_string(longitude) + std::string{" "} + std::to_string(latitude);
+//    const std::string message = format.str();
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::AddMapMarker, message });
 }
 
