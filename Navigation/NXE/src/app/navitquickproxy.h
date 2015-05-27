@@ -99,6 +99,7 @@ private slots:
 private:
 
     void changeCurrentItem(LocationProxy* proxy);
+    void setWaypointItem(LocationProxy* proxy);
 
     std::shared_ptr<Context> context;
     std::shared_ptr<NXE::NXEInstance> nxeInstance;

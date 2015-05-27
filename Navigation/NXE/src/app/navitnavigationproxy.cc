@@ -28,7 +28,7 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
     });
 
     nxeInstance->ipc()->navigationChanged().connect([this](bool navi) {
-        aInfo() << "Navigation info changed to " << (navi ? "true":"false");
+        aTrace() << "Navigation info changed to " << (navi ? "true":"false");
         if (navi) {
             aDebug() << "Zoomin to route since navigation is on";
             nxeInstance->ipc()->clearMapMarker();
@@ -40,12 +40,12 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
     });
 
     nxeInstance->ipc()->etaResponse().connect([this](std::int32_t eta) {
-        aDebug() << "Eta received " << eta;
+        aTrace() << "Eta received " << eta;
 
         // this is from Navit gui_gtk_statusbar.c
         time_t _eta = time(NULL) + eta/10;
         auto remainingEta = _eta - time(NULL);
-        aDebug() << _eta << " rem = " << remainingEta;
+        aTrace() << _eta << " rem = " << remainingEta;
 
         m_eta = remainingEta;
         emit etaChanged();

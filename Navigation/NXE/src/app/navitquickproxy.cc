@@ -139,8 +139,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         loc->moveToThread(this->thread());
         if (navigationProxy.navigation()) {
             aInfo() << "Navigation take place, this will be an waypoint";
-            m_waypointItem.reset(loc);
-            emit waypointItemChanged();
+            setWaypointItem(loc);
         }
         else {
             aInfo() << "Not navigating, select this and show on the screen";
@@ -447,6 +446,7 @@ void NavitQuickProxy::searchNear(const QString& str)
 void NavitQuickProxy::moveToCurrentPosition()
 {
     nxeInstance->ipc()->setTracking(true);
+    changeCurrentItem(nullptr);
 
     auto pos = nxeInstance->gps()->position();
     nxeInstance->ipc()->setPosition(pos.longitude, pos.latitude);
@@ -477,8 +477,7 @@ void NavitQuickProxy::setZoom(int newZoom)
 
 void NavitQuickProxy::clearWaypoint()
 {
-    m_waypointItem.reset();
-    emit waypointItemChanged();
+    setWaypointItem(nullptr);
 }
 
 void NavitQuickProxy::setLocationPopUp(const QUuid& id)
@@ -505,7 +504,11 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
             // and this will points to an deleted object
             foundItem = proxy;
             aDebug() << "Found item " << proxy->itemText().toStdString() << " with id= " << proxy->id().toString().toStdString();
-            changeCurrentItem(LocationProxy::clone(proxy));
+            if (navigationProxy.navigation()) {
+                setWaypointItem(proxy);
+            } else {
+                changeCurrentItem(LocationProxy::clone(proxy));
+            }
         }
     });
 
@@ -640,4 +643,19 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
     }
 
     emit currentlySelectedItemChanged();
+}
+
+void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
+{
+    nxeInstance->ipc()->setTracking(false);
+    nxeInstance->ipc()->zoomToRoute();
+    if (proxy) {
+        m_waypointItem.reset(LocationProxy::clone(proxy));
+        nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
+    } else {
+        m_waypointItem.reset();
+        nxeInstance->ipc()->clearMapMarker();
+    }
+
+    emit waypointItemChanged();
 }

@@ -41,12 +41,22 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
+            if (navigationProxy.navigation) {
+                // hide navigation info component
+                navigationInfoObject.opacity = 0
+            }
             Info.remove(locationInfoComponent,locationInfoObject);
             Info.remove(locationInfoTopComponent, locationInfoTopObject)
 
             if (navitProxy.currentlySelectedItem) {
                 Info.createLocationComponent(navitProxy.currentlySelectedItem)
+            } else {
+                if (navigationProxy.navigation) {
+                    // current item is dismissed, but navigation is still in place
+                    navigationInfoObject.opacity = 1
+                }
             }
+
         }
         onWaypointItemChanged: {
             Info.remove(waypointComponent,waypointObject)
