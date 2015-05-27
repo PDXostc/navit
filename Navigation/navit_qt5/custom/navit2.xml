@@ -1240,7 +1240,7 @@ SYSTEM "navit.dtd">
                     <icon src="nav_roundabout_r8_bk.png" w="32" h="32" />
                 </itemgra>
                 <itemgra item_types="route_end" order="0-">
-                    <icon src="nav_destination_bk.png" w="32" h="32" x="4" y="30"/>
+                    <icon src="flag_icon_black.png" w="32" h="32" x="4" y="30"/>
                 </itemgra>
 
                 <itemgra item_types="waypoint,route_end" order="2">
@@ -2557,7 +2557,7 @@ SYSTEM "navit.dtd">
                     <icon src="nav_roundabout_r8_bk.png" w="32" h="32" />
                 </itemgra>
                 <itemgra item_types="route_end" order="0-">
-                    <icon src="nav_destination_bk.png" w="32" h="32" x="4" y="30"/>
+                    <icon src="flag_icon_black.png" w="32" h="32" x="4" y="30"/>
                 </itemgra>
 
                 <itemgra item_types="waypoint,route_end" order="2">
