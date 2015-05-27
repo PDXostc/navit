@@ -3,48 +3,49 @@ import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
 
 Page {
+    id: root
     property variant mapsToDownload: []
     property int count: 0
     property string customHeader: "Download Maps"
 
+    function downloadMaps() {
+        rootStack.push({
+                           item: Qt.resolvedUrl("DownloadMaps.qml"),
+                           replace: true,
+                           properties: {
+                               maps: mapsToDownload
+                           }
+                       })
+    }
+    function updateState() {
+        if (mapsToDownload.length !== 0) {
+            mainItem.state = 'dialog'
+        } else {
+            mainItem.state = 'noDialog'
+        }
+        count = mapsToDownload.length
+    }
+
+    function mapEntryClicked(itemText, mapSize) {
+        var properMapSize = Math.ceil(mapSize / (1024 * 1024))
+        var _index = mapsToDownload.indexOf(itemText)
+        if (_index === -1) {
+            console.debug('Map size', properMapSize, mapSize, 'for ',itemText)
+            mapsToDownload.push(itemText)
+            dialog.downloadSize += properMapSize
+        } else {
+            mapsToDownload.splice(_index, 1)
+            dialog.downloadSize -= properMapSize
+        }
+        updateState()
+    }
+
     Item {
-        id: root
+        id: mainItem
         anchors.fill: parent
         state: "noDialog"
 
 
-        function updateState() {
-            if (mapsToDownload.length !== 0) {
-                root.state = 'dialog'
-            } else {
-                root.state = 'noDialog'
-            }
-            count = mapsToDownload.length
-        }
-
-        function mapEntryClicked(itemText, mapSize) {
-            var properMapSize = Math.ceil(mapSize / (1024 * 1024))
-            var _index = mapsToDownload.indexOf(itemText)
-            if (_index === -1) {
-                console.debug('Map size', properMapSize, mapSize, 'for ',itemText)
-                mapsToDownload.push(itemText)
-                dialog.downloadSize += properMapSize
-            } else {
-                mapsToDownload.splice(_index, 1)
-                dialog.downloadSize -= properMapSize
-            }
-            updateState()
-        }
-
-        function downloadMaps() {
-            rootStack.push({
-                               item: Qt.resolvedUrl("DownloadMaps.qml"),
-                               replace: true,
-                               properties: {
-                                   maps: mapsToDownload
-                               }
-                           })
-        }
 
         ListView {
             id: list
@@ -68,6 +69,7 @@ Page {
                 onMapEntryClicked: {
                     console.debug('clicked ', mapName)
                     root.mapEntryClicked(mapName, mapSize)
+
                 }
             }
         }

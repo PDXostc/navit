@@ -20,13 +20,14 @@ Item {
 
     Item {
         anchors.fill: parent
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    checkBoxItem.checked = !checkBoxItem.checked
-                    root.checked(checkBoxItem.checked)
-                }
+        MouseArea {
+            anchors.fill: parent
+            z:99
+            onClicked: {
+                checkBoxItem.checked = !checkBoxItem.checked
+                root.checked(checkBoxItem.checked)
             }
+        }
 
         NText {
             id: nameText
@@ -73,11 +74,6 @@ Item {
             enabled: !isDownloaded
             checked: isDownloaded
 
-//            onCheckedChanged: {
-//                if (checked !== initialState) {
-//                    root.checked(checked)
-//                }
-//            }
 
             style: CheckBoxStyle {
                 indicator: Rectangle {
