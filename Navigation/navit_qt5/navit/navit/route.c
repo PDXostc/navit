@@ -4076,6 +4076,57 @@ route_attr_iter_destroy(struct attr_iter *iter)
 	g_free(iter);
 }
 
+
+/**
+ * @brief Gets estimated time and length for the route between 2 points
+ *
+ * @param r_orig existing route object to be duplicated
+ * @param pos start point
+ * @param c end point
+ * @param length output buffer for destination length
+ * @param time output buffer for destination time
+ * @returns 1 if success
+ */
+
+int
+route_get_dest_length_time(struct route *r_orig, struct pcoord *pos, struct pcoord *c, struct attr* length, struct attr* time)
+{
+    struct route *r = NULL;
+    struct attr route_status;
+    int res = 0;
+
+    length->u.num = 0;
+    time->u.num = 0;
+
+    if (r_orig) {
+
+        r = route_dup(r_orig);
+        route_clear_destinations(r);
+        route_set_position(r, pos);
+
+        route_set_destination(r, c, 0);
+        route_status.u.num = 0;
+
+        route_get_attr(r, attr_route_status, &route_status, NULL);
+
+        if (route_status.u.num == route_status_path_done_new) {
+            route_get_attr(r, attr_destination_length, length, NULL);
+            route_get_attr(r, attr_destination_time, time, NULL);
+
+            res = 1;
+
+            dbg(lvl_debug,"destination_distance = %ld\n",length->u.num);
+            dbg(lvl_debug,"destination_time = %ld\n",time->u.num);
+        }
+        route_destroy(r);
+    }
+
+    return res;
+}
+
+
+
+
 void
 route_init(void)
 {

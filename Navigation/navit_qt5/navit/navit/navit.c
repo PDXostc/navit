@@ -435,7 +435,6 @@ void navit_show_selection_point_pcoord(void* data, struct pcoord *p, int enable)
 }
 
 
-
 static
 void navit_dbus_send_point_info(void* data, struct point *p)
 {
@@ -449,6 +448,46 @@ void navit_dbus_send_point_info(void* data, struct point *p)
 		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
 
 	attr_list_free(attr_list);
+}
+
+
+
+/**
+ * @brief Sends using dbus estimated time and length for the route between 2 points
+ *
+ * example dbus message:
+ * array [
+ *     dict entry(
+ *         string "destination_length"
+  *        variant             int32 4558
+ *      )
+ *      dict entry(
+ *        string "destination_time"
+ *        variant             int32 3072
+ *     )
+ *  ]
+ *
+ * @param data The navit instance
+ * @param start The coordinate to start routing from
+ * @param end The coordinate to start routing to
+ * @returns nothing
+ */
+void navit_dbus_send_dest_time_length(void* data, struct pcoord *start, struct pcoord *end)
+{
+	struct navit *this=data;
+	struct attr cb, length, time, **attr_list=NULL;
+	int valid=0;
+
+	if (navit_get_dest_length_time(this, start, end, &length, &time)) {
+
+		attr_list=attr_generic_add_attr(attr_list, &length);
+		attr_list=attr_generic_add_attr(attr_list, &time);
+
+		if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
+			callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
+
+		attr_list_free(attr_list);
+	}
 }
 
 static
@@ -2000,6 +2039,25 @@ navit_set_destination(struct navit *this_, struct pcoord *c, const char *descrip
 			navit_draw(this_);
 	}
 }
+
+
+/**
+ * @brief  Gets estimated time and length for the route between 2 points
+ *
+ * @param this_ The navit instance
+ * @param pos The coordinate to start routing from
+ * @param c The coordinate to start routing to
+ * @param length saves returned estimated length
+ * @param time saves returned estimated time
+ * @returns 1 if success or 0 if error
+ */
+int
+navit_get_dest_length_time(struct navit *this_, struct pcoord *pos, struct pcoord *c, struct attr* length, struct attr* time)
+{
+	return route_get_dest_length_time(this_->route,pos,c,length,time);
+}
+
+
 
 /**
  * Add destination description to the recent dest file. Doesn't start routing.

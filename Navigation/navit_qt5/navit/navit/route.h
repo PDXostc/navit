@@ -127,6 +127,8 @@ int route_get_attr(struct route *this_, enum attr_type type, struct attr *attr, 
 void route_init(void);
 void route_destroy(struct route *this_);
 void route_set_selection_point(struct route *this_, struct coord *sel, int enable);
+int route_get_dest_length_time(struct route *r_orig, struct pcoord *pos, struct pcoord *c, struct attr* length, struct attr* time);
+
 /* end of prototypes */
 #ifdef __cplusplus
 }
