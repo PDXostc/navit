@@ -40,7 +40,7 @@ public:
     void setDataFilePath(const std::string &datafile);
     boost::optional<MapData> getMapData(const std::string& name);
     std::vector<MapInfo> availableMaps() const;
-
+    std::vector<MapInfo> recommendedMaps(const double lon, const double lat) const;
 private:
     std::string m_datafile;
     boost::property_tree::ptree tree;

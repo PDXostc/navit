@@ -14,6 +14,11 @@
     <method name="maps">
         <arg type="a(stbs)" name="maps" direction="out" />
     </method>
+    <method name="recommendedMaps">
+        <arg type="d" name="lon" direction="in"/>
+        <arg type="d" name="lat" direction="in"/>
+        <arg type="a(stbs)" name="recommendedMaps" direction="out" />
+    </method>
     <method name="cancel">
         <arg type="s" name="mapName" direction="in"/>
     </method>

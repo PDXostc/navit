@@ -118,7 +118,16 @@ void NavitMapsProxy::reloadMaps()
     m_mapsByContinent.clear();
     // Request for available maps
     m_nxeMaps = nxeInstance->mapDownloader()->maps();
-    std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [](const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) -> bool {
+    auto pos = nxeInstance->gps()->position();
+
+    aInfo() << "POSITION.... LON:  " << pos.longitude << " LAT: " << pos.latitude;
+    if(!(std::isnan(pos.longitude) || std::isnan(pos.latitude))) {
+        std::vector<NXE::MapInfo>  m_recommended = nxeInstance->mapDownloader()->recommendedMaps(pos.longitude, pos.latitude);
+        std::for_each(m_recommended.begin(), m_recommended.end(), [this](const NXE::MapInfo& mi) {
+            m_mapsRecommended.append(new MapInfoProxy{mi});
+        });
+    }
+    std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [] (const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) ->bool {
         return lhs.name < rhs.name;
     });
     std::for_each(m_nxeMaps.begin(), m_nxeMaps.end(), [this](const NXE::MapInfo& mi) {
@@ -153,4 +162,6 @@ void NavitMapsProxy::reloadMaps()
     m_ctx->setContextProperty("downloadedMapsModel", QVariant::fromValue(m_mapsDownloaded));
     m_ctx->setContextProperty("recommendedMapsModel", QVariant::fromValue(m_mapsRecommended));
     m_ctx->setContextProperty("allMapsModel", QVariant::fromValue(m_maps));
+
+    emit mapsReloaded();
 }

@@ -23,6 +23,7 @@ public:
     virtual void reportProgress(const bool& enable) override;
     virtual void cancel(const std::string &mapName) override;
     virtual std::vector< DBus::Struct< std::string, uint64_t, bool, std::string> > maps() override;
+    virtual std::vector< DBus::Struct< std::string, uint64_t, bool, std::string> > recommendedMaps(const double& lon, const double& lat) override;
 private:
     std::unique_ptr<MapDownloaderDBusServerPrivate> d;
 };

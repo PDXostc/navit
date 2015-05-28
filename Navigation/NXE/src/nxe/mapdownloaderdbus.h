@@ -14,6 +14,7 @@ public:
     ~MapDownloaderDBus();
 
     virtual std::vector<MapInfo> maps() override;
+    virtual std::vector<MapInfo> recommendedMaps(const double& lon, const double& lat) override;
     virtual bool download(const std::string &region) override;
     virtual void setListener(const MapDownloaderListener & listener) override;
     virtual void cancel(const std::string& region) override;

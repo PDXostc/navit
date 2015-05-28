@@ -87,6 +87,22 @@ std::vector<MapInfo> MapDownloaderDBus::maps()
     return maps;
 }
 
+std::vector<MapInfo> MapDownloaderDBus::recommendedMaps(const double& lon, const double& lat)
+{
+    nInfo() << "Calling recommended maps IPC";
+    std::vector<DBus::Struct<std::string, std::uint64_t, bool, std::string> > result;
+    std::vector<MapInfo> maps;
+    if(std::isnan(lon) || std::isnan(lat))
+        return maps;
+    auto retMessage = DBusHelpers::call("recommendedMaps", *(d->proxy.get()), lon, lat);
+    auto iter = retMessage.reader();
+    iter >> result;
+    std::for_each(result.begin(), result.end(), [&maps] (const ::DBus::Struct<std::string, std::uint64_t, bool, std::string>& entry){
+        maps.emplace_back(MapInfo{entry._1, entry._2, entry._3, entry._4});
+    });
+    return maps;
+}
+
 bool MapDownloaderDBus::download(const std::string &region)
 {
     nInfo() << "Downloading region= " << region;

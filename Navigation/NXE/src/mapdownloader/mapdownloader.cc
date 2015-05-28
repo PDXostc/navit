@@ -323,6 +323,16 @@ std::vector<MapEntry> MapDownloader::maps() const
     return proper;
 }
 
+std::vector<MapEntry> MapDownloader::recommendedMaps(const double lon, const double lat) const
+{
+    auto maps = d->mdesc.recommendedMaps(lon, lat);
+    std::vector<MapEntry> proper;
+    std::for_each(maps.begin(), maps.end(), [&proper, this](const MapInfo& mi) {
+        proper.emplace_back(MapEntry{mi.name, mi.size, d->mapDownloaded(mi.name), mi.continent});
+    });
+    return proper;
+}
+
 void MapDownloader::cancel(const std::string& reqUrl)
 {
     mdInfo() << "Canceling download " << reqUrl;

@@ -38,6 +38,7 @@ public:
 
     std::string download(const std::string& name);
     std::vector<MapEntry> maps() const;
+    std::vector<MapEntry> recommendedMaps(const double lon, const double lat) const;
 
     void cancel(const std::string &reqUrl);
 

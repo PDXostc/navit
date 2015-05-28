@@ -122,4 +122,24 @@ std::vector<DBus::Struct<std::string, uint64_t, bool, std::string> > MapDownload
     return ret;
 }
 
+std::vector<DBus::Struct<std::string, uint64_t, bool, std::string> > MapDownloaderDBusServer::recommendedMaps(const double& lon, const double& lat)
+{
+    std::vector<DBus::Struct<std::string, std::uint64_t, bool, std::string>> ret;
+    if(std::isnan(lon) || std::isnan(lat)) {
+        return ret;
+    }
+    mdInfo() << "Requesting recommended maps for lon: " << lon << " and lat " << lat;
+    auto maps = d->downloader.recommendedMaps(lon, lat);
+    std::for_each(maps.begin(), maps.end(), [&ret](const MapEntry& me) {
+        DBus::Struct<std::string, std::uint64_t, bool, std::string> oneVal;
+        oneVal._1 = me.name;
+        oneVal._2 = me.size;
+        oneVal._3 = me.isDownloaded;
+        oneVal._4 = me.continent;
+        ret.emplace_back(oneVal);
+    });
+
+    return ret;
+}
+
 } // namespace md

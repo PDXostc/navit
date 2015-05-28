@@ -33,6 +33,8 @@ signals:
     void mapDownloadFinished(const QString& map);
 
     void _forceReloadMaps();
+
+    void mapsReloaded();
 private:
 
 

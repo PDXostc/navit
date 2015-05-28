@@ -29,6 +29,7 @@ public:
     ~IMapDownloader() {}
 
     virtual std::vector<MapInfo> maps() = 0;
+    virtual std::vector<MapInfo> recommendedMaps(const double& lon, const double& lat) = 0;
     virtual bool download(const std::string& region) = 0;
     virtual void setListener(const MapDownloaderListener& listener) = 0;
     virtual void cancel(const std::string& region) = 0;

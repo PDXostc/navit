@@ -7,6 +7,19 @@ Page {
     property variant mapsToDownload: []
     property int count: 0
     property string customHeader: "Download Maps"
+    busy: true
+
+
+    Component.onCompleted: {
+        navitMapsProxy.reloadMaps();
+    }
+
+    Connections {
+        target: navitMapsProxy
+        onMapsReloaded: {
+            root.busy = false;
+        }
+    }
 
     function downloadMaps() {
         rootStack.push({
