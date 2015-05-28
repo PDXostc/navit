@@ -82,7 +82,6 @@ public slots:
     void searchStreet(const QString& street);
     void searchAddress(const QString& street);
     void searchSelect(const QString& what, int id);
-    void searchNear(const QString& str);
     void moveToCurrentPosition();
     void getFavorites();
     void getHistory();

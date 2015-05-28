@@ -10,7 +10,6 @@ Rectangle {
     property bool queryBarEnabled: true
     property string customHeader: "History"
 
-
     ListView {
         id: locationResultListView
         anchors.topMargin: 0

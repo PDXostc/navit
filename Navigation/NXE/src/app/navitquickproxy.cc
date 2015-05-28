@@ -72,7 +72,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             });
             if( iter == m_historyResults.end()) {
                 aDebug() << "History result wasn't found in history list, adding " << currItem->itemText().toStdString();
-                m_historyResults.append(LocationProxy::clone(currItem));
+                auto p = LocationProxy::clone(currItem);
+                p->moveToThread(m_rootContext->thread());
+                m_historyResults.append(p);
             } else {
                 aInfo() << "Item " << currItem->itemText().toStdString() << " was found in history, skip it";
             }
@@ -143,8 +145,6 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         }
         else {
             aInfo() << "Not navigating, select this and show on the screen";
-            // before checking refresh favorites
-            getFavorites();
             changeCurrentItem(loc);
         }
     });
@@ -436,11 +436,6 @@ void NavitQuickProxy::searchSelect(const QString& what, int id)
         throw std::runtime_error("Shouldn't happen");
     }
     nxeInstance->ipc()->selectSearchResult(type, id);
-}
-
-void NavitQuickProxy::searchNear(const QString& str)
-{
-    // TODO: Implement me
 }
 
 void NavitQuickProxy::moveToCurrentPosition()
