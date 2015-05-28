@@ -1732,6 +1732,39 @@ request_navit_set_destination(DBusConnection *connection, DBusMessage *message)
 	return empty_reply(connection, message);
 }
 
+/**
+ * @brief Sends estimated time and length for the route between 2 points
+ *
+ * @param connection dbus connection
+ * @param message dbus message
+ * @returns dbus status
+ */
+static DBusHandlerResult
+request_navit_dbus_send_dest_time_length(DBusConnection *connection, DBusMessage *message)
+{
+	struct pcoord begin, end;
+	struct navit *navit;
+	DBusMessageIter iter;
+
+	navit = object_get_from_message(message, "navit");
+	if (! navit)
+		return dbus_error_invalid_object_path(connection, message);
+
+	dbus_message_iter_init(message, &iter);
+	if (!pcoord_get_from_message(message, &iter, &begin))
+        return dbus_error_invalid_parameter(connection, message);
+
+	dbus_message_iter_next(&iter);
+	if (!pcoord_get_from_message(message, &iter, &end))
+        return dbus_error_invalid_parameter(connection, message);
+
+	empty_reply(connection, message);
+
+	navit_dbus_send_dest_time_length(navit, &begin, &end);
+}
+
+
+
 static DBusHandlerResult
 request_navit_search_pois(DBusConnection *connection, DBusMessage *message)
 {
@@ -2133,6 +2166,7 @@ struct dbus_method {
 	{".navit",  "draw_sel_point",          "s",       "coordinates",                         "",   "",      request_navit_draw_sel_point},
 	{".navit",  "clear_sel_point",   "",        "",                                          "",   "",      request_navit_clear_sel_point},
 	{".navit",  "evaluate", 	   "s",	      "command",				 "s",  "",      request_navit_evaluate},
+	{".navit",  "send_length_time",     "ss",      "coordinates,coordinates",                     "",   "",      request_navit_dbus_send_dest_time_length},
 	{".layout", "get_attr",		   "s",	      "attribute",                               "sv",  "attrname,value", request_layout_get_attr},
 	{".map",    "get_attr",            "s",       "attribute",                               "sv",  "attrname,value", request_map_get_attr},
 	{".map",    "set_attr",            "sv",      "attribute,value",                         "",   "",      request_map_set_attr},
