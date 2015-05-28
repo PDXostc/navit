@@ -64,7 +64,7 @@ ListModel {
     }
 
     ListElement {
-        itemText: "Country/Langugage"
+        itemText: "Download Maps"
         type: "sublist"
         options: [
             ListElement {
