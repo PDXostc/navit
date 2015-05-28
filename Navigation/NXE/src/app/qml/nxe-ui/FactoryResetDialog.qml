@@ -7,7 +7,7 @@ Page {
         id: dialogItem
         headerText: "Are you sure?"
         width: parent.width
-        dialogText: "All saved maps, locations, destinations and settings will be removed"
+        dialogText: "All saved maps, locations, destinations and settings will be removed."
         bottomBarComponent: Row {
             width: dialogItem.width
             height: 60

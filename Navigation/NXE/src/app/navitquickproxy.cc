@@ -533,6 +533,8 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
                 nxeInstance->ipc()->setZoom(newZoomLevel);
         });
     }
+
+    // request for distance to this location
 }
 
 void NavitQuickProxy::initNavit()
