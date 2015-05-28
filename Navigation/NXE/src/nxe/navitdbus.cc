@@ -74,7 +74,8 @@ struct DBusQueuedMessage {
         CurrentStreet,
         ZoomToRoute,
         AddMapMarker,
-        ClearMapMarker
+        ClearMapMarker,
+        PossibleTrackInfo
     } type;
     typedef boost::variant<int,
         std::string,
@@ -141,7 +142,8 @@ inline std::ostream& operator<<(std::ostream& os, DBusQueuedMessage::Type t)
         ENUM(CurrentStreet),
         ENUM(ZoomToRoute),
         ENUM(AddMapMarker),
-        ENUM(ClearMapMarker)
+        ENUM(ClearMapMarker),
+        ENUM(PossibleTrackInfo)
     };
     os << mapped.at(t);
     return os;
@@ -193,6 +195,10 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             return val.first == "tap_coord_geo";
         }) != res.end();
 
+        bool isPossibleInfo = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
+            return val.first == "destination_length";
+        }) != res.end();
+
         if (isSpeechSignal) {
             dbusTrace() << "Speech callback";
             auto dataIter = std::find_if(res.begin(), res.end(), [](const std::pair<std::string, ::DBus::Variant>& val) -> bool {
@@ -226,6 +232,10 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             dbusTrace() << "Tap event received";
             auto point = unpackPointClicked(res);
             tapSignal(point);
+        } else if(isPossibleInfo) {
+            dbusTrace() << "Possible info cb";
+            auto posInfo = unpackPossibleInfo(res);
+            possInfoSignal(posInfo);
         }
 
         inProgress = false;
@@ -286,11 +296,28 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
         return point;
     }
 
+    std::pair<std::int32_t, std::int32_t> unpackPossibleInfo(const std::vector<std::pair<std::string, ::DBus::Variant> >& dictionary)
+    {
+        std::pair<std::int32_t, std::int32_t> retVal {-1,-1};
+        std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
+            dbusDebug() << "Entry= " << p.first;
+            if (p.first == "destination_length") {
+                retVal.first = DBusHelpers::getFromIter<int>(p.second.reader());
+            } else if(p.first == "destination_time") {
+                retVal.second = DBusHelpers::getFromIter<int>(p.second.reader());
+            }
+        });
+
+        dbusTrace() << "Unpacked " << retVal.first << ", " << retVal.second;
+        return retVal;
+    }
+
     INavitIPC::SpeechSignalType speechSignal;
     INavitIPC::PointClickedSignalType pointClickedSignal;
     INavitIPC::PointClickedSignalType tapSignal;
     INavitIPC::InitializedSignalType initializedSignal;
     INavitIPC::RoutingSignalType routingSignal;
+    INavitIPC::PossibleTrackSignalType possInfoSignal;
     bool inProgress = false;
 };
 
@@ -490,6 +517,18 @@ struct NavitDBusPrivate {
                     case DBusQueuedMessage::Type::ClearMapMarker:
                     {
                         DBusHelpers::call("clear_sel_point", *(object.get()));
+                        break;
+                    }
+                    case DBusQueuedMessage::Type::PossibleTrackInfo:
+                    {
+                        auto pair = boost::get<std::pair<std::string, std::string>>(msg.value);
+                        std::string from = pair.first;
+                        std::string to = pair.second;
+                        dbusTrace() << "From " << from << " to " << to;
+                        DBus::Message msg =  DBusHelpers::call("send_length_time", *(object.get()), from, to);
+//                        std::vector<std::pair<std::string, ::DBus::Variant> > v;
+//                        auto reader = msg.reader();
+//                        reader >> v;
                         break;
                     }
 
@@ -861,6 +900,15 @@ void NavitDBus::clearMapMarker()
 {
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::ClearMapMarker });
 }
+
+void NavitDBus::possibleTrackInformation(const Position &from, const Position &to)
+{
+    dbusTrace() << "Possible track info";
+    std::string _f = std::string{"geo: "} + std::to_string(from.longitude) + std::string{" "} + std::to_string(from.latitude);
+    std::string _t = std::string{"geo: "} + std::to_string(to.longitude) + std::string{" "} + std::to_string(to.latitude);
+
+    d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::PossibleTrackInfo, std::make_pair(_f,_t)});
+}
 void NavitDBus::distance()
 {
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Distance });
@@ -941,6 +989,12 @@ INavitIPC::InitializedSignalType& NavitDBus::initializedSignal()
 INavitIPC::RoutingSignalType& NavitDBus::routingSignal()
 {
     return d->object->routingSignal;
+}
+
+INavitIPC::PossibleTrackSignalType &NavitDBus::possibleTrackInfoSignal()
+{
+    return d->object->possInfoSignal;
+
 }
 
 } // namespace NXE

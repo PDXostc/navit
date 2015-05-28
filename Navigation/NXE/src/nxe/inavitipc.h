@@ -76,6 +76,9 @@ public:
     typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
     typedef boost::signals2::signal<void(std::string)> StringSignalType;
 
+    typedef boost::signals2::signal<void(std::pair<std::int32_t, std::int32_t>)> PossibleTrackSignalType;
+
+
 
     virtual ~INavitIPC() {}
 
@@ -114,6 +117,7 @@ public:
     virtual void zoomToRoute() = 0;
     virtual void addMapMarker(double longitude, double latitude) = 0;
     virtual void clearMapMarker() = 0;
+    virtual void possibleTrackInformation(const NXE::Position& from, const NXE::Position& to) = 0;
 
     // DBus responses
     virtual IntSignalType& orientationResponse() = 0;
@@ -133,6 +137,7 @@ public:
     virtual PointClickedSignalType& tapSignal() = 0;
     virtual InitializedSignalType& initializedSignal() = 0;
     virtual RoutingSignalType& routingSignal() = 0;
+    virtual PossibleTrackSignalType& possibleTrackInfoSignal() = 0;
 };
 
 

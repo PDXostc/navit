@@ -81,3 +81,16 @@ LocationProxy* LocationProxy::clone(LocationProxy* rhs)
     p->_coords = rhs->_coords;
     return p;
 }
+
+void LocationProxy::setDistance(int newDistance)
+{
+    _distance = newDistance;
+    emit distanceChanged();
+}
+
+void LocationProxy::setEta(int newEta)
+{
+    aTrace() << "Setting eta to " << newEta;
+    _eta = newEta;
+    emit etaChanged();
+}

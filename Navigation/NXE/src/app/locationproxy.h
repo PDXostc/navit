@@ -23,7 +23,8 @@ class LocationProxy : public QObject {
     Q_PROPERTY(double longitude READ longitude CONSTANT)
     Q_PROPERTY(double latitude READ latitude CONSTANT)
     Q_PROPERTY(QUuid itemId READ id CONSTANT)
-    Q_PROPERTY(int distance READ distance CONSTANT)
+    Q_PROPERTY(int distance READ distance NOTIFY distanceChanged)
+    Q_PROPERTY(int eta READ eta NOTIFY etaChanged)
 public:
     LocationProxy(
         QString itemText, bool fav, QString desc, bool bolded, int searchID = -1, int distance = -1, const QString& uuid = "",QObject* parent = 0);
@@ -52,11 +53,18 @@ public:
     void setPosition(const NXE::Position& p) {_coords = p;}
     int distance() const {return _distance;}
 
+    void setDistance(int newDistance);
+
+    int eta() const {return _eta;}
+    void setEta(int newEta);
+
 signals:
 
     void favoriteChanged();
     void descriptionChanged();
     void boldedChanged();
+    void distanceChanged();
+    void etaChanged();
 
 private:
     LocationType _locType;
@@ -68,6 +76,7 @@ private:
     int _searchId;
     int _distance;
     QUuid _id;
+    int _eta;
 };
 
 #endif // LOCATIONPROXY_H

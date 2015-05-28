@@ -6,15 +6,37 @@ Item {
     property string locationName: locationComponent ? locationComponent.itemText : ""
     property string locationDescription: locationComponent ? locationComponent.description : ""
     property int locationDistance: locationComponent ? locationComponent.distance : -1
+    property int locationEta: locationComponent ? locationComponent.eta : -1
     property bool isFavorite: locationComponent ? locationComponent.favorite : false
     property var locationComponent: null
-    width: 400
+    width: 600
     height: 350
+
+    function eta() {
+        var str;
+        console.debug('eta ', locationComponent.eta)
+        if (locationEta === -1) {
+            str = qsTr("Unknown eta");
+        } else {
+            if (locationComponent.eta < 60) {
+                str = locationComponent.eta + " sec";
+            } else {
+                var minutes = Math.floor(locationComponent.eta / 60);
+                str = minutes + " min";
+            }
+        }
+        console.debug(str)
+        return str;
+    }
 
     Connections {
         target: locationComponent ? locationComponent : null
         onFavoriteChanged: {
             console.debug('fav changed ', locationComponent.favorite)
+        }
+
+        onEtaChanged: {
+            etaText.text = eta();
         }
     }
 
@@ -194,6 +216,7 @@ Item {
                 }
 
                 Text {
+                    id: etaText
                     x: 284
                     y: 58
                     color: "#09bcdf"

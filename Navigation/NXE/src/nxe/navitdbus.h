@@ -43,7 +43,8 @@ public:
     virtual void setTracking(bool tracking) override;
     virtual void zoomToRoute() override;
     virtual void addMapMarker(double longitude, double latitude);
-    virtual void clearMapMarker();
+    virtual void clearMapMarker() override;
+    virtual void possibleTrackInformation(const NXE::Position& from, const NXE::Position& to) override;
 
     virtual IntSignalType &orientationResponse() override;
     virtual IntSignalType& zoomResponse() override;
@@ -60,6 +61,7 @@ public:
     virtual PointClickedSignalType& tapSignal() override;
     virtual InitializedSignalType& initializedSignal() override;
     virtual RoutingSignalType& routingSignal() override;
+    virtual PossibleTrackSignalType& possibleTrackInfoSignal() override;
 
 private:
     std::unique_ptr<NavitDBusPrivate> d;

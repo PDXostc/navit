@@ -199,6 +199,18 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         emit searchDone();
     });
 
+    nxeInstance->ipc()->possibleTrackInfoSignal().connect([this](std::pair<std::int32_t, std::int32_t> p){
+        if (m_currentItem) {
+            m_currentItem->setDistance(p.first);
+            auto eta = p.second;
+            time_t _eta = time(NULL) + eta/10;
+            auto remainingEta = _eta - time(NULL);
+            m_currentItem->setEta(remainingEta);
+            aTrace() << "Informations for " << m_currentItem->itemText().toStdString()
+                     << " distance = " << p.first << " time = " << remainingEta;
+        }
+    });
+
     qRegisterMetaType<QObjectList>("QObjectList");
     typedef QQmlListProperty<LocationProxy> LocationProxyList;
     qRegisterMetaType<LocationProxyList>("QQmlListProperty<LocationProxy>");
@@ -461,6 +473,9 @@ void NavitQuickProxy::getFavorites()
 }
 void NavitQuickProxy::getHistory()
 {
+
+    // now we need to get all eta and distances
+
     m_rootContext->setContextProperty("locationHistoryResult", QVariant::fromValue(m_historyResults));
     emit gettingHistoryDone();
 }
@@ -533,8 +548,6 @@ void NavitQuickProxy::setLocationPopUp(const QUuid& id)
                 nxeInstance->ipc()->setZoom(newZoomLevel);
         });
     }
-
-    // request for distance to this location
 }
 
 void NavitQuickProxy::initNavit()
@@ -637,7 +650,16 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
         // add marker
         aTrace() << "Adding map marker";
         nxeInstance->ipc()->addMapMarker(m_currentItem->longitude(), m_currentItem->latitude());
+        // request for distance and eta to this location
+        auto pos = nxeInstance->gps()->position();
+        NXE::Position pp {m_currentItem->longitude(), m_currentItem->latitude()};
+        if (std::isnan(pos.latitude) || std::isnan(pos.longitude)) {
+            aError() << "Unable to calculate position";
+        } else {
+            nxeInstance->ipc()->possibleTrackInformation(pos, pp);
+        }
     }
+
 
     emit currentlySelectedItemChanged();
 }
