@@ -7,7 +7,7 @@ ListView {
 
     delegate: SettingsListDelegate {
         width: settingsListView.width
-        height: 50
+        height: theme.settingsView.delHeight
         onSubMenuRequested: subMenuRequest(url)
     }
 }

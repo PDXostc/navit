@@ -7,7 +7,7 @@ Page {
     Rectangle {
         id: blue
         width: parent.width
-        height: 300
+        height: 450
         color: "#09bcdf"
         anchors.centerIn: parent
 
@@ -30,27 +30,25 @@ Page {
 
         Image {
             id: logo
-            x: 168
-            width: 64
-            height: 64
+            width: 96
+            height: 96
             anchors.top: parent.top
-            anchors.topMargin: -32
+            anchors.topMargin: -96/2
             anchors.horizontalCenter: parent.horizontalCenter
             source: "download_hex_icon.png"
         }
 
         Item {
-            width: 200
-            height: 122
+            width: parent.width
+            height: parent.height/2
             anchors.centerIn: parent
 
-            Text {
+            NText {
                 anchors.fill: parent
                 text: "Downloads completed"
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 23
+                font.pixelSize: 48
                 wrapMode: Text.WordWrap
-                color: "white"
             }
         }
     }

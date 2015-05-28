@@ -5,7 +5,7 @@ Rectangle {
     id: root
     width: 400
     height: 50
-    color: "#09bcdf"
+    color: theme.ssearchView.selectedBck
 
     signal carButtonClicked()
     property alias title: headerTextItem.text
@@ -25,22 +25,19 @@ Rectangle {
             Column {
                 anchors.fill: parent
                 anchors.leftMargin: 5
-                Text {
+                NText {
                     id: headerTextItem
-                    color: "white"
                     verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 16
                     height: parent.height/2
                     width: parent.width
                 }
 
-                Text {
+                NText {
                     id: descriptionItem
-                    color: "white"
                     verticalAlignment: Text.AlignVCenter
-                    font.pixelSize: 16
                     height: parent.height/2
                     width: parent.width
+                    font.pixelSize: theme.defFontSize - 6
                 }
             }
         }
@@ -53,14 +50,14 @@ Rectangle {
         }
 
         Item {
-            width: 50
+            width: theme.defButtonSize + 12
             height: parent.height
 
             Image {
                 anchors.centerIn: parent
                 source: "car_icon_white.png"
-                sourceSize.width: 40
-                sourceSize.height: 40
+                sourceSize.width: theme.defButtonSize
+                sourceSize.height: theme.defButtonSize
                 visible: root.height !== 0
             }
 

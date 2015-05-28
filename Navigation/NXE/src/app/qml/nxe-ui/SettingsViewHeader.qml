@@ -65,32 +65,29 @@ Item {
                 color: "gray"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.verticalCenterOffset: 1
-                font.pixelSize: 14
+                font.pixelSize: theme.defFontSize
             }
         }
 
         Row {
             id: backButtonItem
-            width: 50
+            width: 60
             height: parent.height
+
 
             NButton {
                 id: bckB
                 width: 16
                 height: parent.height
                 iconType: "arrow_left"
-                iconWidth: 16
-                iconHeight: 36
                 onClicked: backToMapRequest()
                 enabled: isHeaderEnabled
             }
 
             NButton {
                 id: mapBackButton
-                width: 24
+                width: 48
                 height: parent.height
-                iconWidth: 24
-                iconHeight: 24
                 iconSource: "map_icon_white.png"
                 onClicked: {
                     Qt.inputMethod.hide()

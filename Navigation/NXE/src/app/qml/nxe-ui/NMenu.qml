@@ -3,7 +3,7 @@ import QtQuick 2.0
 Item {
     id: root
     width: 60
-    height: 4 * 60
+    height: 4 * (theme.menu.buttonSize + 30)
     anchors.left: parent.left
     anchors.top: parent.top
     anchors.topMargin: parent.width * 0.1
@@ -11,9 +11,10 @@ Item {
     signal clicked(string item)
 
     Rectangle {
+        id: menuBackground
         anchors.fill: parent
-        color: "black"
-        opacity: 0.85
+        color: theme.menu.backgroundColor
+        opacity: theme.menu.opacity
     }
 
     Column {
@@ -26,8 +27,8 @@ Item {
             Image {
                 anchors.centerIn: parent
                 source: "menu_icon_white.png"
-                sourceSize.width: 24
-                sourceSize.height: 24
+                sourceSize.width: theme.menu.buttonSize
+                sourceSize.height: theme.menu.buttonSize
             }
             MouseArea {
                 anchors.fill: parent
@@ -41,8 +42,8 @@ Item {
             Image {
                 anchors.centerIn: parent
                 source: "search_icon_white_sm.png"
-                sourceSize.width: 24
-                sourceSize.height: 24
+                sourceSize.width: theme.menu.buttonSize
+                sourceSize.height: theme.menu.buttonSize
             }
             MouseArea {
                 anchors.fill: parent
@@ -56,8 +57,8 @@ Item {
                 anchors.centerIn: parent
                 source: navitProxy.orientation === 0 ? "northup_icon_white.png":"headup_icon_white.png"
 
-                sourceSize.width: 24
-                sourceSize.height: 24
+                sourceSize.width: theme.menu.buttonSize
+                sourceSize.height: theme.menu.buttonSize
             }
             MouseArea {
                 anchors.fill: parent
@@ -76,8 +77,8 @@ Item {
             Image {
                 anchors.centerIn: parent
                 source: "car_icon_white.png"
-                sourceSize.width: 24
-                sourceSize.height: 24
+                sourceSize.width: theme.menu.buttonSize
+                sourceSize.height: theme.menu.buttonSize
             }
             MouseArea {
                 anchors.fill: parent

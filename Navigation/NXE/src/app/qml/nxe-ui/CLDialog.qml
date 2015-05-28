@@ -5,62 +5,36 @@ Item {
     id: dialog
     property int numberOfDowloads: 0
     property real downloadSize: 0
-    width: 400
-    height: 200
+    width: 800
+    height: 400
 
     signal startDownloadClicked()
 
     Rectangle {
         width: parent.width
-        height: parent.height - 32
+        height: parent.height - 96/2
         color: "#09bcdf"
         anchors.bottom: parent.bottom
 
-        Text {
-            color: "white"
+        NText {
             text: "(" + count + ") Downloads (" + downloadSize + "MB)"
             anchors.left: parent.left
             anchors.leftMargin: 10
-            font.pixelSize: 16
             anchors.verticalCenter: parent.verticalCenter
         }
 
-        MouseArea {
-            width: 70
-            height: 50
-            anchors.right: parent.right
-            anchors.rightMargin: 25
-            anchors.verticalCenter: parent.verticalCenter
-
+        NButton {
+            text: "Start Download"
+            iconType: "arrow_right"
             onClicked: startDownloadClicked()
-
-            Row {
-                width: 93
-                anchors.fill: parent
-                spacing: 5
-
-                Text {
-                    width: 75
-                    color: "white"
-                    text: "Start Download"
-                    wrapMode: Text.WordWrap
-                    font.pixelSize: 16
-                }
-
-                Image {
-                    width: 13
-                    anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.height: 20
-                    sourceSize.width: 20
-                    source: "next_icon_white.png"
-                }
-            }
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
     Image {
         anchors.horizontalCenter: parent.horizontalCenter
-        sourceSize.height: 64
-        sourceSize.width: 64
+        sourceSize.height: 96
+        sourceSize.width: 96
         source: "download_hex_icon.png"
     }
 }

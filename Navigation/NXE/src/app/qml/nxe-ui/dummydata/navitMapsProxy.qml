@@ -23,11 +23,15 @@ QtObject {
         mapDownloadError('Oregon', 'Canceled')
         fakeTimer.stop()
     }
+    function reloadMaps() {
+        mapsReloaded()
+    }
 
     // real signals
     signal mapDownloadProgress(string map, int now, int total);
     signal mapDownloadError(string map, string error);
     signal mapDownloadFinished(string map);
+    signal mapsReloaded()
 
     // Fake properties
     property Timer fakeTimer: Timer {

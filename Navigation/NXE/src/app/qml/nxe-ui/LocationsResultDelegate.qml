@@ -23,7 +23,7 @@ Item {
             id: item1
             width: parent.width
             height: parent.height
-            Text {
+            NText {
                 id: mainTextItem
                 width: parent.width * 2 / 3
                 height: parent.height
@@ -32,8 +32,6 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: starImage.right
                 anchors.leftMargin: 5
-                color: "white"
-                font.pixelSize: 18
             }
 
             Image {
@@ -44,15 +42,12 @@ Item {
                 source: "star_icon_solid_white.png"
             }
 
-            Text {
+            NText {
                 id: descriptionText
-                color: "#ffffff"
                 text: description !== undefined ? description : ""
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
                 anchors.rightMargin: 5
-                font.pixelSize: 12
-                font.bold: bolded
             }
         }
     }

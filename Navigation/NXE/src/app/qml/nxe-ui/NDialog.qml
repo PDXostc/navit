@@ -15,31 +15,31 @@ Item {
     Rectangle {
         id: blueRectangle
         width: parent.width
-        height: 300
+        height: 450
         color: "#09bcdf"
         anchors.centerIn: parent
     }
 
     Column {
         width: parent.width
-        height: blueRectangle.height + 32
+        height: blueRectangle.height + theme.dialog.buttonSize/2
         anchors.top: blueRectangle.top
-        anchors.topMargin: -32
+        anchors.topMargin: -theme.dialog.buttonSize/2
         spacing: 5
 
         Image {
             id: logoImage
-            width: 64
-            height: 64
+            width: theme.dialog.buttonSize
+            height: theme.dialog.buttonSize
             anchors.horizontalCenter: parent.horizontalCenter
             source: "download_hex_icon.png"
         }
 
         NText {
             id: headerTextItem
-            font.pixelSize: 29
             font.bold: true
             anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: theme.bigFontSize
         }
 
         Item {
@@ -50,7 +50,7 @@ Item {
 
         Item {
             width: parent.width
-            height: 122
+            height: 200
 
             NText {
                 id: mainTextItem
@@ -59,7 +59,6 @@ Item {
                 anchors.centerIn: parent
 
                 horizontalAlignment: Text.AlignHCenter
-                font.pixelSize: 23
                 wrapMode: Text.WordWrap
             }
         }
@@ -67,7 +66,7 @@ Item {
         Item {
             id: buttonBar
             width: parent.width
-            height: 60
+            height: theme.dialog.bottomBarHeight
 
             Loader {
                 sourceComponent: root.bottomBarComponent

@@ -87,23 +87,23 @@ Page {
     Rectangle {
         id: rect
         width: parent.width
-        height: 300
+        height: 450
         color: "#09bcdf"
         anchors.verticalCenter: parent.verticalCenter
     }
 
     Image {
         id: icon
-        anchors.bottomMargin: -31
+        anchors.bottomMargin: -96/2
         anchors.horizontalCenter: parent.horizontalCenter
-        sourceSize.height: 64
-        sourceSize.width: 64
+        sourceSize.height: 96
+        sourceSize.width: 96
         source: "download_hex_icon.png"
         anchors.bottom: rect.top
     }
 
     Column {
-        spacing: 10
+        spacing: 30
         anchors {
             top: icon.bottom
             topMargin: 10
@@ -117,14 +117,14 @@ Page {
             id: headerText
             color: "white"
             text: "Downloading (" + (currentDownloadIndex + 1) + " of " + maps.length + ")"
-            font.pixelSize: 18
+            font.pixelSize: 40
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
         ProgressBar {
             id: progressBarItem
             width: parent.width
-            height: 15
+            height: 40
             value: 0
             Behavior on value {
                 NumberAnimation {
@@ -145,45 +145,39 @@ Page {
                 }
             }
         }
+
         Item {
             width: parent.width
             height: 20
-            Text {
+
+            NText {
                 text: currentDownloadMap
-                font.pixelSize: 16
-                color: "white"
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            Text {
+            NText {
                 id: bytesTextItem
                 text: "N/A"
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                color: "white"
-                font.pixelSize: 16
             }
         }
 
         Item {
             width: parent.width
             height: 20
-            Text {
+
+            NText {
                 text: "Time remaining"
-                font.pixelSize: 16
-                color: "white"
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            Text {
+            NText {
                 id: etaTextItem
-                text: "1.3 min"
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                color: "white"
-                font.pixelSize: 16
             }
         }
     }

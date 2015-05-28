@@ -26,7 +26,7 @@ Rectangle {
         clip: true
         delegate: LocationsResultDelegate {
             width: parent.width
-            height: 50
+            height: theme.settingsView.delHeight
             onLocationClicked: {
                 navitProxy.setLocationPopUp(itemId)
                 rootStack.pop();

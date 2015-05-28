@@ -19,7 +19,7 @@ Page {
 
         SettingsViewHeader {
             width: parent.width
-            height: 50
+            height: theme.settingsHeaderView.height
             header: "Locations"
             stack: searchStackView
             id: header
@@ -46,7 +46,7 @@ Page {
                         }
                     }
                     width: locationsListView.width
-                    height: 50
+                    height: theme.settingsView.delHeight
                     onSubMenuRequested: {
                         console.debug('request ', Qt.resolvedUrl(url))
                         searchStackView.push(Qt.resolvedUrl(url))

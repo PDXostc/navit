@@ -10,8 +10,10 @@ Item {
     property alias text: buttonText.text
     property alias iconSource: imageItem.source
     property bool iconVisible: iconSource.toString().length !== 0
-    property alias iconWidth: imageItem.sourceSize.width
-    property alias iconHeight: imageItem.sourceSize.height
+//    property alias iconWidth: imageItem.sourceSize.width
+//    property alias iconHeight: imageItem.sourceSize.height
+    property int iconWidth: theme.defButtonSize
+    property int iconHeight: theme.defButtonSize
     property alias layout: rowLayout.layoutDirection
     property string iconType : ""
 
@@ -49,7 +51,7 @@ Item {
             NText {
                 id: buttonText
                 font.bold: root.bold
-                font.pixelSize: 18
+                font.pixelSize: theme.defFontSize + 4
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -71,6 +73,8 @@ Item {
                 id: imageItem
                 visible: (iconType === "arrow_right" || iconType === "arrow_left") ? false : iconVisible
                 anchors.verticalCenter: parent.verticalCenter
+                sourceSize.width: iconWidth
+                sourceSize.height: iconHeight
             }
         }
     }

@@ -37,7 +37,7 @@ Page {
                 rightMargin: 10
                 verticalCenter: parent.verticalCenter
             }
-            height: 15
+            height: 30
             Behavior on value {
                 NumberAnimation {
                 }

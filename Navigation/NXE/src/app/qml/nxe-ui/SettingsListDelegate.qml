@@ -59,8 +59,6 @@ Item {
             height: parent.height
             verticalAlignment: Text.AlignVCenter
             text: itemText
-            color: "white"
-            font.pixelSize: 18
         }
 
         Item {
@@ -71,12 +69,10 @@ Item {
                 id: optionText
                 text: type === "text" ? options.get(currentOption).option : ""
                 visible: type === "text"
-                color: "white"
                 width: parent.width
                 height: parent.height
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignRight
-                font.pixelSize: 16
             }
 
             Item {

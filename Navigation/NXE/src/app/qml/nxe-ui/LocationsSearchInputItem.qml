@@ -28,8 +28,8 @@ Item {
 
     function calculateListSize() {
         if (model) {
-            var size = model.length * 40
-            console.debug(model, model.length, size, root.height)
+            var i = model.count
+            var size = i * (theme.ssearchView.resultHeight)
             if (size > (root.height - 100)) {
                 size = root.height - 100
             }
@@ -50,7 +50,7 @@ Item {
 
         Rectangle {
             id: searchInputItem
-            height: 20
+            height: theme.defFontSize + 10
             width: parent.width
             color: "white"
             focus: true
@@ -58,7 +58,7 @@ Item {
             TextEdit {
                 id: searchInputTextItem
                 color: "#242424"
-                font.pixelSize: 15
+                font.pixelSize: theme.defFontSize
                 anchors.fill: parent
                 anchors.leftMargin: 5
                 Component.onCompleted: {
@@ -105,7 +105,7 @@ Item {
 
                 delegate: MouseArea {
                     width: resultListViewItem.width
-                    height: 40
+                    height: theme.ssearchView.resultHeight
 
                     onClicked: {
                         Qt.inputMethod.hide()
@@ -121,19 +121,17 @@ Item {
                             anchors.leftMargin: 5
                             anchors.rightMargin: 5
 
-                            Text {
+                            NText {
                                 width: parent.width
-                                color: "white"
-                                font.pixelSize: 16
                                 height: parent.height / 2
                                 text: itemText
+                                font.pixelSize: theme.ssearchView.resultFontSize
                             }
-                            Text {
+                            NText {
                                 width: parent.width
-                                color: "white"
-                                font.pixelSize: 12
                                 height: parent.height / 2
                                 text: itemText
+                                font.pixelSize: theme.ssearchView.resultFontSize - 6
                             }
                         }
                     }

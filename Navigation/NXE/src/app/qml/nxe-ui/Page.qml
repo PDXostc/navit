@@ -20,7 +20,7 @@ Rectangle {
         }
     }
 
-    color: "black"
+    color: theme.page.bck
     state: "normal"
 
     Rectangle {

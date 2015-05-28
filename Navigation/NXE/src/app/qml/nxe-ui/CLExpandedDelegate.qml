@@ -38,7 +38,6 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 18
 
         }
 
@@ -53,7 +52,6 @@ Item {
             anchors.verticalCenterOffset: 3
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
-            font.pixelSize: 10
         }
 
 
@@ -61,8 +59,7 @@ Item {
             width: parent.width
             height: 1
             color: "#46a5c3"
-            anchors.top: parent.top
-            anchors.topMargin: 49
+            anchors.bottom: parent.bottom
         }
 
         CheckBox {
@@ -77,8 +74,8 @@ Item {
 
             style: CheckBoxStyle {
                 indicator: Rectangle {
-                    implicitWidth: 16
-                    implicitHeight: 16
+                    implicitWidth: 32
+                    implicitHeight: 32
                     radius: 2
                     border.color: "white"
                     border.width: 1
@@ -92,8 +89,8 @@ Item {
                         Image {
                             source: "white_tick.png"
                             visible: control.checked
-                            sourceSize.width: 16
-                            sourceSize.height: 16
+                            sourceSize.width: 32
+                            sourceSize.height: 32
                         }
                     }
                 }

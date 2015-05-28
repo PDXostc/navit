@@ -70,7 +70,7 @@ Page {
             title: selectedItemText
             description: selectedItemDescription
             width: parent.width
-            height: selectedItemText.length === 0 ? 0 : 50
+            height: selectedItemText.length === 0 ? 0 : theme.ssearchView.resultHeight
             Layout.fillWidth: true
 
             onCarButtonClicked: {
@@ -96,12 +96,10 @@ Page {
             id: titleItem
             visible: __searchStateId !== __FinishSearch
             width: parent.width
-            height: 30
+            height: theme.ssearchView.titleHeight
 
-            Text {
+            NText {
                 text: __searchStateId !== __FinishSearch ? __searchHeaders[__searchStateId] : ""
-                color: 'white'
-                font.pixelSize: 16
                 anchors.fill: parent
                 anchors.leftMargin: 5
             }
@@ -138,8 +136,7 @@ Page {
 
         Item {
             Layout.fillWidth: true
-            height: 80
-
+            height: theme.ssearchView.startOverHeight
 
             Item {
                 anchors.fill: parent

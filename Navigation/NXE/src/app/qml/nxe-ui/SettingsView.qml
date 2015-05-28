@@ -19,7 +19,7 @@ Page {
         SettingsViewHeader {
             id: settingsHeaderItem
             width: parent.width
-            height: 50
+            height: theme.settingsHeaderView.height
             stack: settingsStackView
             header: "Settings"
         }

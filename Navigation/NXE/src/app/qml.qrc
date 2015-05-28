@@ -34,8 +34,6 @@
         <file>qml/compositor.js</file>
         <file>qml/CompositorMainView.qml</file>
         <file>qml/ContrastEffect.qml</file>
-        <file>qml/MainView.qml</file>
-        <file>qml/Menu.qml</file>
         <file>qml/WindowChrome.qml</file>
         <file>qml/WindowContainer.qml</file>
         <file>qml/nxe-ui/alert_hex_icon.png</file>
@@ -95,5 +93,8 @@
         <file>qml/nxe-ui/fonts/fontawesome-webfont.ttf</file>
         <file>qml/nxe-ui/FactoryResetProgressDialog.qml</file>
         <file>qml/nxe-ui/ManagePOIs.qml</file>
+        <file>qml/nxe-ui/themes/Theme.qml</file>
+        <file>qml/nxe-ui/themes/TizenTheme.qml</file>
+        <file>qml/nxe-ui/themes/NormalTheme.qml</file>
     </qresource>
 </RCC>

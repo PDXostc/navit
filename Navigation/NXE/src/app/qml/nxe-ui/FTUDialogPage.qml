@@ -40,7 +40,8 @@ Page {
                 text: "Download a map"
                 bold: true
                 iconType: "arrow_right"
-                iconHeight: 30
+                iconHeight: 60
+                height: parent.height
                 onClicked: {
                     rootStack.push({
                                        item: Qt.resolvedUrl("SettingsView.qml"),

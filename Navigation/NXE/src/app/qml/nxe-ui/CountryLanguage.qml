@@ -58,8 +58,6 @@ Page {
         anchors.fill: parent
         state: "noDialog"
 
-
-
         ListView {
             id: list
             anchors.fill: parent
@@ -80,7 +78,6 @@ Page {
                 width: list.width
 
                 onMapEntryClicked: {
-                    console.debug('clicked ', mapName)
                     root.mapEntryClicked(mapName, mapSize)
 
                 }
@@ -90,7 +87,7 @@ Page {
         CLDialog {
             id: dialog
             width: parent.width
-            height: 200
+            height: 400
             numberOfDowloads: count
             onStartDownloadClicked: downloadMaps()
         }
