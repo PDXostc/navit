@@ -38,7 +38,7 @@ Item {
         NButton {
             id: backButton
             height: parent.height
-            width: 100
+            width: 150
             iconType: "arrow_left"
             iconHeight: 36
             layout: Qt.RightToLeft
@@ -69,10 +69,11 @@ Item {
             }
         }
 
-        Item {
+        Row {
             id: backButtonItem
             width: 50
             height: parent.height
+
             NButton {
                 id: bckB
                 width: 16
@@ -91,8 +92,6 @@ Item {
                 iconWidth: 24
                 iconHeight: 24
                 iconSource: "map_icon_white.png"
-                anchors.left: bckB.right
-                anchors.leftMargin: 15
                 onClicked: {
                     Qt.inputMethod.hide()
                     backToMapRequest()

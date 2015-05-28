@@ -21,7 +21,8 @@ Item {
         var w = buttonText.contentWidth + 5
         if (iconVisible)
             w += imageItem.width
-
+        if( awesomeItem.visible)
+            w += awesomeItem.width
         root.width = w;
     }
 
@@ -59,6 +60,7 @@ Item {
             }
 
             NText {
+                id: awesomeItem
                 font.family: "FontAwesome"
                 visible: (iconType === "arrow_right" || iconType === "arrow_left")
                 text: (iconType === "arrow_left") ? "\uf104" : "\uf105"
