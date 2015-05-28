@@ -57,7 +57,7 @@ Rectangle {
                             NText {
                                 color: "black"
                                 text: locationName
-                                font.pixelSize: 14
+                                font.pixelSize: 26
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -67,7 +67,7 @@ Rectangle {
                             NText {
                                 color: "black"
                                 text: locationDescription
-                                font.pixelSize: 10
+                                font.pixelSize: 20
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -121,6 +121,7 @@ Rectangle {
                             NText {
                                 text: "Navigate to this location"
                                 anchors.verticalCenter:parent.verticalCenter
+                                font.pixelSize: 20
                             }
                         }
                     }
@@ -162,6 +163,7 @@ Rectangle {
                             NText {
                                 text: "Add waypoint to current route"
                                 anchors.verticalCenter:parent.verticalCenter
+                                font.pixelSize: 20
                             }
                         }
                     }

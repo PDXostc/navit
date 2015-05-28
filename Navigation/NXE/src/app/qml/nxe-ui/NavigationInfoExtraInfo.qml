@@ -10,19 +10,19 @@ Item {
 
     RowLayout {
         id: mainItem
-        width: 50
+        width: 70
         height: parent.height
         spacing: 0
 
         Behavior on width {NumberAnimation {}}
 
         Item {
-            width: 50
+            width: 70
             Layout.fillHeight: true
 
             Item {
                 height: parent.height
-                width: 50
+                width: 70
 
                 Rectangle {
                     anchors.fill: parent
@@ -71,7 +71,7 @@ Item {
                             opacity: root.state === 'normal' ? 0 : 1
                             Behavior on opacity {NumberAnimation {}}
                             text: "Current:  " + navigationProxy.currentStreet
-                            font.pixelSize: 12
+                            font.pixelSize: 20
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -83,7 +83,7 @@ Item {
                             opacity: root.state === 'normal' ? 0 : 1
                             Behavior on opacity {NumberAnimation {}}
                             text: "Next:  No data available"
-                            font.pixelSize: 12
+                            font.pixelSize: 20
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -97,7 +97,7 @@ Item {
             name: "normal"
             PropertyChanges {
                 target: mainItem
-                width: 50
+                width: 70
             }
         },
         State {

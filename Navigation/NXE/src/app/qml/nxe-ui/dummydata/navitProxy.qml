@@ -121,7 +121,7 @@ QtObject {
     }
 
     property Timer fakePositionClickedTimer: Timer {
-        running: false
+        running: true
         interval: 1
         repeat: false
         onTriggered: {
@@ -129,8 +129,8 @@ QtObject {
         }
     }
     property Timer fakeWaypointTimer: Timer {
-        running: false
-        interval: 500
+        running: true
+        interval: 2000
         repeat: false
         onTriggered: {
             waypointItem = fakeLocationObject

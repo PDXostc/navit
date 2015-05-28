@@ -5,8 +5,7 @@ Item {
     id: root
     width: 400
 
-
-    property int defaultHeight: 185
+    property int defaultHeight: 255
     property ListModel manuverModel: null
 
     state:'normal'
@@ -27,7 +26,7 @@ Item {
         NavigationInfoExtraInfo {
             id: infoItem
             Layout.fillWidth: true
-            height: 60
+            height: 90
         }
 
         Rectangle {
@@ -36,18 +35,15 @@ Item {
             Row {
                 anchors.fill: parent
 
-
                 ColumnLayout {
                     id: leftBarItem
-                    width: 50
+                    width: 70
                     height: parent.height
                     spacing: 0
 
-
-
                     Rectangle {
                         width: parent.width
-                        height: 60
+                        height: 80
                         color: "#242424"
 
                         Image {
@@ -59,7 +55,7 @@ Item {
                     }
                     Rectangle {
                         width: parent.width
-                        height: 60
+                        height: 80
                         color: "#242424"
 
                         Image {

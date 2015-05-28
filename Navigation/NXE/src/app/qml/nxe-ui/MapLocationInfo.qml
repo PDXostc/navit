@@ -9,7 +9,7 @@ Item {
     property bool isFavorite: locationComponent ? locationComponent.favorite : false
     property var locationComponent: null
     width: 400
-    height: 150
+    height: 350
 
     Connections {
         target: locationComponent ? locationComponent : null
@@ -156,7 +156,7 @@ Item {
                     x: 43
                     y: 21
                     text: locationName
-                    font.pixelSize: 26
+                    font.pixelSize: 30
                 }
 
                 Text {
@@ -165,7 +165,7 @@ Item {
                     text: locationInfo.locationDescription
                     anchors.top: locationTitleTextItem.bottom
                     anchors.topMargin: 5
-                    font.pixelSize: 15
+                    font.pixelSize: 20
                 }
 
                 Text {
