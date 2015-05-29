@@ -84,6 +84,7 @@ std::vector<MapInfo> MapDownloaderDBus::maps()
         maps.emplace_back(MapInfo{entry._1, entry._2, entry._3, entry._4});
 
     });
+    nInfo() << "Maps size " << maps.size();
     return maps;
 }
 

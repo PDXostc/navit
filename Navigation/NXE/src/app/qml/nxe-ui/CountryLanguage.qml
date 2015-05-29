@@ -11,7 +11,8 @@ Page {
 
 
     Component.onCompleted: {
-        navitMapsProxy.reloadMaps();
+        root.busy = true;
+        navitMapsProxy.requestMapsReload();
     }
 
     Connections {

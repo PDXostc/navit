@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <memory>
+#include <thread>
 
 #include "imapdownloader.h"
 
@@ -26,17 +27,20 @@ public slots:
     qreal mapSize(const QString& mapName);
     void cancelDownload(const QString& mapName);
 
+    void requestMapsReload();
+
+private slots:
     void reloadMaps();
+    void updateModels();
 signals:
     void mapDownloadError(const QString& error);
     void mapDownloadProgress(quint64 now, quint64 total, const QString& map);
     void mapDownloadFinished(const QString& map);
 
-    void _forceReloadMaps();
+    void _updateMapsModel();
 
     void mapsReloaded();
 private:
-
 
     std::shared_ptr<NXE::NXEInstance> nxeInstance;
     QObjectList m_maps;
@@ -44,8 +48,11 @@ private:
     QObjectList m_mapsDownloaded;
     NXE::MapDownloaderListener mapDownloaderListener;
     std::vector<NXE::MapInfo> m_nxeMaps;
+    std::vector<NXE::MapInfo> m_recommended;
     QQmlContext* m_ctx;
     std::map<std::string, QObjectList> m_mapsByContinent;
+    std::thread m_reloadMapsThread;
+    bool m_reloadThreadRunning;
 };
 
 #endif // NAVITMAPSPROXY_H

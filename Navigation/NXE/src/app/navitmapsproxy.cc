@@ -9,9 +9,10 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQm
     : QObject(parent)
     , nxeInstance(nxe)
     , m_ctx(ctx)
+    , m_reloadThreadRunning(false)
 {
 
-    connect(this, &NavitMapsProxy::_forceReloadMaps, this, &NavitMapsProxy::reloadMaps, Qt::QueuedConnection);
+    connect(this,&NavitMapsProxy::_updateMapsModel, this, &NavitMapsProxy::updateModels, Qt::QueuedConnection);
 
     // mapDownloaderCallbacks!
     mapDownloaderListener.progressCb = [this](std::string mapName, std::uint64_t now, std::uint64_t total) {
@@ -21,16 +22,19 @@ NavitMapsProxy::NavitMapsProxy(const std::shared_ptr<NXE::NXEInstance>& nxe, QQm
         emit mapDownloadError(QString::fromStdString(strError));
     };
     mapDownloaderListener.finishedCb = [this](std::string map) {
-        emit _forceReloadMaps();
         emit mapDownloadFinished(QString::fromStdString(map));
     };
 
     nxeInstance->setMapDownloaderListener(mapDownloaderListener);
-    reloadMaps();
 }
 
 NavitMapsProxy::~NavitMapsProxy()
 {
+
+    if (m_reloadMapsThread.joinable()) {
+        m_reloadMapsThread.join();
+    }
+
     qDeleteAll(m_maps);
     qDeleteAll(m_mapsRecommended);
     qDeleteAll(m_mapsDownloaded);
@@ -83,8 +87,13 @@ void NavitMapsProxy::cancelDownload(const QString& mapName)
     nxeInstance->mapDownloader()->cancel(mapName.toStdString());
 }
 
-void NavitMapsProxy::reloadMaps()
+void NavitMapsProxy::requestMapsReload()
 {
+    aDebug() << "Requesting maps reload";
+    if (m_reloadThreadRunning) {
+        aInfo() << "Reload already in progress";
+        return;
+    }
 
     m_ctx->setContextProperty("allMapsModel", QVariant::fromValue(QObjectList{}));
     qDeleteAll(m_maps);
@@ -116,17 +125,40 @@ void NavitMapsProxy::reloadMaps()
     for (auto iter = m_mapsByContinent.begin(); iter != m_mapsByContinent.end(); ++iter)
         qDeleteAll(iter->second);
     m_mapsByContinent.clear();
+
+    m_reloadThreadRunning = true;
+    m_reloadMapsThread = std::thread{ [this]() {
+        reloadMaps();
+    }};
+}
+
+void NavitMapsProxy::reloadMaps()
+{
+
+    aInfo() << "Reloading maps";
     // Request for available maps
     m_nxeMaps = nxeInstance->mapDownloader()->maps();
     auto pos = nxeInstance->gps()->position();
 
     aInfo() << "POSITION.... LON:  " << pos.longitude << " LAT: " << pos.latitude;
     if(!(std::isnan(pos.longitude) || std::isnan(pos.latitude))) {
-        std::vector<NXE::MapInfo>  m_recommended = nxeInstance->mapDownloader()->recommendedMaps(pos.longitude, pos.latitude);
-        std::for_each(m_recommended.begin(), m_recommended.end(), [this](const NXE::MapInfo& mi) {
-            m_mapsRecommended.append(new MapInfoProxy{mi});
-        });
+        m_recommended = nxeInstance->mapDownloader()->recommendedMaps(pos.longitude, pos.latitude);
     }
+
+    emit _updateMapsModel();
+}
+
+void NavitMapsProxy::updateModels()
+{
+    m_reloadThreadRunning = false;
+    if(m_reloadMapsThread.joinable()) {
+        m_reloadMapsThread.join();
+    }
+    aInfo() << "Updating models";
+    std::for_each(m_recommended.begin(), m_recommended.end(), [this](const NXE::MapInfo& mi) {
+        m_mapsRecommended.append(new MapInfoProxy{mi});
+    });
+
     std::sort(m_nxeMaps.begin(), m_nxeMaps.end(), [] (const NXE::MapInfo& lhs, const NXE::MapInfo& rhs) ->bool {
         return lhs.name < rhs.name;
     });
@@ -164,4 +196,5 @@ void NavitMapsProxy::reloadMaps()
     m_ctx->setContextProperty("allMapsModel", QVariant::fromValue(m_maps));
 
     emit mapsReloaded();
+
 }

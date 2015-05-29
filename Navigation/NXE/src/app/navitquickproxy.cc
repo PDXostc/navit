@@ -321,7 +321,7 @@ void NavitQuickProxy::reset()
 
     m_settings.remove();
     nxeInstance->mapDownloader()->removeAllMaps();
-    mapsProxy.reloadMaps();
+    mapsProxy.requestMapsReload();
 
     setFtu(true);
 }
