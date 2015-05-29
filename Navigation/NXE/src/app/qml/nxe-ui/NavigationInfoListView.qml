@@ -8,7 +8,7 @@ ListView {
     clip: true
     delegate: Item {
         width: parent.width
-        height: 40
+        height: 60
         Row {
             anchors.fill: parent
 
@@ -20,8 +20,7 @@ ListView {
                 Image {
                     anchors.centerIn: parent
                     source: NI.textToImage(manuverText)
-                    sourceSize.height: 20
-                    sourceSize.width: 20
+                    sourceSize: Qt.size(32,32)
                 }
             }
 
@@ -29,11 +28,10 @@ ListView {
                 width: parent.width - imageItem.width
                 height: parent.height
 
-                Text {
+                NText {
                     text: manuverText
                     anchors.verticalCenter: parent.verticalCenter
                     wrapMode: Text.WordWrap
-                    font.pixelSize: 16
                     color: active ? "black" : "grey"
                 }
             }

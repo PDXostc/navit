@@ -1,7 +1,9 @@
 import QtQuick 2.0
+import QtQuick.Layouts 1.1
+import QtGraphicalEffects 1.0
 
 Item {
-    id: locationInfo
+    id: root
     property bool canNavigate: false
     property string locationName: locationComponent ? locationComponent.itemText : ""
     property string locationDescription: locationComponent ? locationComponent.description : ""
@@ -12,7 +14,9 @@ Item {
     width: 600
     height: 350
 
-    function eta() {
+    state: 'normal'
+
+    function etaText() {
         var str;
         console.debug('eta ', locationComponent.eta)
         if (locationEta === -1) {
@@ -29,6 +33,32 @@ Item {
         return str;
     }
 
+    function distanceText() {
+        var destStr;
+        var dest = locationComponent.distance
+        if (dest === -1) {
+            destStr= "N/A";
+        }
+
+        if (dest > 1000) {
+            var dist = Number(dest / 1000).toFixed(1)
+            destStr = dist + " km"
+        } else {
+            destStr = dest + " m"
+        }
+        console.debug('distance=', destStr, dest)
+        return destStr
+    }
+
+
+    function toggleNaviButton() {
+        if (root.state === 'normal') {
+            root.state = 'navi';
+        } else {
+            root.state = 'normal'
+        }
+    }
+
     Connections {
         target: locationComponent ? locationComponent : null
         onFavoriteChanged: {
@@ -36,196 +66,216 @@ Item {
         }
 
         onEtaChanged: {
-            etaText.text = eta();
+            locationEtaTextItem.text = etaText();
+        }
+
+        onDistanceChanged: {
+            locationDistanceTextItem.text = distanceText();
         }
     }
 
-    Behavior on opacity {
-        NumberAnimation {
-        }
-    }
+    Behavior on opacity {NumberAnimation {} }
 
-    Item {
-        id: item3
-        width: parent.width
-        height: 150
-        anchors.bottom: parent.bottom
+    Rectangle {
+        anchors.fill: parent
+
         Item {
             id: buttonsBar
-            x: 0
-            y: 0
-            width: 60
+            width: 120
             height: parent.height
 
             Rectangle {
                 anchors.fill: parent
                 color: "#242424"
 
-                MouseArea {
-                    x: 0
-                    y: 0
-                    width: 60
-                    height: 75
-                    onClicked: {
-                        if (locationComponent) {
-                            console.debug(locationComponent.favorite)
-                            locationComponent.favorite = !locationComponent.favorite
+                Column {
+                    anchors.fill: parent
+
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height/2
+                        onClicked: {
+                            if (locationComponent) {
+                                console.debug(locationComponent.favorite)
+                                locationComponent.favorite = !locationComponent.favorite
+                            }
+                        }
+                        Image {
+                            sourceSize: theme.bigIconSize
+                            anchors.centerIn: parent
+                            source: isFavorite ? "star_icon_solid_white.png" : "star_icon_empty_grey.png"
                         }
                     }
-                    Image {
-                        x: 12
-                        y: 19
-                        width: 28
-                        height: 28
-                        visible: true
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenterOffset: 0
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        source: isFavorite ? "star_icon_solid_white.png" : "star_icon_empty_grey.png"
-                    }
-                }
 
-                MouseArea {
-                    id: mouseArea2
-                    x: 0
-                    y: 75
-                    width: 60
-                    height: 75
+                    MouseArea {
+                        width: parent.width
+                        height: parent.height/2
 
-                    onClicked: {
-                        startNavigationButton.opacity = 1
-                    }
+                        onClicked: {
+                            toggleNaviButton()
+                        }
 
-                    Image {
-                        id: image2
-                        x: 12
-                        y: 39
-                        width: 28
-                        height: 28
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenterOffset: 0
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        source: "navigate_icon_white.png"
+                        Image {
+                            sourceSize: theme.bigIconSize
+                            anchors.centerIn: parent
+                            source: "navigate_icon_white.png"
+                        }
                     }
                 }
             }
         }
 
         Item {
-            id: item1
-            x: 58
-            y: 0
-            anchors.left: buttonsBar.right
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            anchors.top: parent.top
-            anchors.leftMargin: 0
+            anchors{
+                left: buttonsBar.right
+                right: parent.right
+                bottom: parent.bottom
+                top: parent.top
+            }
 
-            Rectangle {
-                id: rectangle1
-                color: "#fbfbfb"
-                anchors.rightMargin: 0
-                anchors.bottomMargin: 0
-                anchors.leftMargin: 0
-                anchors.topMargin: 0
+            Column {
                 anchors.fill: parent
 
-                MouseArea {
-                    id: startNavigationButton
-                    x: 43
-                    width: 289
-                    height: 36
-                    anchors.top: locationDescription.bottom
-                    anchors.topMargin: 10
+                Column {
+                    width: parent.width
+                    height: parent.height/2
 
-                    onClicked: {
-                        console.debug('Start navigation')
-                        navigationProxy.startNavigation(navitProxy.currentlySelectedItem);
+                    RowLayout {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            leftMargin: 5
+                            rightMargin: 20
+                        }
+                        height: parent.height * 2/3
+                        spacing: 15
+
+                        Item {
+                            width: 60
+                            height: parent.height
+
+                            Image {
+                                id: locationImage
+                                sourceSize: theme.bigIconSize
+                                anchors.verticalCenter: parent.verticalCenter
+                                source: "location_marker_icon.png"
+                                smooth: true
+                            }
+
+                            NDropShadow {
+                                anchors.fill: locationImage
+                                source: locationImage
+                            }
+                        }
+
+                        NText {
+                            text: locationName
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            color: "black"
+                        }
+
+                        NText {
+                            id: locationEtaTextItem
+                            text: "3 min"
+                            color: "#09bcdf"
+                            font.pixelSize: 20
+                        }
+
                     }
 
-                    opacity: 0
-                    Behavior on opacity {
-                        NumberAnimation {
+                    RowLayout {
+                        anchors {
+                            left: parent.left
+                            right: parent.right
+                            leftMargin: 80
+                            rightMargin: 20
+                        }
+                        height: parent.height * 1/3
+
+                        NText {
+                            text: locationDescription
+                            verticalAlignment: Text.AlignTop
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            color: "black"
+                            font.pixelSize: 24
+                        }
+
+                        NText {
+                            id: locationDistanceTextItem
+                            text: "0.2 miles"
+                            Layout.fillHeight: true
+                            verticalAlignment: Text.AlignTop
+                            color: "#09bcdf"
+                            font.pixelSize: 20
                         }
                     }
-                    Image {
+                }
+
+                Item {
+                    height: parent.height/2
+                    anchors {
+                        left: parent.left
+                        leftMargin: 80
+                        right: parent.right
+                        rightMargin: 20
+                    }
+
+
+                    Item {
+                        id: startNavigationItem
                         anchors.fill: parent
-                        source: "blue_forward_button_long_bg.png"
-                    }
+                        Behavior on opacity {NumberAnimation {}}
 
-                    Text {
-                        x: 8
-                        y: 8
-                        color: "#ffffff"
-                        text: qsTr("Start Navigation")
-                        anchors.verticalCenter: parent.verticalCenter
-                        font.pixelSize: 15
-                    }
-                }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: navigationProxy.startNavigation(navitProxy.currentlySelectedItem)
 
-                Image {
-                    x: 58
-                    y: 21
-                    width: 32
-                    height: 32
-                    anchors.left: parent.left
-                    anchors.leftMargin: 5
-                    source: "location_marker_icon.png"
-                }
+                            Image {
+                                source: "blue_forward_button_long_bg.png"
+                                width: parent.width
+                                anchors.verticalCenter: parent.verticalCenter
 
-                Text {
-                    id: locationTitleTextItem
-                    x: 43
-                    y: 21
-                    text: locationName
-                    font.pixelSize: 30
-                }
+                                NText {
+                                    text: "x"
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: 40
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    font.pixelSize: 18
+                                }
+                            }
 
-                Text {
-                    id: locationDescription
-                    x: 43
-                    text: locationInfo.locationDescription
-                    anchors.top: locationTitleTextItem.bottom
-                    anchors.topMargin: 5
-                    font.pixelSize: 20
-                }
+                            NText {
+                                anchors.left: parent.left
+                                anchors.leftMargin: 15
+                                text: qsTr("Start Navigation")
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
 
-                Text {
-                    x: 302
-                    y: 36
-                    color: "#09bcdf"
-                    text: {
-                        var destStr;
-                        if (locationDistance === -1) {
-                            return "N/A";
                         }
-
-                        if (locationDistance > 1000) {
-                            var dist = Number(locationDistance / 1000).toFixed(1)
-                            destStr = dist + " km"
-                        } else {
-                            destStr = locationDistance + " m"
-                        }
-                        console.debug('distance=', destStr, locationDistance)
-                        return destStr
                     }
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    horizontalAlignment: Text.AlignRight
-                    font.pixelSize: 12
-                }
-
-                Text {
-                    id: etaText
-                    x: 284
-                    y: 58
-                    color: "#09bcdf"
-                    anchors.right: parent.right
-                    anchors.rightMargin: 10
-                    horizontalAlignment: Text.AlignRight
-                    font.pixelSize: 12
                 }
             }
         }
     }
+
+    states: [
+        State {
+            name: "normal"
+            PropertyChanges {
+                target: startNavigationItem
+                opacity:0
+            }
+        },
+        State {
+            name: "navi"
+            PropertyChanges {
+                target: startNavigationItem
+                opacity:1
+            }
+        }
+    ]
 }

@@ -66,6 +66,7 @@ function createLocationComponent(location) {
     if (locationInfoComponent.status === Component.Ready) {
         finishComponentCreation(location)
     } else {
+        console.debug(locationInfoComponent.errorString())
         locationInfoComponent.statusChanged.connect(finishComponentCreation(
                                                         location))
     }

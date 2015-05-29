@@ -3,7 +3,7 @@ import QtQuick.Layouts 1.1
 
 Rectangle {
     width: 400
-    height: 200
+    height: 320
     property var locationComponent: null
     property bool isFavorite: locationComponent ? locationComponent.favorite : false
     property string locationName: locationComponent ? locationComponent.itemText : ""
@@ -29,13 +29,12 @@ Rectangle {
                 anchors.fill: parent
                 Rectangle {
                     Layout.fillHeight: true
-                    width: 50
+                    width: 120
                     color: "#242424"
                     Image {
-                        width: 28
-                        height: 28
                         anchors.centerIn: parent
                         source: isFavorite ? "star_icon_solid_white.png" : "star_icon_empty_grey.png"
+                        sourceSize: theme.bigIconSize
                     }
                 }
 
@@ -94,7 +93,7 @@ Rectangle {
                         }
                     }
                     Rectangle {
-                        width: 50
+                        width: 120
                         height: parent.height
                         color: "#242424"
                     }
@@ -137,7 +136,7 @@ Rectangle {
                         }
                     }
                     Rectangle {
-                        width: 50
+                        width: 120
                         height: parent.height
                         color: "#242424"
                     }

@@ -82,8 +82,9 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
             aDebug() << "Navigation canceled, change current item";
 
             // oh clear all items
-
-            changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
+            if(navigationProxy.currentNaviItem()) {
+                changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
+            }
         }
     });
 
@@ -669,7 +670,9 @@ void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
     nxeInstance->ipc()->setTracking(false);
     nxeInstance->ipc()->zoomToRoute();
     if (proxy) {
-        m_waypointItem.reset(LocationProxy::clone(proxy));
+        auto p = LocationProxy::clone(proxy);
+        p->moveToThread(m_rootContext->thread());
+        m_waypointItem.reset(p);
         nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
     } else {
         m_waypointItem.reset();

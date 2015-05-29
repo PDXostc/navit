@@ -71,6 +71,7 @@ int main(int argc, char* argv[])
     // remove all navit instances
     system("killall navit");
     system("rm -rf ~/.navit/destination.txt");
+    system("cp /usr/share/navit/maps/boarders.bin ~/.NavIt/maps/borders.bin");
 
     // Parse app settings
     QCommandLineParser parser;

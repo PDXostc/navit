@@ -64,6 +64,11 @@ bool NavitNavigationProxy::navigation()
 
 void NavitNavigationProxy::startNavigation(QObject* currentItem)
 {
+    if (navigation()) {
+        nxeInstance->ipc()->clearDestination();
+        emit navigationChanged();
+    }
+
     LocationProxy* p = qobject_cast<LocationProxy*>(currentItem);
     m_currentNavigationItem.reset(LocationProxy::clone(p));
     nxeInstance->startNavigation(p->longitude(), p->latitude(), p->description().toStdString());

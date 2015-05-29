@@ -1,8 +1,9 @@
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 
 Item {
     id: root
-    width: 60
+    width: 120
     height: 4 * (theme.menu.buttonSize + 30)
     anchors.left: parent.left
     anchors.top: parent.top
@@ -12,9 +13,16 @@ Item {
 
     Rectangle {
         id: menuBackground
-        anchors.fill: parent
         color: theme.menu.backgroundColor
+        anchors.fill: parent
         opacity: theme.menu.opacity
+    }
+
+    RectangularGlow {
+        anchors.fill: menuBackground
+        glowRadius: 8
+        spread: 0.2
+        color: "#66000000"
     }
 
     Column {
@@ -25,6 +33,7 @@ Item {
             height: root.height/4
 
             Image {
+                id: menuImageItem
                 anchors.centerIn: parent
                 source: "menu_icon_white.png"
                 sourceSize.width: theme.menu.buttonSize

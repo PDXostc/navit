@@ -52,7 +52,6 @@
         <file>qml/nxe-ui/location_marker_icon.png</file>
         <file>qml/nxe-ui/blue_forward_button_long_bg.png</file>
         <file>qml/nxe-ui/MapLocationInfoTop.qml</file>
-        <file>qml/nxe-ui/MapLocationToast.qml</file>
         <file>qml/nxe-ui/ScrollBar.qml</file>
         <file>qml/nxe-ui/DownloadCompleted.qml</file>
         <file>qml/nxe-ui/star_icon_empty_grey.png</file>
@@ -96,5 +95,7 @@
         <file>qml/nxe-ui/themes/Theme.qml</file>
         <file>qml/nxe-ui/themes/TizenTheme.qml</file>
         <file>qml/nxe-ui/themes/NormalTheme.qml</file>
+        <file>qml/nxe-ui/NDropShadow.qml</file>
+        <file>qml/nxe-ui/images/cancel_banner_icon.png</file>
     </qresource>
 </RCC>

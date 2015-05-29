@@ -23,9 +23,12 @@ Item {
     property ListModel navigationManuvers: ListModel {}
 
     NMenu {
+        id: menu
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.topMargin: 110
+        anchors.topMargin: theme.menu.topMargin
+        width: theme.menu.size.width
+        height: theme.menu.size.height
 
         onClicked: {
             if (item === "menu") {
@@ -37,6 +40,7 @@ Item {
             }
         }
     }
+
 
     Connections {
         target: navitProxy
@@ -56,8 +60,8 @@ Item {
                     navigationInfoObject.opacity = 1
                 }
             }
-
         }
+
         onWaypointItemChanged: {
             Info.remove(waypointComponent,waypointObject)
             console.debug('waypoint item', navitProxy.waypointItem)
@@ -65,7 +69,9 @@ Item {
             if(navitProxy.waypointItem) {
 
                 // hide navigationInfoObject
-                navigationInfoObject.opacity = 0;
+                if (navigationInfoObject) {
+                    navigationInfoObject.opacity = 0;
+                }
 
                 console.debug('waypoint item!')
                 Info.createWaypointItem(navitProxy.waypointItem)

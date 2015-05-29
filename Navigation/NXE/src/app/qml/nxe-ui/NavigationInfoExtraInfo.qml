@@ -10,19 +10,19 @@ Item {
 
     RowLayout {
         id: mainItem
-        width: 70
+        width: 120
         height: parent.height
         spacing: 0
 
         Behavior on width {NumberAnimation {}}
 
         Item {
-            width: 70
+            width: 120
             Layout.fillHeight: true
 
             Item {
                 height: parent.height
-                width: 70
+                width: 120
 
                 Rectangle {
                     anchors.fill: parent
@@ -42,8 +42,7 @@ Item {
 
                 Image {
                     source: "images/info_icon_white.png"
-                    sourceSize.height: 32
-                    sourceSize.width: 32
+                    sourceSize: theme.bigIconSize
                     anchors.centerIn: parent
 
                 }
@@ -71,7 +70,6 @@ Item {
                             opacity: root.state === 'normal' ? 0 : 1
                             Behavior on opacity {NumberAnimation {}}
                             text: "Current:  " + navigationProxy.currentStreet
-                            font.pixelSize: 20
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }
@@ -83,7 +81,6 @@ Item {
                             opacity: root.state === 'normal' ? 0 : 1
                             Behavior on opacity {NumberAnimation {}}
                             text: "Next:  No data available"
-                            font.pixelSize: 20
                             anchors.verticalCenter: parent.verticalCenter
                         }
                     }

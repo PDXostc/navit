@@ -1,23 +1,19 @@
 import QtQuick 2.0
 
 Item {
-    id: locationInfoTop
-    x: 0
-    y: 0
     width: 400
-    //  width: 400
-    height: 100
+    height: 120
     visible: true
+
     signal backToMapRequest()
+    signal requestHideBars()
+
     property bool isFavorite : false
     property bool canNavigate : false
     property string locationName: locationComponent ? locationComponent.itemText : ""
     property string locationDescriptionString: locationComponent ? locationComponent.description : ""
     property var locationComponent: null
-
     property bool extraInfoVisible: false
-
-    signal requestHideBars()
 
     Behavior on opacity {NumberAnimation {}}
 
@@ -26,7 +22,7 @@ Item {
         anchors.fill: parent
         Item {
             id: buttonsBar
-            width: 60
+            width: 120
             height: parent.height
 
             Rectangle {
@@ -142,7 +138,6 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: 12
                 }
-
             }
         }
     }
@@ -151,8 +146,9 @@ Item {
         anchors.top: mainItem.bottom
         anchors.topMargin: 5
         anchors.right: parent.right
-        width: 100
-        height: 40
+        anchors.rightMargin: 10
+        width: 180
+        height: 49
         visible: extraInfoVisible
         MouseArea {
             x: 0
@@ -161,20 +157,23 @@ Item {
                 navigationProxy.stopNavigation()
             }
         }
+
         Image {
             id: blueImage
-            x: -10
-            height: 40
-            source: "blue_forward_button_long_bg.png"
-            rotation: 180
-            fillMode: Image.PreserveAspectCrop
+            source: "images/cancel_banner_icon.png"
+//            sourceSize: Qt.size(180,49)
             smooth: true
+            visible: false
         }
-        Text {
+
+        NDropShadow {
+            anchors.fill: blueImage
+            source: blueImage
+        }
+
+        NText {
             anchors.centerIn: parent
             text: "Cancel"
-            color: "white"
-            font.pixelSize: 16
         }
     }
 }

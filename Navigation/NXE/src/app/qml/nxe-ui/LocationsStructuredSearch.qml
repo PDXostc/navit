@@ -135,41 +135,40 @@ Page {
         }
 
         Item {
-            Layout.fillWidth: true
-            height: theme.ssearchView.startOverHeight
+            width: parent.width
+            height: 200
 
-            Item {
-                anchors.fill: parent
-                Row {
-                    anchors.fill: parent
-                    spacing: 5
+            Row {
+                spacing: 5
+                width: parent.width
+                height: 50
+                anchors.verticalCenter: parent.verticalCenter
 
-                    NText {
-                        font.family: "FontAwesome"
-                        text: "\uf104"
-                        font.pixelSize: 22
-                    }
-
-                    NText {
-                        text: "Start over"
-                        anchors.top: parent.top
-                        anchors.topMargin: 0
-                        font.pixelSize: 18
-                    }
+                NText {
+                    font.family: "FontAwesome"
+                    text: "\uf104"
+                    font.pixelSize: 40
                 }
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.debug('start over')
-                        searchStackView.clear();
-                        var aa = null
-                        searchStackView.clear();
-                        navitProxy.finishSearch();
-                        searchStackView.push({item:locationsListView, immediate: true})
-                        searchStackView.push({item: Qt.resolvedUrl("LocationsStructuredSearch.qml"), immediate: true})
-                        // start over!
-                    }
+                NText {
+                    text: "Start over"
+                    anchors.top: parent.top
+                    anchors.topMargin: 0
+                    font.pixelSize: 30
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.debug('start over')
+                    searchStackView.clear();
+                    var aa = null
+                    searchStackView.clear();
+                    navitProxy.finishSearch();
+                    searchStackView.push({item:locationsListView, immediate: true})
+                    searchStackView.push({item: Qt.resolvedUrl("LocationsStructuredSearch.qml"), immediate: true})
+                    // start over!
                 }
             }
         }

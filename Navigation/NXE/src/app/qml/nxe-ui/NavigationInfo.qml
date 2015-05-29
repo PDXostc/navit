@@ -5,7 +5,7 @@ Item {
     id: root
     width: 400
 
-    property int defaultHeight: 255
+    property int defaultHeight: 320
     property ListModel manuverModel: null
 
     state:'normal'
@@ -26,43 +26,43 @@ Item {
         NavigationInfoExtraInfo {
             id: infoItem
             Layout.fillWidth: true
-            height: 90
+            height: 120
         }
 
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight:true
+
             Row {
                 anchors.fill: parent
 
                 ColumnLayout {
                     id: leftBarItem
-                    width: 70
+                    width: 120
                     height: parent.height
                     spacing: 0
 
                     Rectangle {
                         width: parent.width
-                        height: 80
+                        height: 100
                         color: "#242424"
 
                         Image {
                             anchors.centerIn: parent
                             source: "navigate_icon_white.png"
-                            sourceSize.height: 32
-                            sourceSize.width: 32
+                            sourceSize: theme.bigIconSize
                         }
                     }
+
                     Rectangle {
                         width: parent.width
-                        height: 80
+                        height: 100
                         color: "#242424"
 
                         Image {
                             anchors.centerIn: parent
                             source: "star_icon_empty_grey.png"
-                            sourceSize.height: 32
-                            sourceSize.width: 32
+                            sourceSize: theme.bigIconSize
                         }
                     }
 
@@ -132,7 +132,7 @@ Item {
             name: "expandedManuvers"
             PropertyChanges {
                 target: root
-                height: 400
+                height: defaultHeight + 200
             }
         }
     ]
