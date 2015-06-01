@@ -236,7 +236,11 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: navigationUIRequested()
+                            onClicked: {
+                                if (opacity === 1) {
+                                    navigationUIRequested()
+                                }
+                            }
 
                             Image {
                                 source: "blue_forward_button_long_bg.png"
