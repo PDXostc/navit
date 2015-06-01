@@ -16,6 +16,9 @@ Item {
         color: "#09bcdf"
         anchors.bottom: parent.bottom
 
+        MouseArea {
+            anchors.fill: parent
+        }
         NText {
             text: "(" + count + ") Downloads (" + downloadSize + "MB)"
             anchors.left: parent.left
