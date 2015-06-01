@@ -70,6 +70,7 @@ public slots:
     void quit();
     void restartNavit();
     void stopNavit();
+    void zoomToRoute();
 
     QString valueFor(const QString& optionName);
     void changeValueFor(const QString& optionName, const QVariant& newVal);
@@ -87,6 +88,7 @@ public slots:
     void getHistory();
     void setLocationPopUp(const QUuid& id);
     void setZoom(int newZoom);
+    void zoomBy(int factor);
 
     void clearWaypoint();
 

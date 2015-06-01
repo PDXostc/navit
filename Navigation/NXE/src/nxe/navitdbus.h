@@ -15,8 +15,10 @@ public:
 
     //! This will block until startup signal is received
     virtual void quit() override;
+    virtual void restart() override;
     virtual void setZoom(int newZoom) override;
     virtual void zoom() override;
+    virtual void zoomBy(int factor) override;
     virtual void render() override;
     virtual void resize(int x, int y) override;
     virtual void orientation() override;

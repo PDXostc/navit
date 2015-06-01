@@ -166,6 +166,8 @@ void NXEInstance::restartNavit()
 {
     stopNavit();
     startNavit();
+
+    d->ipc->restart();
 }
 
 void NXEInstance::stopNavit()

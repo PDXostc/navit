@@ -183,7 +183,7 @@ Item {
 
                         NText {
                             id: locationEtaTextItem
-                            text: "3 min"
+                            text: ""
                             color: "#09bcdf"
                             font.pixelSize: 20
                         }
@@ -210,7 +210,7 @@ Item {
 
                         NText {
                             id: locationDistanceTextItem
-                            text: "0.2 miles"
+                            text: ""
                             Layout.fillHeight: true
                             verticalAlignment: Text.AlignTop
                             color: "#09bcdf"

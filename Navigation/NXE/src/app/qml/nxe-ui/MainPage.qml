@@ -45,6 +45,7 @@ Item {
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
+            console.debug("onCurrentlySelectedItemChanged");
             if (navigationProxy.navigation) {
                 // hide navigation info component
                 navigationInfoObject.opacity = 0
@@ -92,6 +93,8 @@ Item {
                 Info.remove(locationInfoTopComponent, locationInfoTopObject)
                 Info.remove(navigationInfoComponent, navigationInfoObject)
                 Info.remove(waypointComponent, waypointObject)
+            } else {
+                zoomToRouteTimer.start()
             }
         }
 
@@ -117,6 +120,16 @@ Item {
         interval: 3000
         onTriggered: {
             navigationProxy.stopNavigation();
+        }
+    }
+
+    Timer {
+        id: zoomToRouteTimer
+        running: false
+        interval: 500
+        onTriggered: {
+            navitProxy.zoomToRoute();
+            navitProxy.zoomBy(-2)
         }
     }
 

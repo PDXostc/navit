@@ -75,17 +75,16 @@ public:
     typedef boost::signals2::signal<void(NXE::Position)> CurrentCenterSignalType;
     typedef boost::signals2::signal<void(SearchResults, SearchType)> SearchResultsSignalType;
     typedef boost::signals2::signal<void(std::string)> StringSignalType;
-
     typedef boost::signals2::signal<void(std::pair<std::int32_t, std::int32_t>)> PossibleTrackSignalType;
-
-
 
     virtual ~INavitIPC() {}
 
     virtual void quit() = 0;
+    virtual void restart() = 0;
 
     // Actuall interface description
     virtual void zoom() = 0;
+    virtual void zoomBy(int factor) = 0;
     virtual void setZoom(int newZoom) = 0;
     virtual void render() = 0;
     virtual void resize(int x, int y) = 0;

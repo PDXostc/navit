@@ -272,6 +272,7 @@ void NavitQuickProxy::resize(const QRect& rect)
 
 void NavitQuickProxy::setEnablePoi(bool enable)
 {
+    aDebug() << (enable ? "Enabling" : "Disabling") << " POI";
     nxeInstance->ipc()->setScheme(enable ? "Car-JLR" : "Car-JLR-nopoi");
     m_settings.set<Tags::EnablePoi>(enable);
 }
@@ -338,11 +339,17 @@ void NavitQuickProxy::restartNavit()
 {
     aInfo() << "Restart Navit";
     nxeInstance->restartNavit();
+    QTimer::singleShot(500, this, SLOT(synchronizeNavit()));
 }
 
 void NavitQuickProxy::stopNavit()
 {
     nxeInstance->stopNavit();
+}
+
+void NavitQuickProxy::zoomToRoute()
+{
+    nxeInstance->ipc()->zoomToRoute();
 }
 
 QString NavitQuickProxy::valueFor(const QString& optionName)
@@ -482,6 +489,11 @@ void NavitQuickProxy::getHistory()
 void NavitQuickProxy::setZoom(int newZoom)
 {
     nxeInstance->ipc()->setZoom(newZoom);
+}
+
+void NavitQuickProxy::zoomBy(int factor)
+{
+    nxeInstance->ipc()->zoomBy(factor);
 }
 
 void NavitQuickProxy::clearWaypoint()
