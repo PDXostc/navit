@@ -86,20 +86,7 @@ Item {
 
         onNavigationChanged: {
             console.debug('navigation is', navigationProxy.navigation)
-            if (navigationProxy.navigation) {
-                Info.remove(locationInfoComponent,locationInfoObject);
-                Info.remove(navigationInfoComponent, navigationInfoObject);
-
-                if (!locationInfoTopComponent) {
-                    Info.createTopInfoComponent(null)
-                }
-                locationInfoTopObject.extraInfoVisible = true;
-
-                // clear manuver list
-                navigationManuvers.clear();
-                Info.createNavigationInstructionsItem(navigationManuvers);
-
-            } else {
+            if (!navigationProxy.navigation) {
                 console.debug('Navigation stopped')
                 Info.remove(locationInfoComponent,locationInfoObject);
                 Info.remove(locationInfoTopComponent, locationInfoTopObject)
@@ -144,6 +131,28 @@ Item {
         id: locationsView
         LocationsView {
             onBackToMapRequest: rootStack.pop()
+        }
+    }
+
+    Connections {
+        target: locationInfoObject
+        onNavigationUIRequested: {
+            console.debug('Navi UI Requested')
+            console.debug('navigation is', navigationProxy.navigation)
+            Info.remove(locationInfoComponent,locationInfoObject);
+            Info.remove(navigationInfoComponent, navigationInfoObject);
+            console.debug('loc=', locationInfoTopObject, locationInfoTopComponent)
+
+            if (!locationInfoTopComponent) {
+                Info.createTopInfoComponent(null)
+            }
+            locationInfoTopObject.extraInfoVisible = true;
+
+            // clear manuver list
+            navigationManuvers.clear();
+            Info.createNavigationInstructionsItem(navigationManuvers, navitProxy.currentlySelectedItem);
+
+            navitProxy.moveToCurrentPosition();
         }
     }
 }

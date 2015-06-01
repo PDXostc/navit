@@ -454,8 +454,6 @@ void NavitQuickProxy::searchSelect(const QString& what, int id)
 void NavitQuickProxy::moveToCurrentPosition()
 {
     nxeInstance->ipc()->setTracking(true);
-    changeCurrentItem(nullptr);
-
     auto pos = nxeInstance->gps()->position();
     nxeInstance->ipc()->setPosition(pos.longitude, pos.latitude);
 }

@@ -16,6 +16,8 @@ Item {
 
     state: 'normal'
 
+    signal navigationUIRequested()
+
     function etaText() {
         var str;
         console.debug('eta ', locationComponent.eta)
@@ -54,8 +56,10 @@ Item {
     function toggleNaviButton() {
         if (root.state === 'normal') {
             root.state = 'navi';
+            navigationProxy.startNavigation(navitProxy.currentlySelectedItem);
         } else {
             root.state = 'normal'
+            navigationProxy.stopNavigation();
         }
     }
 
@@ -232,7 +236,7 @@ Item {
 
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: navigationProxy.startNavigation(navitProxy.currentlySelectedItem)
+                            onClicked: navigationUIRequested()
 
                             Image {
                                 source: "blue_forward_button_long_bg.png"
@@ -254,7 +258,6 @@ Item {
                                 text: qsTr("Start Navigation")
                                 anchors.verticalCenter: parent.verticalCenter
                             }
-
                         }
                     }
                 }

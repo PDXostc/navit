@@ -453,6 +453,7 @@ struct NavitDBusPrivate {
                     {
                         auto params = boost::get<std::pair<INavitIPC::SearchType, std::string>>(msg.value);
                         searchSignal(search(params.first, params.second), params.first);
+                        searchInProgress = false;
                         break;
                     }
                     case DBusQueuedMessage::Type::SelectSearch:
@@ -526,9 +527,6 @@ struct NavitDBusPrivate {
                         std::string to = pair.second;
                         dbusTrace() << "From " << from << " to " << to;
                         DBus::Message msg =  DBusHelpers::call("send_length_time", *(object.get()), from, to);
-//                        std::vector<std::pair<std::string, ::DBus::Variant> > v;
-//                        auto reader = msg.reader();
-//                        reader >> v;
                         break;
                     }
 
@@ -703,6 +701,7 @@ struct NavitDBusPrivate {
     bool dbusThreadRunning{ false };
     bool navigation{ false };
     bool navigationCancelled{ false };
+    bool searchInProgress {false};
     concurrent_queue<DBusQueuedMessage> spsc_queue;
 
     INavitIPC::IntSignalType zoomSignal;
@@ -861,6 +860,12 @@ void NavitDBus::startSearch()
 
 void NavitDBus::search(INavitIPC::SearchType type, const std::string& searchString)
 {
+    if (d->searchInProgress) {
+        dbusError() << "Search already in progress, skipping";
+        return;
+    }
+
+    d->searchInProgress = true;
     d->spsc_queue.push(DBusQueuedMessage{ DBusQueuedMessage::Type::Search, DBusQueuedMessage::VariantType{ std::make_pair(type, searchString) } });
 }
 

@@ -29,11 +29,12 @@ function finishTopComponentCreation() {
     }
 }
 
-function finishNavigationCreation(model) {
+function finishNavigationCreation(model, naviComponent) {
     if (navigationInfoComponent.status === Component.Ready) {
         navigationInfoObject = navigationInfoComponent.createObject(mainPageView, {
                                                                     opacity: 0,
-                                                                    manuverModel: model
+                                                                    manuverModel: model,
+                                                                    naviComponent: naviComponent
                                                                 })
         navigationInfoObject.anchors.bottom = mainPageView.bottom
         navigationInfoObject.anchors.left = mainPageView.left
@@ -73,23 +74,25 @@ function createLocationComponent(location) {
 }
 
 function createTopInfoComponent(location) {
+    console.debug('Creating top info component')
     locationInfoTopComponent = Qt.createComponent("MapLocationInfoTop.qml")
     if (locationInfoTopComponent.status === Component.Ready) {
         finishTopComponentCreation(location)
     } else {
+        console.debug(locationInfoComponent.errorString())
         locationInfoTopComponent.statusChanged.connect(
                     finishTopComponentCreation(location))
     }
 }
 
-function createNavigationInstructionsItem(manuverModel) {
+function createNavigationInstructionsItem(manuverModel, naviComponent) {
     navigationInfoComponent = Qt.createComponent(Qt.resolvedUrl("NavigationInfo.qml"))
 
     if (navigationInfoComponent.status === Component.Ready) {
-        finishNavigationCreation(manuverModel);
+        finishNavigationCreation(manuverModel, naviComponent);
     } else {
         console.debug(navigationInfoComponent.errorString());
-        navigationInfoComponent.statusChanged.connect(finishNavigationCreation(manuverModel))
+        navigationInfoComponent.statusChanged.connect(finishNavigationCreation(manuverModel, naviComponent))
     }
 }
 

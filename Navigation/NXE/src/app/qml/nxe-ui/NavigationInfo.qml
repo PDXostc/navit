@@ -7,6 +7,7 @@ Item {
 
     property int defaultHeight: 320
     property ListModel manuverModel: null
+    property var naviComponent: null
 
     state:'normal'
 
@@ -47,6 +48,10 @@ Item {
                         height: 100
                         color: "#242424"
 
+                        MouseArea {
+                            anchors.fill: parent
+                        }
+
                         Image {
                             anchors.centerIn: parent
                             source: "navigate_icon_white.png"
@@ -61,8 +66,15 @@ Item {
 
                         Image {
                             anchors.centerIn: parent
-                            source: "star_icon_empty_grey.png"
+                            source: naviComponent.favorite ? "star_icon_solid_white.png" : "star_icon_empty_grey.png"
                             sourceSize: theme.bigIconSize
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                naviComponent.favorite = !naviComponent.favorite;
+                            }
                         }
                     }
 

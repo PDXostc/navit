@@ -33,8 +33,7 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
             aDebug() << "Zoomin to route since navigation is on";
             nxeInstance->ipc()->clearMapMarker();
             nxeInstance->ipc()->zoomToRoute();
-            nxeInstance->ipc()->render();
-            emit requestMoveToCurrentPosition(5000);
+            nxeInstance->ipc()->setZoom(512 * 2);
         }
         emit navigationChanged();
     });
