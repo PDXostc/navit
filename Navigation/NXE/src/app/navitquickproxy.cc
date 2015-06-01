@@ -65,21 +65,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         aDebug() << "Navigation changed to " << (navigationProxy.navigation() ? " navi " : "no-navi");
         if (navigationProxy.navigation()) {
             // find in m_history first
-            LocationProxy* currItem = qobject_cast<LocationProxy*>(navigationProxy.currentNaviItem());
-            auto iter = std::find_if(m_historyResults.begin(), m_historyResults.end(), [this, currItem](QObject *o) -> bool{
-                LocationProxy* p = qobject_cast<LocationProxy*>(o);
-                return p->itemText() == currItem->itemText() ||
-                       p->id() == currItem->id() ||
-                       (p->longitude() == currItem->longitude() && p->latitude() == currItem->latitude());
-            });
-            if( iter == m_historyResults.end()) {
-                aDebug() << "History result wasn't found in history list, adding " << currItem->itemText().toStdString();
-                auto p = LocationProxy::clone(currItem);
-                p->moveToThread(m_rootContext->thread());
-                m_historyResults.append(p);
-            } else {
-                aInfo() << "Item " << currItem->itemText().toStdString() << " was found in history, skip it";
-            }
+            LocationProxy* p = qobject_cast<LocationProxy*>(navigationProxy.currentNaviItem());
+            tryToAddToHistory(p);
         } else {
             aDebug() << "Navigation canceled, change current item";
 
@@ -685,7 +672,7 @@ void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
         auto p = LocationProxy::clone(proxy);
         p->moveToThread(m_rootContext->thread());
         m_waypointItem.reset(p);
-        m_historyResults.append(LocationProxy::clone(p));
+        tryToAddToHistory(p);
         nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
     } else {
         m_waypointItem.reset();
@@ -693,4 +680,26 @@ void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
     }
 
     emit waypointItemChanged();
+}
+
+void NavitQuickProxy::tryToAddToHistory(LocationProxy *proxy)
+{
+    if (proxy) {
+        LocationProxy* currItem = proxy;
+        auto find = std::find_if(m_historyResults.begin(), m_historyResults.end(), [&currItem](QObject* o) -> bool {
+            LocationProxy* p = qobject_cast<LocationProxy*>(o);
+            return (p->itemText() == currItem->itemText()) ||
+                   (p->id() == currItem->id()) ||
+                   (p->longitude() == currItem->longitude() && p->latitude() == currItem->latitude());
+        });
+
+        if (find == m_historyResults.end()) {
+            aDebug() << "History result wasn't found in history list, adding " << currItem->itemText().toStdString();
+            auto p = LocationProxy::clone(currItem);
+            p->moveToThread(m_rootContext->thread());
+            m_historyResults.append(p);
+        } else {
+            aInfo() << "Item " << currItem->itemText().toStdString() << " was found in history, skip it";
+        }
+    }
 }
