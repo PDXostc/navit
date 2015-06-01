@@ -10,7 +10,7 @@ function finishComponentCreation(location) {
         locationInfoObject.opacity = 1
     }
 }
-function finishTopComponentCreation() {
+function finishTopComponentCreation(location) {
     if (locationInfoTopComponent.status === Component.Ready) {
         locationInfoTopObject = locationInfoTopComponent.createObject(
                     mainPageView, {
@@ -19,7 +19,7 @@ function finishTopComponentCreation() {
         locationInfoTopObject.anchors.top = mainPageView.top
         locationInfoTopObject.anchors.left = mainPageView.left
         locationInfoTopObject.anchors.right = mainPageView.right
-        locationInfoTopObject.locationComponent = navitProxy.currentlySelectedItem
+        locationInfoTopObject.locationComponent = location
         locationInfoTopObject.opacity = 1
 
         locationInfoTopObject.requestHideBars.connect(function () {
@@ -55,11 +55,6 @@ function finishWaypointComponent(location) {
         waypointObject.locationComponent = location
         waypointObject.opacity = 1
     }
-}
-
-function createLocationComponents(location) {
-    createLocationComponent(location)
-    createTopInfoComponent(location)
 }
 
 function createLocationComponent(location) {

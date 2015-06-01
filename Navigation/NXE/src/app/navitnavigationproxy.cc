@@ -59,21 +59,26 @@ bool NavitNavigationProxy::navigation()
     return nxeInstance->ipc()->isNavigationRunning();
 }
 
+QObject *NavitNavigationProxy::currentNaviItem() const
+{
+    aDebug() << Q_FUNC_INFO << static_cast<void*>(m_currentNavigationItem.data()) << m_currentNavigationItem->itemText().toStdString();
+    return m_currentNavigationItem.data();
+}
+
 void NavitNavigationProxy::startNavigation(QObject* currentItem)
 {
-    if (navigation()) {
-        nxeInstance->ipc()->clearDestination();
-        emit navigationChanged();
-    }
+    aInfo() << "Starting navigation";
 
     LocationProxy* p = qobject_cast<LocationProxy*>(currentItem);
     m_currentNavigationItem.reset(LocationProxy::clone(p));
+    emit currentNaviLocationChanged();
+    aDebug() << Q_FUNC_INFO << static_cast<void*>(m_currentNavigationItem.data()) << m_currentNavigationItem->itemText().toStdString();
     nxeInstance->startNavigation(p->longitude(), p->latitude(), p->description().toStdString());
 }
 
 void NavitNavigationProxy::addWaypoint(QObject* item)
 {
-    aDebug() << "Adding waypoint";
+    aInfo() << "Adding waypoint";
     LocationProxy* p = qobject_cast<LocationProxy*>(item);
     nxeInstance->ipc()->addWaypoint(p->longitude(), p->latitude());
 

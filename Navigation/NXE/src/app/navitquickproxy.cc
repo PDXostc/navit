@@ -18,6 +18,8 @@
 
 #include <QtCore/QVariant>
 #include <QtQml/QQmlContext>
+#include <QtQml/QQmlEngine>
+#include <QtQml>
 #include <QtCore/QTimer>
 #include <QtCore/QRect>
 
@@ -63,7 +65,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         aDebug() << "Navigation changed to " << (navigationProxy.navigation() ? " navi " : "no-navi");
         if (navigationProxy.navigation()) {
             // find in m_history first
-            auto currItem = navigationProxy.currentNaviItem();
+            LocationProxy* currItem = qobject_cast<LocationProxy*>(navigationProxy.currentNaviItem());
             auto iter = std::find_if(m_historyResults.begin(), m_historyResults.end(), [this, currItem](QObject *o) -> bool{
                 LocationProxy* p = qobject_cast<LocationProxy*>(o);
                 return p->itemText() == currItem->itemText() ||
@@ -83,7 +85,8 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
             // oh clear all items
             if(navigationProxy.currentNaviItem()) {
-                changeCurrentItem(LocationProxy::clone(navigationProxy.currentNaviItem()));
+                LocationProxy *pp = qobject_cast<LocationProxy*>(navigationProxy.currentNaviItem());
+                changeCurrentItem(LocationProxy::clone(pp));
             }
         }
     });
@@ -678,7 +681,6 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
 void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
 {
     nxeInstance->ipc()->setTracking(false);
-    nxeInstance->ipc()->zoomToRoute();
     if (proxy) {
         auto p = LocationProxy::clone(proxy);
         p->moveToThread(m_rootContext->thread());

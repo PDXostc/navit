@@ -20,6 +20,8 @@ Item {
     property var waypointComponent: null
     property var waypointObject: null
 
+    property bool alreadyInNavi: false
+
     property ListModel navigationManuvers: ListModel {}
 
     NMenu {
@@ -51,7 +53,6 @@ Item {
                 navigationInfoObject.opacity = 0
             }
             Info.remove(locationInfoComponent,locationInfoObject);
-            Info.remove(locationInfoTopComponent, locationInfoTopObject)
 
             if (navitProxy.currentlySelectedItem) {
                 Info.createLocationComponent(navitProxy.currentlySelectedItem)
@@ -79,6 +80,7 @@ Item {
             } else {
                 // show navigationInfoObject
                 navigationInfoObject.opacity = 1;
+                navitProxy.moveToCurrentPosition()
             }
         }
     }
@@ -93,8 +95,26 @@ Item {
                 Info.remove(locationInfoTopComponent, locationInfoTopObject)
                 Info.remove(navigationInfoComponent, navigationInfoObject)
                 Info.remove(waypointComponent, waypointObject)
+
+                alreadyInNavi = false;
             } else {
-                zoomToRouteTimer.start()
+                // navigation ch
+                if (alreadyInNavi) {
+                    navigationInfoObject.opacity = 1;
+                }
+
+                if (locationInfoTopObject && locationInfoTopObject.locationComponent === null) {
+                    // change navi component
+                    console.debug("Changing top bar location component")
+                    locationInfoTopObject.locationComponent = navigationProxy.naviLocation
+
+                    navitProxy.moveToCurrentPosition();
+                    return
+                }
+
+                alreadyInNavi = true;
+                console.debug('start zoom to route timer')
+                zoomToRouteTimer.restart()
             }
         }
 
@@ -110,6 +130,7 @@ Item {
         }
 
         onWaypointAdded: {
+            console.debug('Waypoint added')
             navitProxy.moveToCurrentPosition();
         }
     }
@@ -128,6 +149,7 @@ Item {
         running: false
         interval: 500
         onTriggered: {
+            console.debug('Zoom to route')
             navitProxy.zoomToRoute();
             navitProxy.zoomBy(-2)
         }
@@ -157,13 +179,13 @@ Item {
             console.debug('loc=', locationInfoTopObject, locationInfoTopComponent)
 
             if (!locationInfoTopComponent) {
-                Info.createTopInfoComponent(null)
+                Info.createTopInfoComponent(navigationProxy.naviLocation)
             }
             locationInfoTopObject.extraInfoVisible = true;
 
             // clear manuver list
             navigationManuvers.clear();
-            Info.createNavigationInstructionsItem(navigationManuvers, navitProxy.currentlySelectedItem);
+            Info.createNavigationInstructionsItem(navigationManuvers, navigationProxy.naviLocation)
 
             navitProxy.moveToCurrentPosition();
         }

@@ -17,6 +17,7 @@ class NavitNavigationProxy : public QObject
     Q_PROPERTY(int distanceToDestination READ distanceToDestination NOTIFY distanceToDestinationChanged)
     Q_PROPERTY(int eta READ eta NOTIFY etaChanged)
     Q_PROPERTY(QString currentStreet READ currentStreet NOTIFY currentStreetChanged)
+    Q_PROPERTY(QObject* naviLocation READ currentNaviItem NOTIFY currentNaviLocationChanged)
 public:
     NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstance> &nxe, QObject *parent = 0);
     // Navigation API
@@ -26,7 +27,7 @@ public:
     int eta() { return m_eta;}
     QString currentStreet() const {return m_currentStreet;}
 
-    LocationProxy* currentNaviItem() const {return m_currentNavigationItem.data();}
+    QObject *currentNaviItem() const;
 signals:
     // Navigation
     void navigationChanged();
@@ -40,6 +41,7 @@ signals:
 
     // Private don't use
     void requestMoveToCurrentPosition(int timeout);
+    void currentNaviLocationChanged();
 
 public slots:
     void startNavigation(QObject* currentItem);

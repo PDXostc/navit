@@ -15,6 +15,11 @@ Item {
     property var locationComponent: null
     property bool extraInfoVisible: false
 
+    onLocationNameChanged: {
+        console.trace();
+        console.debug('location name changed', locationComponent, locationName)
+    }
+
     Behavior on opacity {NumberAnimation {}}
 
     Item {
@@ -161,7 +166,6 @@ Item {
         Image {
             id: blueImage
             source: "images/cancel_banner_icon.png"
-//            sourceSize: Qt.size(180,49)
             smooth: true
             visible: false
         }
