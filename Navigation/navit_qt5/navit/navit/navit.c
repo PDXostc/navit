@@ -376,33 +376,6 @@ struct attr** navit_get_point_attr_list(struct navit *this_, struct point *p)
 }
 
 
-int navit_check_point_is_poi(struct navit *this_, struct point *p)
-{
-	struct displaylist_handle *dlh;
-	struct displaylist *display;
-	struct displayitem *di;
-
-    int is_poi = 0;
-
-	display=navit_get_displaylist(this_);
-	dlh=graphics_displaylist_open(display);
-	while ((di=graphics_displaylist_next(dlh))) {
-		struct item *item=graphics_displayitem_get_item(di);
-		if (graphics_displayitem_get_displayed(di) &&
-			graphics_displayitem_within_dist(display, di, p, this_->radius)) {
-			if ((is_poi = g_str_has_prefix(item_to_name(item->type), "poi_")) > 0) {
-				break;
-			}
-		}
-	}
-	graphics_displaylist_close(dlh);
-
-	return is_poi;
-}
-
-
-
-
 void navit_show_selection_point(void* data, struct point *p, int enable)
 {
 	struct navit *this=data;
@@ -500,25 +473,18 @@ void navit_dbus_send_tap_point_info(void* data, struct point *p)
 	struct coord c;
 	struct coord_geo g;
 
-	if (navit_check_point_is_poi(this, p)) {
-		attr_list = navit_get_point_attr_list(this,p);
-	} else {
+	// transform pixel coordinates to geo coordinates
+    trans=navit_get_trans(this);
+    transform_reverse(trans, p, &c);
+    dbg(lvl_error, "%d %d", p->x, p->y);
+    dbg(lvl_error, "%d %d", c.x, c.y);
+    transform_to_geo(transform_get_projection(trans), &c, &g);
 
-	    // transform pixel coordinates to geo coordinates
-        trans=navit_get_trans(this);
-        transform_reverse(trans, p, &c);
-        dbg(lvl_error, "%d %d", p->x, p->y);
-        dbg(lvl_error, "%d %d", c.x, c.y);
-        transform_to_geo(transform_get_projection(trans), &c, &g);
-
-        attr.u.coord_geo=&g;
-        attr.type=attr_tap_coord_geo;
+	attr.u.coord_geo=&g;
+    attr.type=attr_tap_coord_geo;
 
 	    // add clicked point geo coordinates to atrributes list:
-        attr_list=attr_generic_add_attr(attr_list, &attr);
-	}
-
-
+    attr_list=attr_generic_add_attr(attr_list, &attr);
 
 	if (attr_list && navit_get_attr(this, attr_callback_list, &cb, NULL))
 		callback_list_call_attr_4(cb.u.callback_list, attr_command, "dbus_send_signal", attr_list, NULL, &valid);
