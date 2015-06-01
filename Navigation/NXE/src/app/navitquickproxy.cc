@@ -685,6 +685,7 @@ void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
         auto p = LocationProxy::clone(proxy);
         p->moveToThread(m_rootContext->thread());
         m_waypointItem.reset(p);
+        m_historyResults.append(LocationProxy::clone(p));
         nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
     } else {
         m_waypointItem.reset();
