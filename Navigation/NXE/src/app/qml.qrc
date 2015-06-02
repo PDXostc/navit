@@ -97,5 +97,6 @@
         <file>qml/nxe-ui/themes/NormalTheme.qml</file>
         <file>qml/nxe-ui/NDropShadow.qml</file>
         <file>qml/nxe-ui/images/cancel_banner_icon.png</file>
+        <file>qml/nxe-ui/CancelButton.qml</file>
     </qresource>
 </RCC>

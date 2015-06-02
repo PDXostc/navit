@@ -147,37 +147,26 @@ Item {
         }
     }
 
-    Item {
+    CancelButton {
+        width: 180
+        height: 49
         anchors.top: mainItem.bottom
         anchors.topMargin: 5
         anchors.right: parent.right
-        anchors.rightMargin: 10
-        width: 180
-        height: 49
-        visible: extraInfoVisible
-        MouseArea {
-            x: 0
-            anchors.fill: parent
-            onClicked: {
-                navigationProxy.stopNavigation()
-            }
-        }
 
-        Image {
-            id: blueImage
-            source: "images/cancel_banner_icon.png"
-            smooth: true
-            visible: false
-        }
-
-        NDropShadow {
-            anchors.fill: blueImage
-            source: blueImage
+        onClicked: {
+            navigationProxy.stopNavigation()
         }
 
         NText {
-            anchors.centerIn: parent
-            text: "Cancel"
+            text: "CANCEL"
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
+            anchors {
+                fill: parent
+            }
+            font.bold: true
+            font.pixelSize: 28
         }
     }
 }
