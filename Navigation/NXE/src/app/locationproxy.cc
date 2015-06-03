@@ -30,9 +30,8 @@ LocationProxy::LocationProxy(const NXE::SearchResult& searchResult)
                 .arg(QString::fromStdString(searchResult.street.name))
                 .arg(QString::fromStdString(searchResult.house.name));
 
-        _description = QString("%1 (%2), %3")
+        _description = QString("%1, %2")
                 .arg(QString::fromStdString(searchResult.city.name))
-                .arg(QString::fromStdString(searchResult.city.postal))
                 .arg(QString::fromStdString(searchResult.country.name));
     }
     else if (!searchResult.street.name.empty()) {
