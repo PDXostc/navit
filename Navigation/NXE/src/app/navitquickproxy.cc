@@ -126,7 +126,11 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
 
         aDebug() << "Name = " << name.toStdString() << " position = " << pc.position.longitude << " " << pc.position.latitude
                  << " distance = " << distance;
-        auto loc = new LocationProxy { name, false, description, false, -1, distance};
+
+        // check if in favorites
+
+        auto found = m_settings.isFavorite(name.toStdString(), pc.position);
+        auto loc = new LocationProxy { name, found, description, false, -1, distance};
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());

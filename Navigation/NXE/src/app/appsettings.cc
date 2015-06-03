@@ -82,6 +82,30 @@ void AppSettings::addToFavorites(LocationProxy* proxy)
     write_json(favPath.string(), favTree);
 }
 
+bool AppSettings::isFavorite(const std::string &name, const NXE::Position &p)
+{
+    // read all favorites
+    bfs::directory_iterator dirIt{ m_favoritesPath };
+
+    bool found {false};
+
+    for (auto& entry : boost::make_iterator_range(dirIt, {})) {
+        using boost::property_tree::ptree;
+        using boost::property_tree::read_json;
+        ptree entryTree;
+        aInfo() << "Reading " << entry;
+        read_json(entry.path().string(), entryTree);
+
+        aInfo() << "ID = " << entryTree.get<std::string>("id");
+
+        if (entryTree.get<std::string>("itemText") == name) {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}
+
 void AppSettings::removeFromFavorites(const std::string& id)
 {
     aInfo() << "Remove " << id << " from favorites";

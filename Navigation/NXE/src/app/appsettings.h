@@ -3,6 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 #include <QList>
+#include "position.h"
 
 class LocationProxy;
 
@@ -59,6 +60,7 @@ public:
     void save();
 
     void addToFavorites(LocationProxy* proxy);
+    bool isFavorite(const std::string& name, const NXE::Position& p);
     void removeFromFavorites(const std::string& id);
 
     void remove();
