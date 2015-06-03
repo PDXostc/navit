@@ -24,10 +24,18 @@ Rectangle {
                     Layout.fillHeight: true
                     width: 120
                     color: "#242424"
+
                     Image {
                         anchors.centerIn: parent
                         source: isFavorite ? "../images/star_icon_solid_white.png" : "../images/star_icon_empty_grey.png"
                         sourceSize: theme.bigIconSize
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            locationComponent.favorite = !locationComponent.favorite
+                        }
                     }
                 }
 

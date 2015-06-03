@@ -678,6 +678,12 @@ void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
         m_waypointItem.reset(p);
         tryToAddToHistory(p);
         nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
+
+        connect(m_waypointItem.data(), &LocationProxy::favoriteChanged, [this]() {
+            aInfo() << "Waypoint item favorite changed";
+            m_settings.addToFavorites(m_waypointItem.data());
+        });
+
     } else {
         m_waypointItem.reset();
         nxeInstance->ipc()->clearMapMarker();
