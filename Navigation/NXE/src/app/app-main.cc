@@ -121,9 +121,10 @@ int main(int argc, char* argv[])
 #if defined(NXE_OS_LINUX)
         view.showMaximized();
 #elif defined(NXE_OS_TIZEN)
-//        QScreen* s = app.primaryScreen();
-//        view.setGeometry(0,0, s->size().width(), s->size().height() - 200);
-        view.showMaximized();
+        QScreen* s = app.primaryScreen();
+        view.setGeometry(0,0, s->size().width(), s->size().height() - 200);
+//        view.showMaximized();
+        view.show();
 #endif
         // Initialize all
         QObject::connect(&view, SIGNAL(windowAdded(QVariant)), view.rootObject(), SLOT(windowAdded(QVariant)));

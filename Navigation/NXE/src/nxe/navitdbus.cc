@@ -302,7 +302,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
     {
         std::pair<std::int32_t, std::int32_t> retVal {-1,-1};
         std::for_each(dictionary.begin(), dictionary.end(), [&](const std::pair<std::string, ::DBus::Variant>& p) {
-            dbusDebug() << "Entry= " << p.first;
             if (p.first == "destination_length") {
                 retVal.first = DBusHelpers::getFromIter<int>(p.second.reader());
             } else if(p.first == "destination_time") {
@@ -310,7 +309,6 @@ struct NavitDBusObjectProxy : public ::DBus::InterfaceProxy, public ::DBus::Obje
             }
         });
 
-        dbusTrace() << "Unpacked " << retVal.first << ", " << retVal.second;
         return retVal;
     }
 

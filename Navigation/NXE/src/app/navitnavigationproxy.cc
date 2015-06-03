@@ -14,15 +14,10 @@ NavitNavigationProxy::NavitNavigationProxy(const std::shared_ptr<NXE::NXEInstanc
     connect(this, &NavitNavigationProxy::requestMoveToCurrentPosition, this, &NavitNavigationProxy::moveToCurrentPositionWitTimeout, Qt::QueuedConnection);
 
     nxeInstance->ipc()->routingSignal().connect([this](const std::string& manuver) {
-        if (manuver == "You have reached your destination now") {
-            emit navigationManuver("You have arrived");
-            emit navigationFinished();
-        }
-        else {
-            emit navigationManuver(QString::fromStdString(manuver));
-        }
+        emit navigationManuver(QString::fromStdString(manuver));
     });
     nxeInstance->ipc()->distanceResponse().connect([this](std::int32_t distance) {
+        aTrace() << "Distance received = " << distance;
         m_distance = distance;
         emit distanceToDestinationChanged();
     });

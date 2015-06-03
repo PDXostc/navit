@@ -23,7 +23,8 @@ function textToImage(text) {
 
     var turnLeft2Regexp = new RegExp("Take the second.*left.*");
     var turnRight2Regexp = new RegExp("Take the second.*right.*");
-    var reachDestSoonRegexp = new RegExp("You.*destination.*in")
+    var reachDestInRegexp = new RegExp("You.*destination.*in")
+    var reachDestSoonRegexp = new RegExp("You.*destination.*soon")
     var arrivedRegexp = new RegExp("You have arrived")
 
     if(text.match(turnLeftRegexp)) {
@@ -38,7 +39,7 @@ function textToImage(text) {
         return manuverImages[turnLeft2]
     } else if(text.match(turnRight2Regexp)) {
         return manuverImages[turnRight2]
-    } else if(text.match(arrivedRegexp) || text.match(reachDestSoonRegexp)) {
+    } else if(text.match(arrivedRegexp) || text.match(reachDestSoonRegexp) || text.match(reachDestInRegexp)) {
         return manuverImages[arrived]
     } else {
         console.debug('oups what to do with ', text)

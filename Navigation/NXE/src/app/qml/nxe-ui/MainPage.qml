@@ -113,7 +113,7 @@ Item {
                     locationInfoTopObject.locationComponent = navigationProxy.naviLocation
 
                     navitProxy.moveToCurrentPosition();
-                    return
+                    return;
                 }
 
                 alreadyInNavi = true;
@@ -124,7 +124,20 @@ Item {
 
         onNavigationManuver: {
 
-            if (navigationManuvers.count > 10) {
+            var reachDestInRegexp = new RegExp("You.*destination.*in")
+            var reachDestSoonRegexp = new RegExp("You.*destination.*soon")
+            var reachDestNowRegexp = new RegExp("You.*destination.*now")
+
+            if (manuverDescription.match(reachDestInRegexp) || manuverDescription.match(reachDestSoonRegexp)
+                    || manuverDescription.match(reachDestNowRegexp)) {
+                console.debug("You've probably reach destination, navi is about to quit")
+                navigationManuvers.clear();
+                navigationManuvers.append({manuver: "turnLeft", manuverText: manuverDescription, active: true})
+                navigationCancellationTimer.restart()
+                return;
+            }
+
+            if(navigationManuvers.count > 10) {
                 navigationManuvers.remove(0,1)
             }
 
@@ -135,6 +148,7 @@ Item {
         }
 
         onNavigationFinished: {
+            console.debug('Finishing navigation')
             navigationCancellationTimer.start();
         }
 
