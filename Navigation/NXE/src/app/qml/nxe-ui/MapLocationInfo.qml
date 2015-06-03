@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.1
 import QtGraphicalEffects 1.0
+import 'common'
 
 Item {
     id: root
@@ -107,7 +108,7 @@ Item {
                         Image {
                             sourceSize: theme.bigIconSize
                             anchors.centerIn: parent
-                            source: isFavorite ? "star_icon_solid_white.png" : "star_icon_empty_grey.png"
+                            source: isFavorite ? "images/star_icon_solid_white.png" : "images/star_icon_empty_grey.png"
                         }
                     }
 
@@ -122,7 +123,7 @@ Item {
                         Image {
                             sourceSize: theme.bigIconSize
                             anchors.centerIn: parent
-                            source: "navigate_icon_white.png"
+                            source: "images/navigate_icon_white.png"
                         }
                     }
                 }
@@ -162,7 +163,7 @@ Item {
                                 id: locationImage
                                 sourceSize: theme.bigIconSize
                                 anchors.verticalCenter: parent.verticalCenter
-                                source: "location_marker_icon.png"
+                                source: "images/location_marker_icon.png"
                                 smooth: true
                             }
 
@@ -243,7 +244,7 @@ Item {
                             }
 
                             Image {
-                                source: "blue_forward_button_long_bg.png"
+                                source: "images/blue_forward_button_long_bg.png"
                                 width: parent.width
                                 anchors.verticalCenter: parent.verticalCenter
 

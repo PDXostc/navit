@@ -3,6 +3,9 @@ import QtQuick.Layouts 1.1
 import QtQuick.Controls 1.2
 
 import 'infoObjectLogic.js' as Info
+import 'searchview'
+import 'common'
+import 'settingsview'
 
 Item {
     id: mainPageView
@@ -21,6 +24,8 @@ Item {
     property var waypointObject: null
 
     property bool alreadyInNavi: false
+
+    property bool showBackButton: false
 
     property ListModel navigationManuvers: ListModel {}
 
@@ -43,6 +48,19 @@ Item {
         }
     }
 
+    BackButton {
+        width: 120
+        height: 120
+        anchors{
+            top: parent.top
+            left: parent.left
+        }
+        visible: showBackButton
+
+        onClicked: {
+            rootStack.pop();
+        }
+    }
 
     Connections {
         target: navitProxy

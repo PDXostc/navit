@@ -35,7 +35,7 @@ Item {
             Image {
                 id: menuImageItem
                 anchors.centerIn: parent
-                source: "menu_icon_white.png"
+                source: "images/menu_icon_white.png"
                 sourceSize.width: theme.menu.buttonSize
                 sourceSize.height: theme.menu.buttonSize
             }
@@ -50,7 +50,7 @@ Item {
             height: root.height/4
             Image {
                 anchors.centerIn: parent
-                source: "search_icon_white_sm.png"
+                source: "images/search_icon_white_sm.png"
                 sourceSize.width: theme.menu.buttonSize
                 sourceSize.height: theme.menu.buttonSize
             }
@@ -64,7 +64,7 @@ Item {
             height: root.height/4
             Image {
                 anchors.centerIn: parent
-                source: navitProxy.orientation === 0 ? "northup_icon_white.png":"headup_icon_white.png"
+                source: navitProxy.orientation === 0 ? "images/northup_icon_white.png":"images/headup_icon_white.png"
 
                 sourceSize.width: theme.menu.buttonSize
                 sourceSize.height: theme.menu.buttonSize
@@ -85,7 +85,7 @@ Item {
             height: root.height/4
             Image {
                 anchors.centerIn: parent
-                source: "car_icon_white.png"
+                source: "images/car_icon_white.png"
                 sourceSize.width: theme.menu.buttonSize
                 sourceSize.height: theme.menu.buttonSize
             }

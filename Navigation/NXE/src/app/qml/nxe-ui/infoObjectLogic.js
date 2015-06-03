@@ -81,7 +81,7 @@ function createTopInfoComponent(location) {
 }
 
 function createNavigationInstructionsItem(manuverModel, naviComponent) {
-    navigationInfoComponent = Qt.createComponent(Qt.resolvedUrl("NavigationInfo.qml"))
+    navigationInfoComponent = Qt.createComponent(Qt.resolvedUrl("navigationview/NavigationInfo.qml"))
 
     if (navigationInfoComponent.status === Component.Ready) {
         finishNavigationCreation(manuverModel, naviComponent);
@@ -92,10 +92,11 @@ function createNavigationInstructionsItem(manuverModel, naviComponent) {
 }
 
 function createWaypointItem(location) {
-    waypointComponent = Qt.createComponent("WaypointItem.qml")
+    waypointComponent = Qt.createComponent("navigationview/WaypointItem.qml")
     if (waypointComponent.status === Component.Ready) {
         finishWaypointComponent(location)
     } else {
+        console.debug(waypointComponent.errorString());
         waypointComponent.statusChanged.connect(
                     finishWaypointComponent(location))
     }

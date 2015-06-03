@@ -9,6 +9,13 @@ QtObject {
     signal navigationStopped()
     signal navigationFinished()
     signal navigationManuver(string manuverDescription);
+    signal waypointAdded()
+
+    property QtObject naviLocation: QtObject {
+        property bool favorite: true
+        property string description: "Plac ąśźż"
+        property string itemText: "ŻŹŁÓŒÐ"
+    }
 
     function startNavigation() {
         navigation = true;

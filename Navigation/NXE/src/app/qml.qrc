@@ -1,34 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/nxe-ui/back_icon_white_lg.png</file>
-        <file>qml/nxe-ui/back_icon_white_sm.png</file>
-        <file>qml/nxe-ui/car_icon_white.png</file>
-        <file>qml/nxe-ui/CLDialog.qml</file>
-        <file>qml/nxe-ui/CLListDelegate.qml</file>
-        <file>qml/nxe-ui/CLSuggestedCountriesModel.qml</file>
-        <file>qml/nxe-ui/CountryLanguage.qml</file>
-        <file>qml/nxe-ui/download_hex_icon.png</file>
-        <file>qml/nxe-ui/DownloadMaps.qml</file>
-        <file>qml/nxe-ui/FTUMainPage.qml</file>
         <file>qml/nxe-ui/MainPage.qml</file>
-        <file>qml/nxe-ui/map.jpg</file>
-        <file>qml/nxe-ui/map_icon_white.png</file>
         <file>qml/nxe-ui/MenuHeaderButton.qml</file>
-        <file>qml/nxe-ui/menu_icon_white.png</file>
-        <file>qml/nxe-ui/NButton.qml</file>
-        <file>qml/nxe-ui/next_icon_white.png</file>
         <file>qml/nxe-ui/NMenu.qml</file>
-        <file>qml/nxe-ui/northup_icon_white.png</file>
-        <file>qml/nxe-ui/nxe-ui.qmlproject</file>
         <file>qml/nxe-ui/NxeUI.qml</file>
-        <file>qml/nxe-ui/Page.qml</file>
-        <file>qml/nxe-ui/search_icon_white_sm.png</file>
-        <file>qml/nxe-ui/SearchPage.qml</file>
-        <file>qml/nxe-ui/SettingsListDelegate.qml</file>
-        <file>qml/nxe-ui/SettingsListModel.qml</file>
-        <file>qml/nxe-ui/SettingsListView.qml</file>
-        <file>qml/nxe-ui/SettingsView.qml</file>
-        <file>qml/nxe-ui/tick.png</file>
         <file>qml/background.jpg</file>
         <file>qml/closebutton.png</file>
         <file>qml/compositor.js</file>
@@ -36,40 +11,10 @@
         <file>qml/ContrastEffect.qml</file>
         <file>qml/WindowChrome.qml</file>
         <file>qml/WindowContainer.qml</file>
-        <file>qml/nxe-ui/alert_hex_icon.png</file>
-        <file>qml/nxe-ui/FTUCancelPrompt.qml</file>
-        <file>qml/nxe-ui/headup_icon_white.png</file>
-        <file>qml/nxe-ui/LocationsListModel.qml</file>
-        <file>qml/nxe-ui/LocationsListView.qml</file>
-        <file>qml/nxe-ui/LocationsResult.qml</file>
-        <file>qml/nxe-ui/LocationsResultDelegate.qml</file>
-        <file>qml/nxe-ui/LocationsSearch.qml</file>
-        <file>qml/nxe-ui/LocationsView.qml</file>
         <file>qml/nxe-ui/MapLocationInfo.qml</file>
-        <file>qml/nxe-ui/navigate_icon_white.png</file>
-        <file>qml/nxe-ui/search_button_bg.png</file>
-        <file>qml/nxe-ui/star_icon_solid_white.png</file>
-        <file>qml/nxe-ui/location_marker_icon.png</file>
-        <file>qml/nxe-ui/blue_forward_button_long_bg.png</file>
         <file>qml/nxe-ui/MapLocationInfoTop.qml</file>
-        <file>qml/nxe-ui/ScrollBar.qml</file>
-        <file>qml/nxe-ui/DownloadCompleted.qml</file>
-        <file>qml/nxe-ui/star_icon_empty_grey.png</file>
-        <file>qml/nxe-ui/LocationsFavorites.qml</file>
-        <file>qml/nxe-ui/LocationsHistory.qml</file>
-        <file>qml/nxe-ui/white_tick.png</file>
-        <file>qml/nxe-ui/SettingsViewHeader.qml</file>
-        <file>qml/nxe-ui/LocationsStructuredSearch.qml</file>
-        <file>qml/nxe-ui/FTUDialogPage.qml</file>
-        <file>qml/nxe-ui/NDialog.qml</file>
-        <file>qml/nxe-ui/FactoryResetDialog.qml</file>
-        <file>qml/nxe-ui/NText.qml</file>
         <file>qml/nxe-ui/fonts/SourceSansPro-Regular.ttf</file>
-        <file>qml/nxe-ui/LocationsStructuredSearchSelected.qml</file>
-        <file>qml/nxe-ui/LocationsSearchInputItem.qml</file>
         <file>qml/nxe-ui/infoObjectLogic.js</file>
-        <file>qml/nxe-ui/NavigationInfoListView.qml</file>
-        <file>qml/nxe-ui/NavigationInfo.qml</file>
         <file>qml/nxe-ui/images/nav_left_1_bk.png</file>
         <file>qml/nxe-ui/images/nav_right_1_bk.png</file>
         <file>qml/nxe-ui/images/nav_straight_bk.png</file>
@@ -77,26 +22,79 @@
         <file>qml/nxe-ui/images/nav_turnaround_left_bk.png</file>
         <file>qml/nxe-ui/images/expand_window_icon_grey.png</file>
         <file>qml/nxe-ui/images/minimize_window_icon_grey.png</file>
-        <file>qml/nxe-ui/NavigationInfoExtraInfo.qml</file>
         <file>qml/nxe-ui/images/info_icon_white.png</file>
-        <file>qml/nxe-ui/WaypointItem.qml</file>
         <file>qml/nxe-ui/images/navigate_icon_white.png</file>
         <file>qml/nxe-ui/images/blue_forward_button_long_bg.png</file>
-        <file>qml/nxe-ui/CLExpandableDelegate.qml</file>
-        <file>qml/nxe-ui/CLExpandedDelegate.qml</file>
-        <file>qml/nxe-ui/list_toggle_closed_white.png</file>
-        <file>qml/nxe-ui/list_toggle_open_white.png</file>
-        <file>qml/nxe-ui/DownloadCancelConfirmationDialog.qml</file>
         <file>qml/nxe-ui/images/flag_icon_black.png</file>
-        <file>qml/nxe-ui/NavigationImages.js</file>
         <file>qml/nxe-ui/fonts/fontawesome-webfont.ttf</file>
-        <file>qml/nxe-ui/FactoryResetProgressDialog.qml</file>
-        <file>qml/nxe-ui/ManagePOIs.qml</file>
         <file>qml/nxe-ui/themes/Theme.qml</file>
         <file>qml/nxe-ui/themes/TizenTheme.qml</file>
         <file>qml/nxe-ui/themes/NormalTheme.qml</file>
-        <file>qml/nxe-ui/NDropShadow.qml</file>
         <file>qml/nxe-ui/images/cancel_banner_icon.png</file>
-        <file>qml/nxe-ui/CancelButton.qml</file>
+        <file>qml/nxe-ui/common/BackButton.qml</file>
+        <file>qml/nxe-ui/common/CancelButton.qml</file>
+        <file>qml/nxe-ui/common/NButton.qml</file>
+        <file>qml/nxe-ui/common/NDialog.qml</file>
+        <file>qml/nxe-ui/common/NDropShadow.qml</file>
+        <file>qml/nxe-ui/common/NText.qml</file>
+        <file>qml/nxe-ui/common/Page.qml</file>
+        <file>qml/nxe-ui/common/ScrollBar.qml</file>
+        <file>qml/nxe-ui/factoryresetview/FactoryResetDialog.qml</file>
+        <file>qml/nxe-ui/factoryresetview/FactoryResetProgressDialog.qml</file>
+        <file>qml/nxe-ui/ftuview/FTUCancelPrompt.qml</file>
+        <file>qml/nxe-ui/ftuview/FTUDialogPage.qml</file>
+        <file>qml/nxe-ui/ftuview/FTUMainPage.qml</file>
+        <file>qml/nxe-ui/images/alert_hex_icon.png</file>
+        <file>qml/nxe-ui/images/back_icon_white_lg.png</file>
+        <file>qml/nxe-ui/images/back_icon_white_sm.png</file>
+        <file>qml/nxe-ui/images/car_icon_white.png</file>
+        <file>qml/nxe-ui/images/download_hex_icon.png</file>
+        <file>qml/nxe-ui/images/headup_icon_white.png</file>
+        <file>qml/nxe-ui/images/list_toggle_closed_white.png</file>
+        <file>qml/nxe-ui/images/list_toggle_open_white.png</file>
+        <file>qml/nxe-ui/images/location_marker_icon.png</file>
+        <file>qml/nxe-ui/images/map_icon_white.png</file>
+        <file>qml/nxe-ui/images/map.jpg</file>
+        <file>qml/nxe-ui/images/menu_icon_white.png</file>
+        <file>qml/nxe-ui/images/nav_left_2_bk.png</file>
+        <file>qml/nxe-ui/images/nav_right_2_bk.png</file>
+        <file>qml/nxe-ui/images/next_icon_white.png</file>
+        <file>qml/nxe-ui/images/northup_icon_white.png</file>
+        <file>qml/nxe-ui/images/search_button_bg.png</file>
+        <file>qml/nxe-ui/images/search_icon_white_sm.png</file>
+        <file>qml/nxe-ui/images/star_icon_empty_grey.png</file>
+        <file>qml/nxe-ui/images/star_icon_solid_white.png</file>
+        <file>qml/nxe-ui/images/tick.png</file>
+        <file>qml/nxe-ui/images/white_tick.png</file>
+        <file>qml/nxe-ui/mdview/CLDialog.qml</file>
+        <file>qml/nxe-ui/mdview/CLExpandableDelegate.qml</file>
+        <file>qml/nxe-ui/mdview/CLExpandedDelegate.qml</file>
+        <file>qml/nxe-ui/mdview/CLListDelegate.qml</file>
+        <file>qml/nxe-ui/mdview/CLSuggestedCountriesModel.qml</file>
+        <file>qml/nxe-ui/mdview/CountryLanguage.qml</file>
+        <file>qml/nxe-ui/mdview/DownloadCancelConfirmationDialog.qml</file>
+        <file>qml/nxe-ui/mdview/DownloadCompleted.qml</file>
+        <file>qml/nxe-ui/mdview/DownloadMaps.qml</file>
+        <file>qml/nxe-ui/navigationview/NavigationImages.js</file>
+        <file>qml/nxe-ui/navigationview/NavigationInfo.qml</file>
+        <file>qml/nxe-ui/navigationview/NavigationInfoExtraInfo.qml</file>
+        <file>qml/nxe-ui/navigationview/NavigationInfoListView.qml</file>
+        <file>qml/nxe-ui/navigationview/WaypointItem.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsFavHist.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsListModel.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsListView.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsResult.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsResultDelegate.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsSearch.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsSearchInputItem.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsStructuredSearch.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsStructuredSearchSelected.qml</file>
+        <file>qml/nxe-ui/searchview/LocationsView.qml</file>
+        <file>qml/nxe-ui/settingsview/ManagePOIs.qml</file>
+        <file>qml/nxe-ui/settingsview/SettingsListDelegate.qml</file>
+        <file>qml/nxe-ui/settingsview/SettingsListModel.qml</file>
+        <file>qml/nxe-ui/settingsview/SettingsListView.qml</file>
+        <file>qml/nxe-ui/settingsview/SettingsView.qml</file>
+        <file>qml/nxe-ui/settingsview/SettingsViewHeader.qml</file>
     </qresource>
 </RCC>

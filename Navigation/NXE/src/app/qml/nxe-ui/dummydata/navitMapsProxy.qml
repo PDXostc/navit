@@ -24,6 +24,9 @@ QtObject {
         fakeTimer.stop()
     }
     function reloadMaps() {
+    }
+
+    function requestMapsReload() {
         mapsReloaded()
     }
 

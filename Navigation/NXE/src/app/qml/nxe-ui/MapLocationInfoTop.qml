@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import 'common'
 
 Item {
     width: 400
@@ -14,11 +15,6 @@ Item {
     property string locationDescriptionString: locationComponent ? locationComponent.description : ""
     property var locationComponent: null
     property bool extraInfoVisible: false
-
-    onLocationNameChanged: {
-        console.trace();
-        console.debug('location name changed', locationComponent, locationName)
-    }
 
     Behavior on opacity {NumberAnimation {}}
 
@@ -48,7 +44,7 @@ Item {
                     height: 40
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "back_icon_white_lg.png"
+                    source: "images/back_icon_white_lg.png"
                 }
             }
         }
@@ -74,7 +70,7 @@ Item {
                     height: 32
                     anchors.left: parent.left
                     anchors.leftMargin: 5
-                    source: "location_marker_icon.png"
+                    source: "images/location_marker_icon.png"
                 }
 
                 Text {

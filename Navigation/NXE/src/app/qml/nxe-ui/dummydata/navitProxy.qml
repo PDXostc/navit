@@ -69,9 +69,17 @@ QtObject {
         Qt.quit();
     }
 
+    function zoomToRoute() {
+    }
+
+    function zoomBy(factor) {
+    }
+
+    function restartNavit() {}
+
     function setLocationPopUp(itemId) {
-        console.debug('set popup=', itemId)
         currentlySelectedItem = fakeLocationObject;
+        console.debug('set popup=', itemId, currentlySelectedItem)
     }
 
     function setTopBarVisibility(value) {
@@ -94,6 +102,7 @@ QtObject {
         property bool favorite: false
         property string description: "This is a description"
         property int distance: 1000
+        property int eta: 100
     }
 
     property Timer fakeSearchTimer: Timer {

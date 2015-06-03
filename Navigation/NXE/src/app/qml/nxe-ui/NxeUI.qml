@@ -37,14 +37,14 @@ Item {
 
         Loader {
             id: mainPageLoader
-            source: ftu ? "FTUMainPage.qml" : "MainPage.qml"
+            source: ftu ? "ftuview/FTUMainPage.qml" : "MainPage.qml"
 
             Connections {
                 target: navitProxy
                 onFtuChanged: {
                     console.debug('ftu changed!', ftu)
                     if (ftu) {
-                        mainPageLoader.source = Qt.resolvedUrl("FTUMainPage.qml")
+                        mainPageLoader.source = Qt.resolvedUrl("ftuview/FTUMainPage.qml")
                     }
                 }
             }
