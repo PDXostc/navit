@@ -18,5 +18,75 @@ ListModel {
         searchId: 0
         itemId: 2
     }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
+    ListElement {
+        itemText: "Poland"
+        favorite: false
+        description: "yesterday"
+        searchId: 0
+        itemId: 2
+    }
 }
 

@@ -30,6 +30,9 @@ Item {
     function calculateListSize() {
         if (model) {
             var i = model.length
+            if(model.length === undefined) {
+                i = model.count
+            }
             console.debug('list size=',i)
             var size = i * (theme.ssearchView.resultHeight)
             if (size > (root.height - 100)) {

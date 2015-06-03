@@ -12,6 +12,7 @@ Page {
     property var selectedItemId
     property bool searchInProgress: false
     property string customHeader: "Search"
+    property int keyboardHeight: 850
 
     // search state machine
     property int __searchStateId: __CountrySearch
@@ -137,13 +138,13 @@ Page {
 
         Item {
             width: parent.width
-            height: 200
+            height: keyboardHeight
 
             Row {
                 spacing: 5
                 width: parent.width
                 height: 50
-                anchors.verticalCenter: parent.verticalCenter
+                anchors.top: parent.top
 
                 NText {
                     font.family: "FontAwesome"
@@ -169,7 +170,6 @@ Page {
                     navitProxy.finishSearch();
                     searchStackView.push({item:locationsListView, immediate: true})
                     searchStackView.push({item: Qt.resolvedUrl("LocationsStructuredSearch.qml"), immediate: true})
-                    // start over!
                 }
             }
         }
