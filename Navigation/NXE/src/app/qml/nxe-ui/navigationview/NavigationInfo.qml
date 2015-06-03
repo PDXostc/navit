@@ -48,22 +48,6 @@ Item {
                         height: 100
                         color: "#242424"
 
-                        MouseArea {
-                            anchors.fill: parent
-                        }
-
-                        Image {
-                            anchors.centerIn: parent
-                            source: "../images/navigate_icon_white.png"
-                            sourceSize: theme.bigIconSize
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 100
-                        color: "#242424"
-
                         Image {
                             anchors.centerIn: parent
                             source: naviComponent.favorite ? "../images/star_icon_solid_white.png" : "../images/star_icon_empty_grey.png"
@@ -75,6 +59,22 @@ Item {
                             onClicked: {
                                 naviComponent.favorite = !naviComponent.favorite;
                             }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 100
+                        color: "#242424"
+
+                        MouseArea {
+                            anchors.fill: parent
+                        }
+
+                        Image {
+                            anchors.centerIn: parent
+                            source: "../images/navigate_icon_white.png"
+                            sourceSize: theme.bigIconSize
                         }
                     }
 
