@@ -6,6 +6,8 @@ ListView {
     width: 400
     height: 200
 
+    verticalLayoutDirection: ListView.BottomToTop
+
     clip: true
     delegate: Item {
         width: parent.width

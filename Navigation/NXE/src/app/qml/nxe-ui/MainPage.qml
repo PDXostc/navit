@@ -137,6 +137,11 @@ Item {
         }
 
         onNavigationManuver: {
+
+            if (navigationManuvers.count > 10) {
+                navigationManuvers.remove(0,1)
+            }
+
             for(var i = 0; i < navigationManuvers.count; ++i) {
                 navigationManuvers.get(i).active = false;
             }
