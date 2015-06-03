@@ -105,7 +105,7 @@ Item {
                     }
 
                      Image {
-                        width: 20
+                        width: 40
                         height: 40
                         source: root.state === 'normal' ? "../images/expand_window_icon_grey.png" :
                                                           "../images/minimize_window_icon_grey.png"
