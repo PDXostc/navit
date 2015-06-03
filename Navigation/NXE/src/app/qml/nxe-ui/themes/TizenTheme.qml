@@ -50,6 +50,7 @@ QtObject {
     property int defFontSize: 30
     property int bigFontSize: 40
     property int defButtonSize: 48
+    property int keyboardHeight: 850
     property size bigIconSize: Qt.size(60,60)
     property string componentBck: "#09bcdf"
 }

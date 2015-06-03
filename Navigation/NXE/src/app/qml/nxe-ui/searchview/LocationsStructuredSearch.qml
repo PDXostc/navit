@@ -12,7 +12,7 @@ Page {
     property var selectedItemId
     property bool searchInProgress: false
     property string customHeader: "Search"
-    property int keyboardHeight: 85
+    property int keyboardHeight: theme.keyboardHeight
 
     // search state machine
     property int __searchStateId: __CountrySearch
