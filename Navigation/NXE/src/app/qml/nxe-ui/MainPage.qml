@@ -48,24 +48,10 @@ Item {
         }
     }
 
-    BackButton {
-        width: 120
-        height: 120
-        anchors{
-            top: parent.top
-            left: parent.left
-        }
-        visible: showBackButton
-
-        onClicked: {
-            rootStack.pop();
-        }
-    }
-
     Connections {
         target: navitProxy
         onCurrentlySelectedItemChanged: {
-            console.debug("onCurrentlySelectedItemChanged");
+            console.debug("onCurrentlySelectedItemChanged ", navitProxy.currentlySelectedItem);
             if (navigationProxy.navigation) {
                 // hide navigation info component
                 navigationInfoObject.opacity = 0

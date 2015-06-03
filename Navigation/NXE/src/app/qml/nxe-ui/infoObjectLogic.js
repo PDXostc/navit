@@ -58,6 +58,7 @@ function finishWaypointComponent(location) {
 }
 
 function createLocationComponent(location) {
+    console.debug("Creating location info")
     locationInfoComponent = Qt.createComponent("MapLocationInfo.qml")
     if (locationInfoComponent.status === Component.Ready) {
         finishComponentCreation(location)

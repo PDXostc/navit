@@ -31,8 +31,7 @@ Page {
             height: theme.settingsView.delHeight
             onLocationClicked: {
                 navitProxy.setLocationPopUp(itemId)
-                rootStack.push({item: Qt.resolvedUrl("../MainPage.qml"),
-                                properties: {showBackButton: true}})
+                rootStack.pop()
             }
         }
     }
