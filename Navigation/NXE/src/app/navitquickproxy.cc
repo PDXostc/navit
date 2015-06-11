@@ -134,6 +134,7 @@ NavitQuickProxy::NavitQuickProxy(const QString& socketName, QQmlContext* ctx, QO
         // move to parent thread
         loc->setPosition(pc.position);
         loc->moveToThread(this->thread());
+
         if (navigationProxy.navigation()) {
             aInfo() << "Navigation take place, this will be an waypoint";
             setWaypointItem(loc);
@@ -669,28 +670,60 @@ void NavitQuickProxy::changeCurrentItem(LocationProxy* proxy)
     emit currentlySelectedItemChanged();
 }
 
-void NavitQuickProxy::setWaypointItem(LocationProxy *proxy)
+
+void NavitQuickProxy::setWaypointItem(LocationProxy* proxy)
 {
-    nxeInstance->ipc()->setTracking(false);
-    if (proxy) {
-        auto p = LocationProxy::clone(proxy);
-        p->moveToThread(m_rootContext->thread());
-        m_waypointItem.reset(p);
-        tryToAddToHistory(p);
+    nxeInstance->ipc()->clearMapMarker();
+    aDebug() << "Currently selected item ptr=" << static_cast<void*>(proxy);
+    if (proxy == nullptr ) {
+        if (m_waypointItem) {
+            m_waypointItem.reset();
+            nxeInstance->ipc()->clearMapMarker();
+        }
+    }
+    else {
+
+        // check if this is already in favorites, and if so, change the falue of favorite
+        LocationProxy* tmpProxy = proxy;
+
+        auto favIter = std::find_if(m_favoritesResults.begin(), m_favoritesResults.end(), [&proxy, &tmpProxy](QObject* o) -> bool {
+            LocationProxy* _proxy = qobject_cast<LocationProxy*>(o);
+            if (_proxy->itemText() == proxy->itemText()) {
+                aDebug() << "Found item in favorites, use this one ";
+                // favorite list is managed by m_favoritesResults and this list will be cleared (and deleted)
+                // every time someone calls getFavorites
+                tmpProxy = LocationProxy::clone(_proxy);
+                return true;
+            }
+
+            return false;
+        });
+
+        aDebug() << "Changing to " << tmpProxy->itemText().toStdString() << " ptr-" << static_cast<void*>(tmpProxy);
+        assert(tmpProxy);
+        m_waypointItem.reset(tmpProxy);
+        tmpProxy->moveToThread(this->thread());
+
+        tryToAddToHistory(tmpProxy);
+
         nxeInstance->ipc()->addMapMarker(m_waypointItem->longitude(), m_waypointItem->latitude());
 
         connect(m_waypointItem.data(), &LocationProxy::favoriteChanged, [this]() {
-            aInfo() << "Waypoint item favorite changed";
-            m_settings.addToFavorites(m_waypointItem.data());
+                aInfo() << "Adding " << m_waypointItem->id().toByteArray().data() << " to favs";
+                if (m_waypointItem->favorite()) {
+                    m_settings.addToFavorites(m_waypointItem.data());
+                }
+                else {
+                    m_settings.removeFromFavorites(m_waypointItem->id().toByteArray().data());
+                }
         });
-
-    } else {
-        m_waypointItem.reset();
-        nxeInstance->ipc()->clearMapMarker();
     }
 
     emit waypointItemChanged();
 }
+
+
+
 
 void NavitQuickProxy::tryToAddToHistory(LocationProxy *proxy)
 {
